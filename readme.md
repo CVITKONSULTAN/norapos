@@ -1,4 +1,4 @@
-## Tastypoints POS
+## NORA POS
 
 **Requirements**
 1. composer

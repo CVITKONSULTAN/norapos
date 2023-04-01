@@ -1,0 +1,18 @@
+When adding complex node:
+    Disconnet from flow simpleFlow with subnodes:
+        Save in node attributes links to simple flow(array of ids in simple flow)
+        Set display none to simple flow(nodes and connections)
+    Render subnodes in parent original node using links from node attributes(ids of simple flow nodes):
+    Render position:
+        In big flow just increase position number by node_attributes length
+        When rendering node which has node_attributes just set position number of subnodes:
+            increase by 1 begins from position number of parent node
+
+When click renderNodeSettings:
+    Connect all simple flows:
+        Set display(e. g. from none to original)) to all nodes and connections
+            (just traverse all and if display is none then set display to original)
+        Traverse all nodes and if node has node_attributes then:
+            Using ids form node_attributes find simple flow and connect it(just connect head and tail of simpleFlow);
+            Update all flows if needed(using function for updating in BinaryFlow)
+            

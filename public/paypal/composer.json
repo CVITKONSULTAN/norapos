@@ -1,0 +1,6 @@
+{
+    "require": {
+        "paypal/rest-api-sdk-php": "*",
+        "nette/database": "^3.1"
+    }
+}

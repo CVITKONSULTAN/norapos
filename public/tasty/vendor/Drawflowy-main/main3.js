@@ -1,0 +1,2048 @@
+function changeMode(option) {
+    //console.log(lock.id);
+    if (option == "lock") {
+      lock.style.display = "none";
+      unlock.style.display = "block";
+    } else {
+      lock.style.display = "block";
+      unlock.style.display = "none";
+    }
+  }
+  
+  function setCaret(el) {
+    // var el = document.getElementById(id) || document.querySelector(id);
+    var range = document.createRange();
+    var sel = window.getSelection();
+    range.setStart(el.childNodes[0], 0);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    el.focus();
+  }
+  
+  const capitalize = (s) => {
+    if (typeof s !== "string") return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+  
+  addEventListener("mousedown", (ev) => {
+    if (
+      !ev.target.closest(".setting-pick") &&
+      !ev.target.closest(".val-selector")
+    ) {
+      const valSelectorHtmlElem = document.querySelector(".val-selector");
+      valSelectorHtmlElem && (valSelectorHtmlElem.style.display = "none");
+    }
+  });
+  
+  class App extends BinaryFlow {
+    dragId = null;
+    // url =
+    //   "https://valerii.educationhost.cloud?csurl=https://tastypoints.io/akm/restapi.php";
+    url = 'https://tastypos.onprocess.work/tastypointsapi/testnet';
+
+    sideElements = [];
+    dragCloneElem = null;
+    dx = null;
+    dy = null;
+    nodes = [];
+    rightWindows = {};
+    storiesDomElems = {};
+    groups = [];
+    globals = {
+      globalVal1: 1234,
+      someGlobalVariable: "ass",
+    };
+  
+    lastRightWindows = [];
+  
+    versions = {};
+  
+    flowNameElem = document.querySelector("#names .title");
+    flowDescriptionElem = document.querySelector("#names .subtitle");
+    flowActiveElem = document.querySelector("#active input");
+    flowMaxRunTimesElem = document.querySelector("#navigation .maxRunTimes");
+    user_run_limit_seconds = document.querySelector(
+      "#navigation .user_run_limit_seconds"
+    );
+  
+    versionsElem = document.querySelector("#my-draw .menu ul");
+  
+    globalVars = {
+      bdate: 19027,
+      adate: 19041,
+    };
+  
+    templateNode = {
+      flow_node_type_id: 2,
+      nodes_id: 0,
+      node_scrdata_id: 2002,
+      flow_action_scrdata_id: 78,
+      order: 1,
+      nodes_group_id: 3,
+      name: "**",
+      description: "**",
+      icon_link: "assets/eye.svg",
+      icon_link_selected: "assets/eyeblue.svg",
+      nodes_tooltip: "",
+      id_priority: 0,
+      active: 0,
+      execution_wait_time_seconds: 60000,
+      execute_node_specific_date_time: null,
+      loop_cycles: 1,
+      node_settings_json: {
+        if_checkout_amount_is_in_range: {
+          list_id: 0,
+          min: 0,
+          max: 0,
+        },
+        if_partner_is_in_group_id: {
+          list_id: 1,
+          partner_group_id: "",
+        },
+        if_tasty_lover_is_in_group_id: {
+          list_id: 1,
+          tasty_lover_group_id: "",
+        },
+        if_product_is_in_group_id: {
+          list_id: 1,
+          product_group_id: "",
+        },
+        if_specific_partners_id_is: {
+          list_id: 1,
+          partners_id: [""],
+        },
+        if_specific_tasty_lover_id_is: {
+          list_id: 1,
+          tasty_lover_id: [""],
+        },
+        if_specific_product_id_is: {
+          list_id: 1,
+          product_id: [""],
+        },
+        if_date_time_range_is: {
+          list_id: 4,
+          min: "",
+          max: "",
+        },
+      },
+      node_response_settings_json: {},
+    };
+  
+    sortedStepKyes = {
+      id_nodes: 194,
+      node_scrdata_id: 2002,
+      flow_action_scrdata_id: 0,
+      flow_node_type_id: 1,
+      id_priority: 0,
+      node_position: 5,
+      name: "Send sms",
+      description: "Send welcome sms",
+      icon_link_selected: "assets/eyeblue.svg",
+      nodes_tooltip: "",
+      this_node_unique_id: 5,
+      prev_node_unique_id: 6,
+      next_node_unique_id: 0,
+      flow_lane_id: 4,
+      flow_step_x: 1548,
+      flow_step_y: 344,
+      condition_positive: 0,
+      condition_negative: 0,
+      loop_cycles: 1,
+      execution_wait_time_seconds: 60000,
+      execute_node_specific_date_time: "2021-04-30T10:00:00",
+      node_settings_json: {
+        settings: {
+          send_to_tid: [
+            {
+              list_id: 0,
+              list_scrdata_id: 0,
+              tid: 0,
+            },
+          ],
+          sms_template_id: {
+            list_id: 1,
+            list_scrdata_id: 0,
+            id: 1,
+          },
+          custom_message: {
+            sms_message: "",
+            originator_text: "",
+          },
+        },
+        jparam_settings: [],
+      },
+      node_response_settings_json: {},
+    };
+  
+    constructor(...args) {
+      super(...args);
+    }
+  
+    async start() {
+      const activeRightWindow = document.getElementById("my-draw");
+      document.querySelectorAll(".col-right").forEach((el) => {
+        this.rightWindows[el.id] = el;
+        if (el !== activeRightWindow) {
+          el.parentNode.removeChild(el);
+        }
+      });
+  
+      super.start();
+      this.loadFlow();
+  
+      this.quillEditor();
+      this.setEvents();
+  
+      this.activeCategory = "all";
+      this.loadAllNodes().then(this.renderBlocks.bind(this));
+      await this.renderGroups();
+      // this.renderBlocks();
+  
+      // Object.keys(this.drawflow.drawflow).forEach(this.addQuillEditor.bind(this));
+    }
+  
+    setRightWindow(id) {
+      const domElem = this.rightWindows[id];
+      const current = document.querySelector(".col-right");
+      if (current !== domElem) {
+        current.parentNode.removeChild(current);
+        document.querySelector("body main").appendChild(domElem);
+        this.lastRightWindows.push(current.id);
+      }
+      if (domElem.id === 'my-draw') {
+        this.updateAllFlows();
+        this.updateAllFlows();
+  
+      }
+    }
+  
+    async loadFlow() {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      // this.session_id = urlParams.get("session_id");
+      this.session_id = document.querySelector('meta[name="session_id"]').content;
+      if (!this.session_id) {
+        console.error("sessin_id");
+        return;
+      }
+  
+      this.flow_id = parseInt(urlParams.get("flow_id"));
+      if (!this.flow_id) {
+        // create new flow
+        this.request({
+          scrdata_id: 1163,
+          item_id: 0,
+          flows: [
+            {
+              flow_name: this.flowNameElem.innerText,
+              flow_description: this.flowDescriptionElem.innerText,
+              flow_active: this.flowActiveElem.checked ? 1 : 0,
+            },
+          ],
+        }).then(({ item_id }) => {
+          this.flow_id = item_id;
+          // console.log(item_id);
+          const url = new URL(window.document.URL);
+          url.searchParams.set("flow_id", item_id);
+          location.href = url.toString();
+        });
+        this.editFlow();
+      } else {
+        this.request({ scrdata_id: 1162, item_id: this.flow_id }).then((resp) => {
+          if (resp.flows === null) {
+            alert("Such flow do not exist or was deleted!");
+            return;
+          }
+          const flow = resp.flows[0];
+          this.flowNameElem.innerText = flow.flow_name;
+          this.flowDescriptionElem.innerText = flow.flow_description;
+          this.flowActiveElem.checked = flow.flow_active;
+          this.flowMaxRunTimesElem.innerText = flow.run_times_max;
+          this.user_run_limit_seconds.innerText = flow.user_run_limit_seconds;
+          this.quill.setContents(JSON.parse(flow.flow_story));
+  
+          // console.log(flow);
+  
+          this.flowDefaultBackgroundURL = flow.flow_canvas_background_image;
+          this.flowDefaultBackgroundOpacity = flow.flow_canvas_background_opacity;
+          this.editFlow();
+        });
+  
+        const resp = await this.request({
+          scrdata_id: 1160,
+          item_id: this.flow_id,
+        });
+        const flow_steps = resp.flow_steps;
+        this.maxVersionNumber = flow_steps?.[0].update_version || 0;
+  
+        // setup for current
+        this.loadSteps(flow_steps);
+        const currentModuleElem = document.querySelector('[data-version="Home"]');
+        currentModuleElem.onclick = () => {
+          this.handleVersionClick(currentModuleElem);
+          this.changeModule("Home");
+        };
+  
+        this.rightWindows["my-draw"].querySelector(
+          ".btn-commit"
+        ).onclick = this.commitSelectedFlow.bind(this);
+  
+        for (
+          let versionNumber = this.maxVersionNumber;
+          versionNumber > 0;
+          --versionNumber
+        ) {
+          await this.request({
+            scrdata_id: 1160,
+            item_id: this.flow_id,
+            show_ver: versionNumber,
+          }).then((resp) => this.initVersion(versionNumber, resp));
+        }
+      }
+      document.querySelector("#publish").onclick = () => {
+        // console.log('publish');
+        const saveFlow = this.request({
+          scrdata_id: 1163,
+          item_id: this.flow_id,
+          flows: [
+            {
+              flow_id: this.flow_id,
+              flow_name: this.flowNameElem.innerText,
+              flow_description: this.flowDescriptionElem.innerText,
+              flow_active: this.flowActiveElem.checked ? 1 : 0,
+              flow_story: JSON.stringify(this.quill.getContents()),
+              run_times_max: parseInt(this.flowMaxRunTimesElem.innerText),
+              user_run_limit_seconds: parseInt(
+                this.user_run_limit_seconds.innerText
+              ),
+              delete: 0,
+            },
+          ],
+        })
+          .then
+          // console.log
+          ();
+        const saveCommit = this.commitSelectedFlow();
+        Promise.all([saveFlow, saveCommit])
+          .then(() => alert("Saved"))
+          .catch((err) => alert(err.message));
+      };
+      document.querySelector("#publish").disabled = false;
+  
+      document.querySelector("#discard").onclick = () => {
+        this.request({
+          scrdata_id: 1163,
+          item_id: this.flow_id,
+          flows: [
+            {
+              flow_id: this.flow_id,
+              delete: 1,
+            },
+          ],
+        }).then(console.log);
+      };
+    }
+  
+    commitSelectedFlow() {
+      this.updateAllFlows();
+  
+      const steps = JSON.parse(JSON.stringify(this.drawflow.drawflow[this.module].data))
+  
+      if (Object.keys(steps).length === 0) {
+        alert("Please add at least one nodes in flow to allow commit!");
+        return;
+      }
+      // console.log(steps);
+      ++this.maxVersionNumber;
+      let success = true;
+      // const flow_steps = [];
+      const flow_steps = Object.values(steps).map((step) => {
+        // console.log(step);
+        let node = JSON.parse(JSON.stringify(step.data.node));
+        node.update_version = this.maxVersionNumber;
+  
+        node.flow_node = {};
+        ["name", "description", "icon_link_selected"].forEach((key) => {
+          node.flow_node[`node_${key}`] = node[key];
+          delete node[key];
+        });
+        node.flow_node.node_tooltip = node.nodes_tooltip;
+        delete node.nodes_tooltip;
+        // console.log(node.flow_node);
+        if (this.nodeIsCondition(step.id)) {
+          if (!(node.condition_positive && node.condition_negative)) {
+            alert(`Condition Node ${node.node_position} : ${node.this_node_unique_id} is not completely set!`);
+            success = false;
+          }
+        }
+  
+        return node;
+      });
+      if (!success) {
+        return;
+      }
+      console.log(flow_steps);
+      return this.request({
+        scrdata_id: 1161,
+        item_id: this.flow_id,
+        flow_steps,
+      }).then((resp) => {
+        console.log('commited')
+        // console.log(resp);
+        if (resp.message) {
+          alert(resp.message);
+          console.log(resp.message);
+          --this.maxVersionNumber;
+        } else this.initVersion(this.maxVersionNumber, { flow_steps });
+      });
+    }
+  
+    getUpdatedStepData(id) {
+      const step = this.getNodeFromId(id);
+      const { outputs: { output_1, output_2 }, pos_x, pos_y, data: { number, laneNumber } } = step;
+  
+      const condition_positive = this.nodeIsCondition(id) && output_1.connections.length ?
+        this.getNodeFromId(output_1.connections[0].node).data.node.this_node_unique_id : 0;
+  
+      const condition_negative = this.nodeIsCondition(id) && output_2.connections.length ?
+        this.getNodeFromId(output_2.connections[0].node).data.node.this_node_unique_id : 0;
+  
+      let prev_node_unique_id = 0;
+      let parentId = this.nodeParentId(id);
+      if (parentId) {
+        if (!this.nodeIsSub(id) && this.nodeHasSubnodes(parentId)) {
+          const subIds = this.nodeSubIds(parentId);
+          parentId = subIds[subIds.length - 1];
+        }
+        prev_node_unique_id = this.getThisIdByNodeId(parentId);
+      }
+  
+  
+      let next_node_unique_id = 0;
+  
+      if (!this.nodeIsCondition(id)) {
+        let nextId = this.nodeFirstOutputId(id);
+        if (!nextId && this.nodeIsSub(id)) {
+          nextId = this.nodeFirstOutputId(this.getSubHeadId(id));
+        }
+        next_node_unique_id = nextId ? this.getThisIdByNodeId(nextId) : 0;
+        if (this.nodeHasSubnodes(id)) {
+          next_node_unique_id = this.getThisIdByNodeId(this.nodeFirstSubnodeId(id))
+        }
+      }
+  
+      const data = {
+        node_position: number,
+        flow_lane_id: laneNumber,
+        flow_step_x: parseInt(pos_x),
+        flow_step_y: parseInt(pos_y),
+        prev_node_unique_id,
+        next_node_unique_id,
+        condition_positive,
+        condition_negative,
+        node_settings_json: {
+          is_positive: {
+            positive_unique_node_id: condition_positive,
+            negative_unique_node_id: condition_negative,
+          }
+        }
+      };
+      return data;
+    }
+  
+    updateAllFlows(...args) {
+      super.updateAllFlows(...args);
+      const allNodes = Object.values(this.drawflow.drawflow[this.module].data);
+      allNodes.forEach(({ id }) => {
+        const node = this.getUpdatedStepData(id);
+        this.updateNode(id, { data: { node } });
+      });
+    }
+  
+    async request(data) {
+      let data_json = {
+        session_id: this.session_id,
+        sp_name: "OK",
+        session_exp: "2021-02-12T02:57:45.453422",
+        status: "OK",
+        item_id: 0,
+        max_row_per_page: 50,
+        search_term: "",
+        search_term_header: "",
+        pagination: 1,
+        ...data,
+      };
+
+
+      let csrf_token = document.querySelector('meta[name="csrf-token"]').content;
+    //   console.log(csrf_token);
+  
+      let formData = new FormData();
+      formData.append("input",JSON.stringify(data_json).replaceAll("'", "''"));
+      
+      return fetch(this.url, {
+        method: 'post',
+        headers: {
+            'X-CSRF-TOKEN': csrf_token,
+        },
+        body:formData,
+      }).then(async (resp) => {
+        let json = await resp.json();
+        // console.log(json);
+        if (json.status && json.data) {
+          json = JSON.parse(json.data);
+        } else {
+          console.error(json);
+        }
+        if (json.response_error) {
+          console.error(json.response_error);
+        }
+        return json;
+      });
+    }
+  
+    handleVersionClick(li) {
+      if (!li.classList.contains("selected")) {
+        document.querySelector(".menu .selected").classList.remove("selected");
+        li.classList.add("selected");
+      }
+    }
+  
+    initVersion(versionNumber, resp) {
+      // console.log(versionNumber);
+      const flow_steps = resp.flow_steps.filter(
+        ({ update_version }) => update_version == versionNumber
+      );
+      this.versions[versionNumber] = flow_steps;
+      const moduleName = `Version ${versionNumber}`;
+      const li = document.createElement("li");
+      li.style.order = -versionNumber;
+      li.setAttribute("data-version", moduleName);
+      li.innerHTML = `${moduleName}<span>:${flow_steps.length}</span>`;
+      li.onclick = (ev) => {
+        this.handleVersionClick(li);
+        const allModules = Object.keys(this.drawflow.drawflow);
+        if (!allModules.includes(moduleName)) {
+          this.addModule(moduleName);
+          this.changeModule(moduleName);
+          this.loadSteps(flow_steps);
+        } else {
+          this.changeModule(moduleName);
+        }
+      };
+      this.versionsElem.appendChild(li);
+    }
+  
+    loadSteps(flow_steps) {
+      this.activeFlow = false;
+      this.idsRelations[this.module] = {};
+  
+      flow_steps?.forEach((step) => {
+        // console.log(step);
+        ["name", "description", "icon_link_selected"].forEach((key) => {
+          step[key] = step.flow_node[`node_${key}`];
+        });
+        step.nodes_tooltip = step.flow_node.node_tooltip;
+        delete step.flow_node;
+  
+        const types = Object.keys(this.nodeTypes);
+  
+        this.addNode({
+          name: step.name,
+          type: types[step.flow_node_type_id % types.length],
+          pos: {
+            x: step.flow_step_x,
+            y: step.flow_step_y,
+          },
+          data: { node: step },
+        });
+      });
+      const ids = this.idsRelations[this.module];
+      // console.log(ids, this.idsRelations[this.module]);
+      flow_steps?.forEach(
+        ({
+          prev_node_unique_id,
+          this_node_unique_id,
+          next_node_unique_id,
+          condition_positive,
+          condition_negative,
+        }) => {
+          // if (prev_node_unique_id) {
+          //   this.addConnection(
+          //     ids[prev_node_unique_id],
+          //     ids[this_node_unique_id],
+          //     "output_1",
+          //     "input_1"
+          //   );
+          // }
+          if (next_node_unique_id) {
+            this.addConnection(
+              ids[this_node_unique_id],
+              ids[next_node_unique_id],
+              "output_1",
+              "input_1"
+            );
+          }
+          if (condition_positive) {
+            this.addConnection(
+              ids[this_node_unique_id],
+              ids[condition_positive],
+              "output_1",
+              "input_1"
+            );
+          }
+          if (condition_negative) {
+            this.addConnection(
+              ids[this_node_unique_id],
+              ids[condition_negative],
+              "output_2",
+              "input_1"
+            );
+          }
+        }
+      );
+  
+      this.connectSubnodesToParent()
+      this.centerFlow()
+      this.updateAllFlows()
+    }
+  
+    async loadAllNodes() {
+      this.nodes = (await this.request({ scrdata_id: 1156 })).flow_nodes || [];
+    }
+  
+    async getTemplateNode(item_id) {
+      return this.request({ scrdata_id: 1156, item_id }).then(
+        (json) => json.flow_nodes[0]
+      );
+    }
+  
+    async updateTemplateNode(nodeData) {
+      const index = this.nodes.findIndex(
+        ({ nodes_id }) => nodes_id === nodeData.nodes_id
+      );
+      if (index >= 0) {
+        this.nodes[index] = nodeData;
+        this.renderBlocks();
+      }
+      const resp = await this.request({
+        scrdata_id: 1157,
+        item_id: nodeData.nodes_id,
+        flow_nodes: [nodeData],
+      });
+  
+      if (resp.status === 'OK') {
+        if (index >= 0) {
+          alert(`Node ${resp.item_id} updated!`);
+        }
+      } else {
+        alert(`Error occured: ${JSON.stringify(resp)}`);
+      }
+  
+      nodeData.nodes_id = resp.item_id;
+      // console.log(nodeData.nodes_id);
+      if (index === -1) {
+        this.nodes.push(nodeData);
+        this.renderBlocks();
+      }
+      if (nodeData.delete) {
+        this.nodes = this.nodes.filter(
+          ({ nodes_id }) => nodes_id != nodeData.nodes_id
+        );
+        document.querySelector(
+          `[data-nodes-id="${nodeData.nodes_id}"]`
+        ).style.display = "none";
+      }
+  
+      return nodeData;
+    }
+  
+    renderGroup({ node_group_name, node_group_order, id }) {
+      const groups = document.getElementById("subnav");
+      const existGroup = groups.querySelector(`#category-${id}`);
+      const group = existGroup
+        ? existGroup
+        : document
+          .getElementById("group-template")
+          .content.firstElementChild.cloneNode(true);
+      group.id = `category-${id}`;
+      group.innerText = node_group_name;
+      group.style.order = node_group_order;
+      if (!existGroup) {
+        group.onclick = this.handleGroupClick.bind(this);
+      }
+      groups.appendChild(group);
+    }
+  
+    handleGroupClick(e) {
+      const category = e.target.closest(".category");
+      if (!category.classList.contains("navactive")) {
+        categories
+          .querySelector(".navactive")
+          .classList.replace("navactive", "navdisabled");
+        category.classList.replace("navdisabled", "navactive");
+        this.activeCategory = category.id;
+        this.renderBlocks();
+      }
+    }
+  
+    async renderGroups() {
+      const categories = document.getElementById("subnav");
+      categories.innerHTML =
+        '<div id="all" class="category navactive side">All</div>';
+      this.groups = (await this.request({ scrdata_id: 1154 })).flow_nodes_group;
+  
+      categories.querySelector("#all").onclick = this.handleGroupClick.bind(this);
+      this.groups?.forEach(this.renderGroup.bind(this));
+  
+      categories.appendChild(
+        document
+          .getElementById("categories-ettings-template")
+          .content.firstElementChild.cloneNode(true)
+      );
+      // await this.renderBlocks();
+  
+      // switch between groups
+      // categories.querySelectorAll('.category').forEach(category => {
+      //   category
+      // });
+  
+      document
+        .getElementById("categories-settings")
+        .addEventListener("click", () => {
+          const groupsSettings = document.getElementById("groups-settings");
+          groupsSettings.style.display = "block";
+          const items = groupsSettings.querySelector(".items");
+          items.innerHTML = ``;
+          this.groups?.forEach((group) => {
+            items.appendChild(this.formGroupSettingDomElem(group));
+          });
+  
+          groupsSettings.querySelector(".save").onclick = (ev) => {
+            groupsSettings.querySelector(".save").disabled = true;
+            items
+              .querySelectorAll(".category-setting-item")
+              .forEach(async (group, inx, arr) => {
+                const id = group.getAttribute("data-group");
+                const node_group_name = group.querySelector(".category-title")
+                  .innerText;
+                const node_group_description = group.querySelector(
+                  ".category-description"
+                ).innerText;
+                // console.log({ id, node_group_name, node_group_description });
+                const data = { id, node_group_name, node_group_description };
+                await this.updateGroup(data);
+                if (inx === arr.length - 1) {
+                  await this.renderGroups();
+                  groupsSettings.querySelector(".save").disabled = false;
+                }
+              });
+          };
+  
+          groupsSettings.querySelector(".add-category").onclick = async (ev) => {
+            const newGroup = {
+              id: 0,
+              node_group_order: 99,
+              node_group_name: "New group",
+              node_group_description: "Group description",
+            };
+            newGroup.id = (await this.updateGroup(newGroup)).id;
+            items.appendChild(this.formGroupSettingDomElem(newGroup));
+          };
+  
+          groupsSettings
+            .querySelector(".close")
+            .addEventListener("click", (ev) => {
+              groupsSettings.style.display = "none";
+            });
+        });
+    }
+  
+    formGroupSettingDomElem({
+      node_group_name,
+      node_group_order,
+      id,
+      node_group_description,
+    }) {
+      const categorySettingItem = document.createElement("div");
+      categorySettingItem.classList.add("category-setting-item");
+      categorySettingItem.setAttribute("data-group", id);
+      categorySettingItem.innerHTML = `
+        <div>
+          <h3 class="category-title" contenteditable="true">${node_group_name}</h3>
+          <img class="edit-content" src="assets/edit-icon.svg" alt="">
+          <span class="groupId">${id}</span>
+          <button title="Tap and hold to delete" class="delete-category">Delete</button>
+        </div>
+        <div>
+          <p class="category-description" contenteditable="true">${node_group_description}</p>
+          <img class="edit-content" src="assets/edit-icon.svg" alt="">
+        </div>`;
+      categorySettingItem.querySelector(
+        ".delete-category"
+      ).onclick = async () => {
+        const confirm = window.confirm(
+          `Do you really wanna delete group ${node_group_name}, ID.${id}`
+        );
+        if (confirm) {
+          const data = { id, node_group_name, node_group_description, delete: 1 };
+          categorySettingItem.parentNode.removeChild(categorySettingItem);
+          await this.updateGroup(data);
+          // console.log(this.activeCategory, id);
+          if (this.activeCategory.slice(9) == id) {
+            this.activeCategory = "all";
+            this.renderBlocks();
+          }
+        }
+      };
+      return categorySettingItem;
+    }
+  
+    updateGroup(data) {
+      // console.log(data.id);
+      if (!("delete" in data)) {
+        data.delete = 0;
+      }
+      return this.request({
+        scrdata_id: 1155,
+        flow_nodes_group: [data],
+        item_id: data.id,
+      }).then(({ item_id }) => {
+        if (data.delete || !data.id) {
+          this.renderGroups();
+        }
+        return { id: item_id };
+      });
+    }
+  
+    renderNodeSettings({ nodeData, jsonEditor }) {
+  
+      // order keys
+      Object.keys(this.sortedStepKyes).forEach((key) => {
+        if (key in nodeData) {
+          // console.log(key);
+          const value = nodeData[key];
+          delete nodeData[key];
+          nodeData[key] = value;
+        }
+      });
+  
+      this.setRightWindow("node-settings");
+      const win = document.getElementById("node-settings");
+      if (!jsonEditor) {
+        const container = win.querySelector(".jsoneditor");
+        container.innerHTML = "";
+        const options = {
+          mode: "tree",
+          modes: ["code", "form", "text", "tree", "view", "preview"],
+          onChange: () => {
+            const newData = jsonEditor.get();
+            for (let key in nodeData) {
+              if (!(key in newData)) {
+                delete nodeData[key];
+              }
+            }
+            for (let key in newData) {
+              nodeData[key] = newData[key];
+            }
+            this.renderNodeSettings({ nodeData, jsonEditor });
+          },
+        };
+        jsonEditor = new JSONEditor(container, options);
+      }
+      jsonEditor.set(nodeData);
+  
+      const header = document.createElement("header");
+  
+      const types = {
+        number: [
+          "nodes_id",
+          "node_scrdata_id",
+          "flow_action_scrdata_id",
+          "order",
+          "nodes_group_id",
+          "flow_node_type_id",
+          "id_priority",
+          "active",
+          "execution_wait_time_seconds",
+          "loop_cycles",
+          "flow_step_x",
+          "flow_step_y",
+          "prev_node_unique_id",
+          "next_node_unique_id",
+          "this_node_unique_id",
+          "update_version",
+          "id",
+          "flow_lane_id",
+          "node_position",
+          "condition_positive",
+          "condition_negative",
+        ],
+        text: [
+          "name",
+          "description",
+          "icon_link",
+          "icon_link_selected",
+          "nodes_tooltip",
+        ],
+        "datetime-local": ["execute_node_specific_date_time"],
+      };
+      let props = {};
+      Object.keys(types).forEach((key) => {
+        types[key].forEach((prop) => (props[prop] = key));
+      });
+  
+      const left = win.querySelector(".left");
+      left.innerHTML = `
+        <div class="control">
+          <button class="btn execute">Execute</button>
+          <button class="btn save">Save</button>
+          <button class="btn delete">Delete</button>
+        </div>
+        <div class="val-selector">
+        </div>`;
+  
+  
+      const createSettingItem = (pathArr, key, obj) => {
+        const value = obj[key];
+        const type = typeof value === "string" ? "text" : typeof value;
+        const settingItemInfo = document.createElement("div");
+        settingItemInfo.classList.add("setting-item-info");
+  
+        let editable = `<input class="static ${key}" value="${value}" type="${type}">`
+        if (type === 'text') {
+          editable = `<textarea rows="1" class="static ${key}">${value}</textarea>`
+        }
+  
+        settingItemInfo.innerHTML = `
+                  <label>${key}:</label>
+                  <span class="setting-right">
+                    ${editable}
+                    <label class="setting-pick">
+                      <input type="radio" name="val-selector">
+                      <img src="assets/setting.svg">
+                    </label>
+                  </span>`;
+  
+        // console.log(settingItemInfo);
+        settingItemInfo.querySelector(`.static`).oninput = (ev) => {
+          obj[key] =
+            ev.target.type === "number" || type === "number"
+              ? parseInt(ev.target.value)
+              : ev.target.value;
+          jsonEditor.set(nodeData);
+          jsonEditor.expandAll();
+        };
+        if (["Settings JSON", "Node object lists"].includes(pathArr[0])) {
+          this.activateSelector(
+            [...pathArr, key],
+            settingItemInfo,
+            nodeData,
+            jsonEditor
+          );
+        }
+        return settingItemInfo;
+      };
+  
+      const createSettingsHtml = (pathArr, obj) => {
+        const defKeys = ["list_id", "list_scrdata_id"];
+        const container = document.createElement("details");
+        container.innerHTML = `<summary>${pathArr[pathArr.length - 1]}</summary>`;
+        for (let key in obj) {
+          if (defKeys.includes(key)) {
+            continue;
+          }
+          if (typeof obj[key] !== "object" || obj[key] === null) {
+            const settingItem = createSettingItem(pathArr, key, obj);
+            container.appendChild(settingItem);
+          } else {
+            const nestedObj = createSettingsHtml([...pathArr, key], obj[key]);
+            container.appendChild(nestedObj);
+          }
+        }
+        return container;
+      };
+  
+      if (!nodeData.this_node_unique_id) {
+        const settings3 = createSettingsHtml(
+          ["Node attributes"],
+          nodeData.node_attributes
+        );
+        left.prepend(settings3);
+      }
+  
+      const settings2 = createSettingsHtml(
+        ["Node object lists"],
+        nodeData.node_object_lists
+      );
+      left.prepend(settings2);
+  
+      const responseJSON = createSettingsHtml(
+        ["Response JSON"],
+        nodeData.node_response_settings_json
+      );
+      left.prepend(responseJSON);
+  
+      const settingsJSON = createSettingsHtml(
+        ["Settings JSON"],
+        nodeData.node_settings_json
+      );
+      left.prepend(settingsJSON);
+      const btnAddTemplateSetting = document.createElement('span');
+      btnAddTemplateSetting.style.marginLeft = 'auto';
+      btnAddTemplateSetting.innerHTML = `<button>+</button><span class="add-settings-container-wrapper"> <div class="add-settings-container"></div> </span>`
+      const addSettingsContainer = btnAddTemplateSetting.querySelector('.add-settings-container');
+      addSettingsContainer.onclick = (ev) => {
+        ev.preventDefault();
+        // add settings
+      }
+  
+      let visible = false
+      btnAddTemplateSetting.querySelector('button').onclick = () => {
+        if (!visible) {
+          this.request({
+            "scrdata_id": 1222,
+            "session_id": "WAbbc82724-9e9b-46cf-867f-0a5f20dafe93",
+            "item_id": 0,
+          }).then(resp => {
+            const { node_settings_containers } = resp;
+            addSettingsContainer.style.display = 'block'
+            addSettingsContainer.innerHTML = '';
+            node_settings_containers.forEach(({ name, description, settings_json, }) => {
+              const divItem = document.createElement('div');
+              divItem.classList.add('item');
+              divItem.innerHTML = `${name}`;
+              divItem.onclick = () => {
+                console.log(settings_json);
+                for (const key in settings_json) {
+                  if (!(key in nodeData.node_settings_json)) {
+                    nodeData.node_settings_json[key] = settings_json[key];
+                  }
+                }
+                this.renderNodeSettings({ nodeData, jsonEditor });
+              }
+              addSettingsContainer.appendChild(divItem);
+            })
+          })
+        } else {
+          addSettingsContainer.style.display = 'none'
+        }
+        visible = !visible;
+      }
+      settingsJSON.querySelector('summary').appendChild(btnAddTemplateSetting);
+  
+      const defaultSettings = document.createElement("details");
+      defaultSettings.open = true;
+      defaultSettings.innerHTML = `<summary>Default settings</summary><div class="info"></div>`;
+      left.prepend(defaultSettings);
+      const info = defaultSettings.querySelector(".info");
+  
+      for (let key in nodeData) {
+        if (typeof nodeData[key] !== "object" || nodeData[key] === null) {
+          const label = document.createElement("label");
+  
+          const keyName = capitalize(key.replace(/_/g, " "));
+          // console.log(key, keyName, nodeData[key]);
+          label.innerHTML = `${keyName}:
+            <input class="${key}" type="${props[key]}" value="${nodeData[key]}" placeholder="${keyName}">`;
+  
+          if (key === "execute_node_specific_date_time") {
+            label.innerHTML += `<button class="reset-datetime">Reset</button>`;
+            label.querySelector(".reset-datetime").onclick = () => {
+              nodeData[key] = null;
+              jsonEditor.set(nodeData);
+              label.querySelector(`input.${key}`).value = null;
+            };
+          }
+  
+          if (['icon_link', 'icon_link_selected'].includes(key)) {
+            label.classList.add('icon_link')
+            label.innerHTML += `
+              <label class="img-wrap">
+                <img src="${nodeData[key]}" />
+                <input style="display: none;" type="file" accept="image/png, image/jpeg">
+              <label/>`;
+            label.querySelector(".img-wrap").ondragover = (event) => {
+              event.stopPropagation();
+              event.preventDefault();
+            }
+            const setImage = async (imageFileObject) => {
+              const formData = new FormData();
+              formData.append("profile_picture", imageFileObject);
+              const response = await fetch(
+                'https://cors-anywhere.herokuapp.com/https://tastypoints.io/akm/upload_image_process.php', {
+                method: 'POST',
+                body: formData,
+              });
+              const json = await response.json()
+              const link = json.link;
+              nodeData[key] = link;
+              label.querySelector(".img-wrap > img").src = link;
+              label.querySelector("input[class]").value = link;
+              jsonEditor.set(nodeData);
+            }
+  
+            label.querySelector(".img-wrap").ondrop = async (event) => {
+              event.stopPropagation();
+              event.preventDefault();
+              const imageFileObject = event.dataTransfer.files[0];
+              await setImage(imageFileObject)
+            }
+  
+            label.querySelector('input[type="file"]').onchange = async (event) => {
+              await setImage(event.target.files[0])
+            }
+          }
+  
+          if (key === "flow_node_type_id") {
+            const nodeTypeOptions = Object.keys(this.nodeTypes).map((type, index) => `<option value="${index}">${capitalizeFirstLetter(type)}</option>`).join('');
+            label.innerHTML = `Node type:
+            <select class="flow_node_type_id">
+            ${nodeTypeOptions}
+            </select>`;
+            label
+              .querySelector(`option[value="${nodeData[key]}"]`)
+              ?.setAttribute("selected", true);
+          }
+          if (key === "nodes_group_id") {
+            label.innerHTML = `Group: <select class="nodes_group_id"><option value="0">All</option></select>`;
+            const select = label.querySelector("select");
+            this.groups?.forEach(({ id, node_group_name }) => {
+              select.innerHTML += `<option value="${id}">${node_group_name}</option>`;
+            });
+            if (
+              nodeData[key] &&
+              label.querySelector(`option[value="${nodeData[key]}"]`)
+            ) {
+              label
+                .querySelector(`option[value="${nodeData[key]}"]`)
+                .setAttribute("selected", true);
+            }
+          }
+  
+          if (key === "active") {
+            label.innerHTML = `Active: <label class="switch">
+            <input class="active" type="checkbox" />
+            <span class="slider"></span>
+          </label>`;
+            if (nodeData[key]) {
+              label.querySelector("input").checked = true;
+            }
+          }
+  
+          info.appendChild(label);
+        }
+      }
+      info.querySelector(".nodes_id")?.setAttribute("disabled", true);
+      info.querySelector(".id_nodes")?.setAttribute("disabled", true);
+      if (nodeData.this_node_unique_id) {
+        ["save", "delete"].forEach(
+          (className) =>
+            (win.querySelector(`.control .${className}`).style.display = "none")
+        );
+        [
+          "flow_node_type_id",
+          "nodes_group_id",
+          "this_node_unique_id",
+          "flow_step_x",
+          "flow_step_y",
+          "prev_node_unique_id",
+          "next_node_unique_id",
+          "update_version",
+          "id",
+          "flow_lane_id",
+          "node_position",
+          "condition_positive",
+          "condition_negative",
+        ].forEach((key) =>
+          info.querySelector(`.${key}`)?.setAttribute("disabled", true)
+        );
+      }
+  
+      // set handlers to update data
+      let maxInputWidth = 0;
+      info.querySelectorAll("input, select").forEach((input) => {
+        maxInputWidth = Math.max(
+          maxInputWidth,
+          parseInt(getComputedStyle(input).width)
+        );
+        input.oninput = (ev) => {
+          if (input.classList[0] === "active")
+            nodeData[input.classList[0]] = ev.target.checked ? 1 : 0;
+          else if (input.classList.length)
+            nodeData[input.classList[0]] =
+              types.number.includes(input.classList[0])
+                ? parseInt(ev.target.value)
+                : ev.target.value;
+          jsonEditor.set(nodeData);
+          const { icon_link_selected, name, description } = nodeData;
+          header.querySelector('img').src = icon_link_selected;
+          header.querySelector('.title').innerText = name;
+          header.querySelector('.description').innerText = description;
+        };
+      });
+      // Set max width to inputs e. g. align inputs
+      info
+        .querySelectorAll("input, select")
+        .forEach((input) => (input.style.width = maxInputWidth + "px"));
+  
+      win.querySelector(".save").onclick = (ev) => {
+        nodeData.delete = 0;
+        console.log(nodeData);
+        this.updateTemplateNode(nodeData);
+      };
+      win.querySelector(".delete").onclick = (ev) => {
+        const confirm = window.confirm(
+          `Do you really wanna delete node ${nodeData.name}, ID.${nodeData.nodes_id}`
+        );
+        if (confirm) {
+          nodeData.delete = 1;
+          this.updateTemplateNode(nodeData);
+          this.setRightWindow("my-draw");
+        }
+      };
+  
+  
+  
+  
+      header.innerHTML = `
+            <img src="${nodeData.icon_link_selected}">
+            <div>
+              <div class="title">${nodeData.name}</div>
+              <div class="description">${nodeData.description}</div>
+            </div>`;
+      console.log(nodeData.this_node_unique_id)
+      if (nodeData.this_node_unique_id) {
+        const jumpControls = this.createNodeJumpControls(nodeData)
+        header.appendChild(jumpControls);
+      }
+  
+      left.prepend(header);
+    }
+  
+    createNodeJumpControls(nodeData) {
+      const createItem = (nodeId) => {
+        const data = this.getNodeFromId(nodeId).data;
+        const { node: { name, this_node_unique_id }, number } = data;
+        const title = `${name} #${number} : ${this_node_unique_id}`;
+        return `<div data-nodeid="${nodeId}" class="item">${title}</div>`;
+      }
+  
+      const formNextList = (nodeId) => {
+        let html = '';
+  
+        // if condition return details 
+        // with two elems and call two form reursively else return all in list
+  
+        let tmpData = this.getNodeFromId(nodeId).data.node;
+  
+        while (tmpData.next_node_unique_id || tmpData.condition_negative || tmpData.condition_positive) {
+          const { next_node_unique_id, condition_negative, condition_positive } = tmpData;
+          if (condition_negative) {
+            const nextNodeId = this.getIdByThisId(condition_negative);
+            const itemHtml = createItem(nextNodeId)
+            html += `<details><summary>Negative</summary>${itemHtml}${formNextList(nextNodeId)}</details>`
+          }
+          if (condition_positive) {
+            const nextNodeId = this.getIdByThisId(condition_positive);
+            const itemHtml = createItem(nextNodeId)
+            html += `<details><summary>Positive</summary>${itemHtml}${formNextList(nextNodeId)}</details>`
+          }
+  
+          if (next_node_unique_id) {
+            const nextNodeId = this.getIdByThisId(next_node_unique_id);
+            html += createItem(nextNodeId);
+            tmpData = this.getNodeFromId(nextNodeId).data.node;
+          } else {
+            break;
+          }
+        }
+  
+        return html;
+      }
+  
+      const currentNodeId = this.getIdByThisId(nodeData.this_node_unique_id);
+      let rezHtml = '';
+  
+      // TODO selector for previous nodes
+      let html = ``;
+      let tmpData = nodeData;
+      while (tmpData.prev_node_unique_id) {
+        const previousNodeId = this.getIdByThisId(tmpData.prev_node_unique_id);
+        html += createItem(previousNodeId);
+        tmpData = this.getNodeFromId(previousNodeId).data.node;
+      }
+      if (html)
+        rezHtml += `<details><summary>Previous nodes</summary><div class="wrapper"> <div class="content">${html}</div> </div></details>`
+  
+      html = formNextList(currentNodeId);
+      if (html)
+        rezHtml += `<details><summary>Next nodes</summary><div class="wrapper"> <div class="content">${html}</div> </div></details>`
+  
+  
+      // selector for subnodes
+  
+      const div = document.createElement('div');
+      div.classList.add("controls")
+  
+      const btnGoNext = document.createElement('button');
+      btnGoNext.innerText = '>'
+      btnGoNext.onclick = () => {
+        let allOutConns;
+        if ((allOutConns = this.nodeAllOutConnections(currentNodeId)).length > 0) {
+          let nodeData = this.drawflow.drawflow[this.module].data[allOutConns[0].node].data.node;
+          this.renderNodeSettings({ nodeData });
+        } else {
+          btnGoNext.disabled = true;
+        }
+      }
+  
+  
+      const btnGoPrev = document.createElement('button');
+      btnGoPrev.innerText = '<'
+      btnGoPrev.onclick = () => {
+        let parentId;
+        if (parentId = this.nodeParentId(currentNodeId)) {
+          let nodeData = this.drawflow.drawflow[this.module].data[parentId].data.node;
+          this.renderNodeSettings({ nodeData });
+        } else {
+          btnGoPrev.disabled = true;
+        }
+      }
+  
+  
+      div.innerHTML = rezHtml;
+  
+      div.appendChild(btnGoPrev)
+      div.appendChild(btnGoNext)
+  
+      // add listeneres
+      div.querySelectorAll('[data-nodeid]').forEach(item => {
+        const nodeId = item.getAttribute('data-nodeid');
+        item.onclick = () => {
+          let nodeData = this.drawflow.drawflow[this.module].data[nodeId].data.node;
+          this.renderNodeSettings({ nodeData });
+        }
+      });
+  
+      return div;
+    }
+  
+    activateSelector(pathArrEx, settingItemInfo, nodeData, jsonEditor) {
+      // val selector
+      const nodeSettingsJSON = nodeData.node_settings_json;
+      if (!nodeSettingsJSON.jparam_settings) {
+        nodeSettingsJSON.jparam_settings = [];
+      }
+  
+      const pickImg = settingItemInfo.querySelector(".setting-pick");
+      const checkbox = pickImg.querySelector("input");
+      pickImg.addEventListener("click", () => {
+        const valSelectorHtmlElem = document.querySelector(".val-selector");
+        valSelectorHtmlElem.innerHTML = `
+            <p>Variable selector</p>
+            <details id="global-vars">
+              <summary>Global variables</summary>
+            </details>`;
+        if (!checkbox.checked) {
+          valSelectorHtmlElem.style.display = "none";
+          return;
+        }
+        // settingsItem.querySelector('.setting-pick')
+        valSelectorHtmlElem.style.display = "inline-block";
+        const { top, left } = pickImg.getBoundingClientRect();
+        valSelectorHtmlElem.style.left =
+          left + window.scrollX + pickImg.offsetWidth + "px";
+        valSelectorHtmlElem.style.top = top + window.scrollY + "px";
+  
+        // global vars
+        const globalVarsPicker = valSelectorHtmlElem.querySelector(
+          "#global-vars"
+        );
+        globalVarsPicker.addEventListener("toggle", () => {
+          if (globalVarsPicker.open) {
+            for (let key in this.globalVars) {
+              const value = this.globalVars[key];
+              const dl = document.createElement("dl");
+              dl.innerHTML = `
+                <img src="assets/plus.svg">
+                <dt>${key}:</dt>
+                <dd>${value}</dd>`;
+              globalVarsPicker.appendChild(dl);
+            }
+          }
+        });
+  
+        const createSettingItem = (pathArr, key, obj, node_unique_id) => {
+          if (!node_unique_id) {
+            node_unique_id = nodeData.prev_node_unique_id;
+          }
+          const value = obj[key];
+          const type = typeof value === "string" ? "text" : typeof value;
+          const settingItemInfo = document.createElement("dl");
+          settingItemInfo.classList.add("setting-item-choose");
+          settingItemInfo.innerHTML = `
+                    <img src="assets/plus.svg">
+                    <dt>${key}:</dt>
+                    <dd>${value}</dd>`;
+          settingItemInfo.querySelector("img").onclick = () => {
+            const newParam = {
+              replace_this_element: pathArrEx.slice(1).join(","),
+              replace_tag: "",
+              with_this_element_value: {
+                node_unique_id: node_unique_id,
+                settings: ["node_settings_json", "node_object_lists", "node_attributes"].includes(pathArr[1]) ? 1 : 0,
+                parameter: [...pathArr, key].slice(2).join(","),
+              },
+            };
+            // console.log(newParam);
+            function setPropDyn(obj, arr, value) {
+              let i = 0;
+              for (; i < arr.length - 1; i++) {
+                obj = obj[arr[i]];
+              }
+              if (typeof obj[arr[i]] === 'string') {
+                obj[arr[i]] += value;
+              }
+            }
+  
+            // nodeSettingsJSON.jparam_settings = nodeSettingsJSON.jparam_settings.filter(
+            //   ({ replace_this_element }) =>
+            //     replace_this_element !== newParam.replace_this_element
+            // );
+            nodeSettingsJSON.jparam_settings.push(newParam);
+            newParam.replace_tag = `&%jparam:${nodeData.this_node_unique_id}:${nodeSettingsJSON.jparam_settings.length - 1}%&`;
+            setPropDyn(nodeData.node_settings_json, pathArrEx.slice(1), newParam.replace_tag);
+  
+            jsonEditor.set(nodeData);
+            this.renderNodeSettings({ nodeData, jsonEditor });
+            jsonEditor.expandAll();
+          };
+          return settingItemInfo;
+        };
+  
+        const createSettingsHtml = (pathArr, obj, node_unique_id) => {
+          const defKeys = [];
+          const container = document.createElement("details");
+          container.innerHTML = `<summary>${pathArr[pathArr.length - 1]
+            }</summary>`;
+          for (let key in obj) {
+            if (defKeys.includes(key)) {
+              continue;
+            }
+            if (typeof obj[key] !== "object" || obj[key] === null) {
+              const settingItem = createSettingItem(
+                pathArr,
+                key,
+                obj,
+                node_unique_id
+              );
+              container.appendChild(settingItem);
+            } else {
+              const nestedObj = createSettingsHtml(
+                [...pathArr, key],
+                obj[key],
+                node_unique_id
+              );
+              container.appendChild(nestedObj);
+            }
+          }
+          return container;
+        };
+  
+        // previous node
+        if (nodeData.prev_node_unique_id) {
+          const previousNodeId = this.idsRelations[this.module][nodeData.prev_node_unique_id];
+          const previousNodeData = this.getNodeFromId(previousNodeId).data;
+          const title = `${previousNodeData.node.name} #${previousNodeData.number} : ${previousNodeData.node.this_node_unique_id}`;
+          const {
+            node_settings_json,
+            node_response_settings_json,
+          } = previousNodeData.node;
+          const previousNodePicker = createSettingsHtml(
+            [title],
+            { node_settings_json, node_response_settings_json },
+            previousNodeData.node.this_node_unique_id
+          );
+          const details = document.createElement("details");
+          details.innerHTML = `<summary>Previous node</summary>`;
+          details.appendChild(previousNodePicker);
+          valSelectorHtmlElem.appendChild(details);
+        }
+  
+        // all previous nodes
+        const previousNodes = document.createElement("details");
+        previousNodes.innerHTML = `<summary>Previous nodes</summary>`;
+        let tmpData = nodeData;
+        while (tmpData.prev_node_unique_id) {
+          const previousNodeId = this.idsRelations[this.module][tmpData.prev_node_unique_id];
+          const previousNodeData = this.getNodeFromId(previousNodeId).data;
+          const title = `${previousNodeData.node.name} #${previousNodeData.number} : ${previousNodeData.node.this_node_unique_id}`;
+          const {
+            node_settings_json,
+            node_response_settings_json,
+          } = previousNodeData.node;
+          const previousNodePicker = createSettingsHtml(
+            [title],
+            { node_settings_json, node_response_settings_json },
+            previousNodeData.node.this_node_unique_id
+          );
+          previousNodes.appendChild(previousNodePicker);
+          tmpData = previousNodeData.node;
+        }
+        valSelectorHtmlElem.appendChild(previousNodes);
+      });
+    }
+  
+    renderBlock({
+      description,
+      icon_link,
+      icon_link_selected,
+      name,
+      order,
+      nodes_id,
+    }) {
+      const blocklist = document.querySelector("#blocklist");
+      const existBlock = blocklist.querySelector(`[data-nodes-id="${nodes_id}"]`);
+      const domElem = existBlock
+        ? existBlock
+        : document
+          .getElementById("sideElem")
+          .content.firstElementChild.cloneNode(true);
+      domElem.querySelector(".blocktitle").innerText = name;
+      domElem.querySelector(".blockdesc").innerText = description;
+      domElem.querySelector(".blockico > img").src = icon_link;
+  
+      // dropping image
+      domElem.querySelector(".blockico").ondragover = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      domElem.querySelector(".blockico").ondrop = async (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const imageFile = event.dataTransfer.files[0];
+        const url = URL.createObjectURL(imageFile)
+        domElem.querySelector(".blockico > img").src = url;
+  
+  
+  
+        this.getTemplateNode(nodes_id).then(async nodeData => {
+          console.log(nodeData)
+  
+          const formData = new FormData();
+          formData.append("profile_picture", imageFile);
+          const response = await fetch(
+            'https://cors-anywhere.herokuapp.com/https://tastypoints.io/akm/upload_image_process.php', {
+            method: 'POST',
+            body: formData,
+          });
+          const json = await response.json()
+          nodeData.icon_link = json.link;
+          nodeData.delete = 0;
+          await this.updateTemplateNode(nodeData);
+          this.renderBlocks()
+        });
+      }
+  
+  
+      domElem.style.order = order;
+      if (existBlock) return;
+      domElem
+        .querySelector(".side-elem-more")
+        .addEventListener("click", async () => {
+          // console.log('click');
+  
+          let nodeData = await this.getTemplateNode(nodes_id);
+          this.renderNodeSettings({ nodeData });
+        });
+      const dragBegin = (ev) => {
+        if (ev.target.closest(".side-elem-more")) {
+          // console.log(ev.target.closest('.side-elem-more'));
+          return;
+        }
+        let clientX, clientY;
+        if (ev.type === "touchstart") {
+          clientX = ev.touches[0].clientX;
+          clientY = ev.touches[0].clientY;
+        } else {
+          clientX = ev.clientX;
+          clientY = ev.clientY;
+        }
+        this.dragId = nodes_id;
+        domElem.classList.add("blockdisabled");
+        this.dx = clientX - domElem.getBoundingClientRect().left;
+        this.dy = clientY - domElem.getBoundingClientRect().top;
+  
+        this.dragCloneElem = domElem.cloneNode(true);
+        this.dragCloneElem.style.position = "absolute";
+        this.dragCloneElem.style.left = clientX - this.dx + window.scrollX + "px";
+        this.dragCloneElem.style.top = clientY - this.dy + window.scrollY + "px";
+        this.dragCloneElem.style.zIndex = "20";
+        document.body.appendChild(this.dragCloneElem);
+      };
+      domElem.addEventListener("mousedown", dragBegin);
+      domElem.addEventListener("touchstart", dragBegin);
+      domElem.setAttribute("data-nodes-id", nodes_id);
+      blocklist.appendChild(domElem);
+    }
+  
+    get activeNodes() {
+      if (this.activeCategory === "all") {
+        return this.nodes;
+      } else {
+        const groupActiveId = this.activeCategory.slice(9);
+        return this.nodes.filter(
+          ({ nodes_group_id }) => nodes_group_id == groupActiveId
+        );
+      }
+    }
+  
+    renderBlocks(searchText) {
+      let activeNodes = this.activeNodes;
+      if (searchText) {
+        activeNodes = activeNodes.filter(
+          ({ name, description }) =>
+            name.toUpperCase().includes(searchText.toUpperCase()) ||
+            description.toUpperCase().includes(searchText.toUpperCase())
+        );
+      }
+  
+      const blocklist = document.querySelector("#blocklist");
+      blocklist.innerHTML = "";
+      activeNodes?.forEach(this.renderBlock.bind(this));
+    }
+  
+    addNode(...args) {
+      const id = super.addNode(...args);
+  
+      this.stepClickMoreHandle(id);
+      return id;
+    }
+  
+  
+  
+    addNodeImport(...args) {
+      super.addNodeImport(...args);
+      this.stepClickMoreHandle(args[0].id);
+    }
+  
+    stepClickMoreHandle(id) {
+      this.nodeHtmlElem(id)
+        .querySelector(".blockyright").onclick = () => {
+          let nodeData = this.getNodeRef(id).data.node;
+          this.renderNodeSettings({ nodeData });
+        };
+  
+  
+      const showSubnodes = this.nodeHtmlElem(id).querySelector(".count-subnodes");
+      showSubnodes.onclick = () => {
+        const { data: { subVisible } } = this.getNodeFromId(id);
+        this.updateNode(id, { data: { subVisible: !subVisible } });
+        this.renderNode(id);
+        this.updateAllFlows()
+      };
+  
+  
+    }
+  
+    initNodeTemplate() {
+      const win = this.rightWindows["nodeTemplate"];
+      const container = win.querySelector(".jsoneditor");
+      container.innerHTML = "";
+      const options = {
+        mode: "tree",
+        modes: ["code", "form", "text", "tree", "view", "preview"],
+        onChange: () => {
+          this.templateNode = jsonEditor.get();
+          console.log(this.templateNode);
+        },
+      };
+      const jsonEditor = new JSONEditor(container, options);
+      jsonEditor.set(this.templateNode);
+    }
+  
+    editFlow() {
+      const navigationElem = document.querySelector("#navigation");
+      const flowSettingsElem = document.querySelector("#flowSettings");
+      const flowProps = [
+        "flowName",
+        "flowDescription",
+        "maxRunTimes",
+        "user_run_limit_seconds",
+      ];
+  
+      navigationElem.querySelector(".flowSettings").onclick = () => {
+        flowSettingsElem.style.display = "block";
+  
+        flowProps.forEach((className) => {
+          const elem = flowSettingsElem.querySelector(`.${className}`);
+          const renderElem = navigationElem.querySelector(`.${className}`);
+          elem.value = renderElem.innerText;
+          elem.oninput = (e) => {
+            renderElem.innerText = e.target.value;
+          };
+        });
+      };
+      flowSettingsElem.querySelector(".close").onclick = () => {
+        flowSettingsElem.style.display = "none";
+      };
+  
+      const imagesContainer = flowSettingsElem.querySelector(".backgroundImages");
+  
+      const flowBackgroundStyle = document.querySelector("#drawflow .blur").style;
+  
+      const backgroundURL =
+        localStorage.getItem("backgroundURL") || this.flowDefaultBackgroundURL || '';
+  
+      const backgroundOpacity =
+        localStorage.getItem("backgroundOpacity") || this.flowDefaultBackgroundOpacity || 0;
+      const backgroundBlur =
+        localStorage.getItem("backgroundBlur") || this.flowDefaultBackgroundBlur || 0;
+  
+  
+      this.request({
+        scrdata_id: 1164,
+        sp_name: "OK",
+        lab_test: 1,
+        status: "OK",
+        item_id: 0,
+        max_row_per_page: 50,
+        search_term: "",
+        search_term_header: "",
+        pagination: 1,
+        custom_sname: "",
+      }).then((resp) => {
+        const { flow_canvas_background_image } = resp;
+        flow_canvas_background_image.forEach((img) => {
+          const html = `<button><img src="${img.image_link}" /></button>`;
+          imagesContainer.innerHTML += html;
+        });
+        imagesContainer.querySelectorAll("img").forEach((img) => {
+          img.onclick = () => {
+            const value = `url(${img.src})`;
+            flowBackgroundStyle.backgroundImage = value;
+            localStorage.setItem("backgroundURL", value);
+          };
+        });
+      });
+  
+      flowBackgroundStyle.backgroundImage = backgroundURL;
+  
+      const backgroundOpacityInput = flowSettingsElem.querySelector(".backgroundOpacity");
+      backgroundOpacityInput.value = backgroundOpacity;
+      backgroundOpacityInput.oninput = (e) => {
+        const value = e.target.value / 100;
+        document.querySelector('#drawflow').style.backgroundColor = `rgba(251,251,251, ${value})`;
+        localStorage.setItem("backgroundOpacity", e.target.value);
+      };
+      backgroundOpacityInput.oninput({ target: backgroundOpacityInput });
+  
+      const backgroundBlurInput = flowSettingsElem.querySelector(".backgroundBlur");
+      backgroundBlurInput.value = backgroundBlur;
+      backgroundBlurInput.oninput = (e) => {
+        const value = `blur(${e.target.value / 10}px)`;
+        flowBackgroundStyle.filter = value;
+        localStorage.setItem("backgroundBlur", e.target.value);
+      };
+      backgroundBlurInput.oninput({ target: backgroundBlurInput });
+    }
+  
+    setEvents() {
+      document.querySelector("#back").onclick = () => {
+        console.log(this.lastRightWindows);
+        const lastRightWindowId = this.lastRightWindows.pop();
+        if (lastRightWindowId) {
+          this.setRightWindow(lastRightWindowId);
+        }
+      };
+  
+      const updateCountSteps = () => {
+        const allModules = Object.keys(this.drawflow.drawflow);
+        allModules.forEach(
+          (moduleName) =>
+          (document.querySelector(
+            `[data-version="${moduleName}"] span`
+          ).innerText = `:${Object.keys(this.drawflow.drawflow[moduleName].data).length
+          }`)
+        );
+      };
+      this.on("nodeCreated", updateCountSteps);
+      this.on("nodeRemoved", updateCountSteps);
+  
+      this.initNodeTemplate();
+      document
+        .getElementById("add-block")
+        .addEventListener("click", async (ev) => {
+          if (ev.target.closest(".blockyright")) {
+            console.log("more . . .");
+            this.setRightWindow("nodeTemplate");
+            return;
+          }
+          const template = JSON.parse(JSON.stringify(this.templateNode));
+          template.name += ` ${this.nodes.length}`;
+          let maxOrder = 0;
+          this.nodes.forEach(
+            ({ order }) => (maxOrder = Math.max(maxOrder, order))
+          );
+          template.order = maxOrder + 1;
+          template.nodes_group_id = parseInt(this.activeCategory.slice(9));
+          const { nodes_id } = await this.updateTemplateNode(template);
+          document
+            .querySelector(`.blockelem[data-nodes-id="${nodes_id}"]`)
+            .querySelector(".side-elem-more")
+            .click();
+        });
+  
+      document.getElementById("search").addEventListener("input", (ev) => {
+        console.log(ev.target.value);
+        this.renderBlocks(ev.target.value);
+      });
+  
+      document.getElementById("closecard").addEventListener("click", () => {
+        document.getElementById("leftcard").style.display = "none";
+      });
+      document.getElementById("opencard").addEventListener("click", () => {
+        document.getElementById("leftcard").style.display = "block";
+      });
+  
+      document.addEventListener("mouseup", this.dragFinish.bind(this));
+      document.addEventListener("touchend", this.dragFinish.bind(this));
+  
+      document.addEventListener("mousemove", this.dragMove.bind(this));
+      document.addEventListener("touchmove", this.dragMove.bind(this));
+      document.addEventListener("click", () => {
+        document.querySelectorAll("img.edit-content").forEach((img) => {
+          img.addEventListener("click", (e) => {
+            // console.log(img.previousElementSibling);
+            setCaret(img.previousElementSibling);
+          });
+        });
+      });
+  
+      document.getElementById("rightswitch").addEventListener("click", () => {
+        this.setRightWindow("jsoneditor");
+        const container = document.getElementById("jsoneditor");
+        container.innerHTML = "";
+        const options = {
+          mode: "view",
+          onChangeJSON: (json) => {
+            this.import(json);
+          },
+        };
+        const jsonEditor = new JSONEditor(container, options);
+        jsonEditor.set(this.export());
+        jsonEditor.expandAll();
+      });
+  
+      document.querySelector(".btn-story").addEventListener("click", () => {
+        this.setRightWindow("flowStory");
+      });
+      document.getElementById("leftswitch").addEventListener("click", () => {
+        this.setRightWindow("my-draw");
+      });
+    }
+  
+    quillEditor() {
+      function loadFonts() {
+        window.WebFontConfig = {
+          google: {
+            families: [
+              "Inconsolata::latin",
+              "Ubuntu+Mono::latin",
+              "Slabo+27px::latin",
+              "Roboto+Slab::latin",
+            ],
+          },
+        };
+        (function () {
+          var wf = document.createElement("script");
+          wf.src = "https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js";
+          wf.type = "text/javascript";
+          wf.async = "true";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(wf, s);
+        })();
+      }
+      var fonts = ["sofia", "slabo", "roboto", "inconsolata", "ubuntu"];
+      var Font = Quill.import("formats/font");
+      Font.whitelist = fonts;
+      Quill.register(Font, true);
+  
+      // const domElem = document
+      //   .getElementById("quill-template")
+      //   .content.firstElementChild.cloneNode(true);
+      // domElem.setAttribute('data-quill-editor', moduleName);
+      // this.storiesDomElems[moduleName] = domElem;
+  
+      const domElem = this.rightWindows["flowStory"];
+  
+      this.quill = new Quill(domElem.firstElementChild, {
+        bounds: "#toolbar",
+        modules: {
+          syntax: true,
+          toolbar: [
+            [
+              {
+                font: fonts,
+              },
+              {
+                size: [],
+              },
+            ],
+            ["bold", "italic", "underline", "strike"],
+            [
+              {
+                color: [],
+              },
+              {
+                background: [],
+              },
+            ],
+            [
+              {
+                script: "super",
+              },
+              {
+                script: "sub",
+              },
+            ],
+            [
+              {
+                header: "1",
+              },
+              {
+                header: "2",
+              },
+              "blockquote",
+              "code-block",
+            ],
+            [
+              {
+                list: "ordered",
+              },
+              {
+                list: "bullet",
+              },
+              {
+                indent: "-1",
+              },
+              {
+                indent: "+1",
+              },
+            ],
+            [
+              {
+                direction: "rtl",
+              },
+              {
+                align: [],
+              },
+            ],
+            ["link", "image", "video", "formula"],
+            ["clean"],
+          ],
+        },
+        theme: "snow",
+      });
+      loadFonts();
+    }
+  
+    dragMove(ev) {
+      if (this.dragId === null) {
+        if (ev.type === "touchmove") this.position(ev);
+        return;
+      }
+  
+      let clientX, clientY;
+      if (ev.type === "touchmove") {
+        clientX = ev.touches[0].clientX;
+        clientY = ev.touches[0].clientY;
+      } else {
+        clientX = ev.clientX;
+        clientY = ev.clientY;
+      }
+  
+      this.dragCloneElem.style.left = clientX - this.dx + window.scrollX + "px";
+      this.dragCloneElem.style.top = clientY - this.dy + window.scrollY + "px";
+      if (document.getElementById("my-draw")) {
+        const { top, left } = document
+          .querySelector("#drawflow")
+          .getBoundingClientRect();
+        if (this.editor_mode === "fixed" || clientX < left || clientY < top) {
+          return false;
+        }
+        const x =
+          clientX *
+          (this.precanvas.clientWidth /
+            (this.precanvas.clientWidth * this.zoom)) -
+          this.precanvas.getBoundingClientRect().x *
+          (this.precanvas.clientWidth /
+            (this.precanvas.clientWidth * this.zoom));
+        const y =
+          (clientY - this.dy) *
+          (this.precanvas.clientHeight /
+            (this.precanvas.clientHeight * this.zoom)) -
+          this.precanvas.getBoundingClientRect().y *
+          (this.precanvas.clientHeight /
+            (this.precanvas.clientHeight * this.zoom));
+  
+        const node = JSON.parse(
+          JSON.stringify(
+            this.activeNodes.find(({ nodes_id }) => nodes_id === this.dragId)
+          )
+        );
+        node.id_nodes = node.nodes_id;
+        ["order", "active", "icon_link", "nodes_group_id", "nodes_id"].forEach(
+          (key) => delete node[key]
+        );
+  
+        this.dragCloneElem.remove();
+        document
+          .querySelector(".blockdisabled")
+          ?.classList.remove("blockdisabled");
+  
+        // check if start
+        if (node.flow_node_type_id === 0) {
+          const nodes = Object.values(this.drawflow.drawflow[this.module].data);
+          // console.log(nodes);
+          for (let key in nodes) {
+            // console.log(nodes[key]);
+            const {
+              data: {
+                node: { flow_node_type_id },
+              },
+            } = nodes[key];
+            if (flow_node_type_id === 0) {
+              alert("Start node already exist!");
+              this.dragId = null;
+              return;
+            }
+          }
+        }
+  
+        const newNodeId = this.addNewNode({ pos: { x, y }, node });
+  
+        this.click({
+          target: this.nodeHtmlElem(newNodeId),
+          touches: ev.touches,
+          type: ev.type,
+          clientX,
+          clientY,
+        }); // mousedown, touchstart on node
+        this.dragId = null;
+      }
+    }
+  
+    dragFinish() {
+      this.dragId = null;
+      if (this.dragCloneElem) this.dragCloneElem.remove();
+      document.querySelector(".blockdisabled")?.classList.remove("blockdisabled");
+    }
+  }
+  
+  var id = document.getElementById("drawflow");
+  const editor = new App(id);
+  editor.start();
+  

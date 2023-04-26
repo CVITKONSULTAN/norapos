@@ -1,4 +1,5 @@
 <script type="text/javascript">
+    let sell_table = null;
 $(document).ready( function(){
 
     //Date range as a button
@@ -25,7 +26,7 @@ $(document).ready( function(){
         "ajax": {
             "url": "/sells",
             "data": function ( d ) {
-                if({{ Auth::user()->business->business_category === "laundry" }}){
+                if({{ Auth::user()->business->business_category === "laundry" ? 1 : 0 }} === 1){
                     d.is_laundry_view = 1;
                 }
                 if($('#sell_list_filter_date_range').val()) {

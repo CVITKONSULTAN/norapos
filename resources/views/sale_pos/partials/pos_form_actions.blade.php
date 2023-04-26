@@ -66,7 +66,9 @@
 			@if(!isset($pos_settings['hide_recent_trans']) || $pos_settings['hide_recent_trans'] == 0)
 			<div class="pull-right">
 				<button type="button" class="btn btn-primary btn-flat @if($is_mobile) col-xs-6 @endif" data-toggle="modal" data-target="#recent_transactions_modal" id="recent-transactions"> <i class="fas fa-clock"></i> @lang('lang_v1.recent_transactions')</button>
-				<button id="ambil_bayar" type="button" class="btn btn-primary @if(!$is_mobile) @endif btn-flat no-print @if($is_mobile) col-xs-6 @endif" title="Bayar"> <i class="fas fa-money-bill-alt" aria-hidden="true"></i> Ambil & Bayar </button>
+				@if(Auth::user()->business->business_category === "laundry")
+					<button id="ambil_bayar" type="button" class="btn btn-primary @if(!$is_mobile) @endif btn-flat no-print @if($is_mobile) col-xs-6 @endif" title="Bayar"> <i class="fas fa-money-bill-alt" aria-hidden="true"></i> Ambil & Bayar </button>
+				@endif
 			</div>
 			@endif
 			

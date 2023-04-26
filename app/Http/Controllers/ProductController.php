@@ -1141,6 +1141,12 @@ class ProductController extends Controller
 
             $result = $this->productUtil->filterProduct($business_id, $search_term, $location_id, $not_for_selling, $price_group_id, $product_types, $search_fields, $check_qty);
 
+            if(env("APP_LOCALE") === "id"){
+                foreach ($result as $key => $value) {
+                    $result[$key]["selling_price"] = number_format($value->selling_price,0,",",".");
+                }
+            }
+
             return json_encode($result);
         }
     }

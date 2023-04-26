@@ -66,6 +66,12 @@ class Util
             $currency_precision = config('constants.quantity_precision', 2);
         }
 
+        if(env("APP_LOCALE") === "id"){
+            $currency_precision = 0;
+            $thousand_separator = ".";
+            $decimal_separator = ",";
+        }
+
         $formatted = number_format($input_number, $currency_precision, $decimal_separator, $thousand_separator);
 
         if ($add_symbol) {

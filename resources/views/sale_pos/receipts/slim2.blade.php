@@ -10,11 +10,13 @@
     </head>
     <body>
         <div class="ticket">
+			<div class="text-center">
+				<!-- Logo -->
+				@if(!empty($receipt_details->logo))
+					<img class="logo" src="{{$receipt_details->logo}}" alt="Logo">
+				@endif
+			</div>
         	<div class="text-box">
-        	@if(!empty($receipt_details->logo))
-        		<img class="logo" src="{{$receipt_details->logo}}" alt="Logo">
-        	@endif
-        	<!-- Logo -->
             <p class="@if(!empty($receipt_details->logo)) text-with-image @else centered @endif">
             	<!-- Header text -->
             	@if(!empty($receipt_details->header_text))
@@ -603,7 +605,7 @@ img {
 	text-align: right;
 }
 .logo {
-	float: left;
+	/* float: left; */
 	width:35%;
 	padding: 10px;
 }

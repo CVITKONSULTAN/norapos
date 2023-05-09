@@ -13,6 +13,7 @@ class PermissionsTableSeeder extends Seeder
      */
     public function run()
     {
+        if(Permission::count() > 0) return;
         $data = [
             ['name' => 'user.view'],
             ['name' => 'user.create'],

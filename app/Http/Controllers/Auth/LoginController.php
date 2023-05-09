@@ -110,6 +110,9 @@ class LoginController extends Controller
     {
         $user = \Auth::user();
         if (!$user->can('dashboard.data') && $user->can('sell.create')) {
+            if(!$user->checkAbsen()){
+                return '/absensi';
+            }
             return '/pos/create';
         }
 

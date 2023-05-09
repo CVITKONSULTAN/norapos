@@ -77,6 +77,8 @@
 
     var app_locale = "{{session()->get('user.language', config('app.locale'))}}";
 
+    moment.locale("{{session()->get('user.language', config('app.locale'))}}")
+
     var non_utf8_languages = [
         @foreach(config('constants.non_utf8_languages') as $const)
         "{{$const}}",

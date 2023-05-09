@@ -13,12 +13,14 @@
 
 include_once('install_r.php');
 
-// use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Artisan;
 
-// Route::get('/link-storage', function () {
-//     Artisan::call('storage:link');
-//     return "OK";
-// });
+Route::get('/command', function () {
+    // Artisan::call('make:controller UpdateController');
+    // Artisan::call('db:seed --class=AddPermissionAbsensiSeeder');
+    return "OK";
+});
+Route::get('/update', "UpdateController@update");
 
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
@@ -41,6 +43,14 @@ Route::middleware(['setData'])->group(function () {
 
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {
+
+    Route::post('/upload', "FileUploadController@upload")->name('upload');
+
+    Route::get('/absensi', "AbsensiController@create")->name('absensi.create');
+    Route::post('/absensi/store', "AbsensiController@store")->name('absensi.store');
+    Route::get('/absensi/list', "AbsensiController@index")->name('absensi.list');
+    Route::get('/absensi/data', "AbsensiController@data")->name('absensi.data');
+
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/home/get-totals', 'HomeController@getTotals');
     Route::get('/home/product-stock-alert', 'HomeController@getProductStockAlert');

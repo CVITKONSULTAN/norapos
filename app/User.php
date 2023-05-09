@@ -3,6 +3,7 @@
 namespace App;
 
 use DB;
+use \Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -296,5 +297,19 @@ class User extends Authenticatable
     public function contact()
     {
         return $this->belongsTo(\Modules\Crm\Entities\CrmContact::class, 'crm_contact_id');
+    }
+    
+    public function absensi()
+    {
+        return $this->hasMany(\App\Absensi::class,"user_id","id");
+    }
+
+    public function checkAbsen()
+    {
+        $today = Carbon::now();
+        $check = \App\Absensi::where('user_id',$this->id)
+        ->whereDate("created_at",$today->format("Y-m-d"))->count();
+        //jika sudah absen true vice versa
+        return $check > 0;
     }
 }

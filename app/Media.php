@@ -111,7 +111,10 @@ class Media extends Model
             }
             // attach media to model
             Media::attachMediaToModel($model, $business_id, $uploaded_files, $request);
+            return $uploaded_files;
         }
+
+        return null;
     }
 
     /**

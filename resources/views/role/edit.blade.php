@@ -956,6 +956,69 @@
         </div>
         </div>
         <hr>
+
+        <div class="row check_group">
+          <div class="col-md-1">
+            <!-- <h4>@lang( 'role.settings' )</h4> -->
+            <h4>Absensi</h4>
+          </div>
+          <div class="col-md-2">
+            <div class="checkbox">
+                <label>
+                  <input type="checkbox" class="check_all input-icheck" > {{ __( 'role.select_all' ) }}
+                </label>
+              </div>
+          </div>
+          <div class="col-md-9">
+            <div class="col-md-12">
+              <div class="checkbox">
+                <label>
+                  {!! Form::checkbox('permissions[]', 'absensi.create', in_array('absensi.create', $role_permissions), 
+                  [ 'class' => 'input-icheck']); !!} 
+                    Tambah data Absensi
+                </label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="checkbox">
+                <label>
+                  {!! Form::checkbox('permissions[]', 'absensi.view', in_array('absensi.view', $role_permissions), 
+                  [ 'class' => 'input-icheck']); !!} 
+                    Lihat data Absensi Pribadi
+                </label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="checkbox">
+                <label>
+                  {!! Form::checkbox('permissions[]', 'absensi.view_all', in_array('absensi.view_all', $role_permissions), 
+                  [ 'class' => 'input-icheck']); !!} 
+                    Lihat data Absensi Semua
+                </label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="checkbox">
+                <label>
+                  {!! Form::checkbox('permissions[]', 'absensi.update', in_array('absensi.update', $role_permissions), 
+                  [ 'class' => 'input-icheck']); !!} 
+                    Ubah data Absensi
+                </label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="checkbox">
+                <label>
+                  {!! Form::checkbox('permissions[]', 'absensi.delete', in_array('absensi.delete', $role_permissions), 
+                  [ 'class' => 'input-icheck']); !!} 
+                    Hapus data Absensi
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+
         @if(in_array('booking', $enabled_modules))
         <div class="row check_group">
         <div class="col-md-1">

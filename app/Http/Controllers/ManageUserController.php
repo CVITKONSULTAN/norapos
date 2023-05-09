@@ -186,6 +186,9 @@ class ManageUserController extends Controller
 
             $user_details['max_sales_discount_percent'] = !is_null($user_details['max_sales_discount_percent']) ? $this->moduleUtil->num_uf($user_details['max_sales_discount_percent']) : null;
 
+            $lang = env('APP_LOCALE');
+            if($lang) $user_details['language'] = $lang;
+
             //Create the user
             $user = User::create($user_details);
 

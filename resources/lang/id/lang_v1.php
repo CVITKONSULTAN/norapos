@@ -742,7 +742,7 @@ return [
 "labels_for_custom_payments" => "Label untuk pembayaran khusus",
 "packed" => "Penuh sesak",
 "shipped" => "Dikirim",
-"delivered" => "Terkirim",
+"delivered" => "Telah Diterima",
 "shipping_address" => "Alamat Pengiriman",
 "shipping_status" => "Status Pengiriman",
 "delivered_to" => "Dikirim ke",
@@ -1042,4 +1042,5 @@ return [
 "quotation_no"=>"Nomor kutipan",
 "browser_based_printing"=>"Pencetakan Berbasis Browser",
 "configured_printer"=>"Gunakan Printer Tanda Terima yang Dikonfigurasi",
+"presence"=>"Absensi"
 ];

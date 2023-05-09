@@ -84,6 +84,7 @@
             const v = constraints.video;
             errorMsg(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
         } else if (error.name === 'NotAllowedError') {
+            window.location.href = "/pos/create";
             errorMsg('Permissions have not been granted to use your camera and ' +
             'microphone, you need to allow the page access to your devices in ' +
             'order for the demo to work.');

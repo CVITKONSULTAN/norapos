@@ -10,7 +10,7 @@ class UpdateController extends Controller
 {
     public function update()
     {
-        if(Permission::count() === 88){
+        if(Permission::count() === 88 || Permission::count() === 89){
             // add permission for absensi here
             $data = [
                 ['name' => 'absensi.create'],

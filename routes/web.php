@@ -16,7 +16,7 @@ include_once('install_r.php');
 use Illuminate\Support\Facades\Artisan;
 
 Route::get('/command', function () {
-    // Artisan::call('make:controller UpdateController');
+    Artisan::call('migrate');
     // Artisan::call('db:seed --class=AddPermissionAbsensiSeeder');
     return "OK";
 });

@@ -224,6 +224,9 @@
                 height: 15px;
                 width: 15px;
             }
+            section#product_list h1{
+                font-size: 14pt;
+            }
         }
 
     </style>

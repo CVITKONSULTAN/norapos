@@ -46,18 +46,55 @@
             --bs-btn-disabled-border-color: var(--btn-disabled-color-primary);
             --bs-gradient: none;
         }
-        /* body{
-          font-weight: 200;
+        footer{
+            background: #44047C;
+            padding-bottom: 2rem;
+            font-weight: 200;
         }
-        body p {
-          font-weight: 200;
-        } */
+        footer div.logo_download_container img{
+            height: 8vh;
+            margin: 1.5rem 0;
+        }
+        footer div.logo_download_container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        footer p {
+            color: #FFF;
+            text-transform: capitalize;
+            font-size: 18pt;
+        }
+        footer img.logo_footer{
+            height: 8vh;
+        }
+        footer input.email_input{
+            border-radius: 70px 0px 0px 70px !important;
+            min-height: 5vh;
+            text-align: center;
+        }
+        footer button.input_submit{
+            width: 50%;
+            border-radius: 0px 70px 70px 0px !important;
+        }
         @media (min-width: 992px){
             .navbar-expand-lg .navbar-nav .nav-link {
                 margin-right: 2rem;
                 margin-left: 2rem;
             }
         }
+        @media (max-width: 992px){
+          footer img.logo_footer{
+              height: 4vh;
+          }
+          footer div.logo_download_container img {
+            height: 4vh;
+          }
+          footer p{
+            font-size: 10pt;
+          }
+        }
+
     </style>
     @stack('styles')
   </head>

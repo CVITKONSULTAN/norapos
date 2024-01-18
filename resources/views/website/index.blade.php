@@ -110,6 +110,7 @@
             text-align: right;
             font-size: 22pt;
             font-weight: 400;
+            margin-top: 7rem;
         }
         section#feature_2{
             padding-top: 3rem;
@@ -159,51 +160,72 @@
             background: rgba(132, 28, 201, 0.80);
         }
 
+        div#jumbotron .masuk{
+                background: #fff;
+        }
+
 
         @media (min-width: 992px){
-            .navbar-expand-lg .navbar-nav .nav-link {
-                margin-right: 2rem;
-                margin-left: 2rem;
-            }
             #jumbotron .bg_jumbo{
                 padding-top: 8rem;
                 padding-bottom: 22rem;
                 padding-left: 10rem;
             }
         }
-    </style>
-    <style>
-        footer{
-            background: #44047C;
-            padding-bottom: 2rem;
-            font-weight: 200;
+        @media (max-width: 992px){
+            section#cta_1 .quotes {
+                font-size: 12pt;
+                margin: 1rem auto !important;
+            }
+            section#feature .body_content h1{
+                font-size: 20pt !important;
+            }
+            section#feature .body_content h3{
+                font-size: 12pt !important;
+            }
+            section#feature .body_content h2{
+                font-size: 20pt !important;
+            }
+            section#feature .body_content ul {
+                margin-top: 0px !important;
+                /* text-align: center !important; */
+            }
+            .keterangan_feature{
+                display: none;
+            }
+            section#payment_channel h1 {
+                font-size: 15pt;
+            }
+            div#jumbotron{
+                text-align: center;
+            }
+            section#product_list div.card_product{
+                margin-bottom: 1.5rem;
+            }
+            section#feature_2 p.keterangan{
+                font-size: 12pt;
+                text-align: center;
+                margin-top: 0;
+            }
+            section#testimony {
+                padding: 1rem 0;
+            }
+            section#testimony .body #testimoni_list{
+                margin-top: 1rem;
+            }
+            section#testimony .body #testimoni_list .testimoni_item h5{
+                font-size: 12pt;
+            }
+            section#testimony .body #testimoni_list .testimoni_item p{
+                font-size: 12pt;
+                margin-bottom: 1rem;
+            }
+            .swiper-pagination-bullet{
+                height: 15px;
+                width: 15px;
+            }
         }
-        footer div.logo_download_container img{
-            height: 8vh;
-            margin: 1.5rem 0;
-        }
-        footer div.logo_download_container{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        footer p {
-            color: #FFF;
-            text-transform: capitalize;
-            font-size: 18pt;
-        }
-        footer img.logo_footer{
-            height: 8vh;
-        }
-        footer input.email_input{
-            border-radius: 70px 0px 0px 70px !important;
-            min-height: 5vh;
-            text-align: center;
-        }
-        footer button.input_submit{
-            width: 50%;
-            border-radius: 0px 70px 70px 0px !important;
-        }
+
     </style>
 @endpush
 
@@ -212,12 +234,12 @@
         <section id="head" class="bg_jumbo">
             <div class="container-fluid py-5" data-aos="fade-up"  data-aos-duration="2000">
                 <h1 class="display-5 fw-bold">NAIK KAN OMSET <br/>& PROFIT BISNIS ANDA</h1>
-                <p class="col-md-8 fs-4 py-5">
+                <p class="col-md-8 fs-5 py-5">
                     Mulai bisnis jadi mudah dengan <br />online kapanpun & dari mana saja
                 </p>
                 <div class="button_container">
-                    <button class="btn btn-primary btn-lg" type="button">Uji Coba Gratis Sekarang!</button>
-                    <button class="btn btn-outline-primary btn-lg" type="button">Masuk</button>
+                    <button class="btn btn-primary btn-lg mb-2" type="button">Uji Coba Gratis Sekarang!</button>
+                    <button class="btn btn-outline-primary btn-lg mb-2 masuk" type="button">Masuk</button>
                 </div>
             </div>
         </section>
@@ -227,7 +249,7 @@
             <div class="row">
                 <div class="col-md-6 text-center" data-aos="fade-up"  data-aos-duration="2000">
                     <img src="{{asset('img/mockup-multi-device.png')}}" class="img-fluid" />
-                    <h3 class="text-center">Aplikasi NORAPOS</h3>
+                    <h3 class="text-center keterangan_feature">Aplikasi NORAPOS</h3>
                 </div>
                 <div class="col-md-6 body_content" data-aos="fade-up"  data-aos-duration="2000">
                     <h1 class="text-center">KELOLA BISNIS</h1>
@@ -258,7 +280,7 @@
                 </div>
             @endforeach
         </div>
-        <h1 class="text-center head_sec">Metode Pembayaran Lain</h1>
+        <h1 class="text-center">Metode Pembayaran Lain</h1>
         <div class="row justify-content-center my-4">
             @foreach ($payment_channel->where('type','ewallet') as $item)
                 <div class="col-2 mt-2">
@@ -348,12 +370,6 @@
                 <img class="img-fluid" src="{{asset('./img/feature_2.png')}}" />
             </div>
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
                 <p class="keterangan">Mengefisienkan pengelolaan bisnis, dapat digunakan secara bersamaan dengan bisnis online dan offline anda.
                     Kemanapun anda pergi tetap dapat terhubung dengan NORAPOS dengan aplikasi Android dan iOS gratis.
                     Semua menjadi lebih mudah dan dapat di akses menggunakan semua perangkat favorit anda.</p>

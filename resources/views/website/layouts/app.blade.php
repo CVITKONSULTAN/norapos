@@ -46,6 +46,12 @@
             --bs-btn-disabled-border-color: var(--btn-disabled-color-primary);
             --bs-gradient: none;
         }
+        /* body{
+          font-weight: 200;
+        }
+        body p {
+          font-weight: 200;
+        } */
         @media (min-width: 992px){
             .navbar-expand-lg .navbar-nav .nav-link {
                 margin-right: 2rem;

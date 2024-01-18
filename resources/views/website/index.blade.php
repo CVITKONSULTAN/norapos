@@ -144,9 +144,21 @@
             top: 0;
             z-index: 0;
         }
-        .swiper-pagination{
-            top: 10px;
+        .swiper-wrapper{
+            padding-bottom: 5rem;
         }
+
+        .swiper-pagination-bullet {
+            height: 25px;
+            width: 25px;
+            background: rgba(239, 232, 245, 0.8);
+            box-shadow: 2px 3px rgba(0,0,0,0.5);
+            /* margin-right: 2rem; */
+        }
+        .swiper-pagination-bullet-active{
+            background: rgba(132, 28, 201, 0.80);
+        }
+
 
         @media (min-width: 992px){
             .navbar-expand-lg .navbar-nav .nav-link {
@@ -158,6 +170,39 @@
                 padding-bottom: 22rem;
                 padding-left: 10rem;
             }
+        }
+    </style>
+    <style>
+        footer{
+            background: #44047C;
+            padding-bottom: 2rem;
+            font-weight: 200;
+        }
+        footer div.logo_download_container img{
+            height: 8vh;
+            margin: 1.5rem 0;
+        }
+        footer div.logo_download_container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        footer p {
+            color: #FFF;
+            text-transform: capitalize;
+            font-size: 18pt;
+        }
+        footer img.logo_footer{
+            height: 8vh;
+        }
+        footer input.email_input{
+            border-radius: 70px 0px 0px 70px !important;
+            min-height: 5vh;
+            text-align: center;
+        }
+        footer button.input_submit{
+            width: 50%;
+            border-radius: 0px 70px 70px 0px !important;
         }
     </style>
 @endpush
@@ -316,7 +361,7 @@
         </div>
     </section>
     <section id="testimony">
-        <div class="container body">
+        <div class="container body" data-aos="fade-up"  data-aos-duration="2000">
             <h1>TESTIMONIALS</h1>
             <div class="swiper" id="testimoni_list">
                 <!-- Additional required wrapper -->
@@ -337,6 +382,33 @@
         </div>
         <div class="filter_bg"></div>
     </section>
+    <footer>
+        <div class="container" data-aos="fade-up"  data-aos-duration="2000">
+            <img src="{{asset('./img/logo-white.png')}}" class="logo_footer my-4" />
+            <p>
+                Download the Admin App <br/>
+                Manage your POS system and online store, get analysis and insights and keep connected with your customers and staff with the Admin app, available on Android and Apple.
+            </p>
+            <div class="logo_download_container">
+                <a href="#">
+                    <img src="{{asset('./img/playstore.png')}}" class="logo_download_app" />
+                </a>
+                <a href="#">
+                    <img src="{{asset('./img/appstore.png')}}" class="logo_download_app" />
+                </a>
+            </div>
+            <p class="text-center">Tinggalkan alamat e-mail Anda untuk mendapatkan berita terbaru dari NORAPOS</p>
+
+            <form class="input-group mb-3">
+                @csrf
+                <input name="email" type="email" class="form-control email_input" placeholder="Masukkan email anda">
+                <button class="btn btn-primary input_submit">Subscribe</button>
+            </form>
+
+            <p class="text-center"><b>© {{ date('Y') }} NORAPOS</b></p>
+
+        </div>
+    </footer>
 @endsection
 
 @push('scripts')
@@ -358,6 +430,7 @@
                 // If we need pagination
                 pagination: {
                     el: '.swiper-pagination',
+                    clickable: true
                 }
             });
         });

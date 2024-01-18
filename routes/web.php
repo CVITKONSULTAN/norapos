@@ -15,8 +15,25 @@ include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
 
+$database_domain = ['beautyproclinic.com'];
+
+Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
+    $host = request()->getHost();
+    if(in_array($host,$database_domain)){
+        Route::get('/', "MultiDomainController@index")->name("multi.index");
+        Route::get('/about', "MultiDomainController@about")->name("multi.about");
+        Route::get('/gallery', "MultiDomainController@gallery")->name("multi.gallery");
+        Route::get('/contact', "MultiDomainController@contact")->name("multi.contact");
+        Route::get('/product', "MultiDomainController@product")->name("multi.product");
+        Route::get('/services', "MultiDomainController@services")->name("multi.services");
+    }
+});
+
 Route::get('/command', function () {
-    Artisan::call('migrate');
+    // Artisan::call('migrate');
+    // Artisan::call('make:controller MultiDomainController');
+    // Artisan::call('migrate:rollback');
+    // Artisan::call('make:model Blog -m');
     // Artisan::call('db:seed --class=AddPermissionAbsensiSeeder');
     return "OK";
 });
@@ -391,3 +408,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
     Route::get('/sells/{transaction_id}/print', 'SellPosController@printInvoice')->name('sell.printInvoice');
     Route::get('/sells/invoice-url/{id}', 'SellPosController@showInvoiceUrl');
 });
+
+
+// Route::domain('beautyproclinic.com')->group(function () {
+//     Route::get('/', function () {
+//         return "OK";
+//     });
+// });

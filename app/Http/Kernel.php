@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+        // \App\Http\Middleware\Cors::class,
     ];
 
     /**
@@ -67,6 +68,7 @@ class Kernel extends HttpKernel
         'AdminSidebarMenu' => \App\Http\Middleware\AdminSidebarMenu::class,
         'superadmin' => \App\Http\Middleware\Superadmin::class,
         'CheckUserLogin' => \App\Http\Middleware\CheckUserLogin::class,        
+        'Cors' => \App\Http\Middleware\Cors::class,
     ];
     /**
      * The priority-sorted list of middleware.

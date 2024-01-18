@@ -8,6 +8,72 @@ use Illuminate\Http\Request;
 class WebController extends Controller
 {
     public function index(Request $request){
-        return view('website.index');
+        $data['payment_channel'] = collect([
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+            [
+                'type'=>'main',
+                'image'=>asset('img/main_BCA.png')
+            ],
+            [
+                'type'=>'ewallet',
+                'image'=>asset('img/ewalelt_dana.png')
+            ],
+        ]);
+        return view('website.index',$data);
     }
 }

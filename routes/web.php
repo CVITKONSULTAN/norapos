@@ -37,6 +37,11 @@ Route::get('/command', function () {
     // Artisan::call('db:seed --class=AddPermissionAbsensiSeeder');
     return "OK";
 });
+
+Route::group(["prefix"=>"web"],function(){
+    Route::get("/","Website\Webcontroller@index")->name('web.index');
+});
+
 Route::get('/update', "UpdateController@update");
 
 Route::middleware(['setData'])->group(function () {

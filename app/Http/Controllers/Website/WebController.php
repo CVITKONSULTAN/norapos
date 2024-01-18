@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 class WebController extends Controller
 {
     public function index(Request $request){
+        //web langdingpage
         $data['payment_channel'] = collect([
             [
                 'type'=>'main',

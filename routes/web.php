@@ -39,7 +39,7 @@ Route::get('/command', function () {
 });
 
 Route::group(["prefix"=>"web"],function(){
-    Route::get("/","Website\Webcontroller@index")->name('web.index');
+    Route::get("/","Website\WebController@index")->name('web.index');
 });
 
 Route::get('/update', "UpdateController@update");

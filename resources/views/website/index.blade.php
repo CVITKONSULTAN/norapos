@@ -88,8 +88,13 @@
         section#product_list .card_product .hint{
             font-size: 10pt;
         }
+        section#product_list .card_product .offer_text{
+            color: #267933;
+            font-size: 12pt;
+            font-weight: 700;
+        }
         section#product_list .card_product .price{
-            color: var(--bs-primary);
+            /* color: var(--bs-primary); */
             /* font-size: 12pt; */
             font-weight: 600;
         }
@@ -99,12 +104,22 @@
             font-weight: 600;
             text-decoration-line: line-through;
         }
+        section#product_list .card_product ul li {
+            list-style-image: url('./img/check_green.svg');
+        }
+        /* section#product_list .card_product .img_product{
+            border-top-right-radius: 
+        } */
         section#product_list .card_product{
-            border-radius: 10px;
-            border: 0.5px solid rgba(41, 45, 50, 0.10);
-            background: rgba(153, 38, 255, 0.20);
+            border-radius: 20px;
+            border: 1px solid rgba(99, 18, 174, 0.20);
+            background: #FFF;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
             text-align: center;
-            padding: 2rem 4rem;
+            /* border: 0.5px solid rgba(41, 45, 50, 0.10); */
+            /* border-radius: 10px; */
+            /* background: rgba(153, 38, 255, 0.20); */
+            padding: 2rem 0.5rem;
         }
         section#feature_2 .keterangan{
             text-align: right;
@@ -286,7 +301,7 @@
         <h1 class="text-center">Metode Pembayaran Lain</h1>
         <div class="row justify-content-center my-4">
             @foreach ($payment_channel->where('type','ewallet') as $item)
-                <div class="col-2 mt-2">
+                <div class="col-2 mt-2 text-center">
                     <img class="img-fluid" src="{{$item['image']}}" />
                 </div>
             @endforeach
@@ -302,25 +317,81 @@
         <div class="container">
             <h1 class="text-center" data-aos="fade-up"  data-aos-duration="2000">Pilih perangkat keras POS yang modern, dan sesuai <br/> dengan kebutuhan bisnis anda</h1>
             <div class="row mt-5">
-                <div class="col-md-4" data-aos="fade-up"  data-aos-duration="2500">
+                <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <h1>UNLIMITED</h1>
-                        <p>Paket software unlimited</p>
-                        <img class="img-fluid" src="{{asset('./img/product_unlimited.png')}}" />
-                        <p class="mt-4">Lisensi Software Seumur Hidup</p>
-                        <h5 class="my-4">TERBATAS HANYA UNTUK <br/>
-                            10 ORANG PERTAMA</h5>
-                        <br />
-                        <br />
-                        <p class="disc_price">Rp. 456.789,-</p>
-                        <h2 class="price">Rp. 123.456,-</h2>
+                        <img class="img-fluid img_product" src="{{asset('./img/MPOS-1.png')}}" />
+                        <ul class="text-start mt-3">
+                            <li>Android 10.0</li>
+                            <li>Wifi, Bluetooth, Camera</li>
+                            <li>Support Fitur NFC</li>
+                            <li>Support 58x40mm Paper</li>
+                            <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
+                        </ul>
+                        {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
+                        <h2 class="price">Rp 3.999.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
                             <button class="product_order btn btn-primary">Daftar Sekarang!</button>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4" data-aos="fade-up"  data-aos-duration="2300">
+                <div class="col-md-6 mb-2" data-aos="fade-up"  data-aos-duration="2500">
+                    <div class="card_product">
+                        <img class="img-fluid img_product" src="{{asset('./img/TAB-10.png')}}" />
+                        <ul class="text-start mt-3">
+                            <li>Screen 10.4" (Touchscreen)</li>
+                            <li>Stand Tablet 360°</li>
+                            <li>Cash Drawer</li>
+                            <li>Printer Thermal</li>
+                            <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
+                        </ul>
+                        {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
+                        <h2 class="offer_text">PENAWARAN TERBATAS</h2>
+                        <h2 class="price">Rp 5.300.000,-</h2>
+                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
+                        <div class="d-grid">
+                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
+                    <div class="card_product">
+                        <img class="img-fluid img_product" src="{{asset('./img/TAB-8.png')}}" />
+                        <ul class="text-start mt-3">
+                            <li>Screen 8" (Touchscreen)</li>
+                            <li>Stand Tablet 360°</li>
+                            <li>Cash Drawer</li>
+                            <li>Printer Thermal</li>
+                            <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
+                        </ul>
+                        {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
+                        <h2 class="price">Rp 4.300.000,-</h2>
+                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
+                        <div class="d-grid">
+                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
+                    <div class="card_product">
+                        <img class="img-fluid img_product" src="{{asset('./img/dual-platinum.png')}}" />
+                        <ul class="text-start mt-3">
+                            <li>Screen 8" (Touchscreen)</li>
+                            <li>Stand Tablet 360°</li>
+                            <li>Cash Drawer</li>
+                            <li>Printer Thermal</li>
+                            <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
+                        </ul>
+                        {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
+                        <h2 class="offer_text">PENAWARAN TERBATAS</h2>
+                        <h2 class="price">Rp. ???</h2>
+                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
+                        <div class="d-grid">
+                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
+                        </div>
+                    </div>
+                </div>
+                {{-- <div class="col-md-4" data-aos="fade-up"  data-aos-duration="2300">
                     <div class="card_product">
                         <h1>BISNIS</h1>
                         <p>Paket software unlimited</p>
@@ -362,7 +433,7 @@
                             <button class="product_order btn btn-primary">Daftar Sekarang!</button>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>
@@ -370,7 +441,7 @@
         <h1 class="text-center" data-aos="fade-up"  data-aos-duration="2000">Mencatat Seluruh Transaksi anda dengan mudah tanpa ribet dengan ratusan fitur canggih</h1>
         <div class="row">
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
-                <img class="img-fluid" src="{{asset('./img/feature_2.png')}}" />
+                <img class="img-fluid" src="{{asset('./img/feature_2_new.png')}}" />
             </div>
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
                 <p class="keterangan">Mengefisienkan pengelolaan bisnis, dapat digunakan secara bersamaan dengan bisnis online dan offline anda.

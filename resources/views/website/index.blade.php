@@ -1,7 +1,7 @@
 @extends('website.layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    <link defer rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.css" />
     <style>
           /*         
@@ -10,7 +10,7 @@
         */
 
         #jumbotron{
-            background: url("./img/bg-jumbotron.png");
+            background: url("./img/webp/bg-jumbotron.webp");
         }
         #jumbotron .bg_jumbo h1{
             color: var(--bs-primary);
@@ -45,7 +45,7 @@
             padding-bottom: 2rem;
         }
         section#cta_1{
-            background: url('./img/payment_bg.png');
+            background: url('./img/webp/payment_bg.webp');
             position: relative;
         }
         section#cta_1 .filter_bg{
@@ -146,7 +146,7 @@
             z-index: 1;
         }
         section#testimony{
-            background: url('./img/testimony.png');
+            background: url('./img/webp/testimony.webp');
             position: relative;
             padding: 10rem 0rem;
             text-align: center;
@@ -266,7 +266,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 text-center" data-aos="fade-up"  data-aos-duration="2000">
-                    <img src="{{asset('img/mockup-multi-device.png')}}" class="img-fluid" />
+                    <img src="{{asset('img/webp/mockup-multi-device.webp')}}" class="img-fluid" />
                     <h3 class="text-center keterangan_feature">Aplikasi NORAPOS</h3>
                 </div>
                 <div class="col-md-6 body_content" data-aos="fade-up"  data-aos-duration="2000">
@@ -319,7 +319,7 @@
             <div class="row mt-5">
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/MPOS-1.png')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/MPOS-1.webp')}}" />
                         <ul class="text-start mt-3">
                             <li>Android 10.0</li>
                             <li>Wifi, Bluetooth, Camera</li>
@@ -337,7 +337,7 @@
                 </div>
                 <div class="col-md-6 mb-2" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/Tab-10.png')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/Tab-10.webp')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 10.4" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>
@@ -356,7 +356,7 @@
                 </div>
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/Tab-8.png')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/Tab-8.webp')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 8" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>
@@ -374,7 +374,7 @@
                 </div>
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/dual-platinum.png')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/dual-platinum.webp')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 8" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>
@@ -441,7 +441,7 @@
         <h1 class="text-center" data-aos="fade-up"  data-aos-duration="2000">Mencatat Seluruh Transaksi anda dengan mudah tanpa ribet dengan ratusan fitur canggih</h1>
         <div class="row">
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
-                <img class="img-fluid" src="{{asset('./img/feature_2_new.png')}}" />
+                <img class="img-fluid" src="{{asset('./img/webp/feature_2_new.webp')}}" />
             </div>
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
                 <p class="keterangan">Mengefisienkan pengelolaan bisnis, dapat digunakan secara bersamaan dengan bisnis online dan offline anda.
@@ -474,17 +474,17 @@
     </section>
     <footer>
         <div class="container" data-aos="fade-up"  data-aos-duration="2000">
-            <img src="{{asset('./img/logo-white.png')}}" class="logo_footer my-4" />
+            <img src="{{asset('./img/webp/logo-white.webp')}}" class="logo_footer my-4" />
             <p>
                 Download the Admin App <br/>
                 Manage your POS system and online store, get analysis and insights and keep connected with your customers and staff with the Admin app, available on Android and Apple.
             </p>
             <div class="logo_download_container">
                 <a href="#">
-                    <img src="{{asset('./img/playstore.png')}}" class="logo_download_app" />
+                    <img src="{{asset('./img/webp/playstore.webp')}}" class="logo_download_app" />
                 </a>
                 <a href="#">
-                    <img src="{{asset('./img/appstore.png')}}" class="logo_download_app" />
+                    <img src="{{asset('./img/webp/appstore.webp')}}" class="logo_download_app" />
                 </a>
             </div>
             <p class="text-center">Tinggalkan alamat e-mail Anda untuk mendapatkan berita terbaru dari NORAPOS</p>
@@ -503,7 +503,7 @@
 
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
     <script>
          AOS.init();
     </script>

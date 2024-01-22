@@ -337,7 +337,7 @@
                 </div>
                 <div class="col-md-6 mb-2" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/TAB-10.png')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/Tab-10.png')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 10.4" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>
@@ -356,7 +356,7 @@
                 </div>
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/TAB-8.png')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/Tab-8.png')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 8" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>

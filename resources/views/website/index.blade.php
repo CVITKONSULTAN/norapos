@@ -266,7 +266,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 text-center" data-aos="fade-up"  data-aos-duration="2000">
-                    <img src="{{asset('img/webp/mockup-multi-device.webp')}}" class="img-fluid" />
+                    <img src="{{asset('img/webp/mockup-multi-device.webp')}}" class="img-fluid" alt="{{env('APP_TITLE')}}" />
                     <h3 class="text-center keterangan_feature">Aplikasi NORAPOS</h3>
                 </div>
                 <div class="col-md-6 body_content" data-aos="fade-up"  data-aos-duration="2000">
@@ -294,7 +294,7 @@
         <div class="row justify-content-center my-4">
             @foreach ($payment_channel->where('type','main') as $item)
                 <div class="col-2 mt-2">
-                    <img class="img-fluid" src="{{$item['image']}}" />
+                    <img class="img-fluid" src="{{$item['image']}}" alt="{{env('APP_TITLE')}}" />
                 </div>
             @endforeach
         </div>
@@ -302,7 +302,7 @@
         <div class="row justify-content-center my-4">
             @foreach ($payment_channel->where('type','ewallet') as $item)
                 <div class="col-2 mt-2 text-center">
-                    <img class="img-fluid" src="{{$item['image']}}" />
+                    <img class="img-fluid" src="{{$item['image']}}" alt="{{env('APP_TITLE')}}" />
                 </div>
             @endforeach
         </div>
@@ -319,7 +319,7 @@
             <div class="row mt-5">
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/webp/MPOS-1.webp')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/MPOS-1.webp')}}" alt="{{env('APP_TITLE')}}" />
                         <ul class="text-start mt-3">
                             <li>Android 10.0</li>
                             <li>Wifi, Bluetooth, Camera</li>
@@ -337,7 +337,7 @@
                 </div>
                 <div class="col-md-6 mb-2" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/webp/Tab-10.webp')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/Tab-10.webp')}}" alt="{{env('APP_TITLE')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 10.4" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>
@@ -356,7 +356,7 @@
                 </div>
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/webp/Tab-8.webp')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/Tab-8.webp')}}" alt="{{env('APP_TITLE')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 8" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>
@@ -374,7 +374,7 @@
                 </div>
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
-                        <img class="img-fluid img_product" src="{{asset('./img/webp/dual-platinum.webp')}}" />
+                        <img class="img-fluid img_product" src="{{asset('./img/webp/dual-platinum.webp')}}" alt="{{env('APP_TITLE')}}" />
                         <ul class="text-start mt-3">
                             <li>Screen 8" (Touchscreen)</li>
                             <li>Stand Tablet 360°</li>
@@ -441,7 +441,7 @@
         <h1 class="text-center" data-aos="fade-up"  data-aos-duration="2000">Mencatat Seluruh Transaksi anda dengan mudah tanpa ribet dengan ratusan fitur canggih</h1>
         <div class="row">
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
-                <img class="img-fluid" src="{{asset('./img/webp/feature_2_new.webp')}}" />
+                <img class="img-fluid" src="{{asset('./img/webp/feature_2_new.webp')}}" alt="{{env('APP_TITLE')}}" />
             </div>
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
                 <p class="keterangan">Mengefisienkan pengelolaan bisnis, dapat digunakan secara bersamaan dengan bisnis online dan offline anda.
@@ -474,17 +474,17 @@
     </section>
     <footer>
         <div class="container" data-aos="fade-up"  data-aos-duration="2000">
-            <img src="{{asset('./img/webp/logo-white.webp')}}" class="logo_footer my-4" />
+            <img src="{{asset('./img/webp/logo-white.webp')}}" class="logo_footer my-4" alt="{{env('APP_TITLE')}}" />
             <p>
                 Download the Admin App <br/>
                 Manage your POS system and online store, get analysis and insights and keep connected with your customers and staff with the Admin app, available on Android and Apple.
             </p>
             <div class="logo_download_container">
-                <a href="#">
-                    <img src="{{asset('./img/webp/playstore.webp')}}" class="logo_download_app" />
+                <a href="https://play.google.com/">
+                    <img src="{{asset('./img/webp/playstore.webp')}}" class="logo_download_app" alt="{{env('APP_TITLE')}}" />
                 </a>
-                <a href="#">
-                    <img src="{{asset('./img/webp/appstore.webp')}}" class="logo_download_app" />
+                <a href="https://www.apple.com/id/app-store/">
+                    <img src="{{asset('./img/webp/appstore.webp')}}" class="logo_download_app" alt="{{env('APP_TITLE')}}" />
                 </a>
             </div>
             <p class="text-center">Tinggalkan alamat e-mail Anda untuk mendapatkan berita terbaru dari NORAPOS</p>

@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('login',"APIController@login");
+Route::post('forget-password',"APIController@forget_password");
 
 Route::middleware(['Cors'])->group(function () {
     Route::get("data","APIController@data");

@@ -66,6 +66,9 @@ class APIController extends Controller
     function login(Request $request){
         try {
             $user = \App\User::where('username',$request->username)->first();
+            if(empty($user)){
+                return Helper::DataReturn(false,"Akun tidak ditemukan");
+            }
             
             if (!Hash::check($request->password, $user->password)){
                 return Helper::DataReturn(false,"Password anda salah");

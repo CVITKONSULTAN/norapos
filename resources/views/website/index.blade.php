@@ -179,6 +179,10 @@
                 background: #fff;
         }
 
+        div#jumbotron .masuk:hover{
+            color: var(--bs-primary);
+        }
+
 
         @media (min-width: 992px){
             #jumbotron .bg_jumbo{
@@ -256,8 +260,8 @@
                     Mulai bisnis jadi mudah dengan <br />online kapanpun & dari mana saja
                 </p>
                 <div class="button_container">
-                    <button class="btn btn-primary btn-lg mb-2" type="button">Uji Coba Gratis Sekarang!</button>
-                    <button class="btn btn-outline-primary btn-lg mb-2 masuk" type="button">Masuk</button>
+                    <a href="https://wa.me/6285157815452" class="btn btn-primary btn-lg mb-2" type="button">Uji Coba Gratis Sekarang!</a>
+                    <a href="/" class="btn btn-outline-primary btn-lg mb-2 masuk" type="button">Masuk</a>
                 </div>
             </div>
         </section>
@@ -331,7 +335,7 @@
                         <h2 class="price">Rp 3.999.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
                         </div>
                     </div>
                 </div>
@@ -350,7 +354,7 @@
                         <h2 class="price">Rp 5.300.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
                         </div>
                     </div>
                 </div>
@@ -368,7 +372,7 @@
                         <h2 class="price">Rp 4.300.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
                         </div>
                     </div>
                 </div>
@@ -387,53 +391,10 @@
                         <h2 class="price">Rp. ???</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
                         </div>
                     </div>
                 </div>
-                {{-- <div class="col-md-4" data-aos="fade-up"  data-aos-duration="2300">
-                    <div class="card_product">
-                        <h1>BISNIS</h1>
-                        <p>Paket software unlimited</p>
-                        <img class="img-fluid" src="{{asset('./img/product_unlimited.png')}}" />
-                        <ul class="text-start">
-                            <li>1 Unit Tablet 10”</li>
-                            <li>1 Unit Printer Thermal Bluetooth</li>
-                            <li>Lisence software Norapos</li>
-                            <li>Support CS (Pada Jam Kerja)</li>
-                            <li>Gratis Biaya Pengiriman Device</li>
-                            <li>Modul, Pelatihan, Manual book & Buku Panduan Gratis!</li>
-                        </ul>
-                        <p class="disc_price">Rp. 456.789,-</p>
-                        <h2 class="price">Rp. 123.456,-</h2>
-                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
-                        <div class="d-grid">
-                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4" data-aos="fade-up"  data-aos-duration="2000">
-                    <div class="card_product">
-                        <h1>PLATINUM</h1>
-                        <p>Paket software unlimited</p>
-                        <img class="img-fluid" src="{{asset('./img/product_unlimited.png')}}" />
-                        <ul class="text-start">
-                            <li>1 Paket Personal Computer</li>
-                            <li>GRATIS Mouse & keyboard</li>
-                            <li>1 unit printer thermal bluetooth</li>
-                            <li>lisence software norapos</li>
-                            <li>support cS PLATINUM</li>
-                            <li>Gratis Biaya Pengiriman Device</li>
-                            <li>Modul, Pelatihan, Manual book & Buku Panduan Gratis!</li>
-                        </ul>
-                        <p class="disc_price">Rp. 456.789,-</p>
-                        <h2 class="price">Rp. 123.456,-</h2>
-                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
-                        <div class="d-grid">
-                            <button class="product_order btn btn-primary">Daftar Sekarang!</button>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
         </div>
     </section>
@@ -450,7 +411,7 @@
             </div>
         </div>
     </section>
-    <section id="testimony">
+    {{-- <section id="testimony">
         <div class="container body" data-aos="fade-up"  data-aos-duration="2000">
             <h1>TESTIMONIALS</h1>
             <div class="swiper" id="testimoni_list">
@@ -471,11 +432,11 @@
               </div>
         </div>
         <div class="filter_bg"></div>
-    </section>
-    <footer>
+    </section> --}}
+    <footer id="footer">
         <div class="container" data-aos="fade-up"  data-aos-duration="2000">
             <img src="{{asset('./img/webp/logo-white.webp')}}" class="logo_footer my-4" alt="{{env('APP_TITLE')}}" />
-            <p>
+            {{-- <p>
                 Download the Admin App <br/>
                 Manage your POS system and online store, get analysis and insights and keep connected with your customers and staff with the Admin app, available on Android and Apple.
             </p>
@@ -486,7 +447,7 @@
                 <a href="https://www.apple.com/id/app-store/">
                     <img src="{{asset('./img/webp/appstore.webp')}}" class="logo_download_app" alt="{{env('APP_TITLE')}}" />
                 </a>
-            </div>
+            </div> --}}
             <p class="text-center">Tinggalkan alamat e-mail Anda untuk mendapatkan berita terbaru dari NORAPOS</p>
 
             <form class="input-group mb-3">

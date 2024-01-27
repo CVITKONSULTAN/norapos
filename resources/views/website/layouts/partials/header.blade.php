@@ -11,24 +11,24 @@
         <div class="d-flex">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                  <a class="nav-link {{ Request::is('/') ? 'active' : ''}}" href="{{ route('web.index') }}">Beranda</a>
+                  <a href="#" class="nav-link {{ Request::is('/') ? 'active' : ''}}">Beranda</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link {{ Request::is('/web/produk-kami') ? 'active' : ''}}" href="{{ route('web.index') }}">Produk Kami</a>
+                  <a href="#product_list" class="nav-link {{ Request::is('/web/produk-kami') ? 'active' : ''}}">Produk Kami</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link {{ Request::is('/web/tentang-kami') ? 'active' : ''}}" href="{{ route('web.index') }}">Tentang Kami</a>
+                  <a href="#footer" class="nav-link {{ Request::is('/web/tentang-kami') ? 'active' : ''}}" >Tentang Kami</a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                   <a class="nav-link {{ Request::is('/web/blog') ? 'active' : ''}}" href="{{ route('web.index') }}">Blog</a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
-                  <a class="btn btn-primary px-lg-5 mx-lg-1 {{ Request::is('/web/blog') ? 'active' : ''}}" href="{{ route('web.index') }}">
+                  <a href="/" class="btn btn-primary px-lg-5 mx-lg-1 {{ Request::is('/web/blog') ? 'active' : ''}}" >
                     Login
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="btn btn-outline-primary {{ Request::is('/web/blog') ? 'active' : ''}}" href="{{ route('web.index') }}">
+                  <a href="https://wa.me/6285157815452" class="btn btn-outline-primary {{ Request::is('/web/blog') ? 'active' : ''}}" >
                     Minta Demo
                   </a>
                 </li>

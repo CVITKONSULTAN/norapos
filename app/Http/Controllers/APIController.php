@@ -79,7 +79,7 @@ class APIController extends Controller
     
             return Helper::DataReturn(true,"OK",["token" => $token]);
         } catch (\Throwable $th) {
-            return Helper::DataReturn(false,$th->getMessage());
+            return Helper::DataReturn(false,$th->getMessage(),$request->all());
         }
     }
 }

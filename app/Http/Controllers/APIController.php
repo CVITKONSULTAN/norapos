@@ -64,19 +64,22 @@ class APIController extends Controller
     }
 
     function login(Request $request){
-        
-        $user = \App\User::where('username',$request->username)->first();
-        
-        if (!Hash::check($request->password, $user->password)){
-            return Helper::DataReturn(false,"Password anda salah");
+        try {
+            $user = \App\User::where('username',$request->username)->first();
+            
+            if (!Hash::check($request->password, $user->password)){
+                return Helper::DataReturn(false,"Password anda salah");
+            }
+     
+            $token = Str::random(60);
+     
+            $user->forceFill([
+                'api_token' => hash('sha256', $token),
+            ])->save();
+    
+            return Helper::DataReturn(true,"OK",["token" => $token]);
+        } catch (\Throwable $th) {
+            return Helper::DataReturn(false,$th->getMessage());
         }
- 
-        $token = Str::random(60);
- 
-        $user->forceFill([
-            'api_token' => hash('sha256', $token),
-        ])->save();
-
-        return Helper::DataReturn(true,"OK",["token" => $token]);
     }
 }

@@ -66,9 +66,9 @@ class APIController extends Controller
     function login(Request $request){
         
         $user = \App\User::where('username',$request->username)->first();
-
+        
         if (!Hash::check($request->password, $user->password)){
-            Helper::DataReturn(false,"Password anda salah");
+            return Helper::DataReturn(false,"Password anda salah");
         }
  
         $token = Str::random(60);

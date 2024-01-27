@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Str;
+use Hash;
+
+use App\Helpers\Helper;
 
 class APIController extends Controller
 {
@@ -57,5 +61,22 @@ class APIController extends Controller
         }
 
         return $collection;
+    }
+
+    function login(Request $request){
+        
+        $user = \App\User::where('username',$request->username)->first();
+
+        if (!Hash::check($request->password, $user->password)){
+            Helper::DataReturn(false,"Password anda salah");
+        }
+ 
+        $token = Str::random(60);
+ 
+        $user->forceFill([
+            'api_token' => hash('sha256', $token),
+        ])->save();
+
+        return Helper::DataReturn(true,"OK",["token" => $token]);
     }
 }

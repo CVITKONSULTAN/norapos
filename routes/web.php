@@ -30,7 +30,7 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
 });
 
 Route::get('/command', function () {
-    // Artisan::call('migrate');
+    Artisan::call('migrate');
     // Artisan::call('make:controller MultiDomainController');
     // Artisan::call('migrate:rollback');
     // Artisan::call('make:model Blog -m');

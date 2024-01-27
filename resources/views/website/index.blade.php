@@ -127,6 +127,9 @@
             font-weight: 400;
             margin-top: 7rem;
         }
+        section#feature_2 h1{
+            font-size: 14pt;
+        }
         section#feature_2{
             padding-top: 3rem;
             /* padding-bottom: 3rem; */
@@ -280,7 +283,7 @@
                     <ul class="mt-5">
                         <li>Fitur lengkap dan terintegrasi</li>
                         <li>Pembukuan & Laporan mudah dipahami (realtime)</li>
-                        <li>Sinkronisasi otomatis (SmartSync)</li>
+                        {{-- <li>Sinkronisasi otomatis (SmartSync)</li> --}}
                         <li>Transaksi cepat</li>
                         <li>Mudah digunakan (user friendly)</li>
                         <li>Instalasi mudah dan praktis</li>
@@ -335,7 +338,7 @@
                         <h2 class="price">Rp 3.999.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
                         </div>
                     </div>
                 </div>
@@ -354,7 +357,7 @@
                         <h2 class="price">Rp 5.300.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
                         </div>
                     </div>
                 </div>
@@ -372,11 +375,11 @@
                         <h2 class="price">Rp 4.300.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
+                {{-- <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
                     <div class="card_product">
                         <img class="img-fluid img_product" src="{{asset('./img/webp/dual-platinum.webp')}}" alt="{{env('APP_TITLE')}}" />
                         <ul class="text-start mt-3">
@@ -386,20 +389,19 @@
                             <li>Printer Thermal</li>
                             <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
                         </ul>
-                        {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
                         <h2 class="offer_text">PENAWARAN TERBATAS</h2>
                         <h2 class="price">Rp. ???</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
                         <div class="d-grid">
-                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Daftar Sekarang!</a>
+                            <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>
     <section id="feature_2" class="container">
-        <h1 class="text-center" data-aos="fade-up"  data-aos-duration="2000">Mencatat Seluruh Transaksi anda dengan mudah tanpa ribet dengan ratusan fitur canggih</h1>
+        <h1 class="text-center head" data-aos="fade-up"  data-aos-duration="2000">Mencatat Seluruh Transaksi anda dengan mudah tanpa ribet dengan ratusan fitur canggih</h1>
         <div class="row">
             <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
                 <img class="img-fluid" src="{{asset('./img/webp/feature_2_new.webp')}}" alt="{{env('APP_TITLE')}}" />

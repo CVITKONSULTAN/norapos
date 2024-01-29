@@ -246,5 +246,24 @@ class APIController extends Controller
         ];
     }
 
+    function recreate_token(Request $request){
+
+        $token = $request->token;
+        $api_token = hash('sha256', $token);
+        $user = \App\User::where('api_token',$api_token)->first();
+        
+        if(empty($user)){
+            return Helper::DataReturn(false,"Akun tidak ditemukan");
+        }
+
+        $token = Str::random(60);
+     
+        $user->forceFill([
+            'api_token' => hash('sha256', $token),
+        ])->save();
+
+        return Helper::DataReturn(true,"OK",["token" => $token]);        
+    }
+
 
 }

@@ -11,16 +11,17 @@ use DB;
 
 use App\Helpers\Helper;
 
-use App\BusinessLocation;
-
 use App\Charts\CommonChart;
+
+use App\BusinessLocation;
 use App\Currency;
 use App\Transaction;
-use App\Utils\BusinessUtil;
+use App\VariationLocationDetails;
 
+use App\Utils\BusinessUtil;
+use App\Utils\ProductUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
-use App\VariationLocationDetails;
 use App\Utils\Util;
 
 class APIController extends Controller
@@ -44,12 +45,14 @@ class APIController extends Controller
         BusinessUtil $businessUtil,
         TransactionUtil $transactionUtil,
         ModuleUtil $moduleUtil,
-        Util $commonUtil
+        Util $commonUtil,
+        ProductUtil $productUtil
     ) {
         $this->businessUtil = $businessUtil;
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
+        $this->productUtil = $productUtil;
     }
 
     public function data(Request $request)
@@ -251,7 +254,7 @@ class APIController extends Controller
         $token = $request->token;
         $api_token = hash('sha256', $token);
         $user = \App\User::where('api_token',$api_token)->first();
-        
+
         if(empty($user)){
             return Helper::DataReturn(false,"Akun tidak ditemukan");
         }
@@ -263,6 +266,43 @@ class APIController extends Controller
         ])->save();
 
         return Helper::DataReturn(true,"OK",["token" => $token]);        
+    }
+
+    /**
+     * Retrieves products list.
+     *
+     * @param  string  $q
+     * @param  boolean  $check_qty
+     *
+     * @return JSON
+     */
+    public function getProducts()
+    {
+        $business = request()->user()->business;
+        $business_id = $business->id;
+        
+        $search_term = request()->input('term', '');
+        $location_id = request()->input('location_id', null);
+        $check_qty = request()->input('check_qty', false);
+        $price_group_id = request()->input('price_group', null);
+        $not_for_selling = request()->get('not_for_selling', null);
+        $price_group_id = request()->input('price_group', '');
+        $product_types = request()->get('product_types', []);
+
+        $search_fields = request()->get('search_fields', ['name', 'sku']);
+        if (in_array('sku', $search_fields)) {
+            $search_fields[] = 'sub_sku';
+        }
+
+        $result = $this->productUtil->filterProduct($business_id, $search_term, $location_id, $not_for_selling, $price_group_id, $product_types, $search_fields, $check_qty);
+
+        if(env("APP_LOCALE") === "id"){
+            foreach ($result as $key => $value) {
+                $result[$key]["selling_price"] = number_format($value->selling_price,0,",",".");
+            }
+        }
+
+        return $result;
     }
 
 

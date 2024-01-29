@@ -18,8 +18,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware'=>'auth:api'],function(){
+    
     Route::post('/home/get-totals', 'APIController@getTotals');
     Route::post('/home/chart', 'APIController@getChart');
+
+    Route::post('/products/list', 'APIController@getProducts');
 });
 
 Route::post('login',"APIController@login");

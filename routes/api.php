@@ -17,6 +17,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['middleware'=>'auth:api'],function(){
+    Route::post('/home/get-totals', 'APIController@getTotals');
+    Route::post('/home/chart', 'APIController@getChart');
+});
+
 Route::post('login',"APIController@login");
 Route::post('forget-password',"APIController@forget_password");
 

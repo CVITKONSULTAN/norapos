@@ -501,7 +501,9 @@
                             <p>Tablet Stand 360°</p>
                         </div>
                     </div>
-                    <a href="https://wa.me/6285157815452" class="btn btn-primary btn-lg mb-2" type="button">Hubungi CS Kami Untuk Perangkat Lainnya</a>
+                    <div class="d-grid">
+                        <a href="https://wa.me/6285157815452" class="btn btn-primary btn-lg mb-2" type="button">Hubungi CS Kami Untuk Perangkat Lainnya</a>
+                    </div>
                 </div>
             </div>
         </div>

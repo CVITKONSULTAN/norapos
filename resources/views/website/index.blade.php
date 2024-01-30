@@ -12,8 +12,10 @@
         #jumbotron{
             background: url("./img/webp/bg-jumbotron.webp");
         }
-        #jumbotron .bg_jumbo h1{
-            color: var(--bs-primary);
+        #jumbotron .bg_jumbo h1,#jumbotron .bg_jumbo p{
+            font-weight: 600;
+            /* color: var(--bs-primary); */
+            color: #FFF;
         }
         #jumbotron .bg_jumbo{
                 background-color: #6312ae35;
@@ -224,6 +226,15 @@
         }
 
         @media (max-width: 992px){
+            #jumbotron {
+                background: url(./img/webp/background_mobile.webp);
+                background-position: 20% 70%;
+                background-size: 120% 100%;
+                background-repeat: no-repeat;
+            }
+            #jumbotron .bg_jumbo{
+                padding-top: 5rem;
+            }
             section#cta_1 .quotes {
                 font-size: 12pt;
                 margin: 1rem auto !important;
@@ -278,6 +289,25 @@
             section#product_list h1{
                 font-size: 14pt;
             }
+            section#feature_2 h5.disc_price{
+                font-weight: 600;
+                color: #383636;
+                text-decoration-line: line-through;
+                font-size: 18pt !important;
+            }
+            section#feature_2 h5.price{
+                color: #D71920;
+                font-weight: 700;
+                font-size: 20pt !important;
+            }
+            section#feature_2 p.ppn{
+                font-size: 10pt;
+            }
+            section#feature_2 h5.promo_text{
+                color: #267933;
+                font-size: 15pt;
+                font-weight: 700;
+            }
         }
 
     </style>
@@ -287,9 +317,10 @@
     <div class="bg-body-tertiary rounded-3" id="jumbotron">
         <section id="head" class="bg_jumbo">
             <div class="container-fluid py-5" data-aos="fade-up"  data-aos-duration="2000">
-                <h1 class="display-5 fw-bold">NAIK KAN OMSET <br/>& PROFIT BISNIS ANDA</h1>
+                {{-- <h1 class="display-5 fw-bold">NAIK KAN OMSET <br/>& PROFIT BISNIS ANDA</h1> --}}
+                <h1 class="display-5 fw-bold">Apapun bisnis anda.<br/>NORAPOS solusinya!</h1>
                 <p class="col-md-8 fs-5 py-5">
-                    Mulai bisnis jadi mudah dengan <br />online kapanpun & dari mana saja
+                    Mulai bisnis jadi mudah <br/>kapanpun, dari mana saja.
                 </p>
                 <div class="button_container">
                     <a href="https://wa.me/6285157815452" class="btn btn-primary btn-lg mb-2" type="button">Uji Coba Gratis Sekarang!</a>
@@ -303,11 +334,9 @@
             <div class="row">
                 <div class="col-md-12">
                     <h1 class="text-center">Kelola usaha offline Anda dengan Aplikasi Kasir NORAPOS</h1>
-                </div>
-                <div class="col-md-6">
-                    <img src="{{asset("./img/webp/feature_1_revisi.webp")}}" class="img-fluid" alt="{{env('APP_TITLE')}}" />
-                </div>
-                <div class="col-md-6">
+                    <div class="text-center">
+                        <img src="{{asset("./img/webp/feature_1_revisi.webp")}}" class="img-fluid" alt="{{env('APP_TITLE')}}" />
+                    </div>
                     <p class="text-center">Anti repot! Anti ribet! Transaksi mudah dan cepat. Cukup melalui satu perangkat, Anda dapat melakukan pencatatan transaksi secara realtime, menerima pembayaran digital hingga mencetak nota dengan praktis, dan portable.</p>
                 </div>
             </div>
@@ -380,9 +409,9 @@
                         {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
                         {{-- <h2 class="price">Rp 3.999.000,-</h2> --}}
                         {{-- <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
-                        <div class="d-grid">
+                        {{-- <div class="d-grid">
                             <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="col-md-6 mb-2" data-aos="fade-up"  data-aos-duration="2500">
@@ -400,9 +429,9 @@
                         {{-- <h2 class="offer_text">PENAWARAN TERBATAS</h2>
                         <h2 class="price">Rp 5.300.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
-                        <div class="d-grid">
+                        {{-- <div class="d-grid">
                             <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
@@ -419,9 +448,9 @@
                         {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
                         {{-- <h2 class="price">Rp 4.300.000,-</h2>
                         <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
-                        <div class="d-grid">
+                        {{-- <div class="d-grid">
                             <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 {{-- <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2500">
@@ -456,11 +485,11 @@
                             <p>Printer Thermal</p>
                         </div>
                         <div class="col-6 text-center">
-                            <img class="img-fluid" src="{{asset("./img/webp/Group_5.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_6.webp")}}" alt="{{env('APP_TITLE')}}" />
                             <p>Barcode<br/>Scanner</p>
                         </div>
                         <div class="col-6 text-center">
-                            <img class="img-fluid" src="{{asset("./img/webp/Group_6.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_5.webp")}}" alt="{{env('APP_TITLE')}}" />
                             <p>Mobile POS<br/>(Support NFC)</p>
                         </div>
                         <div class="col-6 text-center">
@@ -472,6 +501,7 @@
                             <p>Tablet Stand 360°</p>
                         </div>
                     </div>
+                    <a href="https://wa.me/6285157815452" class="btn btn-primary btn-lg mb-2" type="button">Hubungi CS Kami Untuk Perangkat Lainnya</a>
                 </div>
             </div>
         </div>
@@ -510,6 +540,12 @@
                         src="{{asset('./img/webp/feature_2_new.webp')}}" 
                         alt="{{env('APP_TITLE')}}"
                     />
+                    <div>
+                        <h5 class="disc_price">Rp499.000,- /bulan</h5>
+                        <h5 class="promo_text">DISKON LAUNCHING 68%</h5>
+                        <h5 class="price">Rp159.680,- /bulan</h5>
+                        <p class="ppn">Harga sudah termasuk Pajak dan PPN 11%</p>
+                    </div>
                     <ul class="text-start mt-3">
                         <li>Aplikasi Kasir Digital</li>
                         <li>Manajemen Stok / Produk (Tersedia Fitur Upload Masal)</li>
@@ -557,6 +593,11 @@
     <footer id="footer">
         <div class="container" data-aos="fade-up"  data-aos-duration="2000">
             <img src="{{asset('./img/webp/logo-white.webp')}}" class="logo_footer my-4" alt="{{env('APP_TITLE')}}" />
+            <p class="text-start">
+                Jl. Tanjung Raya 2, Parit Mayor. Pontianak<br />
+                Kalimantan Barat. Indonesia<br/>
+                Kontak CS Kami WA : 0851-5781-5452
+            </p>
             {{-- <p>
                 Download the Admin App <br/>
                 Manage your POS system and online store, get analysis and insights and keep connected with your customers and staff with the Admin app, available on Android and Apple.
@@ -569,7 +610,7 @@
                     <img src="{{asset('./img/webp/appstore.webp')}}" class="logo_download_app" alt="{{env('APP_TITLE')}}" />
                 </a>
             </div> --}}
-            <p class="text-center">Tinggalkan alamat e-mail Anda untuk mendapatkan berita terbaru dari NORAPOS</p>
+            <p class="text-start">Tinggalkan alamat e-mail Anda untuk mendapatkan berita terbaru dari NORAPOS</p>
 
             <form class="input-group mb-3">
                 @csrf
@@ -587,7 +628,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
     <script>
-         AOS.init();
+        AOS.init();
     </script>
     <script type="module">
         import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs'
@@ -606,6 +647,6 @@
                 }
             });
         });
-      
+        
     </script>
 @endpush

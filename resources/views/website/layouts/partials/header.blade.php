@@ -1,7 +1,7 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar fixed-top navbar-expand-lg" id="navbar_header">
     <div class="container-fluid">
       <a class="navbar-brand" href="{{route('web.index')}}">
-        <img src="/img/logo.svg" alt="{{env('APP_NAME')}}" />
+        <img id="logo_img" src="/img/logo.svg" alt="{{env('APP_NAME')}}" />
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -9,14 +9,14 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <div class="navbar-nav me-auto mb-2 mb-lg-0"></div>
         <div class="d-flex">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navItemContainer">
+                <li class="nav-item line">
                   <a href="#" class="nav-link {{ Request::is('/') ? 'active' : ''}}">Beranda</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item line">
                   <a href="#product_list" class="nav-link {{ Request::is('/web/produk-kami') ? 'active' : ''}}">Produk Kami</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item line">
                   <a href="#footer" class="nav-link {{ Request::is('/web/tentang-kami') ? 'active' : ''}}" >Tentang Kami</a>
                 </li>
                 {{-- <li class="nav-item">
@@ -32,7 +32,8 @@
                     Minta Demo
                   </a>
                 </li>
-                <li class="nav-item dropdown me-md-5">
+                <li class="nav-item dropdown me-md-5 bahasa_container">
+                  <div class="label">Bahasa</div>
                   <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     (ID)
                   </a>

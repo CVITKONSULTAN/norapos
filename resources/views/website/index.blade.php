@@ -74,7 +74,7 @@
         }
         section#product_list{
             background: rgba(165, 58, 254, 0.13);
-            padding-top: 3rem;
+            /* padding-top: 3rem; */
             padding-bottom: 3rem;
         }
         section#product_list .card_product h1 {
@@ -125,7 +125,11 @@
             text-align: right;
             font-size: 22pt;
             font-weight: 400;
-            margin-top: 7rem;
+            /* margin-top: 7rem; */
+        }
+        section#feature_2 h5{
+            font-size: 12pt;
+            text-align: center;
         }
         section#feature_2 h1{
             font-size: 14pt;
@@ -185,6 +189,30 @@
         div#jumbotron .masuk:hover{
             color: var(--bs-primary);
         }
+        div#pelengkap h5{
+            font-size: 12pt;
+            padding: 1rem 0;
+        }
+        div#pelengkap img{
+            margin-bottom: 0.5rem;
+        }
+
+        /* section#feature2 div.card_product_main{ */
+        div.card_product_main{
+            border-radius: 20px;
+            border: 2px solid rgba(99, 18, 174, 0.20);
+            background: rgba(99, 18, 174, 0.10);
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        div.card_product_main ul li {
+            list-style-image: url('./img/webp/checkedPurple.svg');
+            padding-top: 10px;
+            padding-left: 10px;
+        }
 
 
         @media (min-width: 992px){
@@ -194,6 +222,7 @@
                 padding-left: 10rem;
             }
         }
+
         @media (max-width: 992px){
             section#cta_1 .quotes {
                 font-size: 12pt;
@@ -272,6 +301,17 @@
     <section id="feature">
         <div class="container">
             <div class="row">
+                <div class="col-md-12">
+                    <h1 class="text-center">Kelola usaha offline Anda dengan Aplikasi Kasir NORAPOS</h1>
+                </div>
+                <div class="col-md-6">
+                    <img src="{{asset("./img/webp/feature_1_revisi.webp")}}" class="img-fluid" alt="{{env('APP_TITLE')}}" />
+                </div>
+                <div class="col-md-6">
+                    <p class="text-center">Anti repot! Anti ribet! Transaksi mudah dan cepat. Cukup melalui satu perangkat, Anda dapat melakukan pencatatan transaksi secara realtime, menerima pembayaran digital hingga mencetak nota dengan praktis, dan portable.</p>
+                </div>
+            </div>
+            {{-- <div class="row">
                 <div class="col-md-6 text-center" data-aos="fade-up"  data-aos-duration="2000">
                     <img src="{{asset('img/webp/mockup-multi-device.webp')}}" class="img-fluid" alt="{{env('APP_TITLE')}}" />
                     <h3 class="text-center keterangan_feature">Aplikasi NORAPOS</h3>
@@ -283,7 +323,7 @@
                     <ul class="mt-5">
                         <li>Fitur lengkap dan terintegrasi</li>
                         <li>Pembukuan & Laporan mudah dipahami (realtime)</li>
-                        {{-- <li>Sinkronisasi otomatis (SmartSync)</li> --}}
+                        <li>Sinkronisasi otomatis (SmartSync)</li>
                         <li>Transaksi cepat</li>
                         <li>Mudah digunakan (user friendly)</li>
                         <li>Instalasi mudah dan praktis</li>
@@ -293,9 +333,10 @@
                         <li>Pantau bisnis anda kapanpun dan dari mana saja</li>
                     </ul>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </section>
+{{-- 
     <section id="payment_channel" class="container" data-aos="fade-up"  data-aos-duration="2000">
         <h1 class="text-center">Menerima Semua Jenis Pembayaran</h1>
         <div class="row justify-content-center my-4">
@@ -320,6 +361,7 @@
         </div>
         <div class="filter_bg"></div>
     </section>
+--}}
     <section id="product_list">
         <div class="container">
             <h1 class="text-center" data-aos="fade-up"  data-aos-duration="2000">Pilih perangkat keras POS yang modern, dan sesuai <br/> dengan kebutuhan bisnis anda</h1>
@@ -332,11 +374,12 @@
                             <li>Wifi, Bluetooth, Camera</li>
                             <li>Support Fitur NFC</li>
                             <li>Support 58x40mm Paper</li>
-                            <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
+                            {{-- <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li> --}}
+                            <li><b>NORAPOS 12 BULAN - PRIME+</b></li>
                         </ul>
                         {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
-                        <h2 class="price">Rp 3.999.000,-</h2>
-                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
+                        {{-- <h2 class="price">Rp 3.999.000,-</h2> --}}
+                        {{-- <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
                         <div class="d-grid">
                             <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
                         </div>
@@ -350,12 +393,13 @@
                             <li>Stand Tablet 360°</li>
                             <li>Cash Drawer</li>
                             <li>Printer Thermal</li>
-                            <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
+                            {{-- <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li> --}}
+                            <li><b>NORAPOS 12 BULAN - PRIME+</b></li>
                         </ul>
                         {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
-                        <h2 class="offer_text">PENAWARAN TERBATAS</h2>
+                        {{-- <h2 class="offer_text">PENAWARAN TERBATAS</h2>
                         <h2 class="price">Rp 5.300.000,-</h2>
-                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
+                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
                         <div class="d-grid">
                             <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
                         </div>
@@ -369,11 +413,12 @@
                             <li>Stand Tablet 360°</li>
                             <li>Cash Drawer</li>
                             <li>Printer Thermal</li>
-                            <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li>
+                            {{-- <li><b>UNLIMITED FITUR NORAPOS 12 BULAN</b></li> --}}
+                            <li><b>NORAPOS 12 BULAN - PRIME+</b></li>
                         </ul>
                         {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
-                        <h2 class="price">Rp 4.300.000,-</h2>
-                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p>
+                        {{-- <h2 class="price">Rp 4.300.000,-</h2>
+                        <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
                         <div class="d-grid">
                             <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
                         </div>
@@ -398,18 +443,92 @@
                     </div>
                 </div> --}}
             </div>
+            <div id="pelengkap" data-aos="fade-up"  data-aos-duration="2500">
+                <h5 class="text-center">Pelengkap kasir untuk memudahkan transaksi penjualan anda</h5>
+                <div class="container">
+                    <div class="row ">
+                        <div class="col-6 text-center">
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_3.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <p>Cash Drawer<br/>(Laci Kasir Otomatis)</p>
+                        </div>
+                        <div class="col-6 text-center">
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_4.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <p>Printer Thermal</p>
+                        </div>
+                        <div class="col-6 text-center">
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_5.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <p>Barcode<br/>Scanner</p>
+                        </div>
+                        <div class="col-6 text-center">
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_6.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <p>Mobile POS<br/>(Support NFC)</p>
+                        </div>
+                        <div class="col-6 text-center">
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_7.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <p>Tablet Galaxy</p>
+                        </div>
+                        <div class="col-6 text-center">
+                            <img class="img-fluid" src="{{asset("./img/webp/Group_8.webp")}}" alt="{{env('APP_TITLE')}}" />
+                            <p>Tablet Stand 360°</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     <section id="feature_2" class="container">
         <h1 class="text-center head" data-aos="fade-up"  data-aos-duration="2000">Mencatat Seluruh Transaksi anda dengan mudah tanpa ribet dengan ratusan fitur canggih</h1>
         <div class="row">
-            <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
-                <img class="img-fluid" src="{{asset('./img/webp/feature_2_new.webp')}}" alt="{{env('APP_TITLE')}}" />
+            <div class="col-md-12" data-aos="fade-up"  data-aos-duration="2000">
+                {{-- <img class="img-fluid" src="{{asset('./img/webp/feature_2_new.webp')}}" alt="{{env('APP_TITLE')}}" /> --}}
+                <div class="text-center">
+                    <img class="img-fluid" src="{{asset('./img/webp/feature_2_revisi.webp')}}" alt="{{env('APP_TITLE')}}" />
+                </div>
+                <h5>Semua menjadi lebih mudah dan dapat di akses menggunakan semua perangkat favorit anda.</h5>
+                <p class="keterangan">
+                    Mengefisienkan pengelolaan bisnis offline anda. Kemanapun anda pergi tetap dapat terhubung dengan NORAPOS dengan aplikasi Android dan iOS gratis.
+                </p>
+                <div class="d-grid gap-1 mb-2">
+                    <a href="https://wa.me/6285157815452" class="btn btn-primary btn-lg mb-2" type="button">Dapatkan Penawaran Sekarang!</a>
+                    <a href="/" class="btn btn-outline-primary btn-lg mb-2 masuk" type="button">Minta Demo Gratis!</a>
+                </div>
             </div>
-            <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
-                <p class="keterangan">Mengefisienkan pengelolaan bisnis, dapat digunakan secara bersamaan dengan bisnis online dan offline anda.
+            {{-- <div class="col-md-6" data-aos="fade-up"  data-aos-duration="2000">
+                <p class="keterangan">
+                    Mengefisienkan pengelolaan bisnis, dapat digunakan secara bersamaan dengan bisnis online dan offline anda.
                     Kemanapun anda pergi tetap dapat terhubung dengan NORAPOS dengan aplikasi Android dan iOS gratis.
-                    Semua menjadi lebih mudah dan dapat di akses menggunakan semua perangkat favorit anda.</p>
+                    Semua menjadi lebih mudah dan dapat di akses menggunakan semua perangkat favorit anda.
+                </p>
+            </div> --}}
+            <div class="col-md-12">
+                <div class="card_product_main">
+                    <h5>Smart POS</h5>
+                    <h2>NORA PRIME+</h2>
+                    <p>Unlimited! Tanpa batasan fitur diberbagai perangkat favorite anda</p>
+                    <img 
+                        class="img-fluid img_product" 
+                        src="{{asset('./img/webp/feature_2_new.webp')}}" 
+                        alt="{{env('APP_TITLE')}}"
+                    />
+                    <ul class="text-start mt-3">
+                        <li>Aplikasi Kasir Digital</li>
+                        <li>Manajemen Stok / Produk (Tersedia Fitur Upload Masal)</li>
+                        <li>Laporan Penjualan harian, bulanan, tahun</li>
+                        <li>Laporan transaksi (Dilengkapi chart/grafik)</li>
+                        <li>Manajemen Promo</li>
+                        <li>Manajemen Karyawan (Tak Terbatas)</li>
+                        <li>Menu Digital</li>
+                        <li>Manajemen Agen / Pemasok</li>
+                        <li>Menyimpan database pelanggan</li>
+                        <li>Support Lainnya (Training da panduan pengguna, whatsapp support, call center support)</li>
+                    </ul>
+                    {{-- <p class="disc_price">Rp. 456.789,-</p> --}}
+                    {{-- <h2 class="price">Rp 3.999.000,-</h2> --}}
+                    {{-- <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
+                    <div class="d-grid">
+                        <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

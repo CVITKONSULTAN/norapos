@@ -562,7 +562,7 @@
                     {{-- <h2 class="price">Rp 3.999.000,-</h2> --}}
                     {{-- <p class="hint">Harga sudah termasuk Pajak dan PPN 11%</p> --}}
                     <div class="d-grid">
-                        <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Dapatkan Sekarang!</a>
+                        <a href="https://wa.me/6285157815452" class="product_order btn btn-primary">Hubungi CS Kami Sekarang!</a>
                     </div>
                 </div>
             </div>

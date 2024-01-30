@@ -166,6 +166,7 @@
         $(window).scroll(function (event) {
             const scroll = $(window).scrollTop();
             const widthScreen = $(window).width();
+            collapsed = $(this).hasClass("collapsed");
             if(scroll > 10){
                 navbarElm.addClass("scrolled");
                 if(widthScreen <= 992){

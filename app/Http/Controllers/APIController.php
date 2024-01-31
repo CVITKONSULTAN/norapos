@@ -305,5 +305,21 @@ class APIController extends Controller
         return $result;
     }
 
+    function getBusiness(){
+        $user = request()->user();
+        $business = $user->business ?? false;
+        if($business){
+            $business = $business->toArray();
+            $business['user'] = $user->toArray();
+            $business['user']['profile_photo'] = $user->media ?? "";
+            unset(
+                $business['user']['business'],
+                $business['user']['bank_details'],
+                $business['user']['api_token'],
+            );
+        }
+        return $business;
+    }
+
 
 }

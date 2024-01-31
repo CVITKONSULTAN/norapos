@@ -21,6 +21,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     
     Route::post('/home/get-totals', 'APIController@getTotals');
     Route::post('/home/chart', 'APIController@getChart');
+    Route::post('/business', 'APIController@getBusiness');
 
     Route::post('/products/list', 'APIController@getProducts');
 });

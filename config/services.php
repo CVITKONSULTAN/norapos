@@ -37,5 +37,10 @@ return [
         'api_key' => env('SENDGRID_API_KEY'),
         'transport' => 'sendgrid',
     ],
+    'google' => [
+        'client_id' => '478007783958-e06geeaog19lnrfr5su4r8rijdd4h4do.apps.googleusercontent.com',
+        'client_secret' => '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',
+        'redirect' => 'https://itkoskw.itkonsultan.co.id/auth/google/callback',
+    ],
 
 ];

@@ -15,6 +15,10 @@ include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
 
+// if( env('APP_DEBUG') ){
+//     \Debugbar::enable();
+// }
+
 $database_domain = ['beautyproclinic.com'];
 
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
@@ -40,6 +44,11 @@ Route::get('/command', function () {
 
 Route::group(["prefix"=>"web"],function(){
     Route::get("/","Website\WebController@index")->name('web.index');
+});
+
+Route::group(['prefix'=>'auth'],function(){
+    Route::get('/google',"SocialiteController@google")->name('auth.google');
+    Route::get('/google/callback',"SocialiteController@google_callback");
 });
 
 Route::get('/update', "UpdateController@update");

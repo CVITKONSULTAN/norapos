@@ -181,6 +181,8 @@ return [
 
         Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
 
+        Barryvdh\Debugbar\ServiceProvider::class,
+
     ],
 
     /*
@@ -239,5 +241,6 @@ return [
         'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
         'Datatables' => Yajra\DataTables\Facades\DataTables::class,
         'Paystack' => Unicodeveloper\Paystack\Facades\Paystack::class,
+        'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
     ]
 ];

@@ -131,7 +131,7 @@ class APIController extends Controller
     }
 
     function forget_password(Request $request){
-        // try{
+        try{
             $user = \App\User::where('email',$request->email)->first();
             if(empty($user)){
                 return Helper::DataReturn(false,"Akun tidak ditemukan");
@@ -139,9 +139,9 @@ class APIController extends Controller
             $token = Str::random(60);
             $user->sendPasswordResetNotification($token);
             return Helper::DataReturn(true,"Silahkan cek kotak masuk (inbox) email anda");
-        // } catch (\Throwable $th) {
-        //     return Helper::DataReturn(false,$th->getMessage(),$request->all());
-        // }
+        } catch (\Throwable $th) {
+            return Helper::DataReturn(false,$th->getMessage(),$request->all());
+        }
     }
 
     /**

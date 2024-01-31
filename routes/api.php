@@ -27,7 +27,7 @@ Route::group(['middleware'=>'auth:api'],function(){
 
 Route::post('login',"APIController@login");
 Route::post('recreate-token',"APIController@recreate_token");
-Route::post('forget-password',"APIController@forget_password");
+Route::post('forget-password',"APIController@forget_password")->name('api.forget');
 
 Route::middleware(['Cors'])->group(function () {
     Route::get("data","APIController@data");

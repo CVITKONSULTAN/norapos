@@ -30,6 +30,8 @@
         "nwidart/laravel-modules": "5.1.0",
         "pusher/pusher-php-server": "^4.1",
         "razorpay/razorpay": "2.*",
+        "s-ichikawa/laravel-sendgrid-driver": "^2.1",
+        "sendgrid/sendgrid": "^8.1",
         "spatie/flysystem-dropbox": "^1.0",
         "spatie/laravel-activitylog": "^3.2",
         "spatie/laravel-backup": "^5.7",

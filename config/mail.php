@@ -133,4 +133,16 @@ return [
 
     'log_channel' => env('MAIL_LOG_CHANNEL'),
 
+    'mailers' => [
+        'sendgrid' => [
+            'api_key' => env('SENDGRID_API_KEY'),
+            'transport' => 'sendgrid',
+        ],
+    ],
+
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY'),
+        'transport' => 'sendgrid',
+    ],
+
 ];

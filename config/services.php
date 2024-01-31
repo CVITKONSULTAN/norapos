@@ -33,5 +33,9 @@ return [
     'sparkpost' => [
         'secret' => env('SPARKPOST_SECRET'),
     ],
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY'),
+        'transport' => 'sendgrid',
+    ],
 
 ];

@@ -179,6 +179,8 @@ return [
         ConsoleTVs\Charts\ChartsServiceProvider::class,
         App\Providers\DropboxServiceProvider::class,
 
+        Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
+
     ],
 
     /*

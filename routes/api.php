@@ -23,7 +23,10 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::post('/home/chart', 'APIController@getChart');
     Route::post('/business', 'APIController@getBusiness');
 
+    Route::post('/customers', 'APIController@getCustomers');
+    
     Route::post('/products/list', 'APIController@getProducts');
+    Route::post('/products/list', 'APIController@getProductRow');
 });
 
 Route::post('login',"APIController@login");

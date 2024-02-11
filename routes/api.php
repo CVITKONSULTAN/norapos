@@ -27,6 +27,8 @@ Route::group(['middleware'=>'auth:api'],function(){
     
     Route::post('/products/list', 'APIController@getProducts');
     // Route::post('/products/list', 'APIController@getProductRow');
+
+    Route::post('/pos', 'APIController@store_POS');
 });
 
 Route::post('login',"APIController@login");

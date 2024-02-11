@@ -19,12 +19,16 @@ use App\Transaction;
 use App\VariationLocationDetails;
 use App\Contact;
 use App\User;
+use App\Media;
 
 use App\Utils\BusinessUtil;
 use App\Utils\ProductUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
+use App\Utils\CashRegisterUtil;
+use App\Utils\ContactUtil;
+use App\Utils\NotificationUtil;
 
 class APIController extends Controller
 {
@@ -37,6 +41,9 @@ class APIController extends Controller
     protected $transactionUtil;
     protected $moduleUtil;
     protected $commonUtil;
+    protected $cashRegisterUtil;
+    protected $contactUtil;
+    protected $notificationUtil;
 
     /**
      * Create a new controller instance.
@@ -48,13 +55,19 @@ class APIController extends Controller
         TransactionUtil $transactionUtil,
         ModuleUtil $moduleUtil,
         Util $commonUtil,
-        ProductUtil $productUtil
+        ProductUtil $productUtil,
+        ContactUtil $contactUtil,
+        CashRegisterUtil $cashRegisterUtil,
+        NotificationUtil $notificationUtil
     ) {
         $this->businessUtil = $businessUtil;
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
         $this->productUtil = $productUtil;
+        $this->cashRegisterUtil = $cashRegisterUtil;
+        $this->contactUtil = $contactUtil;
+        $this->notificationUtil = $notificationUtil;
     }
 
     public function data(Request $request)
@@ -501,6 +514,294 @@ class APIController extends Controller
 
             $output['success'] = false;
             $output['msg'] = __('lang_v1.item_out_of_stock');
+        }
+
+        return $output;
+    }
+
+    public function store_POS(Request $request)
+    {
+        $input = $request->except('_token');
+        $user = $request->user();
+        $business = request()->user()->business;
+        $business_id = $business->id;
+        $is_direct_sale = false;
+
+        if(!isset($input['location_id']) || empty($input['location_id'])){
+            $input['location_id'] = 0;
+            $location = $business->locations()->first();
+            if(!empty($location))
+            $input['location_id'] = $location->id;
+        }
+
+
+        if (!empty($request->input('is_direct_sale'))) {
+            $is_direct_sale = true;
+        }
+
+        //Check if there is a open register, if no then redirect to Create Register screen.
+        if (!$is_direct_sale && $this->cashRegisterUtil->countOpenedRegister() == 0) {
+            return Helper::DataReturn(false,"Belum ada buka kasir");
+        }
+
+        try {
+
+            //Check Customer credit limit
+            $is_credit_limit_exeeded = $this->transactionUtil->isCustomerCreditLimitExeeded($input);
+
+            if ($is_credit_limit_exeeded !== false) {
+                $credit_limit_amount = $this->transactionUtil->num_f($is_credit_limit_exeeded, true);
+                $output = ['success' => 0,
+                            'msg' => __('lang_v1.cutomer_credit_limit_exeeded', ['credit_limit' => $credit_limit_amount])
+                        ];
+                if (!$is_direct_sale) {
+                    return $output;
+                } else {
+                    return Helper::DataReturn(false,$output["msg"] ?? "");
+                }
+            }
+
+            $input['is_quotation'] = 0;
+            //status is send as quotation from Add sales screen.
+            if ($input['status'] == 'quotation') {
+                $input['status'] = 'draft';
+                $input['is_quotation'] = 1;
+            }
+
+            if (!empty($input['products'])) {
+
+                //Check if subscribed or not, then check for users quota
+                if (!$this->moduleUtil->isSubscribed($business_id)) {
+                    return $this->moduleUtil->expiredResponse(null,1);
+                } elseif (!$this->moduleUtil->isQuotaAvailable('invoices', $business_id)) {
+                    return $this->moduleUtil->quotaExpiredResponse('invoices', $business_id, null);
+                }
+        
+                $user_id = $user->id;
+
+                $discount = [
+                        'discount_type' => $input['discount_type'],
+                        'discount_amount' => $input['discount_amount']
+                ];
+                $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
+
+                DB::beginTransaction();
+
+                if (empty($request->input('transaction_date'))) {
+                    $input['transaction_date'] =  \Carbon::now();
+                } else {
+                    $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
+                }
+                if ($is_direct_sale) {
+                    $input['is_direct_sale'] = 1;
+                }
+
+                //Set commission agent
+                $input['commission_agent'] = !empty($request->input('commission_agent')) ? $request->input('commission_agent') : null;
+
+                // return $business;
+                // $commsn_agnt_setting = $request->session()->get('business.sales_cmsn_agnt');
+                $commsn_agnt_setting = $business->sales_cmsn_agnt;
+
+                if ($commsn_agnt_setting == 'logged_in_user') {
+                    $input['commission_agent'] = $user_id;
+                }
+
+                if (isset($input['exchange_rate']) && $this->transactionUtil->num_uf($input['exchange_rate']) == 0) {
+                    $input['exchange_rate'] = 1;
+                }
+
+                //Customer group details
+                $contact_id = $request->get('contact_id', null);
+                $cg = $this->contactUtil->getCustomerGroup($business_id, $contact_id);
+                $input['customer_group_id'] = (empty($cg) || empty($cg->id)) ? null : $cg->id;
+
+                //set selling price group id
+                $price_group_id = $request->has('price_group') ? $request->input('price_group') : null;
+
+                //If default price group for the location exists
+                $price_group_id = $price_group_id == 0 && $request->has('default_price_group') ? $request->input('default_price_group') : $price_group_id;
+
+                $input['is_suspend'] = isset($input['is_suspend']) && 1 == $input['is_suspend']  ? 1 : 0;
+                if ($input['is_suspend']) {
+                    $input['sale_note'] = !empty($input['additional_notes']) ? $input['additional_notes'] : null;
+                }
+
+                //Generate reference number
+                if (!empty($input['is_recurring'])) {
+                    //Update reference count
+                    $ref_count = $this->transactionUtil->setAndGetReferenceCount('subscription');
+                    $input['subscription_no'] = $this->transactionUtil->generateReferenceNumber('subscription', $ref_count);
+                }
+
+                if (!empty($request->input('invoice_scheme_id'))) {
+                    $input['invoice_scheme_id'] = $request->input('invoice_scheme_id');
+                }
+
+                //Types of service
+                if ($this->moduleUtil->isModuleEnabled('types_of_service')) {
+                    $input['types_of_service_id'] = $request->input('types_of_service_id');
+                    $price_group_id = !empty($request->input('types_of_service_price_group')) ? $request->input('types_of_service_price_group') : $price_group_id;
+                    $input['packing_charge'] = !empty($request->input('packing_charge')) ?
+                    $this->transactionUtil->num_uf($request->input('packing_charge')) : 0;
+                    $input['packing_charge_type'] = $request->input('packing_charge_type');
+                    $input['service_custom_field_1'] = !empty($request->input('service_custom_field_1')) ?
+                    $request->input('service_custom_field_1') : null;
+                    $input['service_custom_field_2'] = !empty($request->input('service_custom_field_2')) ?
+                    $request->input('service_custom_field_2') : null;
+                    $input['service_custom_field_3'] = !empty($request->input('service_custom_field_3')) ?
+                    $request->input('service_custom_field_3') : null;
+                    $input['service_custom_field_4'] = !empty($request->input('service_custom_field_4')) ?
+                    $request->input('service_custom_field_4') : null;
+                }
+
+                $input['selling_price_group_id'] = $price_group_id;
+
+                if ($this->transactionUtil->isModuleEnabled('tables')) {
+                    $input['res_table_id'] = request()->get('res_table_id');
+                }
+                if ($this->transactionUtil->isModuleEnabled('service_staff')) {
+                    $input['res_waiter_id'] = request()->get('res_waiter_id');
+                }
+
+                $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
+
+                $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
+                
+                if (!$is_direct_sale) {
+                    //Add change return
+                    $change_return = $this->dummyPaymentLine;
+                    $change_return['amount'] = $input['change_return'];
+                    $change_return['is_return'] = 1;
+                    $input['payment'][] = $change_return;
+                }
+
+                $is_credit_sale = isset($input['is_credit_sale']) && $input['is_credit_sale'] == 1 ? true : false;
+
+                if (!$transaction->is_suspend && !empty($input['payment']) && !$is_credit_sale) {
+                    $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment']);
+                }
+
+                //Check for final and do some processing.
+                if ($input['status'] == 'final') {
+                    //update product stock
+                    foreach ($input['products'] as $product) {
+                        $decrease_qty = $this->productUtil
+                                    ->num_uf($product['quantity']);
+                        if (!empty($product['base_unit_multiplier'])) {
+                            $decrease_qty = $decrease_qty * $product['base_unit_multiplier'];
+                        }
+
+                        if ($product['enable_stock']) {
+                            $this->productUtil->decreaseProductQuantity(
+                                $product['product_id'],
+                                $product['variation_id'],
+                                $input['location_id'],
+                                $decrease_qty
+                            );
+                        }
+
+                        if ($product['product_type'] == 'combo') {
+                            //Decrease quantity of combo as well.
+                            $this->productUtil
+                                ->decreaseProductQuantityCombo(
+                                    $product['combo'],
+                                    $input['location_id']
+                                );
+                        }
+                    }
+
+                    //Add payments to Cash Register
+                    if (!$is_direct_sale && !$transaction->is_suspend && !empty($input['payment']) && !$is_credit_sale) {
+                        $this->cashRegisterUtil->addSellPayments($transaction, $input['payment']);
+                    }
+
+                    //Update payment status
+                    $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
+
+                    if ($business->enable_rp == 1) {
+                        $redeemed = !empty($input['rp_redeemed']) ? $input['rp_redeemed'] : 0;
+                        $this->transactionUtil->updateCustomerRewardPoints($contact_id, $transaction->rp_earned, 0, $redeemed);
+                    }
+
+                    //Allocate the quantity from purchase and add mapping of
+                    //purchase & sell lines in
+                    //transaction_sell_lines_purchase_lines table
+                    $business_details = $this->businessUtil->getDetails($business_id);
+                    $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+
+                    $business = ['id' => $business_id,
+                                    'accounting_method' => $business->accounting_method,
+                                    'location_id' => $input['location_id'],
+                                    'pos_settings' => $pos_settings
+                                ];
+                    // dd($business,$transaction->sell_lines);
+                    // return $transaction->sell_lines;
+                    $this->transactionUtil->mapPurchaseSell($business, $transaction->sell_lines, 'purchase',true,null,'mobile');
+
+                    //Auto send notification
+                    $this->notificationUtil->autoSendNotification($business_id, 'new_sale', $transaction, $transaction->contact);
+                }
+
+                //Set Module fields
+                if (!empty($input['has_module_data'])) {
+                    $this->moduleUtil->getModuleData('after_sale_saved', ['transaction' => $transaction, 'input' => $input]);
+                }
+
+                Media::uploadMedia($business_id, $transaction, $request, 'documents');
+
+                // activity()
+                // ->performedOn($transaction)
+                // ->log('added');
+
+                // dd('commited');
+                DB::commit();
+
+                if ($request->input('is_save_and_print') == 1) {
+                    $url = $this->transactionUtil->getInvoiceUrl($transaction->id, $business_id);
+                    $output['data'] = $url;
+                    // return redirect()->to($url . '?print_on_load=true');
+                }
+
+                $msg = trans("sale.pos_sale_added");
+                $receipt = '';
+                $invoice_layout_id = $request->input('invoice_layout_id');
+                $print_invoice = false;
+                if (!$is_direct_sale) {
+                    if ($input['status'] == 'draft') {
+                        $msg = trans("sale.draft_added");
+
+                        if ($input['is_quotation'] == 1) {
+                            $msg = trans("lang_v1.quotation_added");
+                            $print_invoice = true;
+                        }
+                    } elseif ($input['status'] == 'final') {
+                        $print_invoice = true;
+                    }
+                }
+
+                if ($transaction->is_suspend == 1 && empty($pos_settings['print_on_suspend'])) {
+                    $print_invoice = false;
+                }
+                
+                if ($print_invoice) {
+                    $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id, null, false, true, $invoice_layout_id);
+                }
+
+                $output = Helper::DataReturn(true,$msg,["receipt" => $receipt]);
+            } else {
+                $output = Helper::DataReturn(false,trans("messages.something_went_wrong"));
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            $msg = trans("messages.something_went_wrong");
+                
+            if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
+                $msg = $e->getMessage();
+            }
+
+            $output = Helper::DataReturn(false,$msg);
         }
 
         return $output;

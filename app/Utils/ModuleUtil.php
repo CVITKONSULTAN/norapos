@@ -180,7 +180,7 @@ class ModuleUtil extends Util
      *
      * @return string
      */
-    public static function expiredResponse($redirect_url = null)
+    public static function expiredResponse($redirect_url = null, $type = 0)
     {
         $response_array = ['success' => 0,
                         'msg' => __(
@@ -190,6 +190,10 @@ class ModuleUtil extends Util
                             ]
                         )
                     ];
+
+        if($type === 1){
+            return $response_array;
+        }
 
         if (request()->ajax()) {
             if (request()->wantsJson()) {
@@ -355,17 +359,24 @@ class ModuleUtil extends Util
      * @param string $type
      * @param int $business_id
      * @param string $redirect_url = null
+     * @param int $type = 0
      *
      * @return \Illuminate\Http\Response
      */
     public function quotaExpiredResponse($type, $business_id, $redirect_url = null)
     {
+        $response_array = ['success' => 0,
+            'msg' => ''
+        ];
         if ($type == 'locations') {
+            $response_array = ['success' => 0,
+                    'msg' => __("superadmin::lang.max_locations")
+                ];
+            if(empty($redirect_url)){
+                return $response_array;
+            }
             if (request()->ajax()) {
                 if (request()->wantsJson()) {
-                    $response_array = ['success' => 0,
-                            'msg' => __("superadmin::lang.max_locations")
-                        ];
                     return $response_array;
                 } else {
                     return view('superadmin::subscription.max_location_modal');
@@ -375,20 +386,27 @@ class ModuleUtil extends Util
             $response_array = ['success' => 0,
                         'msg' => __("superadmin::lang.max_users")
                     ];
+                    if(empty($redirect_url)){
+                        return $response_array;
+                    }
             return redirect($redirect_url)
                     ->with('status', $response_array);
         } elseif ($type == 'products') {
             $response_array = ['success' => 0,
                         'msg' => __("superadmin::lang.max_products")
                     ];
-
+                    if(empty($redirect_url)){
+                        return $response_array;
+                    }
             return redirect($redirect_url)
                     ->with('status', $response_array);
         } elseif ($type == 'invoices') {
             $response_array = ['success' => 0,
                         'msg' => __("superadmin::lang.max_invoices")
                     ];
-
+                    if(empty($redirect_url)){
+                        return $response_array;
+                    }
             if (request()->wantsJson()) {
                 return $response_array;
             } else {

@@ -272,6 +272,9 @@ class TransactionUtil extends Util
                 $uf_quantity = $uf_data ? $this->num_uf($product['quantity']) : $product['quantity'];
                 $uf_item_tax = $uf_data ?$this->num_uf($product['item_tax']) : $product['item_tax'];
                 $uf_unit_price_inc_tax = $uf_data ? $this->num_uf($product['unit_price_inc_tax']) : $product['unit_price_inc_tax'];
+
+                $tax_id = $product['tax_id'] ?? 0;
+
                 $line = [
                     'product_id' => $product['product_id'],
                     'variation_id' => $product['variation_id'],
@@ -281,7 +284,7 @@ class TransactionUtil extends Util
                     'line_discount_type' => !empty($product['line_discount_type']) ? $product['line_discount_type'] : null,
                     'line_discount_amount' => !empty($product['line_discount_amount']) ? $uf_data ? $this->num_uf($product['line_discount_amount']) : $product['line_discount_amount'] : 0,
                     'item_tax' =>  $uf_item_tax / $multiplier,
-                    'tax_id' => $product['tax_id'],
+                    'tax_id' => $tax_id,
                     'unit_price_inc_tax' =>  $uf_unit_price_inc_tax / $multiplier,
                     'sell_line_note' => !empty($product['sell_line_note']) ? $product['sell_line_note'] : '',
                     'sub_unit_id' => !empty($product['sub_unit_id']) ? $product['sub_unit_id'] : null,
@@ -1734,8 +1737,9 @@ class TransactionUtil extends Util
     {
         $scheme_id = BusinessLocation::where('business_id', $business_id)
                     ->where('id', $location_id)
-                    ->first()
-                    ->invoice_scheme_id;
+                    ->first();
+        // dd($scheme_id,$business_id);
+        $scheme_id = empty($scheme) ? 0 : $scheme_id->invoice_scheme_id;
         if (!empty($scheme_id) && $scheme_id != 0) {
             $scheme = InvoiceScheme::find($scheme_id);
         }
@@ -2501,7 +2505,7 @@ class TransactionUtil extends Util
      *
      * @return object
      */
-    public function mapPurchaseSell($business, $transaction_lines, $mapping_type = 'purchase', $check_expiry = true, $purchase_line_id = null)
+    public function mapPurchaseSell($business, $transaction_lines, $mapping_type = 'purchase', $check_expiry = true, $purchase_line_id = null,$tipe = "web")
     {
         if (empty($transaction_lines)) {
             return false;
@@ -2521,6 +2525,7 @@ class TransactionUtil extends Util
         }
 
         $qty_selling = null;
+        // dd($transaction_lines);
         foreach ($transaction_lines as $line) {
             //Check if stock is not enabled then no need to assign purchase & sell
             $product = Product::find($line->product_id);
@@ -2638,6 +2643,11 @@ class TransactionUtil extends Util
 
             if (! ($qty_selling == 0 || is_null($qty_selling))) {
                 //If overselling not allowed through exception else create mapping with blank purchase_line_id
+                // dd($allow_overselling,$product);
+                if($tipe === "mobile"){
+                    $allow_overselling = true;
+                }
+
                 if (!$allow_overselling) {
                     $variation = Variation::find($line->variation_id);
                     $mismatch_name = $product->name;

@@ -37,8 +37,14 @@ class Util
         } else {
             $thousand_separator = session()->has('currency') ? session('currency')['thousand_separator'] : '';
             $decimal_separator = session()->has('currency') ? session('currency')['decimal_separator'] : '';
-        }
 
+            if(request()->user()){
+                $business = request()->user()->business;
+                $currency = $business->currency;
+                $thousand_separator = $currency->thousand_separator ?? "";
+                $decimal_separator = $currency->decimal_separator ?? "";
+            }
+        }
         $num = str_replace($thousand_separator, '', $input_number);
         $num = str_replace($decimal_separator, '.', $num);
 
@@ -307,7 +313,12 @@ class Util
     public function setAndGetReferenceCount($type, $business_id = null)
     {
         if (empty($business_id)) {
-            $business_id = request()->session()->get('user.business_id');
+            try {
+                $business_id = request()->session()->get('user.business_id');
+            } catch (\Throwable $th) {
+                $business = request()->user()->business;
+                $business_id = $business->id;
+            }
         }
 
         $ref = ReferenceCount::where('ref_type', $type)

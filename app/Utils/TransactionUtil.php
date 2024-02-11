@@ -273,7 +273,7 @@ class TransactionUtil extends Util
                 $uf_item_tax = $uf_data ?$this->num_uf($product['item_tax']) : $product['item_tax'];
                 $uf_unit_price_inc_tax = $uf_data ? $this->num_uf($product['unit_price_inc_tax']) : $product['unit_price_inc_tax'];
 
-                $tax_id = $product['tax_id'] ?? 0;
+                $tax_id = $product['tax_id'] ?? null;
 
                 $line = [
                     'product_id' => $product['product_id'],

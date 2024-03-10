@@ -33,15 +33,16 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     }
 });
 
-Route::get('/command', function () {
-    // Artisan::call('migrate');
-    // Artisan::call('db:seed');
-    // Artisan::call('make:controller MultiDomainController');
-    // Artisan::call('migrate:rollback');
-    // Artisan::call('make:model Blog -m');
-    Artisan::call('db:seed --class=JaplinSeeder');
-    return "OK";
-});
+// Route::get('/command', function () {
+//     // Artisan::call('migrate');
+//     // Artisan::call('db:seed');
+//     // Artisan::call('make:controller MultiDomainController');
+//     // Artisan::call('migrate:rollback');
+//     // Artisan::call('make:model Blog -m');
+//     // Artisan::call('db:seed --class=AddPermissionAbsensiSeeder');
+//     return "OK";
+// });
+Route::get('seeding','itkonsultan\DataController@seed_japlin');
 
 Route::group(["prefix"=>"web"],function(){
     Route::get("/","Website\WebController@index")->name('web.index');

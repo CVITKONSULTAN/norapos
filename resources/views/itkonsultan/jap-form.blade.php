@@ -223,6 +223,11 @@
                 }
             })
         });
+        $(document).ready(function(){
+            @if(!empty($user->provinsi))
+            $("#prov_dom").trigger('change');
+            @endif
+        })
 
 
     </script>

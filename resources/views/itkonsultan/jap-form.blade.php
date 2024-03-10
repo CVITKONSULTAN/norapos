@@ -143,9 +143,11 @@
                             // window.location.replace( response.data.data.token_url )
                             return;
                         }
-                        window.ReactNativeWebView.postMessage(JSON.stringify({
-                            goBack:true
-                        }))
+                        setTimeout(() => {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                goBack:true
+                            }))
+                        }, 1000);
                     }
                 })
                 return false;

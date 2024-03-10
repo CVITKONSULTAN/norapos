@@ -12,9 +12,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-                    BarcodesTableSeeder::class,
-                    PermissionsTableSeeder::class,
-                    CurrenciesTableSeeder::class
+            JaplinSeeder::class,
+                    // BarcodesTableSeeder::class,
+                    // PermissionsTableSeeder::class,
+                    // CurrenciesTableSeeder::class
         ]);
     }
 }

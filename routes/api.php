@@ -38,3 +38,14 @@ Route::post('forget-password',"APIController@forget_password")->name('api.forget
 Route::middleware(['Cors'])->group(function () {
     Route::get("data","APIController@data");
 });
+
+Route::get('wilayah','itkonsultan\WilayahController@getData');
+
+Route::post('midtrans-notify','itkonsultan\DataController@midtrans_notify');
+Route::get('payment-landing','itkonsultan\ViewerController@landing_payment');
+
+Route::group(['prefix'=>'itkonsultan'],function(){
+    Route::post('phone-store','itkonsultan\DataController@store_data_phone');
+    Route::get('form','itkonsultan\ViewerController@form');
+    Route::post('transaction','itkonsultan\DataController@store_transaction')->name('itko.trx_store');
+});

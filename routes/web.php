@@ -34,12 +34,12 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
 });
 
 Route::get('/command', function () {
-    Artisan::call('migrate');
-    Artisan::call('db:seed');
+    // Artisan::call('migrate');
+    // Artisan::call('db:seed');
     // Artisan::call('make:controller MultiDomainController');
     // Artisan::call('migrate:rollback');
     // Artisan::call('make:model Blog -m');
-    // Artisan::call('db:seed --class=AddPermissionAbsensiSeeder');
+    Artisan::call('db:seed --class=JaplinSeeder');
     return "OK";
 });
 

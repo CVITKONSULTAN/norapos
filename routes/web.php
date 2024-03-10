@@ -42,7 +42,7 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
 //     // Artisan::call('db:seed --class=AddPermissionAbsensiSeeder');
 //     return "OK";
 // });
-Route::get('seeding','itkonsultan\DataController@seed_japlin');
+// Route::get('seeding','itkonsultan\DataController@seed_japlin');
 
 Route::group(["prefix"=>"web"],function(){
     Route::get("/","Website\WebController@index")->name('web.index');

@@ -66,7 +66,7 @@ class DataController extends Controller
             $product = BusinessProduct::find($request->product_id);
 
             $client = new \GuzzleHttp\Client();
-            $endpoint = "https://2cca-27-124-95-229.ngrok-free.app/midtrans/index.php";
+            $endpoint = "https://development.norapos.com/midtrans/index.php";
             $request = $client->request('POST', $endpoint, [
                 'form_params' => [
                     "data" => [

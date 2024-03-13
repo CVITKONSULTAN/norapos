@@ -14,6 +14,10 @@ class BusinessTransaction extends Model
         'title'
     ];
 
+    protected $casts = [
+        "metadata" => "array"
+    ];
+
     function user(){
         return $this->belongsTo(UserPhones::class,"user_phones_id","id");
     }

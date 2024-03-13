@@ -48,4 +48,5 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     Route::post('phone-store','itkonsultan\DataController@store_data_phone');
     Route::get('form','itkonsultan\ViewerController@form');
     Route::post('transaction','itkonsultan\DataController@store_transaction')->name('itko.trx_store');
+    Route::post('history-transaction','itkonsultan\DataController@history_transaction')->name('itko.trx_history');
 });

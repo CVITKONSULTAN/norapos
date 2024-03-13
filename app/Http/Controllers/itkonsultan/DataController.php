@@ -263,4 +263,21 @@ class DataController extends Controller
         BusinessProduct::insert($product);
         return "OK";
     }
+
+    function history_transaction(Request $request){
+
+        $user = UserPhones::where('uid',$request->uid)
+        ->first();
+
+        $take = 10;
+        $page = $request->page ?? 1;
+        $skip = $take * (intval($page) - 1);
+        $data = BusinessTransaction::where('user_phones_id',$user->id)
+        ->skip($skip)
+        ->take($take)
+        ->get();
+
+        return Helper::DataReturn(true,"OK",$data);
+
+    }
 }

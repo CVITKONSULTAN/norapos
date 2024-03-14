@@ -5,6 +5,7 @@ namespace App\Http\Controllers\itkonsultan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Str;
+use Hash;
 
 use App\Helpers\Helper;
 use App\Models\itkonsultan\UserPhones;
@@ -282,16 +283,29 @@ class DataController extends Controller
 
     function history_transaction(Request $request){
 
-        $user = UserPhones::where('uid',$request->uid)
-        ->first();
+        if($request->has('adminToken')){
+
+            $user = UserPhones::where([
+                'isAdmin'=>1,
+                'adminToken'=> $request->adminToken
+            ])
+            ->first();
+
+            if(empty($user))
+            return Helper::DataReturn(false,"User not found");
+
+            $data = BusinessTransaction::whereIn('status',$request->status);
+
+        } else {
+            $user = UserPhones::where('uid',$request->uid)
+            ->first();
+            $data = BusinessTransaction::where('user_phones_id',$user->id);
+        }
 
         $take = 10;
         $page = $request->page ?? 1;
         $skip = $take * (intval($page) - 1);
-        $data = BusinessTransaction::where('user_phones_id',$user->id)
-        ->skip($skip)
-        ->take($take)
-        ->get();
+        $data = $data->skip($skip)->take($take)->get();
 
         return Helper::DataReturn(true,"OK",$data);
     }
@@ -313,4 +327,49 @@ class DataController extends Controller
         $midtrans = $data['data']->metadata['midtrans'];
         return redirect()->to($midtrans['token_url']);
     }
+
+    function setup_admin(Request $request){
+
+        $email = "admin@itkonsultan.co.id";
+        $data['user'] = UserPhones::where('email',$email)
+        ->first();
+        // dd($data['user']);
+        $data['user']->password = bcrypt($data['user']->password);
+        $data['user']->save();
+
+        return $data;
+
+    }
+
+    function login_admin(Request $request){
+        $user = UserPhones::where('email',$request->email)
+        ->first();
+
+        if(empty($user))
+        return Helper::DataReturn(false,"Email tidak ditemukan..");
+
+        if(Hash::check($request->password,$user->password))
+        return Helper::DataReturn(false,"Password salah, periksa kembali...");
+
+        $data['adminToken'] = Str::uuid()->toString();
+
+        $log_uid = [];
+        try {
+            $log_uid = json_decode($user->log_uid,true);
+        } catch (\Throwable $th) {
+            $log_uid = [];
+        }
+        $log_uid[] = $request->all();
+        $data['log_uid'] =  json_encode($log_uid);
+
+        if($request->has("fcmToken")){
+            $data['fcmToken'] = $request->fcmToken;
+        }
+
+        $user->update($data);
+        
+        return Helper::DataReturn(true,"OK",["token"=>$data['adminToken']]);
+
+    }
+
 }

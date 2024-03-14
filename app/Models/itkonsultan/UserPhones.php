@@ -24,6 +24,10 @@ class UserPhones extends Model
         'desa',
         'alamat',
 
+        'isAdmin',
+        'adminToken',
+        'log_uid',
+
     ];
 
     function transaction(){

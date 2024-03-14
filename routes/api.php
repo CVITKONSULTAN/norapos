@@ -50,8 +50,12 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     Route::get('profile','itkonsultan\ViewerController@profile');
     Route::get('detail','itkonsultan\ViewerController@detail');
 
+    Route::get('setup-admin','itkonsultan\DataController@setup_admin');
+
     Route::get('next-payment','itkonsultan\DataController@next_payment')->name('itko.next_payment');
 
+    Route::post('login','itkonsultan\DataController@login_admin');
+    
     Route::post('phone-store','itkonsultan\DataController@store_data_phone');
     Route::post('profile','itkonsultan\DataController@store_profile')->name('itko.profile_store');
     Route::post('transaction','itkonsultan\DataController@store_transaction')->name('itko.trx_store');

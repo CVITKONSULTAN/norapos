@@ -7,9 +7,45 @@ use App\Http\Controllers\Controller;
 
 use App\Models\itkonsultan\UserPhones;
 use App\Models\itkonsultan\BusinessProduct;
+use App\Models\itkonsultan\BusinessTransaction;
 
 class ViewerController extends Controller
 {
+
+    function detail(Request $request){
+        $data = $request->all();
+        if($request->has('jap')){
+            $data['user'] = UserPhones::where('uid',$data['uid'])->first();
+            
+            $data['data'] = BusinessTransaction::where([
+                'user_phones_id'=>$data['user']->id,
+                'id'=>$request->id
+            ])
+            ->first();
+
+            if($data['data']->category === "nidi"){
+                // dd($data['data']->metadata);
+                $data['product'] = BusinessProduct::where('id',
+                $data['data']->metadata['product_id']
+                )
+                ->first();
+            }
+
+            return view('itkonsultan.jap-detail',$data);
+        }
+    }
+
+    function profile(Request $request){
+        $data = $request->all();
+        if($request->has('jap')){
+            $wc = new WilayahController;
+            $provinsi = $wc->getData($request);
+            $data['provinsi'] = $provinsi['status'] ? $provinsi['data'] : [];
+            $data['user'] = UserPhones::where('uid',$data['uid'])->first();
+            return view('itkonsultan.jap-profile',$data);
+        }
+    }
+
     function form(Request $request){
         $data = $request->all();
         if($request->has('jap')){
@@ -20,7 +56,6 @@ class ViewerController extends Controller
             if(!empty($request->jap) && $request->jap === "nidi"){
                 $data['products'] = BusinessProduct::all();
             }
-            // dd($data);
             return view('itkonsultan.jap-form',$data);
         }
     }

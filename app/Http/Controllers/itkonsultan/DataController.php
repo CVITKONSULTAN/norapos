@@ -99,6 +99,22 @@ class DataController extends Controller
 
     }
 
+    function store_profile(Request $request){
+
+        $user = UserPhones::where('uid',$request->uid)
+        ->first();
+
+        if(empty($user))
+        return Helper::DataReturn(false,"Data not found");
+
+        $data = $request->all();
+
+        $user->update($data);
+
+        return Helper::DataReturn(true,"Data berhasil disimpan");
+
+    }
+
     function seed_japlin(){
         $input = [
             'business_name'=>'PT. JASA  PEMERIKSAAN LISTRIK INDONESIA (JAPLIN)',
@@ -278,6 +294,23 @@ class DataController extends Controller
         ->get();
 
         return Helper::DataReturn(true,"OK",$data);
+    }
 
+    function next_payment(Request $request){
+        $data['user'] = UserPhones::where('uid',$request->uid)
+        ->first();
+        $data['data'] = BusinessTransaction::where([
+            'user_phones_id'=>$data['user']->id,
+            'id'=>$request->id
+        ])->first();
+
+        if(!isset($data['data']->metadata['midtrans']))
+        return redirect()->back()->with([
+            'status'=>'error',
+            'message'=> 'Invalid mid-trans'
+        ]);
+
+        $midtrans = $data['data']->metadata['midtrans'];
+        return redirect()->to($midtrans['token_url']);
     }
 }

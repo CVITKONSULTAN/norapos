@@ -45,8 +45,15 @@ Route::post('midtrans-notify','itkonsultan\DataController@midtrans_notify');
 Route::get('payment-landing','itkonsultan\ViewerController@landing_payment');
 
 Route::group(['prefix'=>'itkonsultan'],function(){
-    Route::post('phone-store','itkonsultan\DataController@store_data_phone');
+
     Route::get('form','itkonsultan\ViewerController@form');
+    Route::get('profile','itkonsultan\ViewerController@profile');
+    Route::get('detail','itkonsultan\ViewerController@detail');
+
+    Route::get('next-payment','itkonsultan\DataController@next_payment')->name('itko.next_payment');
+
+    Route::post('phone-store','itkonsultan\DataController@store_data_phone');
+    Route::post('profile','itkonsultan\DataController@store_profile')->name('itko.profile_store');
     Route::post('transaction','itkonsultan\DataController@store_transaction')->name('itko.trx_store');
     Route::post('history-transaction','itkonsultan\DataController@history_transaction')->name('itko.trx_history');
 });

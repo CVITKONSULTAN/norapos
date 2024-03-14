@@ -55,7 +55,7 @@ class DataController extends Controller
 
         $input = [
             'user_phones_id' => $user->id,
-            'metadata'=>json_encode($request->all()),
+            'metadata'=>$request->all(),
             'category'=>$request->category,
             'title'=>$request->title,
             'status'=>'proses'
@@ -89,7 +89,7 @@ class DataController extends Controller
             $metadata = json_decode($b->metadata,true);
             $metadata['midtrans'] = json_decode($response,true);
             $metadata['midtrans']['redirect'] = true;
-            $b->metadata = json_encode($metadata);
+            $b->metadata = $metadata;
             $b->status = 'menunggu pembayaran';
             $b->save();
             return Helper::DataReturn(true,"Lanjutkan proses pembayaran...",[

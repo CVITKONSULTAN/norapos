@@ -406,8 +406,8 @@ class DataController extends Controller
         if(empty($data))
         return Helper::DataReturn(false,"Data not found");
 
-        // $data->status = $request->status;
-        // $data->save();
+        $data->status = $request->status;
+        $data->save();
 
         $tmp = $data->created_at->format('d/m/Y H:i');
         $status = strtoupper($request->status);

@@ -8,7 +8,7 @@
         
         // $ip = $_SERVER['REMOTE_ADDR'];
 
-        $live = false;
+        $live = true;
 
         // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
         \Midtrans\Config::$isProduction = $live;

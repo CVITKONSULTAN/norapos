@@ -69,7 +69,7 @@
         </div>
         <div class="form-group">
             <label>Alamat Lengkap</label>
-            <textarea disabled required name="alamat" required class="form-control">{{$user->alamat ?? ""}}</textarea>
+            <textarea disabled required name="alamat" required class="form-control">{{$data->metadata['alamat'] ?? ""}}</textarea>
         </div>
         @if(isset($product) && $data->category === "nidi")
             <div class="form-group">

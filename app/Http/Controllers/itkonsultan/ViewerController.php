@@ -15,13 +15,27 @@ class ViewerController extends Controller
     function detail(Request $request){
         $data = $request->all();
         if($request->has('jap')){
-            $data['user'] = UserPhones::where('uid',$data['uid'])->first();
-            
-            $data['data'] = BusinessTransaction::where([
-                'user_phones_id'=>$data['user']->id,
-                'id'=>$request->id
-            ])
-            ->first();
+
+            if($request->has('token')){
+
+                $data['user'] = UserPhones::where([
+                    'adminToken'=>$data['token'],
+                    'isAdmin'=>1
+                ])->first();
+
+                $data['data'] = BusinessTransaction::where([
+                    'id'=>$request->id
+                ])->first();
+
+            } else {
+                $data['user'] = UserPhones::where('uid',$data['uid'])->first();
+                
+                $data['data'] = BusinessTransaction::where([
+                    'user_phones_id'=>$data['user']->id,
+                    'id'=>$request->id
+                ])
+                ->first();
+            }
 
             if($data['data']->category === "nidi"){
                 // dd($data['data']->metadata);
@@ -31,7 +45,11 @@ class ViewerController extends Controller
                 ->first();
             }
 
-            return view('itkonsultan.jap-detail',$data);
+            if($request->has('token')){
+                return view('itkonsultan.jap-detail-admin',$data);
+            } else {
+                return view('itkonsultan.jap-detail',$data);
+            }
         }
     }
 

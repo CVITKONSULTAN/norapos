@@ -98,6 +98,22 @@ class DataController extends Controller
             ]);
         }
 
+        $tmp = $b->created_at->format('d/m/Y H:i');
+        $status = strtoupper($b->status);
+        $user = UserPhones::where('isAdmin',1)
+        ->first();
+
+        Helper::sendPush([
+            'token'=>$user->fcmToken,
+            'title'=>"Pesanan masuk $b->title #$b->id - $tmp",
+            'body' => "Silahkan proses pesanan $b->title",
+            "payload"=>[
+                'title'=>"Pesanan masuk $b->title #$b->id - $tmp",
+                'body' => "Silahkan proses pesanan $b->title",
+                'type' => 'admin'
+            ]
+        ]);
+
         return Helper::DataReturn(true,"Data berhasil ditambahkan",$b);
 
     }
@@ -307,7 +323,7 @@ class DataController extends Controller
         $take = 10;
         $page = $request->page ?? 1;
         $skip = $take * (intval($page) - 1);
-        $data = $data->skip($skip)->take($take)->get();
+        $data = $data->orderBy('id','desc')->skip($skip)->take($take)->get();
 
         return Helper::DataReturn(true,"OK",$data);
     }
@@ -372,6 +388,41 @@ class DataController extends Controller
         
         return Helper::DataReturn(true,"OK",["token"=>$data['adminToken']]);
 
+    }
+
+    function admin_change_status(Request $request){
+        $user = UserPhones::where([
+            'isAdmin'=>1,
+            'adminToken'=> $request->adminToken
+        ])
+        ->first();
+
+        if(empty($user))
+        return Helper::DataReturn(false,"User not found");
+
+        $data = BusinessTransaction::find($request->id);
+
+        
+        if(empty($data))
+        return Helper::DataReturn(false,"Data not found");
+
+        // $data->status = $request->status;
+        // $data->save();
+
+        $tmp = $data->created_at->format('d/m/Y H:i');
+        $status = strtoupper($request->status);
+        Helper::sendPush([
+            'token'=>$data->user->fcmToken,
+            'title'=>"PESANAN $status #$data->id - $tmp",
+            'body' => "$data->title telah dinyatakan $status",
+            "payload"=>[
+                'title'=>"PESANAN $status #$data->id - $tmp",
+                'body' => "$data->title telah dinyatakan $status",
+                'type' => 'user'
+            ]
+        ]);
+        
+        return Helper::DataReturn(true,"Data berhasil disimpan",$data);
     }
 
 }

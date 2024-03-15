@@ -55,6 +55,8 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     Route::get('next-payment','itkonsultan\DataController@next_payment')->name('itko.next_payment');
 
     Route::post('login','itkonsultan\DataController@login_admin');
+
+    Route::post('change-status','itkonsultan\DataController@admin_change_status')->name('itko.change_status');
     
     Route::post('phone-store','itkonsultan\DataController@store_data_phone');
     Route::post('profile','itkonsultan\DataController@store_profile')->name('itko.profile_store');

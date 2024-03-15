@@ -86,7 +86,9 @@ class DataController extends Controller
                 ]
             ]);
             $response = $request->getBody()->getContents();
-            $metadata = json_decode($b->metadata,true);
+            // return $b;
+            // $metadata = json_decode($b->metadata ?? "[]",true);
+            $metadata = $b->metadata ?? [];
             $metadata['midtrans'] = json_decode($response,true);
             $metadata['midtrans']['redirect'] = true;
             $b->metadata = $metadata;

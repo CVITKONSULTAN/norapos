@@ -63,4 +63,5 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     Route::post('profile','itkonsultan\DataController@store_profile')->name('itko.profile_store');
     Route::post('transaction','itkonsultan\DataController@store_transaction')->name('itko.trx_store');
     Route::post('history-transaction','itkonsultan\DataController@history_transaction')->name('itko.trx_history');
+    
 });

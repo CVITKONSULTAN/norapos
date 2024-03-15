@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Str;
 use Hash;
+use Log;
 
 use App\Helpers\Helper;
 use App\Models\itkonsultan\UserPhones;
@@ -38,10 +39,6 @@ class DataController extends Controller
         $user->update($data);
 
         return Helper::DataReturn(true,"Data berhasil diubah",$user);
-    }
-
-    function midtrans_notify(Request $request){
-        info($request->all());
     }
 
     function store_transaction(Request $request){
@@ -452,6 +449,85 @@ class DataController extends Controller
         }
 
         return Helper::DataReturn(true,"OK",$data);
+    }
+
+    function midtrans_notify(Request $request){
+
+        $data = $request->all();
+        $serverkey = 'SB-Mid-server-LOrTnklwFV5riW1uZxbpncvT';
+        // $headers = collect($request->header())->transform(function ($item) {
+        //     return $item[0];
+        // });
+        // Log::info( "midtrans callback headers >> ".json_encode($headers));
+        Log::info( "midtrans callback >> ".json_encode($data));
+        $gross_amount = $request->gross_amount ?? "";
+        $status_code = $request->status_code ?? "";
+        $order_id = $request->order_id ?? "";
+
+        $str = $order_id.$status_code.$gross_amount.$serverkey;
+        $hash = hash('sha512', $str);
+        if($hash !== $request->signature_key) return [
+            'status'=>false,
+            'message'=>"Bad Request (403)"
+        ];
+
+        $data = BusinessTransaction::where('id',$order_id)->first();
+        
+        if(empty($data)) return [
+            'status'=>false,
+            'message'=>"Data not found (403)"
+        ];
+
+        $success = [
+            // 'settlement',
+            'capture'
+        ];
+        
+        if(in_array($request->transaction_status,$success)){
+            $data->status = 'proses';
+            $data->save();
+
+            //get admin
+            $user = UserPhones::where('isAdmin',1)
+            ->first();
+            $tmp = $data->created_at->format('d/m/Y H:i');
+            $status = strtoupper($data->status);
+            Helper::sendPush([
+                'token'=>$user->fcmToken,
+                'title'=>"Pesanan masuk $data->title #$data->id - $tmp",
+                'body' => "Silahkan proses pesanan $data->title",
+                "payload"=>[
+                    'title'=>"Pesanan masuk $data->title #$data->id - $tmp",
+                'body' => "Silahkan proses pesanan $data->title",
+                    'type' => 'admin'
+                ]
+            ]);
+            // end admin notif
+
+        } else
+        if($request->transaction_status === 'pending' || $request->transaction_status === 'authorize'){
+            $data->status = 'menunggu pembayaran';
+            $data->save();
+        } else {
+            $data->status = 'batal';
+            $data->save();
+            //get user notif
+            $user = $data->user;
+            $tmp = $data->created_at->format('d/m/Y H:i');
+            $status = strtoupper($data->status);
+            Helper::sendPush([
+                'token'=>$user->fcmToken,
+                'title'=>"Pesanan $status $data->title #$data->id - $tmp",
+                'body' => "$data->title telah berakhir...",
+                "payload"=>[
+                    'title'=>"Pesanan $status $data->title #$data->id - $tmp",
+                    'body' => "$data->title telah berakhir...",
+                    'type' => 'user'
+                ]
+            ]);
+            // end user notif
+        }
+
     }
 
 }

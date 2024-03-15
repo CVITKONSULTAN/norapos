@@ -425,4 +425,31 @@ class DataController extends Controller
         return Helper::DataReturn(true,"Data berhasil disimpan",$data);
     }
 
+    function history_transaction_rekap(Request $request){
+
+
+        $user = UserPhones::where([
+            'isAdmin'=>1,
+            'adminToken'=> $request->adminToken
+        ])
+        ->first();
+
+        if(empty($user))
+        return Helper::DataReturn(false,"User not found");
+
+        $data = [
+            'menunggu pembayaran' => 0,
+            'proses' => 0,
+            'selesai' => 0,
+            'batal' => 0,
+            'total' => BusinessTransaction::count(),
+        ];
+        foreach ($data as $key => $value) {
+            if($key === "total") continue;
+            $data[$key] = BusinessTransaction::where('status',$key)->count();
+        }
+
+        return Helper::DataReturn(true,"OK",$data);
+    }
+
 }

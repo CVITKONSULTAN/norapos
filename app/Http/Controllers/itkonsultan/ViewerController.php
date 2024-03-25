@@ -66,13 +66,19 @@ class ViewerController extends Controller
 
     function form(Request $request){
         $data = $request->all();
+        // dd($data);
         if($request->has('jap')){
             $wc = new WilayahController;
             $provinsi = $wc->getData($request);
             $data['provinsi'] = $provinsi['status'] ? $provinsi['data'] : [];
             $data['user'] = UserPhones::where('uid',$data['uid'])->first();
-            if(!empty($request->jap) && $request->jap === "nidi"){
-                $data['products'] = BusinessProduct::all();
+
+            if(!empty($request->jap)){
+                $category_slug = $request->jap ?? null;
+                $products = BusinessProduct::where('category_slug',$category_slug)->get();
+                if(!empty($products)){
+                    $data['products'] = $products;
+                }
             }
             return view('itkonsultan.jap-form',$data);
         }

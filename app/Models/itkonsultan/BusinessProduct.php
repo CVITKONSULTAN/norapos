@@ -13,6 +13,7 @@ class BusinessProduct extends Model
         'description',
         'price',
         'business_id',
+        'category_slug'
     ];
 
     function business(){

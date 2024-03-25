@@ -13,19 +13,24 @@ class Helper {
     }
 
     public static function sendPush(Array $data){
-
-        $file = config('firebase.credentials')['file'];
-        $factory = (new Factory)
-        ->withServiceAccount($file);
-        $messaging = $factory->createMessaging();
-
-        $message = CloudMessage::withTarget('token',$data['token'])
-            // ->withNotification(Notification::create($data['title'], $data['body']))
-            ->withHighestPossiblePriority()
-            ->withData($data['payload'] ?? []);
-
-        $messaging->send($message);
-        return "OK";
+        try {
+            $file = config('firebase.credentials')['file'];
+            $factory = (new Factory)
+            ->withServiceAccount($file);
+            $messaging = $factory->createMessaging();
+    
+            $message = CloudMessage::withTarget('token',$data['token'])
+                // ->withNotification(Notification::create($data['title'], $data['body']))
+                ->withHighestPossiblePriority()
+                ->withData($data['payload'] ?? []);
+    
+            $messaging->send($message);
+            return "OK";
+        } catch (\Throwable $th) {
+            //throw $th;
+            info("notif itkonsultan error: " . $th->getMessage() ."line: " . $th->getLine());
+            return false;
+        }
     }
 
 

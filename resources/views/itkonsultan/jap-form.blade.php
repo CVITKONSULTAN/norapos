@@ -57,7 +57,9 @@
             <label>Alamat Lengkap</label>
             <textarea required name="alamat" required class="form-control">{{$user->alamat ?? ""}}</textarea>
         </div>
-        @if(!empty($products))
+        @if(
+            count($products) > 0
+        )
             <div class="form-group">
                 <label>Pilih Produk/Layanan</label>
                 <select required name="produk_id" class="form-control" id="product">
@@ -82,7 +84,9 @@
 @push('js')
     <script>
 
-        @if(!empty($products))
+        @if(
+            count($products) > 0
+        )
             let selected = null;
             const products = [
                 @foreach ($products as $item)

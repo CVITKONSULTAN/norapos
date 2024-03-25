@@ -71,7 +71,7 @@
             <label>Alamat Lengkap</label>
             <textarea disabled required name="alamat" required class="form-control">{{$data->metadata['alamat'] ?? ""}}</textarea>
         </div>
-        @if(isset($product) && $data->category === "nidi")
+        @if(isset($product))
             <div class="form-group">
                 <label>Pilih Produk/Layanan</label>
             </div>
@@ -80,7 +80,7 @@
                 <p id="deskripsi">{{ $product->description }}</p>
                 <p><b>Total : <span id="harga"> Rp. {{ number_format($product->price,0,',','.') }}</span></b></p>
             </div>
-            @if($data->category === "nidi" && $data->status === "menunggu pembayaran")
+            @if($data->status === "menunggu pembayaran")
                 <div class="d-grid mt-3 mb-3">
                     <a href="{{ route('itko.next_payment',[
                         'uid' => $data->metadata['uid'],

@@ -37,8 +37,8 @@ class ViewerController extends Controller
                 ->first();
             }
 
-            if($data['data']->category === "nidi"){
-                // dd($data['data']->metadata);
+            // if($data['data']->category === "nidi"){
+            if($data['data']->metadata['product_id']){
                 $data['product'] = BusinessProduct::where('id',
                 $data['data']->metadata['product_id']
                 )

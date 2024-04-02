@@ -16,4 +16,9 @@ class BusinessDomain extends Model
     function product(){
         return $this->hasMany(BusinessDomain::class,'business_id','id');
     }
+
+    function userphone(){
+        return $this->hasMany(UserPhones::class,'business_domain_id','id');
+    }
+
 }

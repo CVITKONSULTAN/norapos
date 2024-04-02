@@ -28,9 +28,15 @@ class UserPhones extends Model
         'adminToken',
         'log_uid',
 
+        'business_domain_id',
+
     ];
 
     function transaction(){
         return $this->hasMany(BusinessTransaction::class,"user_phones_id","id");
+    }
+
+    function business(){
+        return $this->belongsTo(BusinessDomain::class,"business_domain_id",'id');
     }
 }

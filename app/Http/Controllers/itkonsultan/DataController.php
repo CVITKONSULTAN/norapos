@@ -20,6 +20,13 @@ class DataController extends Controller
 
         $data = $request->all();
 
+        if(!$request->has('business_domain_id')){
+            $business = BusinessDomain::where('domain','https://listrikanda.com/')->first();
+            if(!empty($business)){
+                $data['business_domain_id'] = $business->id;
+            }
+        }
+
         $user = UserPhones::where('uid',$request->uid)
         ->orWhere('fcmToken',$request->fcmToken)
         ->first();
@@ -386,6 +393,17 @@ class DataController extends Controller
             // end user notif
         }
 
+    }
+
+    function seed_norapos(){
+        $business = BusinessDomain::where('domain','https://listrikanda.com/')->first();
+        if(empty($business)) return "business not found";
+        UserPhones::whereNull('business_domain_id')->update(['business_domain_id'=> $business->id]);
+        $business = BusinessDomain::create([
+            'domain' => 'https://norapos.com',
+            'business_name' => 'norapos_mobile',
+        ]);
+        return "OK";
     }
 
 }

@@ -395,6 +395,9 @@
             }
         });
     });
+
+    $(".main-header").hide();
+
 </script>
 
 @endsection

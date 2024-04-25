@@ -426,5 +426,5 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
 });
 
 Route::group(['prefix'=>'webview'],function(){
-    Route::get('/reports/profit-loss', 'ReportController@getProfitLoss');
+    Route::get('/reports/profit-loss', 'ReportController@getProfitLossWebview');
 });

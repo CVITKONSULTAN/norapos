@@ -64,11 +64,11 @@ class ReportController extends Controller
     public function getProfitLoss(Request $request)
     {
 
-        if($request->apiToken){
-            // dd(\App\User::whereNotNull('api_token')->get());
-            $user = \App\User::where('api_token',$request->apiToken)->first();
-            Auth::login($user);
-        }
+        // if($request->apiToken){
+        //     // dd(\App\User::whereNotNull('api_token')->get());
+        //     $user = \App\User::where('api_token',$request->apiToken)->first();
+        //     Auth::login($user);
+        // }
 
         if (!auth()->user()->can('profit_loss_report.view')) {
             abort(403, 'Unauthorized action.');
@@ -3134,5 +3134,44 @@ class ReportController extends Controller
             'potential_profit' => $potential_profit,
             'profit_margin' => $profit_margin
         ];
+    }
+
+    /**
+     * Shows profit\loss of a business
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getProfitLossWebview(Request $request)
+    {
+
+        if($request->apiToken){
+            $user = \App\User::where('api_token',$request->apiToken)->first();
+            if(empty($user)) return abort(404,'User not found');
+            Auth::login($user);
+        } else {
+            return abort(404,'User not found');
+        }
+
+        if (!auth()->user()->can('profit_loss_report.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        //Return the details in ajax call
+        if ($request->ajax()) {
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+            $location_id = $request->get('location_id');
+
+            $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $start_date, $end_date);
+
+            // $data['closing_stock'] = $data['closing_stock'] - $data['total_sell_return'];
+
+            return view('report.partials.profit_loss_details', compact('data'))->render();
+        }
+
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        return view('report.webview.profit_loss', compact('business_locations'));
     }
 }

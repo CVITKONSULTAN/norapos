@@ -1,4 +1,4 @@
-<div class="col-xs-6">
+<div class="col-md-6">
     @component('components.widget')
         <table class="table table-striped">
             <tr>
@@ -73,7 +73,7 @@
     @endcomponent
 </div>
 
-<div class="col-xs-6">
+<div class="col-md-6">
     @component('components.widget')
         <table class="table table-striped">
             <tr>
@@ -160,7 +160,7 @@
     @endcomponent
 </div>
 <br>
-<div class="col-xs-12">
+<div class="col-md-12">
     @component('components.widget')
         <h3 class="text-muted mb-0">
             {{ __('lang_v1.gross_profit') }}: 

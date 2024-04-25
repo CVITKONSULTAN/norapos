@@ -32,6 +32,8 @@ use DB;
 use Illuminate\Http\Request;
 use App\TaxRate;
 
+use Auth;
+
 class ReportController extends Controller
 {
     /**
@@ -61,6 +63,13 @@ class ReportController extends Controller
      */
     public function getProfitLoss(Request $request)
     {
+
+        if($request->apiToken){
+            // dd(\App\User::whereNotNull('api_token')->get());
+            $user = \App\User::where('api_token',$request->apiToken)->first();
+            Auth::login($user);
+        }
+
         if (!auth()->user()->can('profit_loss_report.view')) {
             abort(403, 'Unauthorized action.');
         }

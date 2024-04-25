@@ -425,9 +425,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
     Route::get('/sells/invoice-url/{id}', 'SellPosController@showInvoiceUrl');
 });
 
-
-// Route::domain('beautyproclinic.com')->group(function () {
-//     Route::get('/', function () {
-//         return "OK";
-//     });
-// });
+Route::group(['prefix'=>'webview'],function(){
+    Route::get('/reports/profit-loss', 'ReportController@getProfitLoss');
+});

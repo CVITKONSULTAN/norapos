@@ -13,6 +13,7 @@ use App\Models\itkonsultan\UserPhones;
 use App\Models\itkonsultan\BusinessTransaction;
 use App\Models\itkonsultan\BusinessProduct;
 use App\Models\itkonsultan\BusinessDomain;
+use App\Models\itkonsultan\FormCollection;
 
 class DataController extends Controller
 {
@@ -27,8 +28,14 @@ class DataController extends Controller
             }
         }
 
-        $user = UserPhones::where('uid',$request->uid)
-        ->orWhere('fcmToken',$request->fcmToken)
+        $user = UserPhones::where([
+            'uid'=>$request->uid,
+            "business_domain_id"=>$data['business_domain_id']
+        ])
+        ->orWhere([
+            'fcmToken'=>$request->fcmToken,
+            "business_domain_id"=>$data['business_domain_id']
+        ])
         ->first();
 
         if(empty($user)) {
@@ -403,7 +410,29 @@ class DataController extends Controller
             'domain' => 'https://norapos.com',
             'business_name' => 'norapos_mobile',
         ]);
+        $this->seed_japlin();
         return "OK";
+    }
+
+    function form_collection_store(Request $request){
+        try {
+            $input = $request->all();
+            $input['data_input'] = json_encode($input);
+            $input['ip'] = $request->ip();
+            FormCollection::create($input);
+            return [
+                'status' => true, 
+                'message'=> "Data berhasil ditambahkan", 
+                'detail' => "OK"
+            ];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return [
+                'status' =>false, 
+                'message'=>"Internal Server Error", 
+                'detail' =>$th->getMessage()
+            ];
+        }
     }
 
 }

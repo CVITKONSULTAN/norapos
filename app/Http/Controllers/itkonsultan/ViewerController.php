@@ -66,12 +66,16 @@ class ViewerController extends Controller
 
     function form(Request $request){
         $data = $request->all();
-        // dd($data);
+
+        $wc = new WilayahController;
+        $provinsi = $wc->getData($request);
+        $data['provinsi'] = $provinsi['status'] ? $provinsi['data'] : [];
+        $data['user'] = UserPhones::where(
+            'uid',
+            $data['uid'] ?? null
+        )->first();
+
         if($request->has('jap')){
-            $wc = new WilayahController;
-            $provinsi = $wc->getData($request);
-            $data['provinsi'] = $provinsi['status'] ? $provinsi['data'] : [];
-            $data['user'] = UserPhones::where('uid',$data['uid'])->first();
 
             if(!empty($request->jap)){
                 $category_slug = $request->jap ?? null;
@@ -81,6 +85,20 @@ class ViewerController extends Controller
                 }
             }
             return view('itkonsultan.jap-form',$data);
+        }
+
+        if($request->has('norapos')){
+            $prefix = "itkonsultan.norapos_mobile";
+            switch ($request->norapos) {
+                case 'feedback':
+                    # code...
+                    break;
+                
+                default:
+                    $data['title'] = "Buat Akun Baru";
+                    return view("$prefix.register",$data);
+                    break;
+            }
         }
     }
 

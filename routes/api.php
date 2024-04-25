@@ -47,6 +47,8 @@ Route::get('payment-landing','itkonsultan\ViewerController@landing_payment');
 Route::group(['prefix'=>'itkonsultan'],function(){
 
     Route::get('form','itkonsultan\ViewerController@form');
+    Route::post('form','itkonsultan\DataController@form_collection_store')->name('form.store');
+    
     Route::get('profile','itkonsultan\ViewerController@profile');
     Route::get('detail','itkonsultan\ViewerController@detail');
 

@@ -126,11 +126,15 @@ class APIController extends Controller
         try {
             $user = \App\User::where('username',$request->username)->first();
             if(empty($user)){
-                return Helper::DataReturn(false,"Akun tidak ditemukan");
+                return response()->json(
+                    Helper::DataReturn(false,"Akun tidak ditemukan"), 
+                400); 
             }
             
             if (!Hash::check($request->password, $user->password)){
-                return Helper::DataReturn(false,"Password anda salah");
+                return response()->json(
+                    Helper::DataReturn(false,"Password anda salah"),
+                400); 
             }
      
             $token = Str::random(60);
@@ -141,7 +145,9 @@ class APIController extends Controller
     
             return Helper::DataReturn(true,"OK",["token" => $token]);
         } catch (\Throwable $th) {
-            return Helper::DataReturn(false,$th->getMessage(),$request->all());
+            return response()->json(
+                Helper::DataReturn(false,$th->getMessage(),$request->all()),
+            500); 
         }
     }
 
@@ -811,6 +817,22 @@ class APIController extends Controller
         }
 
         return $output;
+    }
+
+    function list_blog(Request $request){
+        $page = $request->page ?? 0;
+        $take = 10;
+        $skip = (intval($page) - 1) * $take;
+        $business_id = $request->user()->business->id ?? 0;
+        if($request->business){
+            $business_id = $request->business;
+        }
+        $data = \App\Blog::where('business_id',$business_id)
+        ->orderBy('id','DESC')
+        ->skip($skip)
+        ->take(10)
+        ->get();
+        return Helper::DataReturn(true,"OK",$data);
     }
 
 

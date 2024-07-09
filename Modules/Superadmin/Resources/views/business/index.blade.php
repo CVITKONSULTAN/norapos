@@ -57,7 +57,7 @@
                                 <h5 class="widget-user-desc"><i class="fa fa-mobile" title="Owner Contact"></i> {{ $business->owner->contact_no }}</h5>
                             @endif
 
-                                <h5 class="widget-user-desc"><i class="fa fa-phone" title="Business Contact"></i> {{ implode([", ", $address->mobile, $address->alternate_number]) }}</h5>
+                                {{-- <h5 class="widget-user-desc"><i class="fa fa-phone" title="Business Contact"></i> {{ $address->mobile ? implode([", ", $address->mobile, $address->alternate_number]) : "" }}</h5> --}}
                                 <address class="widget-user-desc">
                                   @php
                                     $address_array = [];

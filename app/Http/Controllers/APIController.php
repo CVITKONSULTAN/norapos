@@ -818,6 +818,9 @@ class APIController extends Controller
         $take = 10;
         $skip = (intval($page) - 1) * $take;
         $business_id = $request->user()->business->id ?? 0;
+        if($request->business){
+            $business_id = $request->business;
+        }
         $data = \App\Blog::where('business_id',$business_id)
         ->orderBy('id','DESC')
         ->skip($skip)

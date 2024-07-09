@@ -30,8 +30,9 @@ Route::group(['middleware'=>'auth:api'],function(){
 
     Route::post('/pos', 'APIController@store_POS');
 
-    Route::post('/blog', 'APIController@list_blog');
 });
+
+Route::post('/blog', 'APIController@list_blog');
 
 Route::post('login',"APIController@login");
 Route::post('recreate-token',"APIController@recreate_token");

@@ -102,7 +102,7 @@ class BusinessController extends BaseController
             abort(403, 'Unauthorized action.');
         }
 
-        try {
+        // try {
             DB::beginTransaction();
 
             //Create owner.
@@ -138,9 +138,16 @@ class BusinessController extends BaseController
 
             $this->businessUtil->newBusinessDefaultResources($business->id, $user->id);
             $new_location = $this->businessUtil->addLocation($business->id, $business_location);
+            try {
+                //create new permission with the new location
+                Permission::create(['name' => 'location.' . $new_location->id ]);
+            } catch (\Throwable $th) {
+                
+                $name = 'location.' . $new_location->id . date('YmdH');
 
-            //create new permission with the new location
-            Permission::create(['name' => 'location.' . $new_location->id ]);
+                //create new permission with the new location
+                Permission::create(['name' => $name ]);
+            }
 
             DB::commit();
 
@@ -156,16 +163,16 @@ class BusinessController extends BaseController
             return redirect()
                 ->action('\Modules\Superadmin\Http\Controllers\BusinessController@index')
                 ->with('status', $output);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
-            $output = ['success' => 0,
-                            'msg' => __('messages.something_went_wrong')
-                        ];
+        //     $output = ['success' => 0,
+        //                     'msg' => __('messages.something_went_wrong')
+        //                 ];
 
-            return back()->with('status', $output)->withInput();
-        }
+        //     return back()->with('status', $output)->withInput();
+        // }
     }
 
     /**

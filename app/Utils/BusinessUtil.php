@@ -31,19 +31,43 @@ class BusinessUtil extends Util
     public function newBusinessDefaultResources($business_id, $user_id)
     {
         $user = User::find($user_id);
+        try {
+            //create Admin role and assign to user
+            $role = Role::create([ 'name' => 'Admin#' . $business_id,
+                                'business_id' => $business_id,
+                                'guard_name' => 'web', 'is_default' => 1
+                            ]);
+        } catch (\Throwable $th) {
 
-        //create Admin role and assign to user
-        $role = Role::create([ 'name' => 'Admin#' . $business_id,
-                            'business_id' => $business_id,
-                            'guard_name' => 'web', 'is_default' => 1
-                        ]);
+            $name = 'Admin#' . $business_id. date('YmdH');
+
+            //create Admin role and assign to user
+            $role = Role::create([ 'name' => $name,
+                                'business_id' => $business_id,
+                                'guard_name' => 'web', 'is_default' => 1
+                            ]);
+        }
+
         $user->assignRole($role->name);
 
-        //Create Cashier role for a new business
-        $cashier_role = Role::create([ 'name' => 'Cashier#' . $business_id,
-                            'business_id' => $business_id,
-                            'guard_name' => 'web'
-                        ]);
+        try {
+            //Create Cashier role for a new business
+            $cashier_role = Role::create([ 'name' => 'Cashier#' . $business_id,
+                'business_id' => $business_id,
+                'guard_name' => 'web'
+            ]);
+        } catch (\Throwable $th) {
+
+            $name = 'Cashier#' . $business_id. date('YmdH');
+
+            //Create Cashier role for a new business
+            $cashier_role = Role::create([ 'name' => $name,
+                'business_id' => $business_id,
+                'guard_name' => 'web'
+            ]);
+        }
+
+       
         $cashier_role->syncPermissions(['sell.view', 'sell.create', 'sell.update', 'sell.delete', 'access_all_locations', 'view_cash_register', 'close_cash_register','absensi.view','absensi.delete']);
 
         $business = Business::findOrFail($business_id);

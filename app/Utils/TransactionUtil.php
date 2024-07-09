@@ -44,7 +44,8 @@ class TransactionUtil extends Util
         $invoice_no = !empty($input['invoice_no']) ? $input['invoice_no'] : $this->getInvoiceNumber($business_id, $input['status'], $input['location_id'], $invoice_scheme_id);
 
         $final_total = $uf_data ? $this->num_uf($input['final_total']) : $input['final_total'];
-        $transaction = Transaction::create([
+
+        $input = [
             'business_id' => $business_id,
             'location_id' => $input['location_id'],
             'type' => 'sell',
@@ -101,7 +102,11 @@ class TransactionUtil extends Util
             'import_time' => !empty($input['import_time']) ? $input['import_time'] : null,
             'res_table_id' => !empty($input['res_table_id']) ? $input['res_table_id'] : null,
             'res_waiter_id' => !empty($input['res_waiter_id']) ? $input['res_waiter_id'] : null,
-        ]);
+        ];
+
+        // DD($input);
+
+        $transaction = Transaction::create($input);
 
         return $transaction;
     }
@@ -270,6 +275,9 @@ class TransactionUtil extends Util
                     }
                 }
                 $uf_quantity = $uf_data ? $this->num_uf($product['quantity']) : $product['quantity'];
+                if(!isset($product['item_tax'])){
+                    $product['item_tax'] = 0;
+                }
                 $uf_item_tax = $uf_data ?$this->num_uf($product['item_tax']) : $product['item_tax'];
                 $uf_unit_price_inc_tax = $uf_data ? $this->num_uf($product['unit_price_inc_tax']) : $product['unit_price_inc_tax'];
 

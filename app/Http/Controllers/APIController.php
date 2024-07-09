@@ -393,7 +393,7 @@ class APIController extends Controller
             $contacts->addSelect('total_rp');
         // }
         $contacts = $contacts->get();
-        return json_encode($contacts);
+        return $contacts;
     }
 
     function getProductRow($variation_id,$location_id){
@@ -688,6 +688,12 @@ class APIController extends Controller
                     $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment']);
                 }
 
+                $amount = $transaction->final_total;
+
+                if(isset($input['amount'])){
+                    $amount = intval( $input['amount'] );
+                }
+
                 //Check for final and do some processing.
                 if ($input['status'] == 'final') {
                     //update product stock
@@ -723,7 +729,7 @@ class APIController extends Controller
                     }
 
                     //Update payment status
-                    $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
+                    $this->transactionUtil->updatePaymentStatus($transaction->id, $amount);
 
                     if ($business->enable_rp == 1) {
                         $redeemed = !empty($input['rp_redeemed']) ? $input['rp_redeemed'] : 0;

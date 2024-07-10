@@ -195,8 +195,10 @@ $(document).ready( function(){
             var footer_total_remaining = 0;
             var footer_total_sell_return_due = 0;
             for (var r in data){
+                const total_paid_row = typeof($(data[r].total_paid).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_paid).data('orig-value')) : 0;
+                console.log("total_paid_row",r,total_paid_row);
                 footer_sale_total += typeof($(data[r].final_total).data('orig-value')) != 'undefined' ? parseFloat($(data[r].final_total).data('orig-value')) : 0;
-                footer_total_paid += typeof($(data[r].total_paid).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_paid).data('orig-value')) : 0;
+                footer_total_paid += total_paid_row;
                 footer_total_remaining += typeof($(data[r].total_remaining).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_remaining).data('orig-value')) : 0;
                 footer_total_sell_return_due += typeof($(data[r].return_due).data('orig-value')) != 'undefined' ? parseFloat($(data[r].return_due).data('orig-value')) : 0;
             }

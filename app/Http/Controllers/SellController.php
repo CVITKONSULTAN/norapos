@@ -367,6 +367,11 @@ class SellController extends Controller
                 )
                 ->addColumn('total_remaining', function ($row) {
                     $total_remaining =  $row->final_total - $row->total_paid;
+
+                    if(auth()->user()->business->id == 11 && $total_remaining <= 0){
+                        $total_remaining = 0;
+                    }
+
                     $total_remaining_html = '<span class="display_currency payment_due" data-currency_symbol="true" data-orig-value="' . $total_remaining . '">' . $total_remaining . '</span>';
 
                     

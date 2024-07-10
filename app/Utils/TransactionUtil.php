@@ -871,7 +871,7 @@ class TransactionUtil extends Util
         if ($il->show_customer == 1) {
             $output['customer_label'] = !empty($il->customer_label) ? $il->customer_label : '';
             $output['customer_name'] = !empty($customer->name) ? $customer->name: '';
-            $output['customer_mobile'] = $customer->mobile;
+            $output['customer_mobile'] = $customer->mobile ?? "";
             
             if (!empty($output['customer_name']) && $receipt_printer_type != 'printer') {
                 $output['customer_info'] .= $customer->contact_address;
@@ -884,7 +884,7 @@ class TransactionUtil extends Util
                 }
             }
 
-            $output['customer_tax_number'] = $customer->tax_number;
+            $output['customer_tax_number'] = $customer->tax_number ?? 0;
             $output['customer_tax_label'] = !empty($il->client_tax_label) ? $il->client_tax_label : '';
 
             $temp = [];
@@ -3373,7 +3373,7 @@ class TransactionUtil extends Util
             return false;
         }
 
-        $credit_limit = Contact::find($input['contact_id'])->credit_limit;
+        $credit_limit = Contact::find($input['contact_id'])->credit_limit ?? null;
 
         if ($credit_limit == null) {
             return false;

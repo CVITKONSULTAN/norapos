@@ -992,12 +992,22 @@ class APIController extends Controller
     function getCheckin(Request $request){
 
         $date = $request->date ?? date("Y-m-d");
+        $status = $request->status ?? null;
 
         $business_id = $request->user()->business->id ?? 0;
-        // dd($date);
-        $data = \App\Transaction::with('sell_lines.product','contact','payment_lines')
-        ->whereDate('transaction_date',$date)
-        ->where('business_id',$business_id)
+        
+        $data = \App\Transaction::with('contact')
+        ->with(['sell_lines.product' => function($query) {
+            return $query->orderBy('id', 'DESC');
+        }])
+        ->select("*",
+        DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
+                        TP.transaction_id=transactions.id) as total_paid'),
+        )
+        ->whereDate('transactions.transaction_date',$date)
+        ->where('transactions.business_id',$business_id)
+        ->where("transactions.shipping_status",$status)
+        ->orderBy('id','desc')
         ->get();
 
         $res = [];
@@ -1007,7 +1017,10 @@ class APIController extends Controller
             $contact_name = $value["contact"]["name"] ?? "";
             $res[] = [
                 "id"=>$value["id"],
-                "tagihan"=>$value["final_total"],
+                "status"=> $value['shipping_status'] == "delivered" ? "Out" : "In",
+                "tagihan"=> number_format($value["final_total"],0,",","."),
+                "telah_dibayar"=> number_format($value["total_paid"],0,",","."),
+                "sisa"=> number_format(($value["final_total"] - $value["total_paid"]),0,",","."),
                 "tgl_checkin"=> \Carbon::parse($value['transaction_date'])->format("d/m/Y"),
                 "lama_menginap"=>$value["pay_term_number"],
                 "no_kamar"=>$room_name,
@@ -1016,7 +1029,7 @@ class APIController extends Controller
             ];
         }
         
-        return Helper::DataReturn(true,"OK",$data);
+        return Helper::DataReturn(true,"OK",$res);
         
     }
 
@@ -1103,6 +1116,29 @@ class APIController extends Controller
                 $sells->with($with);
             }
             return Helper::DataReturn(true,"OK",$sells->get());
+    }
+
+    function checkoutStore(Request $request){
+        $t = \App\Transaction::where("id",$request->id)
+        ->whereNull('shipping_status')
+        ->first();
+        if(empty($t))
+        return Helper::DataReturn(false,"Data not found");
+
+        $amount = $request->amount ?? 0;
+        $notes = $request->notes ?? "";
+
+        $payment = [
+            "amount"=>$amount,
+            "method"=>"cash",
+            "note"=>$notes
+        ];
+
+        $this->transactionUtil->createOrUpdatePaymentLines($t, [$payment]);
+        $this->transactionUtil->updatePaymentStatus($t->id, $amount);
+        $t->update(["shipping_status"=>"delivered","additional_notes"=>$notes]);
+
+        return Helper::DataReturn(true,"Data berhasil disimpan!");
     }
 
 

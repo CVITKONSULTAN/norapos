@@ -9,7 +9,11 @@
 	</a>
 
     <!-- Sidebar Menu -->
-    {!! Menu::render('admin-sidebar-menu', 'adminltecustom'); !!}
+    @if(auth()->user()->business->id == 11)
+      {!! Menu::render('admin-sidebar-hotel', 'adminltecustom'); !!}
+    @else
+      {!! Menu::render('admin-sidebar-menu', 'adminltecustom'); !!}
+    @endif
 
     <!-- /.sidebar-menu -->
   </section>

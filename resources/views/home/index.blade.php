@@ -126,8 +126,30 @@
 	      <!-- /.info-box -->
 	    </div>
 	    <!-- /.col -->
+
+      <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
+        <div class="info-box info-box-new-style">
+          <span class="info-box-icon bg-red">
+            <i class="fas fa-minus-circle"></i>
+          </span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">
+              @if(auth()->user()->business->id == 11)
+                Pengeluaran
+              @else
+                {{ __('lang_v1.expense') }}
+              @endif
+            </span>
+            <span class="info-box-number total_expense"><i class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+
   	</div>
-  	<div class="row row-custom">
+  	{{-- <div class="row row-custom">
         <!-- expense -->
         <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
           <div class="info-box info-box-new-style">
@@ -149,7 +171,7 @@
           </div>
           <!-- /.info-box -->
         </div>
-    </div>
+    </div> --}}
     @if(!empty($widgets['after_sale_purchase_totals']))
       @foreach($widgets['after_sale_purchase_totals'] as $widget)
         {!! $widget !!}
@@ -188,7 +210,14 @@
   	<!-- products less than alert quntity -->
   	<div class="row">
 
-      <div class="col-sm-6">
+      <div class="
+        @if(auth()->user()->business->id == 11)
+        col-sm-12
+        @endif
+        @if(auth()->user()->business->id != 11)
+        col-sm-6
+        @endif
+      ">
         @component('components.widget', ['class' => 'box-warning'])
           @slot('icon')
             <i class="fa fa-exclamation-triangle text-yellow" aria-hidden="true"></i>

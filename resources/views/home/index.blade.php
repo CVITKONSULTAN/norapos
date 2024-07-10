@@ -49,6 +49,7 @@
 	</div>
 	<br>
 	<div class="row row-custom">
+    @if(auth()->user()->business->id != 11)
     	<div class="col-md-3 col-sm-6 col-xs-12 col-custom">
 	      <div class="info-box info-box-new-style">
 	        <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
@@ -61,13 +62,20 @@
 	      </div>
 	      <!-- /.info-box -->
 	    </div>
+    @endif
 	    <!-- /.col -->
 	    <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
 	      <div class="info-box info-box-new-style">
 	        <span class="info-box-icon bg-aqua"><i class="ion ion-ios-cart-outline"></i></span>
 
 	        <div class="info-box-content">
-	          <span class="info-box-text">{{ __('home.total_sell') }}</span>
+	          <span class="info-box-text">
+            @if(auth()->user()->business->id != 11)
+              {{ __('home.total_sell') }}
+            @else
+              Total Transaksi
+            @endif
+            </span>
 	          <span class="info-box-number total_sell"><i class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
 	        </div>
 	        <!-- /.info-box-content -->
@@ -75,6 +83,7 @@
 	      <!-- /.info-box -->
 	    </div>
 	    <!-- /.col -->
+      @if(auth()->user()->business->id != 11)
 	    <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
 	      <div class="info-box info-box-new-style">
 	        <span class="info-box-icon bg-yellow">
@@ -90,6 +99,7 @@
 	      </div>
 	      <!-- /.info-box -->
 	    </div>
+      @endif
 	    <!-- /.col -->
 
 	    <!-- fix for small devices only -->
@@ -102,7 +112,13 @@
 	        </span>
 
 	        <div class="info-box-content">
-	          <span class="info-box-text">{{ __('home.invoice_due') }}</span>
+	          <span class="info-box-text">
+            @if(auth()->user()->business->id != 11)
+              {{ __('home.invoice_due') }}
+            @else
+              Total Kurang Bayar
+            @endif
+            </span>
 	          <span class="info-box-number invoice_due"><i class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
 	        </div>
 	        <!-- /.info-box-content -->
@@ -121,7 +137,11 @@
 
             <div class="info-box-content">
               <span class="info-box-text">
-                {{ __('lang_v1.expense') }}
+                @if(auth()->user()->business->id == 11)
+                  Pengeluaran
+                @else
+                  {{ __('lang_v1.expense') }}
+                @endif
               </span>
               <span class="info-box-number total_expense"><i class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
             </div>
@@ -174,7 +194,11 @@
             <i class="fa fa-exclamation-triangle text-yellow" aria-hidden="true"></i>
           @endslot
           @slot('title')
-            {{ __('lang_v1.sales_payment_dues') }} @show_tooltip(__('lang_v1.tooltip_sales_payment_dues'))
+            @if(auth()->user()->business->id != 11)
+              {{ __('lang_v1.sales_payment_dues') }} @show_tooltip(__('lang_v1.tooltip_sales_payment_dues'))
+            @else
+              Jumlah Kurang Bayar
+            @endif
           @endslot
           <table class="table table-bordered table-striped" id="sales_payment_dues_table">
             <thead>
@@ -188,6 +212,7 @@
         @endcomponent
       </div>
 
+    @if(auth()->user()->business->id != 11)
   		<div class="col-sm-6">
 
         @component('components.widget', ['class' => 'box-warning'])
@@ -209,55 +234,59 @@
         @endcomponent
 
   		</div>
+    @endif
+
     </div>
 
-    <div class="row">
-      
-      <div class="col-sm-6">
-        @component('components.widget', ['class' => 'box-warning'])
-          @slot('icon')
-            <i class="fa fa-exclamation-triangle text-yellow" aria-hidden="true"></i>
-          @endslot
-          @slot('title')
-            {{ __('home.product_stock_alert') }} @show_tooltip(__('tooltip.product_stock_alert'))
-          @endslot
-          <table class="table table-bordered table-striped" id="stock_alert_table">
-            <thead>
-              <tr>
-                <th>@lang( 'sale.product' )</th>
-                <th>@lang( 'business.location' )</th>
-                        <th>@lang( 'report.current_stock' )</th>
-              </tr>
-            </thead>
-          </table>
-        @endcomponent
+    @if(auth()->user()->business->id != 11)
+      <div class="row">
+        <div class="col-sm-6">
+          @component('components.widget', ['class' => 'box-warning'])
+            @slot('icon')
+              <i class="fa fa-exclamation-triangle text-yellow" aria-hidden="true"></i>
+            @endslot
+            @slot('title')
+              {{ __('home.product_stock_alert') }} @show_tooltip(__('tooltip.product_stock_alert'))
+            @endslot
+            <table class="table table-bordered table-striped" id="stock_alert_table">
+              <thead>
+                <tr>
+                  <th>@lang( 'sale.product' )</th>
+                  <th>@lang( 'business.location' )</th>
+                          <th>@lang( 'report.current_stock' )</th>
+                </tr>
+              </thead>
+            </table>
+          @endcomponent
+        </div>
+
+        @can('stock_report.view')
+          @if(session('business.enable_product_expiry') == 1)
+            <div class="col-sm-6">
+                @component('components.widget', ['class' => 'box-warning'])
+                    @slot('icon')
+                      <i class="fa fa-exclamation-triangle text-yellow" aria-hidden="true"></i>
+                    @endslot
+                    @slot('title')
+                      {{ __('home.stock_expiry_alert') }} @show_tooltip( __('tooltip.stock_expiry_alert', [ 'days' =>session('business.stock_expiry_alert_days', 30) ]) )
+                    @endslot
+                    <input type="hidden" id="stock_expiry_alert_days" value="{{ \Carbon::now()->addDays(session('business.stock_expiry_alert_days', 30))->format('Y-m-d') }}">
+                    <table class="table table-bordered table-striped" id="stock_expiry_alert_table">
+                      <thead>
+                        <tr>
+                            <th>@lang('business.product')</th>
+                            <th>@lang('business.location')</th>
+                            <th>@lang('report.stock_left')</th>
+                            <th>@lang('product.expires_in')</th>
+                        </tr>
+                      </thead>
+                    </table>
+                @endcomponent
+            </div>
+          @endif
+        @endcan
       </div>
-      @can('stock_report.view')
-        @if(session('business.enable_product_expiry') == 1)
-          <div class="col-sm-6">
-              @component('components.widget', ['class' => 'box-warning'])
-                  @slot('icon')
-                    <i class="fa fa-exclamation-triangle text-yellow" aria-hidden="true"></i>
-                  @endslot
-                  @slot('title')
-                    {{ __('home.stock_expiry_alert') }} @show_tooltip( __('tooltip.stock_expiry_alert', [ 'days' =>session('business.stock_expiry_alert_days', 30) ]) )
-                  @endslot
-                  <input type="hidden" id="stock_expiry_alert_days" value="{{ \Carbon::now()->addDays(session('business.stock_expiry_alert_days', 30))->format('Y-m-d') }}">
-                  <table class="table table-bordered table-striped" id="stock_expiry_alert_table">
-                    <thead>
-                      <tr>
-                          <th>@lang('business.product')</th>
-                          <th>@lang('business.location')</th>
-                          <th>@lang('report.stock_left')</th>
-                          <th>@lang('product.expires_in')</th>
-                      </tr>
-                    </thead>
-                  </table>
-              @endcomponent
-          </div>
-        @endif
-      @endcan
-  	</div>
+    @endif
 
     @if(!empty($widgets['after_dashboard_reports']))
       @foreach($widgets['after_dashboard_reports'] as $widget)

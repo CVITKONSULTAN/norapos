@@ -838,7 +838,7 @@ class AdminSidebarMenu
                     function ($sub) {
                         $sub->url(
                             action('ExpenseController@index'),
-                            "Daftar Pengeualaran",
+                            "Daftar Pengeluaran",
                             ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]
                         );
                         $sub->url(
@@ -886,7 +886,7 @@ class AdminSidebarMenu
                         if (in_array('expenses', $enabled_modules) && auth()->user()->can('expense_report.view')) {
                             $sub->url(
                                 action('ReportController@getExpenseReport'),
-                                "Laporan catatan pengeluaran",
+                                "Laporan Catatan Pengeluaran",
                                 ['icon' => 'fa fas fa-search-minus', 'active' => request()->segment(2) == 'expense-report']
                             );
                         }

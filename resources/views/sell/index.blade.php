@@ -166,15 +166,23 @@ $(document).ready( function(){
             { data: 'final_total', name: 'final_total'},
             { data: 'total_paid', name: 'total_paid', "searchable": false},
             { data: 'total_remaining', name: 'total_remaining'},
-            { data: 'return_due', orderable: false, "searchable": false},
-            { data: 'shipping_status', name: 'shipping_status'},
-            { data: 'total_items', name: 'total_items', "searchable": false},
+            { data: 'return_due', orderable: false, "searchable": false,
+                @if(auth()->user()->business->id == 11) "visible":false @endif
+            },
+            { data: 'shipping_status', name: 'shipping_status',
+                @if(auth()->user()->business->id == 11) "visible":false @endif
+            },
+            { data: 'total_items', name: 'total_items', "searchable": false,
+                @if(auth()->user()->business->id == 11) "visible":false @endif
+            },
             { data: 'types_of_service_name', name: 'tos.name', @if(empty($is_types_service_enabled)) visible: false @endif},
             { data: 'service_custom_field_1', name: 'service_custom_field_1', @if(empty($is_types_service_enabled)) visible: false @endif},
             { data: 'added_by', name: 'u.first_name'},
             { data: 'additional_notes', name: 'additional_notes'},
             { data: 'staff_note', name: 'staff_note'},
-            { data: 'shipping_details', name: 'shipping_details'},
+            { data: 'shipping_details', name: 'shipping_details',
+                @if(auth()->user()->business->id == 11) "visible":false @endif
+            },
             { data: 'table_name', name: 'tables.name', @if(empty($is_tables_enabled)) visible: false @endif },
             { data: 'waiter', name: 'ss.first_name', @if(empty($is_service_staff_enabled)) visible: false @endif },
         ],

@@ -704,7 +704,7 @@ class APIController extends Controller
             return Helper::DataReturn(false,"Belum ada buka kasir");
         }
 
-        // try {
+        try {
 
             //Check Customer credit limit
             $is_credit_limit_exeeded = $this->transactionUtil->isCustomerCreditLimitExeeded($input);
@@ -958,17 +958,17 @@ class APIController extends Controller
             } else {
                 $output = Helper::DataReturn(false,trans("messages.something_went_wrong"));
             }
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-        //     $msg = trans("messages.something_went_wrong");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            $msg = trans("messages.something_went_wrong");
                 
-        //     if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
-        //         $msg = $e->getMessage();
-        //     }
+            if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
+                $msg = $e->getMessage();
+            }
 
-        //     $output = Helper::DataReturn(false,$msg);
-        // }
+            $output = Helper::DataReturn(false,$msg);
+        }
 
         return $output;
     }
@@ -1018,6 +1018,91 @@ class APIController extends Controller
         
         return Helper::DataReturn(true,"OK",$data);
         
+    }
+
+    function checkinList(Request $request){
+
+            $business_id = $request->user()->business->id ?? 0;
+
+            $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+
+            $with = [];
+            $shipping_statuses = $this->transactionUtil->shipping_statuses();
+            $sells = $this->transactionUtil->getListSells($business_id);
+
+            $permitted_locations = auth()->user()->permitted_locations();
+            if ($permitted_locations != 'all') {
+                $sells->whereIn('transactions.location_id', $permitted_locations);
+            }
+
+            //Add condition for created_by,used in sales representative sales report
+            if (request()->has('created_by')) {
+                $created_by = request()->get('created_by');
+                if (!empty($created_by)) {
+                    $sells->where('transactions.created_by', $created_by);
+                }
+            }
+
+            if (!empty(request()->input('payment_status')) && request()->input('payment_status') != 'overdue') {
+                $sells->where('transactions.payment_status', request()->input('payment_status'));
+            } elseif (request()->input('payment_status') == 'overdue') {
+                $sells->whereIn('transactions.payment_status', ['due', 'partial'])
+                    ->whereNotNull('transactions.pay_term_number')
+                    ->whereNotNull('transactions.pay_term_type')
+                    ->whereRaw("IF(transactions.pay_term_type='days', DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number DAY) < CURDATE(), DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number MONTH) < CURDATE())");
+            }
+
+            //Add condition for location,used in sales representative expense report
+            if (request()->has('location_id')) {
+                $location_id = request()->get('location_id');
+                if (!empty($location_id)) {
+                    $sells->where('transactions.location_id', $location_id);
+                }
+            }
+
+            if (!empty(request()->customer_id)) {
+                $customer_id = request()->customer_id;
+                $sells->where('contacts.id', $customer_id);
+            }
+
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end =  request()->end_date;
+                $sells->whereDate('transactions.transaction_date', '>=', $start)
+                            ->whereDate('transactions.transaction_date', '<=', $end);
+            }
+
+            if (!empty(request()->input('sub_type'))) {
+                $sells->where('transactions.sub_type', request()->input('sub_type'));
+            }
+
+            if (!empty(request()->input('created_by'))) {
+                $sells->where('transactions.created_by', request()->input('created_by'));
+            }
+
+            if (!empty(request()->input('sales_cmsn_agnt'))) {
+                $sells->where('transactions.commission_agent', request()->input('sales_cmsn_agnt'));
+            }
+
+            if (!empty(request()->input('service_staffs'))) {
+                $sells->where('transactions.res_waiter_id', request()->input('service_staffs'));
+            }
+            $only_shipments = request()->only_shipments == 'true' ? true : false;
+            if ($only_shipments && auth()->user()->can('access_shipping')) {
+                $sells->whereNotNull('transactions.shipping_status');
+            }
+
+            if (!empty(request()->input('shipping_status'))) {
+                $sells->where('transactions.shipping_status', request()->input('shipping_status'));
+            }
+            
+            $sells->groupBy('transactions.id');
+
+            $with[] = 'payment_lines';
+            if (!empty($with)) {
+                $sells->with($with);
+            }
+            return $sells;
     }
 
 

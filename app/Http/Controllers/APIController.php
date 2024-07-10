@@ -994,11 +994,27 @@ class APIController extends Controller
         $date = $request->date ?? date("Y-m-d");
 
         $business_id = $request->user()->business->id ?? 0;
-        
-        $data = \App\Transaction::where('created_at',$date)
-        ->with('sell_lines')
+        // dd($date);
+        $data = \App\Transaction::with('sell_lines.product','contact','payment_lines')
+        ->whereDate('transaction_date',$date)
         ->where('business_id',$business_id)
         ->get();
+
+        $res = [];
+
+        foreach ($data as $key => $value) {
+            $room_name = $value["sell_lines"][0]["product"]["name"] ?? "";
+            $contact_name = $value["contact"]["name"] ?? "";
+            $res[] = [
+                "id"=>$value["id"],
+                "tagihan"=>$value["final_total"],
+                "tgl_checkin"=> \Carbon::parse($value['transaction_date'])->format("d/m/Y"),
+                "lama_menginap"=>$value["pay_term_number"],
+                "no_kamar"=>$room_name,
+                "pengunjung"=>$contact_name,
+                "estimasi_checkout"=> \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y"),
+            ];
+        }
         
         return Helper::DataReturn(true,"OK",$data);
         

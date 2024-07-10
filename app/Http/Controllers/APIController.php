@@ -989,5 +989,20 @@ class APIController extends Controller
         return Helper::DataReturn(true,"OK",$data);
     }
 
+    function getCheckin(Request $request){
+
+        $date = $request->date ?? date("Y-m-d");
+
+        $business_id = $request->user()->business->id ?? 0;
+        
+        $data = \App\Transaction::where('created_at',$date)
+        ->with('sell_lines')
+        ->where('business_id',$business_id)
+        ->get();
+        
+        return Helper::DataReturn(true,"OK",$data);
+        
+    }
+
 
 }

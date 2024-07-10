@@ -834,21 +834,21 @@ class AdminSidebarMenu
             //Expense dropdown
             if (in_array('expenses', $enabled_modules) && (auth()->user()->can('expense.access') || auth()->user()->can('view_own_expense'))) {
                 $menu->dropdown(
-                    __('expense.expenses'),
+                    "Pengeluaran",
                     function ($sub) {
                         $sub->url(
                             action('ExpenseController@index'),
-                            __('lang_v1.list_expenses'),
+                            "Daftar Pengeualaran",
                             ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == null]
                         );
                         $sub->url(
                             action('ExpenseController@create'),
-                            __('expense.add_expense'),
+                            "Tambah Pengeluaran",
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'expenses' && request()->segment(2) == 'create']
                         );
                         $sub->url(
                             action('ExpenseCategoryController@index'),
-                            __('expense.expense_categories'),
+                            "Kategori Pengeluaran",
                             ['icon' => 'fa fas fa-circle', 'active' => request()->segment(1) == 'expense-categories']
                         );
                     },
@@ -878,7 +878,7 @@ class AdminSidebarMenu
 
                             $sub->url(
                                 action('ReportController@getproductSellReport'),
-                                __('lang_v1.product_sell_report'),
+                                "Laporan Transaksi",
                                 ['icon' => 'fa fas fa-arrow-circle-up', 'active' => request()->segment(2) == 'product-sell-report']
                             );
 
@@ -886,7 +886,7 @@ class AdminSidebarMenu
                         if (in_array('expenses', $enabled_modules) && auth()->user()->can('expense_report.view')) {
                             $sub->url(
                                 action('ReportController@getExpenseReport'),
-                                __('report.expense_report'),
+                                "Laporan catatan pengeluaran",
                                 ['icon' => 'fa fas fa-search-minus', 'active' => request()->segment(2) == 'expense-report']
                             );
                         }

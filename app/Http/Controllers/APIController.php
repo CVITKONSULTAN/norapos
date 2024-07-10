@@ -1102,7 +1102,7 @@ class APIController extends Controller
             if (!empty($with)) {
                 $sells->with($with);
             }
-            return Helper::DataReturn(true,"OK",$sells);
+            return Helper::DataReturn(true,"OK",$sells->get());
     }
 
 

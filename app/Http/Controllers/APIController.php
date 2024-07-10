@@ -323,7 +323,9 @@ class APIController extends Controller
             }
         }
 
-        return $result;
+        return response()->json(
+            Helper::DataReturn(true,"OK",$result)
+            ,200);
     }
 
     function getBusiness(){
@@ -339,7 +341,9 @@ class APIController extends Controller
                 $business['user']['api_token'],
             );
         }
-        return $business;
+        return response()->json(
+            Helper::DataReturn(true,"OK",$business)
+            ,200);
     }
 
     /**
@@ -394,7 +398,9 @@ class APIController extends Controller
             $contacts->addSelect('total_rp');
         // }
         $contacts = $contacts->get();
-        return $contacts;
+        return response()->json(
+            Helper::DataReturn(true,"OK",$contacts)
+            ,200);
     }
 
     function storeCustomer(Request $request){

@@ -195,7 +195,8 @@ $(document).ready( function(){
             var footer_total_remaining = 0;
             var footer_total_sell_return_due = 0;
             for (var r in data){
-                const total_paid_row = typeof($(data[r].total_paid).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_paid).data('orig-value')) : 0;
+                let total_paid_row = typeof($(data[r].total_paid).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_paid).data('orig-value')) : 0;
+                total_paid_row = isNaN(total_paid_row) ? 0 : total_paid_row;
                 console.log("total_paid_row",r,total_paid_row);
                 footer_sale_total += typeof($(data[r].final_total).data('orig-value')) != 'undefined' ? parseFloat($(data[r].final_total).data('orig-value')) : 0;
                 footer_total_paid += total_paid_row;

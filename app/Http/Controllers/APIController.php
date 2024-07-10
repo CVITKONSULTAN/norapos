@@ -359,6 +359,7 @@ class APIController extends Controller
         $user_id = $user->id;
 
         $contacts = Contact::where('business_id', $business_id)
+                        ->orderBy('id',"desc")
                         ->active();
 
         $selected_contacts = User::isSelectedContacts($user_id);
@@ -394,6 +395,83 @@ class APIController extends Controller
         // }
         $contacts = $contacts->get();
         return $contacts;
+    }
+
+    function storeCustomer(Request $request){
+        try {
+
+            $user = request()->user();
+            $business = $user->business ?? false;
+
+            $business_id = $business->id;
+            $user_id = $user->id;
+
+            $data = $request->only(['name', 'email','mobile']);
+
+            if($request->insert){
+                $customer = Contact::where('business_id', $business_id)
+                            ->where('mobile', $data['mobile'])
+                            ->whereIn('type', ['customer', 'both'])
+                            ->first();
+    
+                if (!empty($customer)) {
+                    return response()->json(
+                        Helper::DataReturn(false,"User/Mobile is already registered")
+                        ,400);
+                }
+                    $data['type'] = 'customer';
+                    $data['business_id'] = $business_id;
+                    $data['created_by'] = $user_id;
+                    $data['credit_limit'] = null;
+                    // $data['mobile'] = 0;
+    
+                    $ref_count = $this->commonUtil->setAndGetReferenceCount('contacts', $business_id);
+    
+                    $data['contact_id'] = $this->commonUtil->generateReferenceNumber('contacts', $ref_count, $business_id);
+    
+                    $customer = Contact::create($data);
+                    return response()->json(
+                        Helper::DataReturn(true,"OK")
+                    ,200);
+            }
+
+            if($request->update){
+                $customer = Contact::find($request->id ?? 0);
+                if(empty($customer)){
+                    return response()->json(
+                        Helper::DataReturn(false,"User not found")
+                        ,400);
+                }
+                $customer->update($data);
+                return response()->json(
+                    Helper::DataReturn(true,"OK")
+                ,200);
+            }
+
+            if($request->delete){
+                $customer = Contact::find($request->id ?? 0);
+                if(empty($customer)){
+                    return response()->json(
+                        Helper::DataReturn(false,"User not found")
+                        ,400);
+                }
+                $customer->delete();
+                return response()->json(
+                    Helper::DataReturn(true,"OK")
+                ,200);
+            }
+
+            return response()->json(
+                Helper::DataReturn(true,"COMMAND NOT FOUND")
+            ,400);
+
+        } catch (\Exception $e) {
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
+            return response()->json(
+                Helper::DataReturn(false,$e->getMessage())
+                ,500);
+        }
     }
 
     function getProductRow($variation_id,$location_id){

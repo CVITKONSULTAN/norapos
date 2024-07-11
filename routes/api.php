@@ -26,13 +26,17 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::post('/customers', 'APIController@getCustomers');
     Route::post('/customers/store', 'APIController@storeCustomer');
 
-    Route::post('/checkout/store', 'APIController@checkoutStore');
     
     Route::post('/products/list', 'APIController@getProducts');
+    
+    Route::post('/pos', 'APIController@store_POS');
+
+    // hotel kartika punya
     Route::post('/checkin/list', 'APIController@getCheckin');
     Route::post('/checkin/list/v2', 'APIController@checkinList');
-
-    Route::post('/pos', 'APIController@store_POS');
+    Route::post('/checkout/store', 'APIController@checkoutStore');
+    Route::post('/checkin/update', 'APIController@checkinUpdate');
+    // end hotel kartika
 
 });
 

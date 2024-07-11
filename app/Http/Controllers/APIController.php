@@ -1141,5 +1141,84 @@ class APIController extends Controller
         return Helper::DataReturn(true,"Data berhasil disimpan!");
     }
 
+    function checkinUpdate(Request $request){
+        $t = \App\Transaction::where("id",$request->id)
+        ->whereNull('shipping_status')
+        ->first();
+        if(empty($t))
+        return Helper::DataReturn(false,"Data not found");
+
+
+        $amount = $request->amount ?? 0;
+        $notes = $request->notes ?? "";
+        $product_id = $request->product_id ?? 0;
+
+        $business_id = $request->user()->business->id ?? 0;
+        $location_id = $request->user()->business->locations->first()->id ?? 0;
+
+        $payment = [
+            "amount"=>$amount,
+            "method"=>"cash",
+            "note"=>$notes
+        ];
+
+         $product = \App\Product::join('variations', 'products.id', '=', 'variations.product_id')
+                ->active()
+                ->whereNull('variations.deleted_at')
+                ->where('products.id',$product_id)
+                ->leftjoin('units as U', 'products.unit_id', '=', 'U.id')
+                ->leftjoin(
+                    'variation_location_details AS VLD',
+                    function ($join) use ($location_id) {
+                        $join->on('variations.id', '=', 'VLD.variation_id');
+
+                        //Include Location
+                        if (!empty($location_id)) {
+                            $join->where(function ($query) use ($location_id) {
+                                $query->where('VLD.location_id', '=', $location_id);
+                                //Check null to show products even if no quantity is available in a location.
+                                //TODO: Maybe add a settings to show product not available at a location or not.
+                                $query->orWhereNull('VLD.location_id');
+                            });
+                            ;
+                        }
+                    }
+                )
+                ->select(
+                    'products.id as product_id',
+                    'products.name',
+                    'products.type',
+                    'products.enable_stock',
+                    'products.type as product_type',
+                    'products.unit_id as product_unit_id',
+                    'products.sub_unit_ids as sub_unit_id',
+                    'products.tax as tax_id',
+                    'variations.id as variation_id',
+                    'variations.name as variation',
+                    'VLD.qty_available',
+                    'variations.sell_price_inc_tax as selling_price',
+                    'variations.sell_price_inc_tax as unit_price',
+                    'variations.sell_price_inc_tax as unit_price_inc_tax',
+                    'variations.sub_sku',
+                    'U.short_name as unit'
+                )
+                ->groupBy('variations.id')
+                ->first();
+
+        $sell_lines = $t->sell_lines()->first();
+        $sell_lines->update([
+            'product_id'=> $product_id,
+            "unit_price_before_discount"=> $product->selling_price,
+            "unit_price"=> $product->selling_price,
+            "unit_price_inc_tax"=> $product->selling_price
+        ]);
+        $t->payment_lines()->delete();
+        $this->transactionUtil->createOrUpdatePaymentLines($t, [$payment]);
+        $this->transactionUtil->updatePaymentStatus($t->id, $amount);
+
+        return Helper::DataReturn(true,"Data berhasil di ubah");
+
+    }
+
 
 }

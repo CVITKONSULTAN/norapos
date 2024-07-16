@@ -292,7 +292,20 @@ class ProductController extends Controller
         $pos_module_data = $this->moduleUtil->getModuleData('get_filters_for_list_product_screen');
 
         $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
-
+        if(in_array(auth()->user()->id,[11,21])){
+            return view('product.hotel.index')
+                ->with(compact(
+                    'rack_enabled',
+                    'categories',
+                    'brands',
+                    'units',
+                    'taxes',
+                    'business_locations',
+                    'show_manufacturing_data',
+                    'pos_module_data',
+                    'is_woocommerce'
+                ));
+        }
         return view('product.index')
             ->with(compact(
                 'rack_enabled',

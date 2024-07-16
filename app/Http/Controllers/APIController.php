@@ -380,16 +380,33 @@ class APIController extends Controller
         $price_group_id = request()->input('price_group', '');
         $product_types = request()->get('product_types', []);
 
+        $business_type = request()->get('business_type', null);
+
         $search_fields = request()->get('search_fields', ['name', 'sku']);
         if (in_array('sku', $search_fields)) {
             $search_fields[] = 'sub_sku';
         }
 
-        $result = $this->productUtil->filterProductAPI($business_id, $search_term, $location_id, $not_for_selling, $price_group_id, $product_types, $search_fields, $check_qty);
-
-        if(env("APP_LOCALE") === "id"){
-            foreach ($result as $key => $value) {
-                $result[$key]["selling_price"] = number_format($value->selling_price,0,",",".");
+        if($business_type == "hotel"){
+            $result = \App\Product::where('products.business_id',$business->id)
+            ->leftjoin('brands', 'brands.id', '=', 'products.brand_id')
+            ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.product_id', '=', 'products.id')
+            ->orderBy('transaction_sell_lines.created_at','desc')
+            ->select(
+                'products.id as id',
+                'products.name as ROOM NAME',
+                'products.not_for_selling as OUT OF SERVICE',
+                "brands.name as BRAND NAME",
+                "transaction_sell_lines.created_at as LAST CHECK IN"
+            )
+            ->get();
+        } else {
+            $result = $this->productUtil->filterProductAPI($business_id, $search_term, $location_id, $not_for_selling, $price_group_id, $product_types, $search_fields, $check_qty);
+    
+            if(env("APP_LOCALE") === "id"){
+                foreach ($result as $key => $value) {
+                    $result[$key]["selling_price"] = number_format($value->selling_price,0,",",".");
+                }
             }
         }
 

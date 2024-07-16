@@ -1220,5 +1220,77 @@ class APIController extends Controller
 
     }
 
+    function hotel_ota(){
+        $data = [
+            [
+                'label'=>"Traveloka",
+                'value'=>"Traveloka"
+            ],
+            [
+                'label'=>"Tiket.com",
+                'value'=>"Tiket.com"
+            ],
+            [
+                'label'=>"Agoda",
+                'value'=>"Agoda"
+            ],
+            [
+                'label'=>"Booking.com",
+                'value'=>"Booking.com"
+            ],
+            [
+                'label'=>"Trivago",
+                'value'=>"Trivago"
+            ],
+            [
+                'label'=>"Airbnb",
+                'value'=>"Airbnb"
+            ],
+            [
+                'label'=>"TripAdvisor",
+                'value'=>"TripAdvisor"
+            ],
+            [
+                'label'=>"Nusatrip",
+                'value'=>"Nusatrip"
+            ],
+            [
+                'label'=>"Skyscanner",
+                'value'=>"Skyscanner"
+            ],
+            [
+                'label'=>"Expedia",
+                'value'=>"Expedia"
+            ]
+        ];
+        return Helper::DataReturn(
+            true,
+            "OK",
+            $data
+        );
+    }
+
+    function hotel_payment(){
+        $data = [
+            [
+                'label'=>"Cash",
+                'value'=>"Cash"
+            ],
+            [
+                'label'=>"Transfer",
+                'value'=>"Transfer"
+            ],
+            [
+                'label'=>"Lainnya",
+                'value'=>"Lainnya"
+            ],
+        ];
+        return Helper::DataReturn(
+            true,
+            "OK",
+            $data
+        );
+    }
+
 
 }

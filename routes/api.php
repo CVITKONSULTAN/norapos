@@ -31,6 +31,9 @@ Route::group(['middleware'=>'auth:api'],function(){
     
     Route::post('/pos', 'APIController@store_POS');
 
+    Route::post('/hotel/ota', 'APIController@hotel_ota');
+    Route::post('/hotel/payment', 'APIController@hotel_payment');
+
     // hotel kartika punya
     Route::post('/checkin/list', 'APIController@getCheckin');
     Route::post('/checkin/list/v2', 'APIController@checkinList');

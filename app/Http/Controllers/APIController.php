@@ -1064,6 +1064,7 @@ class APIController extends Controller
             $res[] = [
                 "id"=>$value["id"],
                 "status"=> $value['shipping_status'] == "delivered" ? "Out" : "In",
+                "deposit"=> number_format($value['service_custom_field_3'],0,",","."),
                 "tagihan"=> number_format($value["final_total"],0,",","."),
                 "telah_dibayar"=> number_format($value["total_paid"],0,",","."),
                 "sisa"=> number_format(($value["final_total"] - $value["total_paid"]),0,",","."),
@@ -1171,6 +1172,7 @@ class APIController extends Controller
         if(empty($t))
         return Helper::DataReturn(false,"Data not found");
 
+        $deposit_return = $request->deposit_return ?? 0;
         $amount = $request->amount ?? 0;
         $notes = $request->notes ?? "";
 
@@ -1182,7 +1184,14 @@ class APIController extends Controller
 
         $this->transactionUtil->createOrUpdatePaymentLines($t, [$payment]);
         $this->transactionUtil->updatePaymentStatus($t->id, $amount);
-        $t->update(["shipping_status"=>"delivered","additional_notes"=>$notes]);
+
+        $total_depo = intval($t->service_custom_field_3) - intval($deposit_return);
+        
+        $t->update([
+            "shipping_status"=>"delivered",
+            "additional_notes"=>$notes,
+            "service_custom_field_3"=>$total_depo
+        ]);
 
         return Helper::DataReturn(true,"Data berhasil disimpan!");
     }

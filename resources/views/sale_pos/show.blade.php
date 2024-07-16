@@ -24,13 +24,14 @@
         <b>{{ __('sale.payment_status') }}:</b> @if(!empty($sell->payment_status)){{ __('lang_v1.' . $sell->payment_status) }}<br>
         @endif
       </div>
+      @if($sell->contact)
       <div class="col-sm-4">
-        <b>{{ __('sale.customer_name') }}:</b> {{ $sell->contact->name }}<br>
+        <b>{{ __('sale.customer_name') }}:</b> {{ $sell->contact->name ?? "" }}<br>
         <b>{{ __('business.address') }}:</b><br>
         @if(!empty($sell->billing_address()))
           {{$sell->billing_address()}}
         @else
-          {!! $sell->contact->contact_address !!}
+          {!! $sell->contact->contact_address ?? "" !!}
           @if($sell->contact->mobile)
           <br>
               {{__('contact.mobile')}}: {{ $sell->contact->mobile }}
@@ -46,6 +47,7 @@
         @endif
         
       </div>
+      @endif
       <div class="col-sm-4">
       @if(in_array('tables' ,$enabled_modules))
          <strong>@lang('restaurant.table'):</strong>

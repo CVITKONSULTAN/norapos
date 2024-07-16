@@ -26,6 +26,9 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SellController extends Controller
 {
+    
+    private $hotel_id = [11,21];
+
     /**
      * All Utils instance.
      *
@@ -324,6 +327,15 @@ class SellController extends Controller
                         return $html;
                     }
                 )
+                ->addColumn('pembayaran',function($row){
+                    return $row->service_custom_field_1;
+                })
+                ->addColumn('OTA',function($row){
+                    return $row->service_custom_field_2;
+                })
+                ->addColumn('deposit',function($row){
+                    return number_format($row->service_custom_field_3,0,',','.');
+                })
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',
@@ -405,8 +417,15 @@ class SellController extends Controller
                     return $invoice_no;
                 })
                 ->editColumn('shipping_status', function ($row) use ($shipping_statuses) {
-                    $status_color = !empty($this->shipping_status_colors[$row->shipping_status]) ? $this->shipping_status_colors[$row->shipping_status] : 'bg-gray';
-                    $status = !empty($row->shipping_status) ? '<a href="#" class="btn-modal" data-href="' . action('SellController@editShipping', [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color .'">' . $shipping_statuses[$row->shipping_status] . '</span></a>' : '';
+                    $status = '';
+                    if(in_array(auth()->user()->id,$this->hotel_id)){
+                        if(!empty($row->shipping_status)){
+                            $status = '<span class="label bg-red">Check out</span>';
+                        }
+                    } else {
+                        $status_color = !empty($this->shipping_status_colors[$row->shipping_status]) ? $this->shipping_status_colors[$row->shipping_status] : 'bg-gray';
+                        $status = !empty($row->shipping_status) ? '<a href="#" class="btn-modal" data-href="' . action('SellController@editShipping', [$row->id]) . '" data-container=".view_modal"><span class="label ' . $status_color .'">' . $shipping_statuses[$row->shipping_status] . '</span></a>' : '';
+                    }
                      
                     return $status;
                 })
@@ -454,6 +473,11 @@ class SellController extends Controller
         $service_staffs = null;
         if ($this->productUtil->isModuleEnabled('service_staff')) {
             $service_staffs = $this->productUtil->serviceStaffDropdown($business_id);
+        }
+
+        if(in_array(auth()->user()->id,$this->hotel_id)){
+            return view('sell.hotel.index')
+            ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled'));
         }
 
         return view('sell.index')

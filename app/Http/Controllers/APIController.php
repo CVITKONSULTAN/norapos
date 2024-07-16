@@ -704,6 +704,31 @@ class APIController extends Controller
         $business_id = $business->id;
         $is_direct_sale = false;
 
+        if($request->has('hotel')){
+
+            $product = $request->products[0] ?? null;
+
+            if(empty($product))
+            return response()->json(
+                Helper::DataReturn(false,"Product not found"), 
+            400); 
+
+            $check = \App\TransactionSellLine::where([
+                'product_id'=>$product['product_id'],
+            ])
+            ->whereHas('transaction',function($q){
+                return $q->whereNull('shipping_status');
+            })
+            ->where('created_at','like', "%".date('Y-m-d')."%" )
+            ->first();
+
+            if($check)
+            return response()->json(
+                Helper::DataReturn(false,"Room sudah ada yang checkin..."), 
+            400); 
+        }
+
+
         if(!isset($input['location_id']) || empty($input['location_id'])){
             $input['location_id'] = 0;
             $location = $business->locations()->first();

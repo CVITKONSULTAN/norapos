@@ -4695,6 +4695,9 @@ class TransactionUtil extends Util
         $transaction_data['business_id'] = $business_id;
         $transaction_data['created_by'] = $user_id;
         $transaction_data['type'] = 'expense';
+        if($request->has('sub_type')){
+            $transaction_data['sub_type'] = $request->sub_type ?? "";
+        }
         $transaction_data['status'] = 'final';
         $transaction_data['payment_status'] = 'due';
         $transaction_data['final_total'] = $format_data ? $this->num_uf(

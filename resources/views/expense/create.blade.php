@@ -28,11 +28,16 @@
 						{!! Form::select('location_id', $business_locations, $default_location, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required'], $bl_attributes); !!}
 					</div>
 				</div>
-
 				<div class="col-sm-4">
 					<div class="form-group">
 						{!! Form::label('expense_category_id', __('expense.expense_category').':') !!}
 						{!! Form::select('expense_category_id', $expense_categories, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="form-group">
+						{!! Form::label('sub_type', 'Tipe :') !!}
+						{!! Form::select('sub_type', $subtype, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
 					</div>
 				</div>
 				<div class="col-sm-4">

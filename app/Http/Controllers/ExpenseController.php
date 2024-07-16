@@ -290,8 +290,10 @@ class ExpenseController extends Controller
             $accounts = Account::forDropdown($business_id, true, false, true);
         }
 
+        $subtype = ["investasi"=>"Investasi","konsumtif"=>"Konsumtif"];
+
         return view('expense.create')
-            ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'contacts'));
+            ->with(compact('subtype','expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'contacts'));
     }
 
     /**

@@ -397,9 +397,13 @@ class APIController extends Controller
                 'products.name as ROOM NAME',
                 'products.not_for_selling as OUT OF SERVICE',
                 "brands.name as BRAND NAME",
-                "transaction_sell_lines.created_at as LAST CHECK IN"
+                "transaction_sell_lines.created_at as LAST CHECK IN",
             )
             ->get();
+            foreach ($result as $key => $value) {
+                $result[$key]['TODAY AVAILABLE'] = str_contains($value['LAST CHECK IN'], date('Y-m-d')) ? 0 : 1;
+            }
+            
         } else {
             $result = $this->productUtil->filterProductAPI($business_id, $search_term, $location_id, $not_for_selling, $price_group_id, $product_types, $search_fields, $check_qty);
     

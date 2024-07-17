@@ -389,7 +389,7 @@ class APIController extends Controller
 
         if($business_type == "hotel"){
             $result = \App\Product::where('products.business_id',$business->id)
-            ->join('variations', 'products.id', '=', 'variations.product_id')
+            ->leftjoin('variations', 'products.id', '=', 'variations.product_id')
             ->leftjoin('brands', 'brands.id', '=', 'products.brand_id')
             ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.product_id', '=', 'products.id')
             ->orderBy('transaction_sell_lines.created_at','desc')
@@ -401,6 +401,8 @@ class APIController extends Controller
                 "transaction_sell_lines.created_at as LAST CHECK IN",
                 'variations.sell_price_inc_tax as selling_price',
             )
+            ->groupBy('id')
+            ->orderBy('id','asc')
             ->get();
             foreach ($result as $key => $value) {
                 $result[$key]['selling_price'] = intval($value->selling_price);

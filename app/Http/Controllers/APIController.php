@@ -739,8 +739,9 @@ class APIController extends Controller
 
             $p = \App\Product::where([
                 'id'=>$product['product_id'],
-                'not_for_selling'=> 0
+                'not_for_selling'=> 1
             ])->first();
+
             if($p)
             return response()->json(
                 Helper::DataReturn(false,"Room out of service..."), 

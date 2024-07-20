@@ -1298,6 +1298,10 @@ class APIController extends Controller
     function hotel_ota(){
         $data = [
             [
+                'label'=>"Tidak ada",
+                'value'=>"Tidak ada"
+            ],
+            [
                 'label'=>"Traveloka",
                 'value'=>"Traveloka"
             ],

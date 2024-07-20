@@ -19,6 +19,12 @@
 @endphp
 {!! Form::open(['url' => action('ProductController@store'), 'method' => 'post', 
     'id' => 'product_add_form','class' => 'product_form ' . $form_class, 'files' => true ]) !!}
+    <input type="hidden" name="category_id" value="" />
+    <input type="hidden" name="weight" value="" />
+    <input type="hidden" name="product_custom_field2" value="" />
+    <input type="hidden" name="product_custom_field3" value="" />
+    <input type="hidden" name="product_custom_field4" value="" />
+
     @component('components.widget', ['class' => 'box-primary'])
         <div class="row">
         <div class="col-sm-4">

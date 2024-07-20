@@ -398,6 +398,7 @@ class APIController extends Controller
                 'products.name as ROOM NAME',
                 'products.not_for_selling as NOT FOR SELL',
                 'products.product_custom_field1 as KET. KERUSAKAN',
+                'products.product_custom_field2 as KEBERSIHAN',
                 "brands.name as TIPE KAMAR",
                 "transaction_sell_lines.created_at as LAST CHECK IN",
                 'variations.sell_price_inc_tax as selling_price',
@@ -1413,6 +1414,25 @@ class APIController extends Controller
             true,
             "OK",
             $receipt
+        );
+    }
+
+    function room_update(Request $request){
+        $id = $request->id ?? 0;
+        $p = \App\Product::find($id);
+        if(empty($p))
+        return response()->json(
+                Helper::DataReturn(false,"Kamar tidak ditemukan"), 
+            400); 
+        $p->update([
+            "not_for_selling" => $request->not_for_selling ?? "",
+            "product_custom_field1" => $request->product_custom_field1 ?? "",
+            "product_custom_field2" => $request->product_custom_field2 ?? ""
+        ]);
+        return Helper::DataReturn(
+            true,
+            "Data berhasil diubah",
+            $p
         );
     }
 

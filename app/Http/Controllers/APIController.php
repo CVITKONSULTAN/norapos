@@ -504,11 +504,11 @@ class APIController extends Controller
                 'balance'
             )
                     ->onlyCustomers();
+            if (request()->session()->get('business.enable_rp') == 1) {
+                $contacts->addSelect('total_rp');
+            }
         }
 
-        // if (request()->session()->get('business.enable_rp') == 1) {
-            $contacts->addSelect('total_rp');
-        // }
         $contacts = $contacts->get();
         return response()->json(
             Helper::DataReturn(true,"OK",$contacts)

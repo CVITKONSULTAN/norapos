@@ -451,7 +451,7 @@ class APIController extends Controller
      * @param  string  $q
      * @return JSON
      */
-    public function getCustomers()
+    public function getCustomers(Request $request)
     {
         $term = request()->input('q', '');
 
@@ -480,18 +480,31 @@ class APIController extends Controller
             });
         }
 
-        $contacts->select(
-            'contacts.id',
-            DB::raw("IF(contacts.contact_id IS NULL OR contacts.contact_id='', name, CONCAT(name, ' (', contacts.contact_id, ')')) AS text"),
-            'mobile',
-            'address_line_1',
-            'city',
-            'state',
-            'pay_term_number',
-            'pay_term_type',
-            'balance'
-        )
-                ->onlyCustomers();
+        if($request->hotel){ 
+            $contacts->select(
+                'contacts.id as ID',
+                'contacts.name as NAME',
+                'mobile as NO HP',
+                'address_line_1 as ALAMAT',
+                'city as KOTA',
+                'state as PROVINSI',
+                'landline as NIK'
+            )
+                    ->onlyCustomers();
+        } else {
+            $contacts->select(
+                'contacts.id',
+                DB::raw("IF(contacts.contact_id IS NULL OR contacts.contact_id='', name, CONCAT(name, ' (', contacts.contact_id, ')')) AS text"),
+                'mobile',
+                'address_line_1',
+                'city',
+                'state',
+                'pay_term_number',
+                'pay_term_type',
+                'balance'
+            )
+                    ->onlyCustomers();
+        }
 
         // if (request()->session()->get('business.enable_rp') == 1) {
             $contacts->addSelect('total_rp');
@@ -510,6 +523,7 @@ class APIController extends Controller
 
             $business_id = $business->id;
             $user_id = $user->id;
+            $nik = $request->nik ?? "";
 
             $data = $request->only(['name', 'email','mobile']);
 
@@ -528,6 +542,7 @@ class APIController extends Controller
                     $data['business_id'] = $business_id;
                     $data['created_by'] = $user_id;
                     $data['credit_limit'] = null;
+                    $data['landline'] = $nik;
                     // $data['mobile'] = 0;
     
                     $ref_count = $this->commonUtil->setAndGetReferenceCount('contacts', $business_id);
@@ -547,6 +562,7 @@ class APIController extends Controller
                         Helper::DataReturn(false,"User not found")
                         ,400);
                 }
+                $data['landline'] = $nik;
                 $customer->update($data);
                 return response()->json(
                     Helper::DataReturn(true,"OK")

@@ -1107,6 +1107,8 @@ class APIController extends Controller
                 "tagihan"=> number_format($value["final_total"],0,",","."),
                 "telah_dibayar"=> number_format($value["total_paid"],0,",","."),
                 "sisa"=> number_format(($value["final_total"] - $value["total_paid"]),0,",","."),
+                "metode_pembayaran"=> $value['service_custom_field_1'],
+                "ota"=> $value['service_custom_field_2'],
                 "tgl_checkin"=> \Carbon::parse($value['transaction_date'])->format("d/m/Y"),
                 "lama_menginap"=>$value["pay_term_number"],
                 "no_kamar"=>$room_name,

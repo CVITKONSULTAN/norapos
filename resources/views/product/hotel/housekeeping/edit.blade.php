@@ -237,6 +237,12 @@
             {!! Form::text('product_custom_field1', $product->product_custom_field1, ['class' => 'form-control', 'placeholder' => $product_custom_field1]); !!}
           </div>
         </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+              {!! Form::label('product_custom_field2',  'Status Kebersihan:') !!}
+              {!! Form::text('product_custom_field2', $product->product_custom_field2, ['class' => 'form-control', 'placeholder' => $product_custom_field2]); !!}
+            </div>
+          </div>
 
         {{-- <div class="col-sm-3">
           <div class="form-group">

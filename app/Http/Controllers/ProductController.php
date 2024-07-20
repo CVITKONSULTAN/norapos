@@ -292,13 +292,8 @@ class ProductController extends Controller
         $pos_module_data = $this->moduleUtil->getModuleData('get_filters_for_list_product_screen');
 
         $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
-        
-        $check_housekeeping = auth()->user()->roles()
-        ->where('name','like','%Housekeeping%')
-        ->get()
-        ->isNotEmpty();
 
-        if( $check_housekeeping ){
+        if( auth()->user()->checkHouseKeeping() ){
             return view('product.hotel.housekeeping.index')
                 ->with(compact(
                     'rack_enabled',
@@ -645,6 +640,13 @@ class ProductController extends Controller
         $pos_module_data = $this->moduleUtil->getModuleData('get_product_screen_top_view');
 
         if(str_contains( strtolower(auth()->user()->business->name) , 'hotel')){
+
+            if( auth()->user()->checkHouseKeeping() ){
+                return view('product.hotel.housekeeping.edit')
+                    ->with(compact('categories', 'brands', 'units', 'sub_units', 'taxes', 'tax_attributes', 'barcode_types', 'product', 'sub_categories', 'default_profit_percent', 'business_locations', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
+
+            }
+
             return view('product.hotel.edit')
                 ->with(compact('categories', 'brands', 'units', 'sub_units', 'taxes', 'tax_attributes', 'barcode_types', 'product', 'sub_categories', 'default_profit_percent', 'business_locations', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
         }

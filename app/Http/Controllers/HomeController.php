@@ -54,7 +54,7 @@ class HomeController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!auth()->user()->role == "Housekeeping") {
+        if (auth()->user()->checkHouseKeeping()) {
             return redirect()->to('/products');
         }
 

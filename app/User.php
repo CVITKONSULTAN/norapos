@@ -312,4 +312,12 @@ class User extends Authenticatable
         //jika sudah absen true vice versa
         return $check > 0;
     }
+
+    function checkHouseKeeping(){
+        return $this->roles()
+        ->where('name','like','%Housekeeping%')
+        ->get()
+        ->isNotEmpty();
+        
+    }
 }

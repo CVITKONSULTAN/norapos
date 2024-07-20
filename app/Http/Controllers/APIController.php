@@ -396,8 +396,9 @@ class APIController extends Controller
             ->select(
                 'products.id as id',
                 'products.name as ROOM NAME',
-                'products.not_for_selling as OUT OF SERVICE',
-                "brands.name as BRAND NAME",
+                'products.not_for_selling as NOT FOR SELL',
+                'products.product_custom_field1 as KET. KERUSAKAN',
+                "brands.name as TIPE KAMAR",
                 "transaction_sell_lines.created_at as LAST CHECK IN",
                 'variations.sell_price_inc_tax as selling_price',
             )
@@ -1238,48 +1239,48 @@ class APIController extends Controller
             "note"=>$notes
         ];
 
-         $product = \App\Product::join('variations', 'products.id', '=', 'variations.product_id')
-                ->active()
-                ->whereNull('variations.deleted_at')
-                ->where('products.id',$product_id)
-                ->leftjoin('units as U', 'products.unit_id', '=', 'U.id')
-                ->leftjoin(
-                    'variation_location_details AS VLD',
-                    function ($join) use ($location_id) {
-                        $join->on('variations.id', '=', 'VLD.variation_id');
+        $product = \App\Product::join('variations', 'products.id', '=', 'variations.product_id')
+            ->active()
+            ->whereNull('variations.deleted_at')
+            ->where('products.id',$product_id)
+            ->leftjoin('units as U', 'products.unit_id', '=', 'U.id')
+            ->leftjoin(
+                'variation_location_details AS VLD',
+                function ($join) use ($location_id) {
+                    $join->on('variations.id', '=', 'VLD.variation_id');
 
-                        //Include Location
-                        if (!empty($location_id)) {
-                            $join->where(function ($query) use ($location_id) {
-                                $query->where('VLD.location_id', '=', $location_id);
-                                //Check null to show products even if no quantity is available in a location.
-                                //TODO: Maybe add a settings to show product not available at a location or not.
-                                $query->orWhereNull('VLD.location_id');
-                            });
-                            ;
-                        }
+                    //Include Location
+                    if (!empty($location_id)) {
+                        $join->where(function ($query) use ($location_id) {
+                            $query->where('VLD.location_id', '=', $location_id);
+                            //Check null to show products even if no quantity is available in a location.
+                            //TODO: Maybe add a settings to show product not available at a location or not.
+                            $query->orWhereNull('VLD.location_id');
+                        });
+                        ;
                     }
-                )
-                ->select(
-                    'products.id as product_id',
-                    'products.name',
-                    'products.type',
-                    'products.enable_stock',
-                    'products.type as product_type',
-                    'products.unit_id as product_unit_id',
-                    'products.sub_unit_ids as sub_unit_id',
-                    'products.tax as tax_id',
-                    'variations.id as variation_id',
-                    'variations.name as variation',
-                    'VLD.qty_available',
-                    'variations.sell_price_inc_tax as selling_price',
-                    'variations.sell_price_inc_tax as unit_price',
-                    'variations.sell_price_inc_tax as unit_price_inc_tax',
-                    'variations.sub_sku',
-                    'U.short_name as unit'
-                )
-                ->groupBy('variations.id')
-                ->first();
+                }
+            )
+            ->select(
+                'products.id as product_id',
+                'products.name',
+                'products.type',
+                'products.enable_stock',
+                'products.type as product_type',
+                'products.unit_id as product_unit_id',
+                'products.sub_unit_ids as sub_unit_id',
+                'products.tax as tax_id',
+                'variations.id as variation_id',
+                'variations.name as variation',
+                'VLD.qty_available',
+                'variations.sell_price_inc_tax as selling_price',
+                'variations.sell_price_inc_tax as unit_price',
+                'variations.sell_price_inc_tax as unit_price_inc_tax',
+                'variations.sub_sku',
+                'U.short_name as unit'
+            )
+            ->groupBy('variations.id')
+            ->first();
 
         $sell_lines = $t->sell_lines()->first();
         $sell_lines->update([
@@ -1288,9 +1289,15 @@ class APIController extends Controller
             "unit_price"=> $product->selling_price,
             "unit_price_inc_tax"=> $product->selling_price
         ]);
-        $t->payment_lines()->delete();
+        // $t->payment_lines()->delete();
         $this->transactionUtil->createOrUpdatePaymentLines($t, [$payment]);
         $this->transactionUtil->updatePaymentStatus($t->id, $amount);
+
+        if($request->service_custom_field_3){
+            $t->update([
+                "deposit"=> $request->service_custom_field_3
+            ]);
+        }
 
         return Helper::DataReturn(true,"Data berhasil di ubah");
 

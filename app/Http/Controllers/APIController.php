@@ -1068,9 +1068,13 @@ class APIController extends Controller
         )
         ->whereDate('transactions.transaction_date',$date)
         ->where('transactions.business_id',$business_id)
-        ->where("transactions.shipping_status",$status)
-        ->orderBy('id','desc')
-        ->get();
+        ->orderBy('id','desc');
+
+        if($status != "all"){
+            $data = $data->where("transactions.shipping_status",$status);
+        }
+
+        $data = $data->get();
 
         $res = [];
 
@@ -1360,6 +1364,43 @@ class APIController extends Controller
             true,
             "OK",
             $data
+        );
+    }
+
+    function print_trx_id(Request $request){
+
+        $business = request()->user()->business;
+        $business_id = request()->user()->business->id;
+
+        $trx_id = $request->trx_id ?? 0;
+        $transaction = \App\Transaction::find($trx_id);
+
+        $input = $request->all();
+
+        if(empty($transaction))
+        return response()->json(
+                Helper::DataReturn(false,"Transaksi tidak ditemukan"), 
+            400); 
+
+        if(!isset($input['location_id']) || empty($input['location_id'])){
+            $input['location_id'] = 0;
+            $location = $business->locations()->first();
+            if(!empty($location))
+            $input['location_id'] = $location->id;
+        }
+
+        $invoice_layout_id = $request->input('invoice_layout_id');
+
+        $receipt = $this->receiptContent(
+            $business_id, 
+            $input['location_id'], 
+            $transaction->id, null, false, true, 
+            $invoice_layout_id);
+        
+        return Helper::DataReturn(
+            true,
+            "OK",
+            $receipt
         );
     }
 

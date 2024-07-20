@@ -12,6 +12,7 @@ class HotelReservasi extends Model
        'checkout',
        'durasi',
        'contact_id',
+       'ota',
     ];
 
     function contact(){

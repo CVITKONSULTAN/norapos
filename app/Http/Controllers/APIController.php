@@ -906,6 +906,13 @@ class APIController extends Controller
 
                 $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
 
+                if($request->has('hotel')){
+                    $latest = \App\Transaction::where('business_id', $business_id)->latest();
+                    $ref_no = empty($latest) || emptyy($latest->ref_no) ? 1 : $latest->ref_no + 1;
+                    $transaction->ref_no = $ref_no;
+                    $transaction->save();
+                }
+
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
                 
                 if (!$is_direct_sale) {
@@ -1093,6 +1100,11 @@ class APIController extends Controller
                     ->whereDate('transactions.transaction_date',$date);
         }
 
+        if($request->date){
+            $data = $data->where("transactions.transaction_date",$date);
+            // dd($data->count());
+        }
+
         $data = $data->get();
 
         $res = [];
@@ -1113,6 +1125,7 @@ class APIController extends Controller
                 "lama_menginap"=>$value["pay_term_number"],
                 "no_kamar"=>$room_name,
                 "pengunjung"=>$contact_name,
+                "pajak_no"=>$value['ref_no'],
                 "estimasi_checkout"=> \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y"),
             ];
         }

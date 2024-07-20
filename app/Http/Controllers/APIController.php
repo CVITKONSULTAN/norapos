@@ -1066,12 +1066,13 @@ class APIController extends Controller
         DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
                         TP.transaction_id=transactions.id) as total_paid'),
         )
-        ->whereDate('transactions.transaction_date',$date)
         ->where('transactions.business_id',$business_id)
         ->orderBy('id','desc');
 
+        
         if($status != "all"){
-            $data = $data->where("transactions.shipping_status",$status);
+            $data = $data->where("transactions.shipping_status",$status)
+                    ->whereDate('transactions.transaction_date',$date);
         }
 
         $data = $data->get();

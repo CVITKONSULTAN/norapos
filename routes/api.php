@@ -21,6 +21,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     
     Route::post('/transaction/receipt', 'APIController@print_trx_id');
 
+    Route::get('/hotel/transaction/list', 'APIController@getCheckin');
     Route::get('/hotel/reservasi/list', 'HotelController@reservasi_list');
     Route::post('/hotel/reservasi/store', 'HotelController@reservasi_store');
 

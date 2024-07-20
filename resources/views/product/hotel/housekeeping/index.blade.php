@@ -117,7 +117,29 @@
                                         <i class="fa fa-plus"></i> @lang('messages.add')</a>
                             <br><br>
                         @endcan
-                        @include('product.partials.hotel.product_list')
+                        {{-- @include('product.partials.hotel.product_list') --}}
+                        @php 
+                            $colspan = 15;
+                            $custom_labels = json_decode(session('business.custom_labels'), true);
+                        @endphp
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="select-all-row"></th>
+                                        <th>&nbsp;</th>
+                                        <th>@lang('messages.action')</th>
+                                        <th>@lang('sale.product')</th>
+                                        <th>@lang('product.category')</th>
+                                        <th>Ket. Kerusakan</th>
+                                        <th>Status Kamar</th>
+                                        <th>@lang('product.sku')</th>
+                                        <th>{{ $custom_labels['product']['custom_field_3'] ?? __('lang_v1.product_custom_field3') }}</th>
+                                        <th>{{ $custom_labels['product']['custom_field_4'] ?? __('lang_v1.product_custom_field4') }}</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
 
                     {{-- <div class="tab-pane" id="product_stock_report">
@@ -190,21 +212,10 @@
                         { data: 'image', name: 'products.image'  },
                         { data: 'action', name: 'action'},
                         { data: 'product', name: 'products.name'  },
-                        { data: 'product_locations', name: 'product_locations'  },
-                        @can('view_purchase_price')
-                            { data: 'purchase_price', name: 'max_purchase_price', searchable: false},
-                        @endcan
-                        @can('access_default_selling_price')
-                            { data: 'selling_price', name: 'max_price', searchable: false},
-                        @endcan
-                        // { data: 'current_stock', searchable: false},
-                        // { data: 'type', name: 'products.type'},
-                        // { data: 'category', name: 'c1.name'},
                         { data: 'brand', name: 'brands.name'},
-                        // { data: 'tax', name: 'tax_rates.name', searchable: false},
-                        { data: 'sku', name: 'products.sku'},
                         { data: 'product_custom_field1', name: 'products.product_custom_field1'  },
                         { data: 'product_custom_field2', name: 'products.product_custom_field2'  },
+                        { data: 'sku', name: 'products.sku'},
                         { data: 'product_custom_field3', name: 'products.product_custom_field3'  },
                         { data: 'product_custom_field4', name: 'products.product_custom_field4'  }
                         

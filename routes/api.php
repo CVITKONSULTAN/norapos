@@ -19,6 +19,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware'=>'auth:api'],function(){
     
+    Route::get('/hotel/reservasi/list', 'HotelController@reservasi_list');
+    Route::post('/hotel/reservasi/store', 'HotelController@reservasi_store');
+
     Route::post('/home/get-totals', 'APIController@getTotals');
     Route::post('/home/chart', 'APIController@getChart');
     Route::post('/business', 'APIController@getBusiness');

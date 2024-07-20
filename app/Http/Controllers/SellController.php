@@ -26,8 +26,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SellController extends Controller
 {
-    
-    private $hotel_id = [11,21];
 
     /**
      * All Utils instance.
@@ -418,7 +416,7 @@ class SellController extends Controller
                 })
                 ->editColumn('shipping_status', function ($row) use ($shipping_statuses) {
                     $status = '';
-                    if(in_array(auth()->user()->id,$this->hotel_id)){
+                    if(str_contains( strtolower(auth()->user()->business->name) , 'hotel')){
                         if(!empty($row->shipping_status)){
                             $status = '<span class="label bg-red">Check out</span>';
                         }
@@ -475,7 +473,7 @@ class SellController extends Controller
             $service_staffs = $this->productUtil->serviceStaffDropdown($business_id);
         }
 
-        if(in_array(auth()->user()->id,$this->hotel_id)){
+        if(str_contains( strtolower(auth()->user()->business->name) , 'hotel')){
             return view('sell.hotel.index')
             ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled'));
         }

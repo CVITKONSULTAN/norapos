@@ -27,8 +27,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
-
-    private $hotel_id = [11,21];
     /**
      * All Utils instance.
      *
@@ -294,7 +292,28 @@ class ProductController extends Controller
         $pos_module_data = $this->moduleUtil->getModuleData('get_filters_for_list_product_screen');
 
         $is_woocommerce = $this->moduleUtil->isModuleInstalled('Woocommerce');
-        if(in_array(auth()->user()->id,$this->hotel_id)){
+        
+        $check_housekeeping = auth()->user()->roles()
+        ->where('name','like','%Housekeeping%')
+        ->get()
+        ->isNotEmpty();
+
+        if( $check_housekeeping ){
+            return view('product.hotel.housekeeping.index')
+                ->with(compact(
+                    'rack_enabled',
+                    'categories',
+                    'brands',
+                    'units',
+                    'taxes',
+                    'business_locations',
+                    'show_manufacturing_data',
+                    'pos_module_data',
+                    'is_woocommerce'
+                ));
+        }
+
+        if(str_contains( strtolower(auth()->user()->business->name) , 'hotel')){
             return view('product.hotel.index')
                 ->with(compact(
                     'rack_enabled',
@@ -393,7 +412,7 @@ class ProductController extends Controller
         //product screen view from module
         $pos_module_data = $this->moduleUtil->getModuleData('get_product_screen_top_view');
 
-        if(in_array(auth()->user()->id,$this->hotel_id)){
+        if(str_contains( strtolower(auth()->user()->business->name) , 'hotel')){
             return view('product.hotel.create')
             ->with(compact('categories', 'brands', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
         }
@@ -625,7 +644,7 @@ class ProductController extends Controller
         //product screen view from module
         $pos_module_data = $this->moduleUtil->getModuleData('get_product_screen_top_view');
 
-        if(in_array(auth()->user()->id,$this->hotel_id)){
+        if(str_contains( strtolower(auth()->user()->business->name) , 'hotel')){
             return view('product.hotel.edit')
                 ->with(compact('categories', 'brands', 'units', 'sub_units', 'taxes', 'tax_attributes', 'barcode_types', 'product', 'sub_categories', 'default_profit_percent', 'business_locations', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
         }

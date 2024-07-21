@@ -410,6 +410,8 @@ class APIController extends Controller
                 $result[$key]['selling_price'] = intval($value->selling_price);
                 $result[$key]['PRICE'] = number_format($value->selling_price,0,",",".");
                 $result[$key]['TODAY AVAILABLE'] = str_contains($value['LAST CHECK IN'], date('Y-m-d')) ? 0 : 1;
+                // unset($result[$key]['image_url']);
+                // dd($result[$key]);
             }
             
         } else {
@@ -525,7 +527,7 @@ class APIController extends Controller
             $user_id = $user->id;
             $nik = $request->nik ?? "";
 
-            $data = $request->only(['name', 'email','mobile']);
+            $data = $request->only(['name', 'email','mobile',"address_line_1","city","state"]);
 
             if($request->insert){
                 $customer = Contact::where('business_id', $business_id)
@@ -1101,19 +1103,19 @@ class APIController extends Controller
             $room_name = $value["sell_lines"][0]["product"]["name"] ?? "";
             $contact_name = $value["contact"]["name"] ?? "";
             $res[] = [
-                "id"=>$value["id"],
-                "status"=> $value['shipping_status'] == "delivered" ? "Out" : "In",
-                "deposit"=> number_format($value['service_custom_field_3'],0,",","."),
-                "tagihan"=> number_format($value["final_total"],0,",","."),
-                "telah_dibayar"=> number_format($value["total_paid"],0,",","."),
-                "sisa"=> number_format(($value["final_total"] - $value["total_paid"]),0,",","."),
-                "metode_pembayaran"=> $value['service_custom_field_1'],
-                "ota"=> $value['service_custom_field_2'],
-                "tgl_checkin"=> \Carbon::parse($value['transaction_date'])->format("d/m/Y"),
-                "lama_menginap"=>$value["pay_term_number"],
-                "no_kamar"=>$room_name,
-                "pengunjung"=>$contact_name,
-                "estimasi_checkout"=> \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y"),
+                "ID"=>$value["id"],
+                "STATUS"=> $value['shipping_status'] == "delivered" ? "Out" : "In",
+                "DEPOSIT"=> number_format($value['service_custom_field_3'],0,",","."),
+                "TAGIHAN"=> number_format($value["final_total"],0,",","."),
+                "DIBAYAR"=> number_format($value["total_paid"],0,",","."),
+                "SISA"=> number_format(($value["final_total"] - $value["total_paid"]),0,",","."),
+                "METODE PEMBAYARAN"=> $value['service_custom_field_1'],
+                "OTA"=> $value['service_custom_field_2'],
+                "TGL CHECKIN"=> \Carbon::parse($value['transaction_date'])->format("d/m/Y"),
+                "LAMA MENGINAP"=>$value["pay_term_number"],
+                "NO KAMAR"=>$room_name,
+                "TAMU"=>$contact_name,
+                "CHECKOUT"=> \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y"),
             ];
         }
         

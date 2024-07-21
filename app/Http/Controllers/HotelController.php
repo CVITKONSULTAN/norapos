@@ -12,17 +12,35 @@ class HotelController extends Controller
     function reservasi_list(Request $request){
         $page = $request->page ?? 1;
         if($page < 0) $page = 1;
-        $take = $request->take ?? 10;
-        $skip = ($page - 1) * 10;
+        $take = $request->take ?? 500;
+        $skip = ($page - 1) * $take;
 
         $query  = \App\HotelReservasi::query()
+        ->leftjoin('contacts as c', 'hotel_reservasis.contact_id', '=', 'c.id')
+        ->select(
+            "hotel_reservasis.id as ID",
+            "harga as HARGA",
+            "ota as OTA",
+            "hotel_reservasis.contact_id as CID",
+            "c.name as NAMA",
+            "c.mobile as NO HP",
+            "durasi as LAMA MENGINAP",
+            "checkin as CHECK IN",
+            "checkout as CHECK OUT",
+        )
         ->skip($skip)
         ->take($take)
-        ->orderBy('id','desc')
-        ->get();
+        ->orderBy('id','desc');
+
+        if($request->date){
+            $query = $query->whereRaw("'$request->date' BETWEEN checkin AND checkout");
+        }
+        // dd($query->toSql());
+
+        $data = $query->get();
 
         return response()->json(
-            Helper::DataReturn(true,"OK",$query), 
+            Helper::DataReturn(true,"OK",$data), 
         200); 
     }
 

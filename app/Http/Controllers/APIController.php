@@ -367,7 +367,7 @@ class APIController extends Controller
      *
      * @return JSON
      */
-    public function getProducts()
+    public function getProducts(Request $request)
     {
         $business = request()->user()->business;
         $business_id = $business->id;
@@ -388,8 +388,14 @@ class APIController extends Controller
         }
 
         if($business_type == "hotel"){
-            $result = \App\Product::where('products.business_id',$business->id)
-            ->leftjoin('variations', 'products.id', '=', 'variations.product_id')
+
+            $query = \App\Product::where('products.business_id',$business->id);
+
+            if($request->not_for_selling){
+                $query = $query->where("products.not_for_selling",0);
+            }
+            
+            $query = $query->leftjoin('variations', 'products.id', '=', 'variations.product_id')
             ->leftjoin('brands', 'brands.id', '=', 'products.brand_id')
             ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.product_id', '=', 'products.id')
             ->orderBy('transaction_sell_lines.created_at','desc')
@@ -402,14 +408,27 @@ class APIController extends Controller
                 "brands.name as TIPE KAMAR",
                 "transaction_sell_lines.created_at as LAST CHECK IN",
                 'variations.sell_price_inc_tax as selling_price',
-            )
+                'products.sku as SKU'
+            );
+
+            $result = $query
             ->groupBy('id')
             ->orderBy('id','asc')
             ->get();
+            
             foreach ($result as $key => $value) {
                 $result[$key]['selling_price'] = intval($value->selling_price);
                 $result[$key]['PRICE'] = number_format($value->selling_price,0,",",".");
-                $result[$key]['TODAY AVAILABLE'] = str_contains($value['LAST CHECK IN'], date('Y-m-d')) ? 0 : 1;
+
+                $check = \App\TransactionSellLine::where([
+                    'product_id'=>$value['id'],
+                ])
+                ->whereHas('transaction',function($q){
+                    return $q->whereNull('shipping_status');
+                })
+                ->first();
+
+                $result[$key]['TODAY AVAILABLE'] = empty($check) ? 1 : 0;
                 // unset($result[$key]['image_url']);
                 // dd($result[$key]);
             }
@@ -749,7 +768,7 @@ class APIController extends Controller
             ->whereHas('transaction',function($q){
                 return $q->whereNull('shipping_status');
             })
-            ->where('created_at','like', "%".date('Y-m-d')."%" )
+            // ->where('created_at','like', "%".date('Y-m-d')."%" )
             ->first();
 
             if($check)
@@ -910,9 +929,17 @@ class APIController extends Controller
 
                 if($request->has('hotel')){
                     $latest = \App\Transaction::where('business_id', $business_id)->latest();
-                    $ref_no = empty($latest) || emptyy($latest->ref_no) ? 1 : $latest->ref_no + 1;
+                    $ref_no = empty($latest) || empty($latest->ref_no) ? 1 : $latest->ref_no + 1;
                     $transaction->ref_no = $ref_no;
                     $transaction->save();
+
+                    if($request->has('reservation_id') && !empty($request->reservation_id)){
+                        $reservasi = \App\HotelReservasi::find($request->reservation_id ?? 0);
+                        if(!empty($reservasi)){
+                            $reservasi->status = "check in";
+                            $reservasi->save();
+                        }
+                    }
                 }
 
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
@@ -1103,8 +1130,11 @@ class APIController extends Controller
         }
 
         if($request->date){
-            $data = $data->where("transactions.transaction_date",$date);
+            $data = $data->where("transactions.transaction_date",'like',"%$date%");
             // dd($data->count());
+        }
+        if($request->history){
+            $data = $data->where('shipping_status','delivered');
         }
 
         $data = $data->get();
@@ -1116,7 +1146,7 @@ class APIController extends Controller
             $contact_name = $value["contact"]["name"] ?? "";
             $res[] = [
                 "ID"=>$value["id"],
-                "STATUS"=> $value['shipping_status'] == "delivered" ? "Out" : "In",
+                // "STATUS"=> $value['shipping_status'] == "delivered" ? "Out" : "In",
                 "DEPOSIT"=> number_format($value['service_custom_field_3'],0,",","."),
                 "TAGIHAN"=> number_format($value["final_total"],0,",","."),
                 "DIBAYAR"=> number_format($value["total_paid"],0,",","."),
@@ -1127,8 +1157,9 @@ class APIController extends Controller
                 "LAMA MENGINAP"=>$value["pay_term_number"],
                 "NO KAMAR"=>$room_name,
                 "TAMU"=>$contact_name,
-                "No. PAJAK"=>$value['ref_no'],
+                // "No. PAJAK"=>$value['ref_no'],
                 "CHECKOUT"=> \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y"),
+                "CATATAN"=>$value['staff_note'],
             ];
         }
         

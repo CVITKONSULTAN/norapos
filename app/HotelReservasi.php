@@ -13,6 +13,7 @@ class HotelReservasi extends Model
        'durasi',
        'contact_id',
        'ota',
+       'status'
     ];
 
     function contact(){

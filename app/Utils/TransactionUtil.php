@@ -3925,6 +3925,7 @@ class TransactionUtil extends Util
         $redeemed_before = 0
     ) {
         $customer = Contact::find($customer_id);
+        if(!$customer) return false;
 
         //Return if walk in customer
         if ($customer->is_default == 1) {

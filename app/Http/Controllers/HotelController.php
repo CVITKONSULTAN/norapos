@@ -16,6 +16,7 @@ class HotelController extends Controller
         $skip = ($page - 1) * $take;
 
         $query  = \App\HotelReservasi::query()
+        ->where('status','reservasi')
         ->leftjoin('contacts as c', 'hotel_reservasis.contact_id', '=', 'c.id')
         ->select(
             "hotel_reservasis.id as ID",

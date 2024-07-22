@@ -28,6 +28,9 @@ class HotelController extends Controller
             "durasi as LAMA MENGINAP",
             "checkin as CHECK IN",
             "checkout as CHECK OUT",
+            "brand_name as TIPE KAMAR",
+            "metode_pembayaran as PEMBAYARAN",
+            "deposit as DEPOSIT",
         )
         ->skip($skip)
         ->take($take)

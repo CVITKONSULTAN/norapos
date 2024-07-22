@@ -13,10 +13,18 @@ class HotelReservasi extends Model
        'durasi',
        'contact_id',
        'ota',
-       'status'
+       'status',
+       "brand_name",
+        "brand_id",
+        "deposit",
+        "metode_pembayaran"
     ];
 
     function contact(){
         return $this->belongsTo(\App\Contact::class,"contact_id","id");
+    }
+
+    function brand(){
+        return $this->belongsTo(\App\Brands::class,"brand_id","id");
     }
 }

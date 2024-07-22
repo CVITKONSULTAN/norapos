@@ -1522,24 +1522,43 @@ class APIController extends Controller
         // }
 
         if(!$request->id) return abort(404);
-        $data['transaction'] = \App\Transaction::find($request->id);
         
-        if(empty($data['transaction']))
-        return abort(404);
-
-        $data['business'] = $data['transaction']->business;
-        $data['location'] = $data['business']->locations()->first();
-
-        $data['transaction_sell_line'] = $data['transaction']->sell_lines;
-
-        $data['contact'] = DB::table('contacts')->find($data['transaction']->contact_id);
-
         if($request->bill){
-            // dd($data);
+            $data['transaction'] = \App\Transaction::find($request->id);
+            
+            if(empty($data['transaction']))
+            return abort(404);
+    
+            $data['business'] = $data['transaction']->business;
+            $data['location'] = $data['business']->locations()->first();
+    
+            $data['transaction_sell_line'] = $data['transaction']->sell_lines;
+    
+            $data['contact'] = DB::table('contacts')->find($data['transaction']->contact_id);
             return view('hotel.print.bill',$data);
         }
+
+        $data['reservasi'] = \App\HotelReservasi::find($request->id);
+        if(empty($data['reservasi']))
+        return abort(404);
+
+        $data['business'] = \App\Business::where('name','like','%kartika%')->first();
+        if(empty($data['business']))
+        return abort(404);
+        $data['location'] = $data['business']->locations()->first();
+
+        // dd($data);
         return view('hotel.print.registered_card',$data);
     }
+
+    function brands_list(Request $request){
+        $business_id = request()->user()->business->id;
+        $list = \App\Brands::where('business_id',$business_id)->get();
+        return response()->json(
+            Helper::DataReturn(true,"OK",$list), 
+        200); 
+    }
+    
 
 
 }

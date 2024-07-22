@@ -5,7 +5,7 @@
 @endphp
 <html>
     <head>
-        <title>Bill</title>
+        <title>Bill {{ $transaction->id }}</title>
         <style>
             table.content tr td, 
             table.content tr th {

@@ -102,6 +102,10 @@
             </tr>
         </table>
 
+        <p style="text-align: center;font-weight:bold;">
+            INVOICE
+        </p>
+
         <table class="content" width="100%" style="
             margin-top:20px;
             border-collapse: collapse;

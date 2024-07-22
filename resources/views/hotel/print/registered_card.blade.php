@@ -44,6 +44,13 @@
                 </td>
             </tr>
             <tr>
+                <td colspan="3">
+                    <p style="text-align: center;font-weight:bold;">
+                        REGISTERED CARD
+                    </p>
+                </td>
+            </tr>
+            <tr>
                 <td>Nama Tamu <br />
                     <i>/ Guest Name</i>
                 </td>

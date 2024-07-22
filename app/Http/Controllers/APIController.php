@@ -925,14 +925,15 @@ class APIController extends Controller
                     $input['res_waiter_id'] = request()->get('res_waiter_id');
                 }
 
-                $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
-
+                $ref_no = null;
                 if($request->has('hotel')){
-                    $latest = \App\Transaction::where('business_id', $business_id)->latest();
+                    $latest = \App\Transaction::where([
+                        'business_id'=>$business_id,
+                        "type"=>"sell"
+                    ])
+                    ->orderBy('id','desc')
+                    ->first();
                     $ref_no = empty($latest) || empty($latest->ref_no) ? 1 : $latest->ref_no + 1;
-                    $transaction->ref_no = $ref_no;
-                    $transaction->save();
-
                     if($request->has('reservation_id') && !empty($request->reservation_id)){
                         $reservasi = \App\HotelReservasi::find($request->reservation_id ?? 0);
                         if(!empty($reservasi)){
@@ -941,6 +942,14 @@ class APIController extends Controller
                         }
                     }
                 }
+
+                $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
+
+                if($request->has('hotel')){
+                    $transaction->ref_no = $ref_no;
+                    $transaction->save();
+                }
+
 
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
                 

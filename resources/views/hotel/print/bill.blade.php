@@ -54,12 +54,12 @@
                         <tr>
                             <td>Kedatangan</td>
                             <td>:</td>
-                            <td>{{ $transaction->created_at->format("dd/MM/yyyy") }}</td>
+                            <td>{{ \Carbon::parse($transaction->transaction_date)->format("d/m/Y") }}</td>
                         </tr>
                         <tr>
                             <td>Keberangkatan</td>
                             <td>:</td>
-                            <td>{{ $transaction->ref_no }}</td>
+                            <td>{{ \Carbon::parse($transaction->checkout_at)->format("d/m/Y") }}</td>
                         </tr>
                         <tr>
                             <td>No. Kamar</td>
@@ -90,12 +90,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>01/01/2024</td>
-                    <td>Keterangan Test</td>
-                    <td>Rp. 1.000.000</td>
-                </tr>
+                @foreach ($transaction_sell_line as $k => $item)    
+                    <tr>
+                        <td>{{ $k+1 }}</td>
+                        <td>{{ $item->created_at->format("d/m/Y") }}</td>
+                        <td>{{ $item->product->name }}</td>
+                        @if( str_contains( $item->product->name , "Room") )
+                            <td>{{ $item->unit_price * $transaction->pay_term_number }}</td>
+                        @else
+                            <td>{{ $item->unit_price }}</td>
+                        @endif
+                    </tr>
+                @endforeach
             </tbody>
             <tfoot>
                 <tr>

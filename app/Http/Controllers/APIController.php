@@ -1286,7 +1286,10 @@ class APIController extends Controller
         $t->update([
             "shipping_status"=>"delivered",
             "additional_notes"=>$notes,
-            "service_custom_field_3"=>$total_depo
+            "service_custom_field_3"=>$total_depo,
+            "checkout_at"=> \Carbon::now()->format('Y-m-d'),
+            "misc_note"=> $request->misc_note ?? null,
+            "misc_cost"=> $request->misc_cost ?? 0
         ]);
 
         return Helper::DataReturn(true,"Data berhasil disimpan!");

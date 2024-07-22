@@ -1527,11 +1527,12 @@ class APIController extends Controller
         if(empty($data['transaction']))
         return abort(404);
 
-        $data['contact'] = $data['transaction']->contact;
         $data['business'] = $data['transaction']->business;
         $data['location'] = $data['business']->locations()->first();
 
         $data['transaction_sell_line'] = $data['transaction']->sell_lines;
+
+        $data['contact'] = DB::table('contacts')->find($data['transaction']->contact_id);
 
         if($request->bill){
             // dd($data);

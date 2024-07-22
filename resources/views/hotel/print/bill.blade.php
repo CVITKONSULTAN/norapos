@@ -54,7 +54,7 @@
                         <tr>
                             <td>Kedatangan</td>
                             <td>:</td>
-                            <td>{{ $transaction->id }}</td>
+                            <td>{{ $transaction->created_at->format("dd/MM/yyyy") }}</td>
                         </tr>
                         <tr>
                             <td>Keberangkatan</td>

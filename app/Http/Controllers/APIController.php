@@ -1500,5 +1500,33 @@ class APIController extends Controller
         );
     }
 
+    function hotel_print(Request $request){
+
+        // if(request()->user() && request()->user()->business){
+        //     $data['business'] = request()->user()->business;
+        // } else {
+        //     if(!$request->business_id) return abort(404);
+        //     $data['business'] = \App\Business::find($request->business_id);
+        // }
+
+        if(!$request->id) return abort(404);
+        $data['transaction'] = \App\Transaction::find($request->id);
+        
+        if(empty($data['transaction']))
+        return abort(404);
+
+        $data['contact'] = $data['transaction']->contact;
+        $data['business'] = $data['transaction']->business;
+        $data['location'] = $data['business']->locations()->first();
+
+        $data['transaction_sell_line'] = $data['transaction']->sell_lines;
+
+        if($request->bill){
+            // dd($data);
+            return view('hotel.print.bill',$data);
+        }
+        return view('hotel.print.registered_card',$data);
+    }
+
 
 }

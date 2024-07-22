@@ -1,6 +1,13 @@
 <html>
     <head>
         <title>Bill</title>
+        <style>
+            table.content tr td, 
+            table.content tr th {
+                border: 1px solid black;
+                padding: 10px;
+            }
+        </style>
     </head>
     <body>
         <div>
@@ -67,6 +74,48 @@
                     </table>
                 </td>
             </tr>
+        </table>
+
+        <table class="content" width="100%" style="
+            margin-top:20px;
+            border-collapse: collapse;
+            border: 1px solid black;
+        ">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Keterangan</th>
+                    <th>Jumlah (Rp)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>01/01/2024</td>
+                    <td>Keterangan Test</td>
+                    <td>Rp. 1.000.000</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;font-weight:bold;">TOTAL</td>
+                    <td>Rp. 1.000.000</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        Disetujui oleh :
+                        <br>
+                        <i>Approved by :</i>
+
+                    </td>
+                    <td colspan="2">
+                        Perusahaan / <i>Company</i> : 
+                        <br>
+                        Alamat / <i>Adress</i> : 
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </body>
 </html>

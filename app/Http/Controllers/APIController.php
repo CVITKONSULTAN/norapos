@@ -1544,7 +1544,12 @@ class APIController extends Controller
             $data['transaction'] = \App\Transaction::where([
                 "id"=>$request->id,
                 "business_id"=> $data['business']->id
-            ])->first();
+            ])
+            ->select("*",
+            DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
+                            TP.transaction_id=transactions.id) as total_paid'),
+            )
+            ->first();
             
             if(empty($data['transaction']))
             return abort(404);

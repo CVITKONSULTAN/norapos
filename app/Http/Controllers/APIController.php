@@ -1162,7 +1162,7 @@ class APIController extends Controller
             if($request->history){
                 $checkout = \Carbon::parse($value["checkout_at"])->format("d/m/Y");
             } else {
-                $checkout = \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y");
+                $checkout = \Carbon::parse($value['transaction_date'])->addDays($value["pay_term_number"])->format("d/m/Y");
             }
 
             $res[] = [

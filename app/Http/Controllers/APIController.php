@@ -1153,6 +1153,13 @@ class APIController extends Controller
         foreach ($data as $key => $value) {
             $room_name = $value["sell_lines"][0]["product"]["name"] ?? "";
             $contact_name = $value["contact"]["name"] ?? "";
+
+            if($request->history){
+                $checkout = \Carbon::parse($value["checkout_at"])->format("d/m/Y");
+            } else {
+                $checkout = \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y");
+            }
+
             $res[] = [
                 "ID"=>$value["id"],
                 // "STATUS"=> $value['shipping_status'] == "delivered" ? "Out" : "In",
@@ -1167,7 +1174,7 @@ class APIController extends Controller
                 "NO KAMAR"=>$room_name,
                 "TAMU"=>$contact_name,
                 // "No. PAJAK"=>$value['ref_no'],
-                "CHECKOUT"=> \Carbon::now()->addDays($value["pay_term_number"])->format("d/m/Y"),
+                "CHECKOUT"=> $checkout,
                 "CATATAN"=>$value['staff_note'],
             ];
         }
@@ -1524,12 +1531,20 @@ class APIController extends Controller
         if(!$request->id) return abort(404);
         
         if($request->bill){
-            $data['transaction'] = \App\Transaction::find($request->id);
+
+            $data['business'] = \App\Business::where('name','like','%kartika%')->first();
+            if(empty($data['business']))
+            return abort(404);
+
+            $data['transaction'] = \App\Transaction::where([
+                "id"=>$request->id,
+                "business_id"=> $data['business']->id
+            ])->first();
             
             if(empty($data['transaction']))
             return abort(404);
     
-            $data['business'] = $data['transaction']->business;
+            // $data['business'] = $data['transaction']->business;
             $data['location'] = $data['business']->locations()->first();
     
             $data['transaction_sell_line'] = $data['transaction']->sell_lines;

@@ -1134,13 +1134,11 @@ class APIController extends Controller
 
         
         if($status != "all"){
-            $data = $data->where("transactions.shipping_status",$status)
-                    ->whereDate('transactions.transaction_date',$date);
+            $data = $data->where("transactions.shipping_status",$status);
         }
 
         if($request->date){
             $data = $data->where("transactions.transaction_date",'like',"%$date%");
-            // dd($data->count());
         }
         if($request->history){
             $data = $data->where('shipping_status','delivered');

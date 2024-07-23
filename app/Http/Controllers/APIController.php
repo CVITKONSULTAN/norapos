@@ -1146,6 +1146,13 @@ class APIController extends Controller
             $data = $data->where('shipping_status','delivered');
         }
 
+        if($request->contact_name){
+            $name = $request->contact_name ?? "";
+            $data = $data->whereHas('contact',function($q) use($name) {
+                return $q->where('name','like',"%$name%");
+            });
+        }
+
         $data = $data->get();
 
         $res = [];

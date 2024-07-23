@@ -125,7 +125,7 @@
                         $price = $item->unit_price;
                         if(str_contains( $item->product->name , "Room")){
                             // $price = $item->unit_price * $transaction->pay_term_number;
-                            $price = $item->total_paid;
+                            $price = $item->total_paid ?? 0;
                         }
                         $total += $price;
                     @endphp

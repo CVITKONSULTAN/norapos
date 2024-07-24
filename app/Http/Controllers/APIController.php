@@ -1295,6 +1295,14 @@ class APIController extends Controller
 
         $total_depo = intval($t->service_custom_field_3) - intval($deposit_return);
         
+        $product = $t->sell_lines[0]->product ?? null;
+
+        if(empty($product)){
+            $product->update(['product_custom_field2'=>"VD"]);
+        }
+
+
+
         $t->update([
             "shipping_status"=>"delivered",
             "additional_notes"=>$notes,
@@ -1303,6 +1311,7 @@ class APIController extends Controller
             "misc_note"=> $request->misc_note ?? null,
             "misc_cost"=> $request->misc_cost ?? 0
         ]);
+
 
         return Helper::DataReturn(true,"Data berhasil disimpan!");
     }

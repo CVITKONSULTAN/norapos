@@ -98,7 +98,7 @@ class ProductController extends Controller
             }
 
             if(auth()->user()->checkHouseKeeping()){
-                $query = $query->whereIN('product_custom_field2',['VD','OD','OC',null,'']);
+                $query = $query->whereIN('product_custom_field2',['VD','OD',null,'']);
             }
 
             $products = $query->select(

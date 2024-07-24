@@ -177,6 +177,7 @@
     <script type="text/javascript">
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
+                pageLength: -1,
                 processing: true,
                 serverSide: true,
                 aaSorting: [[3, 'asc']],
@@ -215,9 +216,9 @@
                         { data: 'brand', name: 'brands.name'},
                         { data: 'product_custom_field1', name: 'products.product_custom_field1'  },
                         { data: 'product_custom_field2', name: 'products.product_custom_field2'  },
-                        { data: 'sku', name: 'products.sku'},
-                        { data: 'product_custom_field3', name: 'products.product_custom_field3'  },
-                        { data: 'product_custom_field4', name: 'products.product_custom_field4'  }
+                        { data: 'sku', name: 'products.sku', visible:false},
+                        { data: 'product_custom_field3', name: 'products.product_custom_field3', visible:false },
+                        { data: 'product_custom_field4', name: 'products.product_custom_field4', visible:false  }
                         
                     ],
                     createdRow: function( row, data, dataIndex ) {

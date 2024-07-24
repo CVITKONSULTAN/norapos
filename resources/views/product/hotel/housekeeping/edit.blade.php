@@ -33,7 +33,7 @@
               </div>
             </div>
 
-            <div class="col-sm-4 @if(!(session('business.enable_category') && session('business.enable_sub_category'))) hide @endif">
+            <div class="col-sm-4 @if(!(session('business.enable_category') && session('business.enable_sub_category'))) hide @endif hidden-xs">
               <div class="form-group">
                 {!! Form::label('sku', __('product.sku')  . ':*') !!} @show_tooltip(__('tooltip.sku'))
                 {!! Form::text('sku', $product->sku, ['class' => 'form-control',
@@ -41,7 +41,7 @@
               </div>
             </div>
 
-            <div class="col-sm-4">
+            <div class="col-sm-4 hidden-xs">
               <div class="form-group">
                 {!! Form::label('barcode_type', __('product.barcode_type') . ':*') !!}
                   {!! Form::select('barcode_type', $barcode_types, $product->barcode_type, ['placeholder' => __('messages.please_select'), 'class' => 'form-control select2', 'required']); !!}
@@ -50,7 +50,7 @@
 
             <div class="clearfix"></div>
             
-            <div class="col-sm-4">
+            <div class="col-sm-4 hidden-xs">
               <div class="form-group">
                 {!! Form::label('unit_id', __('product.unit') . ':*') !!}
                 <div class="input-group">
@@ -106,7 +106,7 @@
               </div>
             </div> --}}
 
-            <div class="col-sm-4">
+            <div class="col-sm-4 hidden-xs">
               <div class="form-group">
                 {!! Form::label('product_locations', __('business.business_locations') . ':') !!} @show_tooltip(__('lang_v1.product_location_help'))
                   {!! Form::select('product_locations[]', $business_locations, $product->product_locations->pluck('id'), ['class' => 'form-control select2', 'multiple', 'id' => 'product_locations']); !!}
@@ -149,13 +149,13 @@
                 @endforeach
             @endif
             <div class="clearfix"></div>
-            <div class="col-sm-8">
+            <div class="col-sm-8 hidden">
               <div class="form-group">
                 {!! Form::label('product_description', __('lang_v1.product_description') . ':') !!}
                   {!! Form::textarea('product_description', $product->product_description, ['class' => 'form-control']); !!}
               </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4 hidden">
               <div class="form-group">
                 {!! Form::label('image', __('lang_v1.product_image') . ':') !!}
                 {!! Form::file('image', ['id' => 'upload_image', 'accept' => 'image/*']); !!}
@@ -284,7 +284,7 @@
         </div>
     @endcomponent
 
-    @component('components.widget', ['class' => 'box-primary'])
+    @component('components.widget', ['class' => 'box-primary hidden'])
         <div class="row">
             <div class="col-sm-4 @if(!session('business.enable_price_tax')) hide @endif">
               <div class="form-group">
@@ -313,29 +313,22 @@
             <div class="form-group col-sm-12" id="product_form_part"></div>
             <input type="hidden" id="variation_counter" value="0">
             <input type="hidden" id="default_profit_percent" value="{{ $default_profit_percent }}">
-            </div>
+        </div>
     @endcomponent
 
-  <div class="row">
-    <input type="hidden" name="submit_type" id="submit_type">
-        <div class="col-sm-12">
-          <div class="text-center">
-            <div class="btn-group">
-              @if($selling_price_group_count)
-                <button type="submit" value="submit_n_add_selling_prices" class="btn btn-warning submit_product_form">@lang('lang_v1.save_n_add_selling_price_group_prices')</button>
-              @endif
-
-              @can('product.opening_stock')
-              <button type="submit" @if(empty($product->enable_stock)) disabled="true" @endif id="opening_stock_button"  value="update_n_edit_opening_stock" class="btn bg-purple submit_product_form">@lang('lang_v1.update_n_edit_opening_stock')</button>
-              @endif
-
-              <button type="submit" value="save_n_add_another" class="btn bg-maroon submit_product_form">@lang('lang_v1.update_n_add_another')</button>
-
-              <button type="submit" value="submit" class="btn btn-primary submit_product_form">@lang('messages.update')</button>
-            </div>
+    <div class="row">
+      <input type="hidden" name="submit_type" id="submit_type">
+          <div class="col-sm-12">
+              <button 
+                type="submit" 
+                value="submit" 
+                class="btn btn-primary btn-block submit_product_form"
+                style="min-height:50px; width:100%;"
+              >
+                @lang('messages.update')
+              </button>
           </div>
-        </div>
-  </div>
+    </div>
 {!! Form::close() !!}
 </section>
 <!-- /.content -->

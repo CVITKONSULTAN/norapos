@@ -1297,8 +1297,9 @@ class APIController extends Controller
         
         $product = $t->sell_lines[0]->product ?? null;
 
-        if(empty($product)){
-            $product->update(['product_custom_field2'=>"VD"]);
+        if(!empty($product)){
+            $product->product_custom_field2 = "VD";
+            $product->save();
         }
 
 

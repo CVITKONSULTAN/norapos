@@ -1409,6 +1409,10 @@ class APIController extends Controller
                 'value'=>"Walk In"
             ],
             [
+                'label'=>"-- Non Aktif --",
+                'value'=>"-- Non Aktif --"
+            ],
+            [
                 'label'=>"Traveloka",
                 'value'=>"Traveloka"
             ],

@@ -781,12 +781,15 @@ class APIController extends Controller
                 // 'not_for_selling'=> 1
             ])->first();
 
-            if($p->not_for_selling == 1)
+            if(empty($p) || $p->not_for_selling == 1)
             return response()->json(
                 Helper::DataReturn(false,"Room out of service..."), 
             400); 
 
             $vid = $p->variations()->first()->id ?? 0;
+
+            $p->product_custom_field2 = "OC";
+            $p->save();
 
             $input['products'][0]['variation_id'] = $vid;
         }

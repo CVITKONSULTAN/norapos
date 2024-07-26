@@ -778,13 +778,17 @@ class APIController extends Controller
 
             $p = \App\Product::where([
                 'id'=>$product['product_id'],
-                'not_for_selling'=> 1
+                // 'not_for_selling'=> 1
             ])->first();
 
-            if($p)
+            if($p->not_for_selling == 1)
             return response()->json(
                 Helper::DataReturn(false,"Room out of service..."), 
             400); 
+
+            $vid = $p->variations()->first()->id ?? 0;
+
+            $input['products'][0]['variation_id'] = $vid;
         }
 
 

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', "Reserverasi")
+@section('title', "Card Log (Catatan Kartu Kamar)")
 
 @section('content')
 
@@ -10,6 +10,7 @@
 
 <!-- Main content -->
 <section class="content">
+{{--     
 <div class="row">
     <div class="col-md-12">
     @component('components.filters', ['title' => __('report.filters')])
@@ -24,7 +25,8 @@
        
     @endcomponent
     </div>
-</div>
+</div> 
+--}}
 
     <div class="row">
         <div class="col-md-12">
@@ -32,7 +34,7 @@
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active">
-                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Room</a>
+                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
                     </li>
                 </ul>
 
@@ -43,17 +45,11 @@
                                 <thead>
                                     <tr>
                                         <td>ID</td>
-                                        <td>HARGA</td>
-                                        <td>OTA</td>
-                                        <td>CID</td>
-                                        <td>NAMA</td>
-                                        <td>NO HP</td>
-                                        <td>LAMA MENGINAP</td>
-                                        <td>CHECK IN</td>
-                                        <td>CHECK OUT</td>
-                                        <td>TIPE KAMAR</td>
-                                        <td>PEMBAYARAN</td>
-                                        <td>DEPOSIT</td>
+                                        <td>NAMA TAMU</td>
+                                        <td>KAMAR</td>
+                                        <td>CHECKIN</td>
+                                        <td>CHECKOUT</td>
+                                        <td>AKUN FO</td>
                                     </tr>
                                 </thead>
                             </table>
@@ -82,10 +78,10 @@
                 serverSide: true,
                 aaSorting: [[3, 'asc']],
                 "ajax": {
-                    "url": "/reservasi/data",
+                    "url": "/card/data",
                     "data": function ( d ) {
-                        d.datatable = 1;
-                        d.date = $("#tanggal_filter").val();
+                        // d.datatable = 1;
+                        // d.date = $("#tanggal_filter").val();
 
                         d = __datatable_ajax_callback(d);
                     }
@@ -103,18 +99,22 @@
                     //         return "";
                     //     }
                     // },
-                    { data: 'ID'  },
-                    { data: 'HARGA'  },
-                    { data: 'OTA'  },
-                    { data: 'CID'  },
-                    { data: 'NAMA'  },
-                    { data: 'NO HP'  },
-                    { data: 'LAMA MENGINAP'  },
-                    { data: 'CHECK IN'  },
-                    { data: 'CHECK OUT'  },
-                    { data: 'TIPE KAMAR'  },
-                    { data: 'PEMBAYARAN'  },
-                    { data: 'DEPOSIT'  }
+                    { data: 'id'  },
+                    { data: 'nama'  },
+                    { 
+                        data: 'product_id',
+                        render: (data, type, row) => {
+                            return row.product?.name ?? "";
+                        }
+                    },
+                    { data: 'checkin'  },
+                    { data: 'checkout'  },
+                    { 
+                        data: 'user_id',
+                        render: (data, type, row) => {
+                            return row.user?.username ?? "";
+                        }
+                    },
                 ]
             });
             // Array to track the ids of the details displayed rows

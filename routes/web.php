@@ -75,7 +75,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::post('/upload', "FileUploadController@upload")->name('upload');
 
-    Route::resource('/reservasi', "ReservasiController");
+    Route::get('/reservasi', "ReservasiController@index");
+    Route::get('/reservasi/data', "HotelController@reservasi_list");
+
+    Route::get('/card', "CardLogController@index");
+    Route::get('/card/data', "CardLogController@data");
 
     Route::get('/absensi', "AbsensiController@create")->name('absensi.create');
     Route::post('/absensi/store', "AbsensiController@store")->name('absensi.store');

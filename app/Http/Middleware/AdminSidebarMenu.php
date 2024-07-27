@@ -809,7 +809,25 @@ class AdminSidebarMenu
                             ]
                     );
                 },
-                ['icon' => 'fa fas fa-cubes', 'id' => 'tour_step5']
+                ['icon' => 'fa fa-list-alt', 'id' => 'tour_step5']
+            )->order(20);
+
+            //Card log
+            $menu->dropdown(
+                "Card Log",
+                function ($sub) {
+                    $sub->url(
+                        '/card',
+                        "Card Log",
+                        [
+                            'icon' => 'fa fas fa-list', 
+                            'active' => 
+                                request()->segment(1) == 'card' && 
+                                request()->segment(2) == ''
+                            ]
+                    );
+                },
+                ['icon' => 'fa fa-credit-card', 'id' => 'tour_step5']
             )->order(20);
 
             //Products dropdown

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Helpers\Helper;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class HotelController extends Controller
@@ -32,14 +33,16 @@ class HotelController extends Controller
             "metode_pembayaran as PEMBAYARAN",
             "deposit as DEPOSIT",
         )
-        ->skip($skip)
-        ->take($take)
         ->orderBy('id','desc');
 
         if($request->date){
             $query = $query->whereRaw("'$request->date' BETWEEN checkin AND checkout");
         }
-        // dd($query->toSql());
+        if($request->datatable){
+            return Datatables::of($query)->make(true);
+        }
+
+        $query = $query->skip($skip)->take($take);
 
         $data = $query->get();
 

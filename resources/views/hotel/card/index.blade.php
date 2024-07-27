@@ -21,7 +21,6 @@
             </div>
             <button class="btn btn-primary" id="reset">RESET</button>
         </div>
-
        
     @endcomponent
     </div>

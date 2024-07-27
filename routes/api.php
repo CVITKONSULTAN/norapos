@@ -21,6 +21,8 @@ Route::get('/hotel/print', 'APIController@hotel_print');
 
 Route::group(['middleware'=>'auth:api'],function(){
     
+    Route::post('/card', 'CardLogController@store');
+
     Route::get('/brands/list', 'APIController@brands_list');
 
     Route::post('/transaction/receipt', 'APIController@print_trx_id');
@@ -38,7 +40,6 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::post('/customers', 'APIController@getCustomers');
     Route::post('/customers/store', 'APIController@storeCustomer');
 
-    
     Route::post('/products/list', 'APIController@getProducts');
     
     Route::post('/pos', 'APIController@store_POS');

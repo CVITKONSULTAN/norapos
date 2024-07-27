@@ -15,10 +15,6 @@ include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
 
-// if( env('APP_DEBUG') ){
-//     \Debugbar::enable();
-// }
-
 $database_domain = ['beautyproclinic.com'];
 
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
@@ -78,6 +74,8 @@ Route::middleware(['setData'])->group(function () {
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {
 
     Route::post('/upload', "FileUploadController@upload")->name('upload');
+
+    Route::resource('/reservasi', "ReservasiController");
 
     Route::get('/absensi', "AbsensiController@create")->name('absensi.create');
     Route::post('/absensi/store', "AbsensiController@store")->name('absensi.store');
@@ -398,7 +396,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('post-document-upload', 'DocumentAndNoteController@postMedia');
     Route::resource('note-documents', 'DocumentAndNoteController');
 });
-
 
 Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {
     Route::get('products/{id?}', 'ProductController@getProductsApi');

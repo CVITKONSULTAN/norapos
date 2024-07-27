@@ -794,6 +794,24 @@ class AdminSidebarMenu
             //     )->order(15);
             // }
 
+            //Reservasi
+            $menu->dropdown(
+                "Reservasi",
+                function ($sub) {
+                    $sub->url(
+                        '/reservasi',
+                        "Reservasi",
+                        [
+                            'icon' => 'fa fas fa-list', 
+                            'active' => 
+                                request()->segment(1) == 'reservasi' && 
+                                request()->segment(2) == ''
+                            ]
+                    );
+                },
+                ['icon' => 'fa fas fa-cubes', 'id' => 'tour_step5']
+            )->order(20);
+
             //Products dropdown
             if (auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
                 auth()->user()->can('brand.view') || auth()->user()->can('unit.view') ||

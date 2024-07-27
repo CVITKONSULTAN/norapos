@@ -238,49 +238,19 @@
           </div>
         </div>
         <div class="col-sm-3">
-            <div class="form-group">
-              {!! Form::label('product_custom_field2',  'Status Kebersihan:') !!}
-              @php
-              $list_status = [
-                    'OC' => "Occupied Clean",
-                    'OD' => "Occupied Dirty",
-                    'VCI' => "Vacant Clean Inspected",
-                    'VC' => "Vacant Clean",
-                    'VD' => "Vacant Dirty",
-                ];
-              @endphp
-              <select class="form-control" name="product_custom_field2">
-                @foreach ($list_status as $key => $item)
-                    <option {{$key == $product->product_custom_field2 ? 'selected' : ''}} value="{{$key}}">{{ $key }} - {{$item}}</option>
-                @endforeach
-                $product->product_custom_field2
-
-              </select>
-            </div>
-          </div>
-
-        {{-- <div class="col-sm-3">
           <div class="form-group">
-            {!! Form::label('product_custom_field2',  $product_custom_field2 . ':') !!}
-            {!! Form::text('product_custom_field2', $product->product_custom_field2, ['class' => 'form-control', 'placeholder' => $product_custom_field2]); !!}
+            {!! Form::label('product_custom_field2',  'Status Kebersihan:') !!}
+            <select class="form-control" name="product_custom_field2">
+              @foreach ($list_status as $key => $item)
+                  <option {{$key == $product->product_custom_field2 ? 'selected' : ''}} value="{{$key}}">{{ $key }} - {{$item}}</option>
+              @endforeach
+            </select>
           </div>
         </div>
 
-        <div class="col-sm-3">
-          <div class="form-group">
-            {!! Form::label('product_custom_field3',  $product_custom_field3 . ':') !!}
-            {!! Form::text('product_custom_field3', $product->product_custom_field3, ['class' => 'form-control', 'placeholder' => $product_custom_field3]); !!}
-          </div>
-        </div>
-
-        <div class="col-sm-3">
-          <div class="form-group">
-            {!! Form::label('product_custom_field4',  $product_custom_field4 . ':') !!}
-            {!! Form::text('product_custom_field4', $product->product_custom_field4, ['class' => 'form-control', 'placeholder' => $product_custom_field4]); !!}
-          </div>
-        </div> --}}
         <!--custom fields-->
         @include('layouts.partials.module_form_part')
+        
         </div>
     @endcomponent
 

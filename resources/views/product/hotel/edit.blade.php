@@ -238,6 +238,19 @@
           </div>
         </div>
 
+        <div class="col-sm-3">
+          <div class="form-group">
+            {!! Form::label('product_custom_field2',  'Status Kebersihan:') !!}
+            
+            <select class="form-control" name="product_custom_field2">
+              @foreach ($list_status as $key => $item)
+                  <option {{$key == $product->product_custom_field2 ? 'selected' : ''}} value="{{$key}}">{{ $key }} - {{$item}}</option>
+              @endforeach
+
+            </select>
+          </div>
+        </div>
+
         {{-- <div class="col-sm-3">
           <div class="form-group">
             {!! Form::label('product_custom_field2',  $product_custom_field2 . ':') !!}

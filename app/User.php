@@ -320,4 +320,8 @@ class User extends Authenticatable
         ->isNotEmpty();
         
     }
+
+    function isHotel() {
+        return str_contains( strtolower($this->business->name) , 'hotel' );
+    }
 }

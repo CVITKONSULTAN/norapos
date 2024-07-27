@@ -793,42 +793,45 @@ class AdminSidebarMenu
             //         ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
             //     )->order(15);
             // }
+            if( !auth()->user()->checkHouseKeeping() ){
+                
+                //Reservasi
+                $menu->dropdown(
+                    "Reservasi",
+                    function ($sub) {
+                        $sub->url(
+                            '/reservasi',
+                            "Reservasi",
+                            [
+                                'icon' => 'fa fas fa-list', 
+                                'active' => 
+                                    request()->segment(1) == 'reservasi' && 
+                                    request()->segment(2) == ''
+                                ]
+                        );
+                    },
+                    ['icon' => 'fa fa-list-alt', 'id' => 'tour_step5']
+                )->order(20);
+    
+                //Card log
+                $menu->dropdown(
+                    "Card Log",
+                    function ($sub) {
+                        $sub->url(
+                            '/card',
+                            "Card Log",
+                            [
+                                'icon' => 'fa fas fa-list', 
+                                'active' => 
+                                    request()->segment(1) == 'card' && 
+                                    request()->segment(2) == ''
+                                ]
+                        );
+                    },
+                    ['icon' => 'fa fa-credit-card', 'id' => 'tour_step5']
+                )->order(20);
 
-            //Reservasi
-            $menu->dropdown(
-                "Reservasi",
-                function ($sub) {
-                    $sub->url(
-                        '/reservasi',
-                        "Reservasi",
-                        [
-                            'icon' => 'fa fas fa-list', 
-                            'active' => 
-                                request()->segment(1) == 'reservasi' && 
-                                request()->segment(2) == ''
-                            ]
-                    );
-                },
-                ['icon' => 'fa fa-list-alt', 'id' => 'tour_step5']
-            )->order(20);
-
-            //Card log
-            $menu->dropdown(
-                "Card Log",
-                function ($sub) {
-                    $sub->url(
-                        '/card',
-                        "Card Log",
-                        [
-                            'icon' => 'fa fas fa-list', 
-                            'active' => 
-                                request()->segment(1) == 'card' && 
-                                request()->segment(2) == ''
-                            ]
-                    );
-                },
-                ['icon' => 'fa fa-credit-card', 'id' => 'tour_step5']
-            )->order(20);
+            }
 
             //Products dropdown
             if (auth()->user()->can('product.view') || auth()->user()->can('product.create') ||

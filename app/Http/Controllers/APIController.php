@@ -399,6 +399,12 @@ class APIController extends Controller
             ->leftjoin('brands', 'brands.id', '=', 'products.brand_id')
             ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.product_id', '=', 'products.id')
             ->orderBy('transaction_sell_lines.created_at','desc')
+
+            if($request->brand_id){
+                $query = $query->where('brand_id',$request->brand_id);
+            }
+
+            $result = $query
             ->select(
                 'products.id as id',
                 'products.name as ROOM NAME',
@@ -409,13 +415,7 @@ class APIController extends Controller
                 "transaction_sell_lines.created_at as LAST CHECK IN",
                 'variations.sell_price_inc_tax as selling_price',
                 'products.sku as SKU'
-            );
-
-            if($request->brand_id){
-                $query = $query->where('brand_id',$request->brand_id);
-            }
-
-            $result = $query
+            )
             ->groupBy('id')
             ->orderBy('id','asc')
             ->get();

@@ -401,7 +401,7 @@ class APIController extends Controller
             ->orderBy('transaction_sell_lines.created_at','desc')
 
             if($request->brand_id){
-                $query = $query->where('brand_id',$request->brand_id);
+                $query = $query->where('products.brand_id',$request->brand_id);
             }
 
             $result = $query

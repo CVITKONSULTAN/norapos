@@ -394,15 +394,15 @@ class APIController extends Controller
             if($request->not_for_selling){
                 $query = $query->where("products.not_for_selling",0);
             }
+
+            if($request->brand_id){
+                $query = $query->where('products.brand_id',$request->brand_id);
+            }
             
             $query = $query->leftjoin('variations', 'products.id', '=', 'variations.product_id')
             ->leftjoin('brands', 'brands.id', '=', 'products.brand_id')
             ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.product_id', '=', 'products.id')
             ->orderBy('transaction_sell_lines.created_at','desc');
-
-            if($request->brand_id){
-                $query = $query->where('products.brand_id',$request->brand_id);
-            }
 
             $result = $query
             ->select(

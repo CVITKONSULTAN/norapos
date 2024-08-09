@@ -398,6 +398,10 @@ class APIController extends Controller
             if($request->brand_id){
                 $query = $query->where('products.brand_id',$request->brand_id);
             }
+
+            if($request->kebersihan){
+                $query = $query->where('products.product_custom_field2','like',"%$request->kebersihan%");
+            }
             
             $query = $query->leftjoin('variations', 'products.id', '=', 'variations.product_id')
             ->leftjoin('brands', 'brands.id', '=', 'products.brand_id')
@@ -1162,6 +1166,11 @@ class APIController extends Controller
             });
         }
 
+        if($request->start && $request->end){
+            $data = $data->whereBetween("transactions.transaction_date",[$request->start,$request->end]);
+            // dd($data->count(),$data->toSql());
+        }
+
         $data = $data->get();
 
         $res = [];
@@ -1493,6 +1502,36 @@ class APIController extends Controller
         );
     }
 
+    function kebersihan_list(){
+        $data = [
+            [
+                'id'=>"OC",
+                'name'=>"Ocupied Clean"
+            ],
+            [
+                'id'=>"OD",
+                'name'=>"Ocupied Dirty"
+            ],
+            [
+                'id'=>"VC",
+                'name'=>"Vacant Clean"
+            ],
+            [
+                'id'=>"VCI",
+                'name'=>"Vacant Clean Inspected"
+            ],
+            [
+                'id'=>"VD",
+                'name'=>"Vacant Dirty"
+            ],
+        ];
+        return Helper::DataReturn(
+            true,
+            "OK",
+            $data
+        );
+    }
+
     function print_trx_id(Request $request){
 
         $business = request()->user()->business;
@@ -1551,13 +1590,6 @@ class APIController extends Controller
 
     function hotel_print(Request $request){
 
-        // if(request()->user() && request()->user()->business){
-        //     $data['business'] = request()->user()->business;
-        // } else {
-        //     if(!$request->business_id) return abort(404);
-        //     $data['business'] = \App\Business::find($request->business_id);
-        // }
-
         if(!$request->id) return abort(404);
         
         if($request->bill){
@@ -1585,20 +1617,87 @@ class APIController extends Controller
             $data['transaction_sell_line'] = $data['transaction']->sell_lines;
     
             $data['contact'] = DB::table('contacts')->find($data['transaction']->contact_id);
+
+            $data['just'] = $request->just ?? null;
+
             return view('hotel.print.bill',$data);
         }
-
-        $data['reservasi'] = \App\HotelReservasi::find($request->id);
-        if(empty($data['reservasi']))
-        return abort(404);
 
         $data['business'] = \App\Business::where('name','like','%kartika%')->first();
         if(empty($data['business']))
         return abort(404);
         $data['location'] = $data['business']->locations()->first();
 
-        // dd($data);
+        if($request->checkin){
+
+            $data['transaction'] = \App\Transaction::find($request->id);
+            
+            return view('hotel.print.checkin_card',$data);
+        }
+
+        $data['reservasi'] = \App\HotelReservasi::find($request->id);
+        if(empty($data['reservasi']))
+        return abort(404);
+
         return view('hotel.print.registered_card',$data);
+    }
+
+    function hotel_room_print(Request $request){
+        $query = \App\Product::where('products.business_id',$request->business_id);
+
+        if($request->not_for_selling){
+            $query = $query->where("products.not_for_selling",0);
+        }
+
+        if($request->brand_id){
+            $query = $query->where('products.brand_id',$request->brand_id);
+        }
+
+        if($request->kebersihan){
+            $query = $query->where('products.product_custom_field2','like',"%$request->kebersihan%");
+        }
+        
+        $query = $query->leftjoin('variations', 'products.id', '=', 'variations.product_id')
+        ->leftjoin('brands', 'brands.id', '=', 'products.brand_id')
+        ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.product_id', '=', 'products.id')
+        ->orderBy('transaction_sell_lines.created_at','desc');
+
+        $result = $query
+        ->select(
+            'products.id as id',
+            'products.name as ROOM NAME',
+            'products.not_for_selling as NOT FOR SELL',
+            'products.product_custom_field1 as KET. KERUSAKAN',
+            'products.product_custom_field2 as KEBERSIHAN',
+            "brands.name as TIPE KAMAR",
+            "transaction_sell_lines.created_at as LAST CHECK IN",
+            'variations.sell_price_inc_tax as selling_price',
+            'products.sku as SKU'
+        )
+        ->groupBy('id')
+        ->orderBy('id','asc')
+        ->get();
+        
+        foreach ($result as $key => $value) {
+            $result[$key]['selling_price'] = intval($value->selling_price);
+            $result[$key]['PRICE'] = number_format($value->selling_price,0,",",".");
+
+            $check = \App\TransactionSellLine::where([
+                'product_id'=>$value['id'],
+            ])
+            ->whereHas('transaction',function($q){
+                return $q->whereNull('shipping_status');
+            })
+            ->first();
+
+            $result[$key]['TODAY AVAILABLE'] = empty($check) ? 1 : 0;
+            // unset($result[$key]['image_url']);
+            // dd($result[$key]);
+        }
+
+        $data['result'] = $result->toArray();
+        
+        return view('hotel.print.room',$data);
     }
 
     function brands_list(Request $request){
@@ -1609,6 +1708,56 @@ class APIController extends Controller
         200); 
     }
     
+    // function hotel_print(Request $request){
+
+    //     if(!$request->id) return abort(404);
+        
+    //     if($request->bill){
+
+    //         $data['business'] = \App\Business::where('name','like','%kartika%')->first();
+    //         if(empty($data['business']))
+    //         return abort(404);
+
+    //         $data['transaction'] = \App\Transaction::where([
+    //             "id"=>$request->id,
+    //             "business_id"=> $data['business']->id
+    //         ])
+    //         ->select("*",
+    //         DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE
+    //                         TP.transaction_id=transactions.id) as total_paid'),
+    //         )
+    //         ->first();
+            
+    //         if(empty($data['transaction']))
+    //         return abort(404);
+    
+    //         // $data['business'] = $data['transaction']->business;
+    //         $data['location'] = $data['business']->locations()->first();
+    
+    //         $data['transaction_sell_line'] = $data['transaction']->sell_lines;
+    
+    //         $data['contact'] = DB::table('contacts')->find($data['transaction']->contact_id);
+    //         return view('hotel.print.bill',$data);
+    //     }
+
+    //     $data['business'] = \App\Business::where('name','like','%kartika%')->first();
+    //     if(empty($data['business']))
+    //     return abort(404);
+    //     $data['location'] = $data['business']->locations()->first();
+
+    //     if($request->checkin){
+
+    //         $data['transaction'] = \App\Transaction::find($request->id);
+
+    //         return view('hotel.print.checkin_card',$data);
+    //     }
+        
+    //     $data['reservasi'] = \App\HotelReservasi::find($request->id);
+    //     if(empty($data['reservasi']))
+    //     return abort(404);
+
+    //     return view('hotel.print.registered_card',$data);
+    // }
 
 
 }

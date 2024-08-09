@@ -18,12 +18,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/hotel/print', 'APIController@hotel_print');
+Route::get('/hotel/room/print', 'APIController@hotel_room_print');
 
 Route::group(['middleware'=>'auth:api'],function(){
     
     Route::post('/card', 'CardLogController@store');
 
     Route::get('/brands/list', 'APIController@brands_list');
+    Route::get('/kebersihan/list', 'APIController@kebersihan_list');
 
     Route::post('/transaction/receipt', 'APIController@print_trx_id');
 

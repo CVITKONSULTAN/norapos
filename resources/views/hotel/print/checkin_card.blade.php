@@ -1,5 +1,5 @@
 @php
-    $tgl_checkout = \Carbon::parse($reservasi->checkout_at)->format("d/m/Y");
+    $tgl_checkout = \Carbon::parse($transaction->checkout_at)->format("d/m/Y");
 @endphp
 
 <html>
@@ -55,13 +55,13 @@
                     <i>/ Guest Name</i>
                 </td>
                 <td>:</td>
-                <td>{{ $reservasi->contact->name }}</td>
+                <td>{{ $transaction->contact->name }}</td>
             </tr>
             <tr>
                 <td>No. HP <br />
                     <i>/ Mobile No.</i></td>
                 <td>:</td>
-                <td>{{ $reservasi->contact->mobile ?? "-" }}</td>
+                <td>{{ $transaction->contact->mobile ?? "-" }}</td>
             </tr>
             <tr>
                 <td>
@@ -69,7 +69,7 @@
                     <i>/ Arrival / Checkin</i>
                 </td>
                 <td>:</td>
-                <td>{{ \Carbon::parse($reservasi->transaction_date)->format("d/m/Y") }}</td>
+                <td>{{ \Carbon::parse($transaction->transaction_date)->format("d/m/Y") }}</td>
             </tr>
             <tr>
                 <td>
@@ -85,7 +85,7 @@
                     <i>/ Online Travel Agent (OTA)</i>
                 </td>
                 <td>:</td>
-                <td>{{ $reservasi->ota ?? "-" }}</td>
+                <td>{{ $transaction->service_custom_field_2 ?? "-" }}</td>
             </tr>
             <tr>
                 <td>
@@ -93,7 +93,15 @@
                     <i>/ Room Type</i>
                 </td>
                 <td>:</td>
-                <td>{{ $reservasi->brand_name ?? "-" }}</td>
+                <td>{{ $transaction->sell_lines[0]->product->brand->name ?? "-" }}</td>
+            </tr>
+            <tr>
+                <td>
+                    No. Kamar <br /> 
+                    <i>/ Room Number</i>
+                </td>
+                <td>:</td>
+                <td>{{ $transaction->sell_lines[0]->product->name ?? "-" }}</td>
             </tr>
             <tr>
                 <td>
@@ -101,7 +109,7 @@
                     <i>/ Payment Method</i>
                 </td>
                 <td>:</td>
-                <td>{{ $reservasi->metode_pembayaran ?? "-" }}</td>
+                <td>{{ $transaction->service_custom_field_1 ?? "-" }}</td>
             </tr>
             <tr>
                 <td>
@@ -109,7 +117,7 @@
                     <i>/ Deposit</i>
                 </td>
                 <td>:</td>
-                <td>{{ number_format($reservasi->deposit,0,",",".") }}</td>
+                <td>{{ number_format($transaction->service_custom_field_3,0,",",".") }}</td>
             </tr>
             <tr>
                 <td colspan="3" style="vertical-align: top">

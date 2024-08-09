@@ -120,31 +120,42 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($transaction_sell_line as $k => $item)
-                    @php
-                        $price = $item->unit_price;
-                        if(str_contains( $item->product->name , "Room")){
-                            // $price = $item->unit_price * $transaction->pay_term_number;''
-                            // $price = $item->total_paid ?? 0;
-                            $price = $transaction->total_paid ?? 0;
-                        }
-                        $total += $price;
-                    @endphp
-                    <tr>
-                        <td style="text-align: center;">{{ $k+1 }}</td>
-                        <td style="text-align: center;">{{ $item->created_at->format("d/m/Y") }}</td>
-                        <td style="text-align: center;">{{ $item->product->name }}</td>
-                        <td style="text-align: right;">{{ number_format($price,0,",",".") }}</td>
-                    </tr>
-                @endforeach
-                @if($transaction->misc_cost > 0 || $transaction->misc_note)
-                    @php($total += $transaction->misc_cost)
-                    <tr>
-                        <td style="text-align: center;">{{ $k+2 }}</td>
-                        <td style="text-align: center;">{{ $tgl_checkout }}</td>
-                        <td style="text-align: center;"> Miscellaneous : {{ $transaction->misc_note }}</td>
-                        <td style="text-align: right;">{{ number_format($transaction->misc_cost,0,",",".") }}</td>
-                    </tr>
+                @if($just != "misc")
+                    @foreach ($transaction_sell_line as $k => $item)
+                        @php
+                            $price = $item->unit_price;
+                            if(str_contains( $item->product->name , "Room")){
+                                // $price = $item->unit_price * $transaction->pay_term_number;''
+                                // $price = $item->total_paid ?? 0;
+                                $price = $transaction->total_paid ?? 0;
+                            }
+                            $total += $price;
+                        @endphp
+                        <tr>
+                            <td style="text-align: center;">{{ $k+1 }}</td>
+                            <td style="text-align: center;">{{ $item->created_at->format("d/m/Y") }}</td>
+                            <td style="text-align: center;">{{ $item->product->name }}</td>
+                            <td style="text-align: right;">{{ number_format($price,0,",",".") }}</td>
+                        </tr>
+                    @endforeach
+                @endif
+                @if($just != "room")
+                    @if($transaction->misc_cost > 0 || $transaction->misc_note)
+                        @php($total += $transaction->misc_cost)
+                        <tr>
+                            <td style="text-align: center;">{{ $k+2 }}</td>
+                            <td style="text-align: center;">{{ $tgl_checkout }}</td>
+                            <td style="text-align: center;"> Miscellaneous : {{ $transaction->misc_note }}</td>
+                            <td style="text-align: right;">{{ number_format($transaction->misc_cost,0,",",".") }}</td>
+                        </tr>
+                        @else
+                        <tr>
+                            <td style="text-align: center;"></td>
+                            <td style="text-align: center;">{{ $tgl_checkout }}</td>
+                            <td style="text-align: center;"> Miscellaneous : {{ $transaction->misc_note ?? "-" }}</td>
+                            <td style="text-align: right;">{{ number_format($transaction->misc_cost ?? 0 ,0,",",".") }}</td>
+                        </tr>
+                    @endif
                 @endif
             </tbody>
             <tfoot>

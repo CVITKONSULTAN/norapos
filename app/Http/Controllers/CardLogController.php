@@ -15,7 +15,8 @@ class CardLogController extends Controller
 
     function data(Request $request) {
         $query = \App\CardLog::query()
-        ->with('user','product','contact');
+        ->with('user','product','contact')
+        ->orderBy('id','desc');
         return Datatables::of($query)->make(true);
     }
 
@@ -23,6 +24,11 @@ class CardLogController extends Controller
 
         $data = $request->all();
         $data['user_id'] = auth()->user()->id;
+
+        if($request->product_sku){
+            $product = \App\Product::where('sku',$request->product_sku)->first();
+            $data['product_id'] = $product->id ?? 0;
+        }
 
         \App\CardLog::create($data);
 

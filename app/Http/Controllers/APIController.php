@@ -411,6 +411,10 @@ class APIController extends Controller
                 'products.sku as SKU'
             );
 
+            if($request->brand_id){
+                $query = $query->where('brand_id',$request->brand_id);
+            }
+
             $result = $query
             ->groupBy('id')
             ->orderBy('id','asc')

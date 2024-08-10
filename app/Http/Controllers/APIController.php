@@ -1490,10 +1490,10 @@ class APIController extends Controller
                 'label'=>"Transfer",
                 'value'=>"Transfer"
             ],
-            [
-                'label'=>"Lainnya",
-                'value'=>"Lainnya"
-            ],
+            // [
+            //     'label'=>"Lainnya",
+            //     'value'=>"Lainnya"
+            // ],
         ];
         return Helper::DataReturn(
             true,

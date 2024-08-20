@@ -468,3 +468,9 @@
 		</div>
 	</div>
 @endif
+
+<style>
+	#receipt_section, .print_section, .invoice{
+		font-family: monospace !important; 
+	}
+</style>

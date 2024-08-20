@@ -426,6 +426,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
     Route::get('/sells/invoice-url/{id}', 'SellPosController@showInvoiceUrl');
 });
 
+Route::get('/print-invoice/{transaction_id}', 'SellPosController@printInvoice')->name('sell.printInvoice');
+
 Route::group(['prefix'=>'webview'],function(){
     Route::get('/reports/profit-loss', 'ReportController@getProfitLossWebview');
 });

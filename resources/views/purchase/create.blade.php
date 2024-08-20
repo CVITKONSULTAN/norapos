@@ -381,6 +381,14 @@
 		        }    
 		    }
 		});
+		$(document).on('change',".purchase_unit_cost",function(e){
+			const name = $(this).attr('name');
+			const row_cout = name.replaceAll(/[^0-9]/g, '');
+			const harga = parseInt($(".harga_"+row_cout).text().replaceAll(',', ''));
+			const val = parseInt( $(this).val().replaceAll(',', '') );
+			const average = (harga + val ) / 2
+			$('input[name="purchases[0][default_sell_price]"]').val(average);
+		})
 	</script>
 	@include('purchase.partials.keyboard_shortcuts')
 @endsection

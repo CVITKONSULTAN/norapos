@@ -1455,7 +1455,7 @@ class SellPosController extends Controller
      */
     public function printInvoice(Request $request, $transaction_id)
     {
-        if (request()->ajax()) {
+        if (request()->ajax() || $request->has('bypass')) {
             try {
                 $output = ['success' => 0,
                         'msg' => trans("messages.something_went_wrong")
@@ -1492,6 +1492,9 @@ class SellPosController extends Controller
                         ];
             }
 
+            if($request->has('bypass')){
+                return $receipt['html_content'];
+            }
             return $output;
         }
     }

@@ -1,4 +1,12 @@
 @foreach( $variations as $variation)
+    @php
+        $check_decimal = 'false';
+        if($product->unit->allow_decimal == 0){
+            $check_decimal = 'true';
+        }
+        $currency_precision = config('constants.currency_precision', 2);
+        $quantity_precision = config('constants.quantity_precision', 2);
+    @endphp
     <tr>
         <td><span class="sr_number"></span></td>
         <td>
@@ -11,20 +19,17 @@
                 <br>
                 <small class="text-muted" style="white-space: nowrap;">@lang('report.current_stock'): @if(!empty($variation->variation_location_details->first())) {{@num_format($variation->variation_location_details->first()->qty_available)}} @else 0 @endif {{ $product->unit->short_name }}</small>
             @endif
-            
+            <br>
+            <small class="text-muted" style="white-space: nowrap;">
+                @lang('purchase.unit_selling_price'): 
+                <br />
+                <span class="harga_{{$row_count}}">{{ number_format($variation->sell_price_inc_tax, $currency_precision, $currency_details->decimal_separator, $currency_details->thousand_separator)}}</span>
+            </small>
         </td>
         <td>
             {!! Form::hidden('purchases[' . $row_count . '][product_id]', $product->id ); !!}
             {!! Form::hidden('purchases[' . $row_count . '][variation_id]', $variation->id , ['class' => 'hidden_variation_id']); !!}
 
-            @php
-                $check_decimal = 'false';
-                if($product->unit->allow_decimal == 0){
-                    $check_decimal = 'true';
-                }
-                $currency_precision = config('constants.currency_precision', 2);
-                $quantity_precision = config('constants.quantity_precision', 2);
-            @endphp
             {!! Form::text('purchases[' . $row_count . '][quantity]', number_format(1, $quantity_precision, $currency_details->decimal_separator, $currency_details->thousand_separator), ['class' => 'form-control input-sm purchase_quantity input_number mousetrap', 'required', 'data-rule-abs_digit' => $check_decimal, 'data-msg-abs_digit' => __('lang_v1.decimal_value_not_allowed')]); !!}
             <input type="hidden" class="base_unit_cost" value="{{$variation->default_purchase_price}}">
             <input type="hidden" class="base_unit_selling_price" value="{{$variation->sell_price_inc_tax}}">

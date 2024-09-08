@@ -179,7 +179,8 @@ class BusinessUtil extends Util
     {
         return [
             'fifo' => __('business.fifo'),
-            'lifo' => __('business.lifo')
+            'lifo' => __('business.lifo'),
+            'avco' => __('business.average')
         ];
     }
 

@@ -283,7 +283,7 @@ class PurchaseController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        try {
+        // try {
             $business_id = $request->session()->get('user.business_id');
 
             //Check if subscribed or not
@@ -373,14 +373,14 @@ class PurchaseController extends Controller
             $output = ['success' => 1,
                             'msg' => __('purchase.purchase_add_success')
                         ];
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
-            $output = ['success' => 0,
-                            'msg' => __('messages.something_went_wrong')
-                        ];
-        }
+        //     $output = ['success' => 0,
+        //                     'msg' => __('messages.something_went_wrong')
+        //                 ];
+        // }
 
         return redirect('purchases')->with('status', $output);
     }

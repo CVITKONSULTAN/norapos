@@ -353,8 +353,7 @@ class ProductUtil extends Util
                             ->first();
             
             //Add quantity in VariationLocationDetails
-            $variation_location_d = VariationLocationDetails
-                          ::where('variation_id', $variation->id)
+            $variation_location_d = VariationLocationDetails::where('variation_id', $variation->id)
                           ->where('product_id', $product_id)
                           ->where('product_variation_id', $variation->product_variation_id)
                           ->where('location_id', $location_id)
@@ -842,8 +841,17 @@ class ProductUtil extends Util
      *
      * @return void
      */
-    public function updateProductFromPurchase($variation_data)
+    public function updateProductFromPurchase(
+        $variation_data,
+        $accounting_method,
+        $location_id
+    )
     {
+        // dd(
+        //     $variation_data,
+        //     $accounting_method,
+        //     $location_id
+        // );
         $variation_details = Variation::where('id', $variation_data['variation_id'])
                                         ->with(['product', 'product.product_tax'])
                                         ->first();
@@ -856,11 +864,38 @@ class ProductUtil extends Util
             $variation_data['sell_price_inc_tax'] = $variation_details->sell_price_inc_tax;
         }
         
+        if($accounting_method == "avco"){
+
+            $hpp_before = $variation_details->default_purchase_price ?? 0;
+            $variation_id = $variation_details->id;
+
+            $total_harga_purchasing = $variation_data['pp_without_discount'] * $variation_data['qty'];
+
+            $variation_stock_location = VariationLocationDetails::where('variation_id', $variation_id)
+            ->where('location_id', $location_id)
+            ->first();
+
+            $current_stock = $variation_stock_location->qty_available ?? 0;
+
+            $total_harga_current = $hpp_before * $current_stock;
+
+            $total_stock = $current_stock + $variation_data['qty'];
+            
+            $formula = ( $total_harga_current + $total_harga_purchasing ) / $total_stock;
+
+            $variation_details->default_purchase_price = $formula;
+
+        } else {
+            $variation_details->default_purchase_price = $variation_data['pp_without_discount'];
+        }
+        
         if (($variation_details->default_purchase_price != $variation_data['pp_without_discount']) ||
             ($variation_details->sell_price_inc_tax != $variation_data['sell_price_inc_tax'])
             ) {
+
             //Set default purchase price exc. tax
-            $variation_details->default_purchase_price = $variation_data['pp_without_discount'];
+            // $variation_details->default_purchase_price = $variation_data['pp_without_discount'];
+            
 
             //Set default purchase price inc. tax
             $variation_details->dpp_inc_tax = $this->calc_percentage($variation_details->default_purchase_price, $tax_rate, $variation_details->default_purchase_price);
@@ -1129,11 +1164,19 @@ class ProductUtil extends Util
      *
      * @return array
      */
-    public function createOrUpdatePurchaseLines($transaction, $input_data, $currency_details, $enable_product_editing, $before_status = null)
+    public function createOrUpdatePurchaseLines(
+        $transaction, 
+        $input_data, 
+        $currency_details, 
+        $enable_product_editing, 
+        $before_status = null
+        )
     {
         $updated_purchase_lines = [];
         $updated_purchase_line_ids = [0];
         $exchange_rate = !empty($transaction->exchange_rate) ? $transaction->exchange_rate : 1;
+
+        $business = $transaction->business ?? null;
         
         foreach ($input_data as $data) {
             $multiplier = 1;
@@ -1145,7 +1188,32 @@ class ProductUtil extends Util
                 $unit = Unit::find($data['sub_unit_id']);
                 $multiplier = !empty($unit->base_unit_multiplier) ? $unit->base_unit_multiplier : 1;
             }
+
             $new_quantity = $this->num_uf($data['quantity']) * $multiplier;
+
+            //Edit product price
+            if ($enable_product_editing == 1) {
+
+                $purchase_price = ($this->num_uf($data['purchase_price'], $currency_details)*$exchange_rate) / $multiplier;
+
+                if (isset($data['default_sell_price'])) {
+                    $variation_data['sell_price_inc_tax'] = ($this->num_uf($data['default_sell_price'], $currency_details)) / $multiplier;
+                }
+                
+                $variation_data['qty'] = $new_quantity;
+                $variation_data['pp_without_discount'] = ($this->num_uf($data['pp_without_discount'], $currency_details)*$exchange_rate) / $multiplier;
+                $variation_data['variation_id'] = $data['variation_id'];
+                $variation_data['purchase_price'] = $purchase_price;
+
+                $accounting = $business->accounting_method ?? "";
+             
+                $this->updateProductFromPurchase(
+                    $variation_data, 
+                    $accounting,
+                    $transaction->location_id
+                );
+            }
+
 
             $new_quantity_f = $this->num_f($new_quantity);
             //update existing purchase line
@@ -1181,17 +1249,6 @@ class ProductUtil extends Util
         
             $updated_purchase_lines[] = $purchase_line;
 
-            //Edit product price
-            if ($enable_product_editing == 1) {
-                if (isset($data['default_sell_price'])) {
-                    $variation_data['sell_price_inc_tax'] = ($this->num_uf($data['default_sell_price'], $currency_details)) / $multiplier;
-                }
-                $variation_data['pp_without_discount'] = ($this->num_uf($data['pp_without_discount'], $currency_details)*$exchange_rate) / $multiplier;
-                $variation_data['variation_id'] = $purchase_line->variation_id;
-                $variation_data['purchase_price'] = $purchase_line->purchase_price;
-             
-                $this->updateProductFromPurchase($variation_data);
-            }
         }
 
         //unset deleted purchase lines

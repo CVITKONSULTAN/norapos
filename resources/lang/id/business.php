@@ -72,6 +72,8 @@ return [
     ],
     'fy_start_month' => 'Tahun keuangan awal bulan',
     'accounting_method' => 'Metode Akutansi Stok',
+    'average' => 'AVERAGE (Harga pembelian rata-rata)',
+    'avco' => 'AVERAGE (Harga pembelian rata-rata)',
     'fifo' => 'FIFO (First In First Out)',
     'lifo' => 'LIFO (Last In First Out)',
     'business_locations' => 'Lokasi Bisnis',

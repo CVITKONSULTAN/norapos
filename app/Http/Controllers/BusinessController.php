@@ -292,9 +292,11 @@ class BusinessController extends Controller
         }
 
         $accounting_methods = [
-                'fifo' => __('business.fifo'),
-                'lifo' => __('business.lifo')
-            ];
+            'fifo' => __('business.fifo'),
+            'lifo' => __('business.lifo'),
+            'avco' => __('business.average')
+        ];
+            
         $commission_agent_dropdown = [
                 '' => __('lang_v1.disable'),
                 'logged_in_user' => __('lang_v1.logged_in_user'),
@@ -327,6 +329,8 @@ class BusinessController extends Controller
         $common_settings = !empty($business->common_settings) ? $business->common_settings : [];
 
         $weighing_scale_setting = !empty($business->weighing_scale_setting) ? $business->weighing_scale_setting : [];
+
+        // dd($business->accounting_method);
 
         return view('business.settings', compact('business', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting'));
     }

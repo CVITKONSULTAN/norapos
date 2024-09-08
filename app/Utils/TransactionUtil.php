@@ -283,7 +283,11 @@ class TransactionUtil extends Util
 
                 $tax_id = $product['tax_id'] ?? null;
 
+                $variation = \App\Variation::find($product['variation_id']);
+                $hpp = empty($variation) ? 0 : $variation->default_purchase_price;
+
                 $line = [
+                    'hpp' => $hpp,
                     'product_id' => $product['product_id'],
                     'variation_id' => $product['variation_id'],
                     'quantity' =>  $uf_quantity * $multiplier,

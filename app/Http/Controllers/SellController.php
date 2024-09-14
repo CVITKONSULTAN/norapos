@@ -275,6 +275,9 @@ class SellController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-left" role="menu">' ;
 
+                        // history print
+                        $html .= '<li><a href="#" data-id="'.$row->id.'" class="detail_history_cetak_modal"><i class="fas fa-eye" aria-hidden="true"></i> History Cetak </a></li>';
+
                         if (auth()->user()->can("sell.view") || auth()->user()->can("direct_sell.access") || auth()->user()->can("view_own_sell_only")) {
                             $html .= '<li><a href="#" data-href="' . action("SellController@show", [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __("messages.view") . '</a></li>';
                         }

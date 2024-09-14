@@ -94,6 +94,34 @@
     aria-labelledby="gridSystemModalLabel">
 </div>
 
+<div class="modal fade history_print" tabindex="-1" role="dialog" 
+    aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog modal-xl no-print" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close no-print" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="modalTitle">
+                    Riwayat Cetak Invoice
+                </h4>
+            </div>
+            <div class="modal-body">
+                <table width="100%" class="table table-bordered table-striped ajax_view" id="history_cetak_table">
+                    <thead>
+                        <tr>
+                            <td>Waktu</td>
+                            <td>Pengguna</td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default no-print" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- This will be printed -->
 <!-- <section class="invoice print_section" id="receipt_section">
 </section> -->
@@ -102,6 +130,9 @@
 
 @section('javascript')
 <script type="text/javascript">
+
+let history_cetak_table;
+
 $(document).ready( function(){
     //Date range as a button
     $('#sell_list_filter_date_range').daterangepicker(
@@ -218,6 +249,32 @@ $(document).ready( function(){
         }
     });
 
+    history_cetak_table = $('#history_cetak_table').DataTable({
+        processing: true,
+        serverSide: true,
+        aaSorting: [[1, 'desc']],
+        "ajax": {"url": "/log_activity/data"},
+        scrollY:        "500px",
+        scrollX:        true,
+        scrollCollapse: true,
+        columns:[
+            { data: 'created_at', name: 'created_at', orderable: false, "searchable": false},
+            { 
+                data: 'name', 
+                name: 'user.username',
+                render: function (data, type, row, meta) {
+                    if(!row.user) return "-";
+                    const fs = row.user.first_name ?? ""
+                    let ls = row.user.last_name ?? ""
+                    if(ls != "") ls = " "+ls
+
+                    const username = row.user.username ?? ''
+                    return username+" ("+fs+ls+")";
+                }
+            },
+        ]
+    })
+
     $(document).on('change', '#sell_list_filter_location_id, #sell_list_filter_customer_id, #sell_list_filter_payment_status, #created_by, #sales_cmsn_agnt, #service_staffs',  function() {
         sell_table.ajax.reload();
     });
@@ -231,6 +288,14 @@ $(document).ready( function(){
         sell_table.ajax.reload();
     });
 });
+
+$(document).on('click','.detail_history_cetak_modal', function(){
+    const id = $(this).data('id')
+    console.log(id,$(this));
+    const link = `/log_activity/data?column[]=actions&search[]=printInvoice&column[]=action_reference&search[]=transaction&column[]=relation_id&search[]=${id}`
+    history_cetak_table.ajax.url(link).load();
+    $('.history_print').modal('show')
+})
 </script>
 <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
 @endsection

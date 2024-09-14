@@ -73,6 +73,8 @@ Route::middleware(['setData'])->group(function () {
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {
 
+    Route::get('/log_activity/data', "LogActivityController@data")->name('log.data');
+
     Route::post('/upload', "FileUploadController@upload")->name('upload');
 
     Route::get('/reservasi', "ReservasiController@index");

@@ -26,6 +26,7 @@
  */
 namespace App\Http\Controllers;
 
+use App\LogActivity;
 use App\Account;
 use App\Brands;
 use App\Business;
@@ -1484,6 +1485,16 @@ class SellPosController extends Controller
                 if (!empty($receipt)) {
                     $output = ['success' => 1, 'receipt' => $receipt];
                 }
+
+                $user_id = $request->user()->id;
+
+                LogActivity::create([
+                    'actions' => "printInvoice",
+                    'action_reference' => "transaction",
+                    'relation_id' => $transaction->id,
+                    'user_id' => $user_id,
+                ]);
+
             } catch (\Exception $e) {
                 \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
                 

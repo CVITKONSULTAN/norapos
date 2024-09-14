@@ -258,7 +258,7 @@ $(document).ready( function(){
         scrollX:        true,
         scrollCollapse: true,
         columns:[
-            { data: 'created_at', name: 'created_at', orderable: false, "searchable": false},
+            { data: 'tgl_buat', name: 'tgl_buat', orderable: false, "searchable": false},
             { 
                 data: 'name', 
                 name: 'user.username',

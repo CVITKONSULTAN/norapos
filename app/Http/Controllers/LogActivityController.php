@@ -9,7 +9,8 @@ use App\LogActivity;
 class LogActivityController extends Controller
 {
     public function data(Request $request) {
-        $data = LogActivity::with('user');
+        // $data = LogActivity::query();
+        $data = LogActivity::select('*','log_activities.created_at as tgl_buat')->with('user');
         if($request->column && $request->search){
             $kolom = $request->column ?? [];
             $nilai = $request->search ?? [];

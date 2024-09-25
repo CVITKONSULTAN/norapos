@@ -9,7 +9,9 @@
 	</a>
 
     <!-- Sidebar Menu -->
-    @if(auth()->user()->business->id == 11)
+    @if(auth()->user()->business->business_category == "sekolah_sd")
+      {!! Menu::render('admin-sidebar-sekolah_sd', 'adminltecustom'); !!}
+    @elseif(auth()->user()->business->id == 11)
       {!! Menu::render('admin-sidebar-hotel', 'adminltecustom'); !!}
     @else
       {!! Menu::render('admin-sidebar-menu', 'adminltecustom'); !!}

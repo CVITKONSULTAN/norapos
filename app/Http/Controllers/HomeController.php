@@ -204,6 +204,13 @@ class HomeController extends Controller
             }
         }
 
+        if (
+            auth()->user()->business->business_category == "sekolah_sd"
+        ) {
+            return view('sekolah_sd.dashboard',
+            compact('date_filters', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations'));
+        }
+
         return view('home.index', compact('date_filters', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations'));
     }
 

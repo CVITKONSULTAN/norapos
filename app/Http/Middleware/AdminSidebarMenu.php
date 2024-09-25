@@ -1015,6 +1015,128 @@ class AdminSidebarMenu
             }
         });
 
+        Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
+
+            $menu->dropdown(
+                "Kontrol Pengguna",
+                function ($sub) {
+                    if (auth()->user()->can('user.view')) {
+                        $sub->url(
+                            action('ManageUserController@index'),
+                            __('user.users'),
+                            ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                        );
+                    }
+                    if (auth()->user()->can('roles.view')) {
+                        $sub->url(
+                            action('RoleController@index'),
+                            "Role",
+                            ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-users']
+            )->order(0);
+
+            $menu->url(
+                action('SekolahSDController@kelas_index'),
+                "Data Kelas",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->url(
+                action('SekolahSDController@data_siswa_index'),
+                "Data Siswa",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->url(
+                action('SekolahSDController@data_siswa_index'),
+                "Data Tenaga Pendidik",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->url(
+                action('SekolahSDController@data_mapel_index'),
+                "Mata Pelajaran",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->url(
+                action('SekolahSDController@data_ekskul_index'),
+                "Ekstrakurikuler",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->url(
+                action('SekolahSDController@data_rekap_nilai_index'),
+                "Rekap Nilai Siswa",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->url(
+                action('SekolahSDController@data_rekap_nilai_index'),
+                "Rekap Absen Siswa",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->dropdown(
+                "E-Raport",
+                function ($sub) {
+                    $sub->url(
+                        action('ManageUserController@index'),
+                        "Raport Project Skenario",
+                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                    );
+                    $sub->url(
+                        action('ManageUserController@index'),
+                        "Raport Project Siswa",
+                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                    );
+                    $sub->url(
+                        action('ManageUserController@index'),
+                        "Raport Tengah Semester",
+                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                    );
+                    $sub->url(
+                        action('ManageUserController@index'),
+                        "Raport Akhir",
+                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                    );
+                },
+                ['icon' => 'fa fas fa-users']
+            )->order(1);
+            $menu->url(
+                action('SekolahSDController@data_rekap_nilai_index'),
+                "Buku Induk Siswa",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+            $menu->url(
+                action('SekolahSDController@data_rekap_nilai_index'),
+                "Peserta Didik Baru",
+                [
+                    'icon' => 'fa fas fa-user', 
+                    'active' => request()->segment(1) == 'users'
+                ]
+            );
+        });
 
         
         //Add menus from modules

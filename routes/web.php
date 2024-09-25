@@ -80,6 +80,23 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/reservasi', "ReservasiController@index");
     Route::get('/reservasi/data', "HotelController@reservasi_list");
 
+    Route::group(['prefix'=>'sekolah_sd'],function(){
+
+        Route::get('dashboard',"SekolahSDController@dashboard")
+        ->name('sekolah_sd.dashboard');
+
+        Route::get('kelas-siswa',"SekolahSDController@kelas_index")
+        ->name('sekolah_sd.kelas.index');
+        Route::get('data-siswa',"SekolahSDController@data_siswa_index")
+        ->name('sekolah_sd.siswa.index');
+        Route::get('data-mapel',"SekolahSDController@data_mapel_index")
+        ->name('sekolah_sd.mapel.index');
+        Route::get('data-rekap-nilai',"SekolahSDController@data_rekap_nilai_index")
+        ->name('sekolah_sd.rekap_nilai.index');
+        Route::get('data-ekskul',"SekolahSDController@data_ekskul_index")
+        ->name('sekolah_sd.rekap_nilai.index');
+    });
+
     Route::get('/card', "CardLogController@index");
     Route::get('/card/data', "CardLogController@data");
 

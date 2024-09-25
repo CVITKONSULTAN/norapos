@@ -1043,7 +1043,9 @@ class AdminSidebarMenu
                 "Data Kelas",
                 [
                     'icon' => 'fa fas fa-user', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'kelas-siswa' 
                 ]
             );
             $menu->url(
@@ -1051,7 +1053,9 @@ class AdminSidebarMenu
                 "Data Siswa",
                 [
                     'icon' => 'fa fas fa-user', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'data-siswa' 
                 ]
             );
             $menu->url(
@@ -1059,7 +1063,9 @@ class AdminSidebarMenu
                 "Data Tenaga Pendidik",
                 [
                     'icon' => 'fa fas fa-user', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'data-tendik' 
                 ]
             );
             $menu->url(
@@ -1067,7 +1073,9 @@ class AdminSidebarMenu
                 "Mata Pelajaran",
                 [
                     'icon' => 'fa fas fa-user', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' =>
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'data-mapel' 
                 ]
             );
             $menu->url(
@@ -1075,17 +1083,45 @@ class AdminSidebarMenu
                 "Ekstrakurikuler",
                 [
                     'icon' => 'fa fas fa-user', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'data-ekskul' 
                 ]
             );
-            $menu->url(
-                action('SekolahSDController@data_rekap_nilai_index'),
+            // $menu->url(
+            //     action('SekolahSDController@data_rekap_nilai_index'),
+            //     "Rekap Nilai Siswa",
+            //     [
+            //         'icon' => 'fa fas fa-user', 
+            //         'active' => request()->segment(1) == 'users'
+            //     ]
+            // );
+            $menu->dropdown(
                 "Rekap Nilai Siswa",
-                [
-                    'icon' => 'fa fas fa-user', 
-                    'active' => request()->segment(1) == 'users'
-                ]
-            );
+                function ($sub) {
+                    $sub->url(
+                            action('SekolahSDController@data_rekap_nilai_index'),
+                        "Nilai Formatif",
+                        [
+                            'icon' => 'fa fas fa-user', 
+                            'active' => 
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'data-rekap-nilai' 
+                        ]
+                    );
+                    $sub->url(
+                        action('RoleController@index'),
+                        "Nilai Sumatif",
+                        ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+                    );
+                    $sub->url(
+                        action('RoleController@index'),
+                        "Catatan Penilaian",
+                        ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+                    );
+                },
+                ['icon' => 'fa fas fa-users']
+            )->order(1);
             $menu->url(
                 action('SekolahSDController@data_rekap_nilai_index'),
                 "Rekap Absen Siswa",

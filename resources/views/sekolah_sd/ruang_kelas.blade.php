@@ -9,7 +9,7 @@
 </section>
 
 <!-- Main content -->
-{{-- 
+
 <section class="content">
 <div class="row">
     <div class="col-md-12">
@@ -17,17 +17,28 @@
     
         <div class="col-md-3">
             <div class="form-group">
-                <label>Tanggal</label>
-                <input id="tanggal_filter" name="date" type="date" class="form-control" />
+                <label>Kelas</label>
+                <input name="kelas" type="text" class="form-control" />
             </div>
-            <button class="btn btn-primary" id="reset">RESET</button>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Tahun Ajaran</label>
+                <input name="tahun" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div style="margin-top: 2.5rem;">
+                <button class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
+                <button class="btn btn-primary" id="reset">RESET</button>
+            </div>
         </div>
 
        
     @endcomponent
     </div>
 </div>
- --}}
+
 
     <div class="row">
         <div class="col-md-12">

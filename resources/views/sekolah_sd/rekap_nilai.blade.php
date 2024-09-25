@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', "Tabel Kelas/Siswa")
+@section('title', "Rekap Nilai Formatif")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Tabel Kelas/Siswa</h1>
+    <h1>Rekap Nilai Formatif</h1>
 </section>
 
 <!-- Main content -->

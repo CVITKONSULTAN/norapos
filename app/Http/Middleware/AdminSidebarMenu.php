@@ -1055,7 +1055,7 @@ class AdminSidebarMenu
                 ]
             );
             $menu->url(
-                action('SekolahSDController@data_siswa_index'),
+                action('SekolahSDController@data_tendik_index'),
                 "Data Tenaga Pendidik",
                 [
                     'icon' => 'fa fas fa-user', 

@@ -21,7 +21,9 @@
 	<div class="row row-custom">
     	<div class="col-md-3 col-sm-6 col-xs-12 col-custom">
 	      <div class="info-box info-box-new-style">
-	        <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+	        <span class="info-box-icon">
+                <img src="/sekolah/icon_sekolah_1.svg" />
+            </span>
 
 	        <div class="info-box-content">
 	          <span class="info-box-text">Total Peserta Didik</span>
@@ -34,7 +36,9 @@
 	    <!-- /.col -->
 	    <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
 	      <div class="info-box info-box-new-style">
-	        <span class="info-box-icon bg-aqua"><i class="ion ion-ios-cart-outline"></i></span>
+	        <span class="info-box-icon">
+                <img src="/sekolah/icon_sekolah_2.svg" />
+            </span>
 
 	        <div class="info-box-content">
 	          <span class="info-box-text">
@@ -49,10 +53,9 @@
 	    <!-- /.col -->
 	    <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
 	      <div class="info-box info-box-new-style">
-	        <span class="info-box-icon bg-yellow">
-	        	<i class="fa fa-dollar"></i>
-				<i class="fa fa-exclamation"></i>
-	        </span>
+	        <span class="info-box-icon">
+                <img src="/sekolah/icon_sekolah_3.svg" />
+            </span>
 
 	        <div class="info-box-content">
 	          <span class="info-box-text">

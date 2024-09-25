@@ -95,6 +95,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.rekap_nilai.index');
         Route::get('data-ekskul',"SekolahSDController@data_ekskul_index")
         ->name('sekolah_sd.rekap_nilai.index');
+        Route::get('data-tendik',"SekolahSDController@data_tendik_index")
+        ->name('sekolah_sd.tendik.index');
     });
 
     Route::get('/card', "CardLogController@index");

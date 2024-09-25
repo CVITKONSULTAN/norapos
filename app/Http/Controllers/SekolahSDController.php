@@ -24,4 +24,7 @@ class SekolahSDController extends Controller
     function data_ekskul_index(Request $request){
         return view('sekolah_sd.ekstrakurikuler');
     }
+    function data_tendik_index(Request $request){
+        return view('sekolah_sd.tendik');
+    }
 }

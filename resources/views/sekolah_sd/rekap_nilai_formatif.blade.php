@@ -279,7 +279,6 @@
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-        $("#editor_modal_catatan_penilaian").modal("show")
     })
     $("#notes_tertinggi button").click(function(){
         const text = $(this).text();

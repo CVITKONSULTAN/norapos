@@ -9,6 +9,26 @@
 </section>
 
 <!-- Main content -->
+<div id="editor_modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    LIHAT PROJECT SISWA
+                </h4>
+            </div>
+            <div class="modal-body">
+                <iframe 
+                    height="750"
+                    width="100%"
+                    src="https://docs.google.com/gview?url={{url('raport/rapot project.pdf')}}"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+              </div>
+        </div>
+    </div>
+</div>
 
 <section class="content">
 
@@ -103,8 +123,8 @@
                                                 Edit
                                             </a>
                                             <a 
-                                                target="_blank" 
-                                                href="{{ route('sekolah_sd.project.create') }}" 
+                                                href="#"
+                                                onclick='$("#editor_modal").modal("show")'
                                                 class="btn btn-primary btn-xs"
                                             >
                                                 Lihat

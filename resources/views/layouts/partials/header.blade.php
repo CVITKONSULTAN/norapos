@@ -34,45 +34,48 @@
         <button id="btnCalculator" title="@lang('lang_v1.calculator')" type="button" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10 popover-default" data-toggle="popover" data-trigger="click" data-content='@include("layouts.partials.calculator")' data-html="true" data-placement="bottom">
             <strong><i class="fa fa-calculator fa-lg" aria-hidden="true"></i></strong>
         </button>
+        @if(auth()->user()->business->business_category != "sekolah_sd")
         
-        @if($request->segment(1) == 'pos')
-          @can('view_cash_register')
-          <button type="button" id="register_details" title="{{ __('cash_register.register_details') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10 btn-modal" data-container=".register_details_modal" 
-          data-href="{{ action('CashRegisterController@getRegisterDetails')}}">
-            <strong><i class="fa fa-briefcase fa-lg" aria-hidden="true"></i></strong>
-          </button>
+          @if($request->segment(1) == 'pos')
+            @can('view_cash_register')
+            <button type="button" id="register_details" title="{{ __('cash_register.register_details') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10 btn-modal" data-container=".register_details_modal" 
+            data-href="{{ action('CashRegisterController@getRegisterDetails')}}">
+              <strong><i class="fa fa-briefcase fa-lg" aria-hidden="true"></i></strong>
+            </button>
+            @endcan
+            @can('close_cash_register')
+            <button type="button" id="close_register" title="{{ __('cash_register.close_register') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-danger btn-flat pull-left m-8 hidden-xs btn-sm mt-10 btn-modal" data-container=".close_register_modal" 
+            data-href="{{ action('CashRegisterController@getCloseRegister')}}">
+              <strong><i class="fa fa-window-close fa-lg"></i></strong>
+            </button>
+            @endcan
+          @endif
+
+          @if(in_array('pos_sale', $enabled_modules))
+            @can('sell.create')
+              <a href="{{action('SellPosController@create')}}" title="@lang('sale.pos_sale')" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10">
+                <strong><i class="fa fa-th-large"></i> &nbsp; @lang('sale.pos_sale')</strong>
+              </a>
+            @endcan
+          @endif
+
+          @if(Module::has('Repair'))
+            @includeIf('repair::layouts.partials.header')
+          @endif
+
+          @can('profit_loss_report.view')
+            <button type="button" id="view_todays_profit" title="{{ __('home.todays_profit') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10">
+              <strong><i class="fas fa-money-bill-alt fa-lg"></i></strong>
+            </button>
           @endcan
-          @can('close_cash_register')
-          <button type="button" id="close_register" title="{{ __('cash_register.close_register') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-danger btn-flat pull-left m-8 hidden-xs btn-sm mt-10 btn-modal" data-container=".close_register_modal" 
-          data-href="{{ action('CashRegisterController@getCloseRegister')}}">
-            <strong><i class="fa fa-window-close fa-lg"></i></strong>
-          </button>
-          @endcan
-        @endif
 
-        @if(in_array('pos_sale', $enabled_modules))
-          @can('sell.create')
-            <a href="{{action('SellPosController@create')}}" title="@lang('sale.pos_sale')" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10">
-              <strong><i class="fa fa-th-large"></i> &nbsp; @lang('sale.pos_sale')</strong>
-            </a>
-          @endcan
-        @endif
+          <!-- Help Button -->
+          @if(auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
+            <button type="button" id="start_tour" title="@lang('lang_v1.application_tour')" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10">
+              <strong><i class="fa fa-question-circle fa-lg" aria-hidden="true"></i></strong>
+            </button>
+          @endif
 
-        @if(Module::has('Repair'))
-          @includeIf('repair::layouts.partials.header')
-        @endif
-
-        @can('profit_loss_report.view')
-          <button type="button" id="view_todays_profit" title="{{ __('home.todays_profit') }}" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10">
-            <strong><i class="fas fa-money-bill-alt fa-lg"></i></strong>
-          </button>
-        @endcan
-
-        <!-- Help Button -->
-        @if(auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
-          <button type="button" id="start_tour" title="@lang('lang_v1.application_tour')" data-toggle="tooltip" data-placement="bottom" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10">
-            <strong><i class="fa fa-question-circle fa-lg" aria-hidden="true"></i></strong>
-          </button>
         @endif
 
         <div class="m-8 pull-left mt-15 hidden-xs" style="color: #fff;"><strong>{{ @format_date('now') }}</strong></div>

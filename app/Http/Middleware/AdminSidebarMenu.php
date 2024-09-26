@@ -1128,11 +1128,13 @@ class AdminSidebarMenu
                 ['icon' => 'fa fas fa-users']
             )->order(1);
             $menu->url(
-                action('SekolahSDController@data_rekap_nilai_index'),
+                action('SekolahSDController@data_rekap_absen_index'),
                 "Rekap Absen Siswa",
                 [
                     'icon' => 'fa fas fa-user', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'data-rekap-absen' 
                 ]
             );
             $menu->dropdown(

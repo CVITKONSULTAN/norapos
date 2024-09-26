@@ -112,6 +112,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.tendik.index');
         Route::get('data-tendik/create',"SekolahSDController@data_tendik_create")
         ->name('sekolah_sd.tendik.create');
+
+        Route::get('data-rekap-absen',"SekolahSDController@data_rekap_absen_index")
+        ->name('sekolah_sd.rekap_absen.index');
     });
 
     Route::get('/card', "CardLogController@index");

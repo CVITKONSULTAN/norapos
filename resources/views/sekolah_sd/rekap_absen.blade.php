@@ -1,17 +1,59 @@
 @extends('layouts.app')
-@section('title', "Tabel Kelas/Siswa")
+@section('title', "Rekap Absen Siswa")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Tabel Kelas/Siswa</h1>
+    <h1>Rekap Absen Siswa</h1>
 </section>
 
 <!-- Main content -->
 
+<div id="editor_modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Form Rekap
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Cari NISN/Nama Siswa</label>
+                    <input class="form-control" placeholder="Cari disini..." />
+                </div>
+                <div class="form-group">
+                    <label>NISN</label>
+                    <input readonly class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Nama Siswa</label>
+                    <input readonly class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Sakit</label>
+                    <input type="number" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Izin</label>
+                    <input type="number" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Tanpa Keterangan</label>
+                    <input type="number" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+              </div>
+        </div>
+    </div>
+</div>
+
 <section class="content">
-    
+
     <div class="row">
         <div class="col-md-12">
         @component('components.filters', ['title' => __('report.filters')])
@@ -19,13 +61,18 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label>Kelas</label>
-                    <input name="kelas" type="text" class="form-control" />
+                    <select name="kelas" type="text" class="form-control">
+                        <option>4 A</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label>Tahun Ajaran</label>
-                    <input name="tahun" type="text" class="form-control" />
+                    <select name="kelas" type="text" class="form-control">
+                        <option>2024/2025 (Semester 1)</option>
+                        <option>2024/2025 (Semester 2)</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-3">
@@ -40,7 +87,6 @@
         </div>
     </div>
 
-
     <div class="row">
         <div class="col-md-12">
            <!-- Custom Tabs -->
@@ -48,6 +94,14 @@
                 <ul class="nav nav-tabs">
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
+                    </li>
+                    <li>
+                        <a 
+                            href="#"
+                            onclick='$("#editor_modal").modal("show")'
+                        >
+                            <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
+                        </a>
                     </li>
                 </ul>
 
@@ -57,13 +111,41 @@
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
                                     <tr>
-                                        <td>ID</td>
-                                        <td>NAMA LENGKAP</td>
-                                        <td>KELAS</td>
-                                        <td>TAHUN AJARAN</td>
-                                        <td>NISN</td>
+                                        <th>ID</th>
+                                        <th>NISN</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Sakit</th>
+                                        <th>Izin</th>
+                                        <th>Tanpa Keterangan</th>
+                                        <th>Tindakan</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>123</td>
+                                        <td>Juliani Okta Farida</td>
+                                        <td>13</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>
+                                            <a 
+                                                class="btn btn-primary btn-xs" 
+                                                href="#"
+                                                onclick='$("#editor_modal").modal("show")'
+                                            >
+                                                Edit
+                                            </a>
+                                            <a 
+                                                class="btn btn-danger btn-xs" 
+                                                href="#"
+                                                target="_blank"
+                                            >
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -85,31 +167,35 @@
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                pageLength: -1,
-                processing: true,
-                serverSide: true,
-                aaSorting: [[3, 'asc']],
-                "ajax": {
-                    "url": "/reservasi/data",
-                    "data": function ( d ) {
-                        d.datatable = 1;
-                        d.date = $("#tanggal_filter").val();
-
-                        d = __datatable_ajax_callback(d);
-                    }
-                },
                 columnDefs: [ {
                     "targets": [0],
                     "orderable": false,
                     "searchable": false
                 } ],
-                columns: [
-                    { data: 'ID'  },
-                    { data: 'HARGA'  },
-                    { data: 'OTA'  },
-                    { data: 'CID'  },
-                    { data: 'NAMA'  }
-                ]
+                // processing: true,
+                // serverSide: true,
+                // "ajax": {
+                //     "url": "/reservasi/data",
+                //     "data": function ( d ) {
+                //         d.datatable = 1;
+                //         d.date = $("#tanggal_filter").val();
+
+                //         d = __datatable_ajax_callback(d);
+                //     }
+                // },
+                // columns: [
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                // ]
             });
             // Array to track the ids of the details displayed rows
             var detailRows = [];

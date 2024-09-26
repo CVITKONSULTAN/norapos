@@ -47,4 +47,8 @@ class SekolahSDController extends Controller
     function data_tendik_create(Request $request){
         return view('sekolah_sd.input.tendik.create');
     }
+
+    function data_rekap_absen_index(Request $request){
+        return view('sekolah_sd.rekap_absen');
+    }
 }

@@ -9,25 +9,37 @@
 </section>
 
 <!-- Main content -->
-{{-- 
-<section class="content">
-<div class="row">
-    <div class="col-md-12">
-    @component('components.filters', ['title' => __('report.filters')])
-    
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>Tanggal</label>
-                <input id="tanggal_filter" name="date" type="date" class="form-control" />
-            </div>
-            <button class="btn btn-primary" id="reset">RESET</button>
-        </div>
 
-       
-    @endcomponent
+<section class="content">
+
+    <div id="editor_modal_ekskul" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+	                <h4 class="modal-title">
+                        Form Ekstrakurikuler
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nama Ekstrakurikuler</label>
+                        <input class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select class="form-control">
+                            <option>Wajib</option>
+                            <option>Pilihan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                  </div>
+            </div>
+        </div>
     </div>
-</div>
- --}}
 
     <div class="row">
         <div class="col-md-12">
@@ -35,22 +47,96 @@
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active">
-                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
+                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Ekstrakurikuler Siswa</a>
+                    </li>
+                    <li class="">
+                        <a href="#ekskul" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i> Data Ekstrakurikuler</a>
                     </li>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="product_list_tab">
+                        <div class="text-right" style="margin-bottom: 10px;">
+                            <a target="_blank" href="{{ route('sekolah_sd.ekskul.create') }}" class="btn btn-primary">Tambah</a>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
+                            <table width="100%" class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
                                     <tr>
-                                        <td>ID</td>
-                                        <td>Nama Siswa</td>
-                                        <td>Ekstrakurikuler	Kategori</td>
-                                        <td>Deksripsi</td>
+                                        <th>ID</th>
+                                        <th>NISN</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Ekstrakurikuler</th>
+                                        <th>Kategori</th>
+                                        <th>Deksripsi</th>
+                                        <th>Tindakan</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1234</td>
+                                        <td>Juliani Okta Farida</td>
+                                        <td>Pramuka</td>
+                                        <td>Wajib</td>
+                                        <td></td>
+                                        <td>
+                                            <a 
+                                                target="_blank" 
+                                                href="{{ route('sekolah_sd.ekskul.create') }}" 
+                                                class="btn btn-primary btn-xs"
+                                            >
+                                                Edit
+                                            </a>
+                                            <a 
+                                                class="btn btn-danger btn-xs" 
+                                                href="#"
+                                                target="_blank"
+                                            >
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="ekskul">
+                        <div class="text-right" style="margin-bottom: 10px;">
+                            <button onclick='$("#editor_modal_ekskul").modal("show")' class="btn btn-primary">Tambah</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table width="100%" class="table table-bordered table-striped ajax_view hide-footer" id="ekskul_table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ekstrakurikuler</th>
+                                        <th>Kategori</th>
+                                        <th>Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Pramuka</td>
+                                        <td>Wajib</td>
+                                        <td>
+                                            <button
+                                                class="btn btn-primary btn-xs" 
+                                                onclick='$("#editor_modal_ekskul").modal("show")'
+                                            >
+                                                Edit
+                                        </button>
+                                            <a 
+                                                class="btn btn-danger btn-xs" 
+                                                href="#"
+                                                target="_blank"
+                                            >
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -58,7 +144,6 @@
             </div>
         </div>
     </div>
-
 
 </section>
 <!-- /.content -->
@@ -71,31 +156,37 @@
     <script type="text/javascript">
 
         $(document).ready( function(){
+            $('#ekskul_table').DataTable();
             product_table = $('#product_table').DataTable({
-                pageLength: -1,
-                processing: true,
-                serverSide: true,
-                aaSorting: [[3, 'asc']],
-                "ajax": {
-                    "url": "/reservasi/data",
-                    "data": function ( d ) {
-                        d.datatable = 1;
-                        d.date = $("#tanggal_filter").val();
-
-                        d = __datatable_ajax_callback(d);
-                    }
-                },
                 columnDefs: [ {
                     "targets": [0],
                     "orderable": false,
                     "searchable": false
                 } ],
-                columns: [
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  }
-                ]
+                // processing: true,
+                // serverSide: true,
+                // "ajax": {
+                //     "url": "/reservasi/data",
+                //     "data": function ( d ) {
+                //         d.datatable = 1;
+                //         d.date = $("#tanggal_filter").val();
+
+                //         d = __datatable_ajax_callback(d);
+                //     }
+                // },
+                // columns: [
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                // ]
             });
             // Array to track the ids of the details displayed rows
             var detailRows = [];

@@ -29,8 +29,12 @@ class SekolahSDController extends Controller
     function data_rekap_nilai_sumatif_index(Request $request){
         return view('sekolah_sd.rekap_nilai_sumatif');
     }
+
     function data_ekskul_index(Request $request){
         return view('sekolah_sd.ekstrakurikuler');
+    }
+    function data_ekskul_create(Request $request){
+        return view('sekolah_sd.input.ekskul.create');
     }
 
     function data_tendik_index(Request $request){

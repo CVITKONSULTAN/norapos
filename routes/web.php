@@ -99,8 +99,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.rekap_nilai.index');
         Route::get('data-rekap-nilai-sumatif',"SekolahSDController@data_rekap_nilai_sumatif_index")
         ->name('sekolah_sd.rekap_nilai_sumatif.index');
+
         Route::get('data-ekskul',"SekolahSDController@data_ekskul_index")
-        ->name('sekolah_sd.rekap_nilai.index');
+        ->name('sekolah_sd.ekskul.index');
+        Route::get('data-ekskul/create',"SekolahSDController@data_ekskul_create")
+        ->name('sekolah_sd.ekskul.create');
 
         Route::get('data-tendik',"SekolahSDController@data_tendik_index")
         ->name('sekolah_sd.tendik.index');

@@ -58,4 +58,14 @@ class SekolahSDController extends Controller
     function buku_induk_create(Request $request){
         return view('sekolah_sd.input.buku_induk.create');
     }
+
+    function project_index(Request $request){
+        return view('sekolah_sd.project');
+    }
+    function raport_tengah_index(Request $request){
+        return view('sekolah_sd.raport_tengah');
+    }
+    function raport_akhir_index(Request $request){
+        return view('sekolah_sd.raport_akhir');
+    }
 }

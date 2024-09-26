@@ -1140,28 +1140,39 @@ class AdminSidebarMenu
             $menu->dropdown(
                 "E-Raport",
                 function ($sub) {
+                    // $sub->url(
+                    //     action('ManageUserController@index'),
+                    //     "Raport Project Skenario",
+                    //     ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                    // );
                     $sub->url(
-                        action('ManageUserController@index'),
-                        "Raport Project Skenario",
-                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
-                    );
-                    $sub->url(
-                        action('ManageUserController@index'),
+                        action('SekolahSDController@project_index'),
                         "Raport Project Siswa",
-                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                        ['icon' => 'fa fas fa-user', 'active' => 
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'project' 
+                        ]
                     );
                     $sub->url(
-                        action('ManageUserController@index'),
+                        action('SekolahSDController@raport_tengah_index'),
                         "Raport Tengah Semester",
-                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                        ['icon' => 'fa fas fa-user', 
+                        'active' => 
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'raport-tengah' 
+                        ]
                     );
                     $sub->url(
-                        action('ManageUserController@index'),
+                        action('SekolahSDController@raport_akhir_index'),
                         "Raport Akhir",
-                        ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                        ['icon' => 'fa fas fa-user', 
+                        'active' =>
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'raport-akhir' 
+                        ]
                     );
                 },
-                ['icon' => 'fa fas fa-users']
+                ['icon' => 'fa fas fa-address-book']
             )->order(1);
             $menu->url(
                 action('SekolahSDController@buku_induk_index'),

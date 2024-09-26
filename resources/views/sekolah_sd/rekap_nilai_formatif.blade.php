@@ -42,13 +42,12 @@
 </section>
 
 <!-- Main content -->
-
 <div id="editor_modal" class="modal fade">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">
-                    Form Nilai
+                    Form Nilai Formatif
                 </h4>
             </div>
             <div class="modal-body">

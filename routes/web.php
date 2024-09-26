@@ -120,6 +120,17 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.buku_induk.index');
         Route::get('buku-induk/create',"SekolahSDController@buku_induk_create")
         ->name('sekolah_sd.buku_induk.create');
+
+        Route::get('project',"SekolahSDController@project_index")
+        ->name('sekolah_sd.project.index');
+        Route::get('project/create',"SekolahSDController@project_create")
+        ->name('sekolah_sd.project.create');
+
+        Route::get('raport-tengah',"SekolahSDController@raport_tengah_index")
+        ->name('sekolah_sd.raport_tengah.index');
+
+        Route::get('raport-akhir',"SekolahSDController@raport_akhir_index")
+        ->name('sekolah_sd.raport_akhir.index');
     });
 
     Route::get('/card', "CardLogController@index");

@@ -24,6 +24,62 @@
 </section>
 
 <!-- Main content -->
+<div id="editor_modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Form Nilai Sumatif
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Cari NISN/Nama Siswa</label>
+                    <input class="form-control" placeholder="Cari disini..." />
+                </div>
+                <div class="form-group">
+                    <label>NISN</label>
+                    <input readonly class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Nama Siswa</label>
+                    <input readonly class="form-control" />
+                </div>
+                <div class="row">
+                    @for ($i = 1; $i <= 3; $i++)   
+                        <div class="form-group col-sm-4">
+                            <label>S {{$i}}
+                                <i 
+                                    data-toggle="tooltip" 
+                                    data-placement="top" 
+                                    title="S {{$i}} adalah bla bla bla bla bla bla bla bla"
+                                    class="fa fa-info-circle"
+                                ></i>
+                            </label>
+                            <input type="number" class="form-control" />
+                        </div>
+                    @endfor
+                    <div class="form-group col-sm-6">
+                        <label>Sumatif Akhir (Non Tes)</label>
+                        <input type="number" class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>Sumatif Akhir (Tes)</label>
+                        <input type="number" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nilai Akhir</label>
+                    <input type="number" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+              </div>
+        </div>
+    </div>
+</div>
 
 <section class="content">
 <div class="row">
@@ -78,6 +134,7 @@
                             <th colspan="3">Sumatif Lingkup Materi</th>
                             <th colspan="2">Sumatif Akhir</th>
                             <th rowspan="2">Nilai Rapor</th>
+                            <th rowspan="2">Tindakan</th>
                         </tr>
                         <tr>
                             @for ($i = 1; $i <= 3; $i++)
@@ -95,6 +152,22 @@
                                     <td>{{$i}}</td> 
                                 @endfor
                                 <td>100</td> 
+                                <td>
+                                    <a 
+                                        class="btn btn-primary btn-xs" 
+                                        href="#"
+                                        onclick='$("#editor_modal").modal("show")'
+                                    >
+                                        Edit
+                                    </a>
+                                    <a 
+                                        class="btn btn-danger btn-xs" 
+                                        href="#"
+                                        target="_blank"
+                                    >
+                                        Hapus
+                                    </a>
+                                </td>
                             </tr>
                         @endfor
                     </tbody>

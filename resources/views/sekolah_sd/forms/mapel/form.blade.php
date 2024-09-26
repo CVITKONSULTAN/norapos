@@ -12,6 +12,16 @@
             </td>
         </tr>
         <tr>
+            <th colspan="2">Kategori Mapel</th>
+            <td>
+                <select class="form-control">
+                    <option>Pilihan</option>
+                    <option>Muatan Lokal</option>
+                    <option>Wajib</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
             <th>
                 Lingkup Materi
             </th>

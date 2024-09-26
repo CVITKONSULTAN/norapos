@@ -51,4 +51,11 @@ class SekolahSDController extends Controller
     function data_rekap_absen_index(Request $request){
         return view('sekolah_sd.rekap_absen');
     }
+
+    function buku_induk_index(Request $request){
+        return view('sekolah_sd.buku_induk');
+    }
+    function buku_induk_create(Request $request){
+        return view('sekolah_sd.input.buku_induk.create');
+    }
 }

@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', "Mata Pelajaran")
+@section('title', "Buku Induk Siswa")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Mata Pelajaran</h1>
+    <h1>Buku Induk Siswa</h1>
 </section>
 
 <!-- Main content -->
@@ -23,7 +23,7 @@
                     <li>
                         <a 
                             target="_blank" 
-                            href="{{ route('sekolah_sd.mapel.create') }}"
+                            href="{{ route('sekolah_sd.buku_induk.create') }}"
                         >
                             <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
                         </a>
@@ -37,27 +37,31 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Mapel</th>
-                                        <th>Kategori</th>
+                                        <th>NISN</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Kewarganegaraan</th>
+                                        <th>Anak Ke</th>
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>1</td>
-                                        <td>Agama Islam</td>
-                                        <td>Wajib</td>
+                                        <td>123</td>
+                                        <td>Juliani Okta Farida</td>
+                                        <td>WNI</td>
+                                        <td>1</td>
                                         <td>
                                             <a 
                                                 class="btn btn-primary btn-xs" 
-                                                href="{{ route('sekolah_sd.mapel.create') }}"
+                                                href="{{ route('sekolah_sd.buku_induk.create') }}"
                                                 target="_blank"
                                             >
                                                 Edit
                                             </a>
                                             <a 
                                                 class="btn btn-primary btn-xs" 
-                                                href="{{ route('sekolah_sd.mapel.create') }}"
+                                                href="{{ route('sekolah_sd.buku_induk.create') }}"
                                                 target="_blank"
                                             >
                                                 Melihat

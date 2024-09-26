@@ -115,6 +115,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('data-rekap-absen',"SekolahSDController@data_rekap_absen_index")
         ->name('sekolah_sd.rekap_absen.index');
+
+        Route::get('buku-induk',"SekolahSDController@buku_induk_index")
+        ->name('sekolah_sd.buku_induk.index');
+        Route::get('buku-induk/create',"SekolahSDController@buku_induk_create")
+        ->name('sekolah_sd.buku_induk.create');
     });
 
     Route::get('/card', "CardLogController@index");

@@ -1042,7 +1042,7 @@ class AdminSidebarMenu
                 action('SekolahSDController@kelas_index'),
                 "Data Kelas",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fas fa-cube', 
                     'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'kelas-siswa' 
@@ -1052,7 +1052,7 @@ class AdminSidebarMenu
                 action('SekolahSDController@data_siswa_index'),
                 "Data Siswa",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fas fa-user-circle', 
                     'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'data-siswa' 
@@ -1062,7 +1062,7 @@ class AdminSidebarMenu
                 action('SekolahSDController@data_tendik_index'),
                 "Data Tenaga Pendidik",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fas fa-graduation-cap', 
                     'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'data-tendik' 
@@ -1072,7 +1072,7 @@ class AdminSidebarMenu
                 action('SekolahSDController@data_mapel_index'),
                 "Mata Pelajaran",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fas fa-cubes', 
                     'active' =>
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'data-mapel' 
@@ -1082,7 +1082,7 @@ class AdminSidebarMenu
                 action('SekolahSDController@data_ekskul_index'),
                 "Ekstrakurikuler",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fa-futbol', 
                     'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'data-ekskul' 
@@ -1119,19 +1119,19 @@ class AdminSidebarMenu
                                 request()->segment(2) == 'data-rekap-nilai-sumatif' 
                             ]
                     );
-                    $sub->url(
-                        action('RoleController@index'),
-                        "Catatan Penilaian",
-                        ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
-                    );
+                    // $sub->url(
+                    //     action('RoleController@index'),
+                    //     "Catatan Penilaian",
+                    //     ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+                    // );
                 },
-                ['icon' => 'fa fas fa-users']
+                ['icon' => 'fa fas fa-server']
             )->order(1);
             $menu->url(
                 action('SekolahSDController@data_rekap_absen_index'),
                 "Rekap Absen Siswa",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fas fa-tasks', 
                     'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'data-rekap-absen' 
@@ -1164,10 +1164,10 @@ class AdminSidebarMenu
                 ['icon' => 'fa fas fa-users']
             )->order(1);
             $menu->url(
-                action('SekolahSDController@data_rekap_nilai_index'),
+                action('SekolahSDController@buku_induk_index'),
                 "Buku Induk Siswa",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fas fa-book', 
                     'active' => request()->segment(1) == 'users'
                 ]
             );
@@ -1175,7 +1175,7 @@ class AdminSidebarMenu
                 action('SekolahSDController@data_rekap_nilai_index'),
                 "Peserta Didik Baru",
                 [
-                    'icon' => 'fa fas fa-user', 
+                    'icon' => 'fa fas fa-user-plus', 
                     'active' => request()->segment(1) == 'users'
                 ]
             );

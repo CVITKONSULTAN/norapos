@@ -9,7 +9,6 @@
 </section>
 
 <!-- Main content -->
-
 <div id="editor_modal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">

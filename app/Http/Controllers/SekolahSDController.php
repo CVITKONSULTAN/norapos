@@ -19,7 +19,10 @@ class SekolahSDController extends Controller
         return view('sekolah_sd.mapel');
     }
     function data_rekap_nilai_index(Request $request){
-        return view('sekolah_sd.rekap_nilai');
+        return view('sekolah_sd.rekap_nilai_formatif');
+    }
+    function data_rekap_nilai_sumatif_index(Request $request){
+        return view('sekolah_sd.rekap_nilai_sumatif');
     }
     function data_ekskul_index(Request $request){
         return view('sekolah_sd.ekstrakurikuler');

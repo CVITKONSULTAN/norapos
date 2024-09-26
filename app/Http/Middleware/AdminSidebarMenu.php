@@ -1107,12 +1107,17 @@ class AdminSidebarMenu
                             'active' => 
                             request()->segment(1) == 'sekolah_sd' &&
                             request()->segment(2) == 'data-rekap-nilai' 
-                        ]
-                    );
-                    $sub->url(
-                        action('RoleController@index'),
-                        "Nilai Sumatif",
-                        ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+                            ]
+                        );
+                        $sub->url(
+                            action('SekolahSDController@data_rekap_nilai_sumatif_index'),
+                            "Nilai Sumatif",
+                            [
+                                'icon' => 'fa fas fa-briefcase', 
+                                'active' => 
+                                request()->segment(1) == 'sekolah_sd' &&
+                                request()->segment(2) == 'data-rekap-nilai-sumatif' 
+                            ]
                     );
                     $sub->url(
                         action('RoleController@index'),

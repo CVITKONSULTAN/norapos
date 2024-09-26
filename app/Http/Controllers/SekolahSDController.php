@@ -23,6 +23,10 @@ class SekolahSDController extends Controller
     function data_mapel_index(Request $request){
         return view('sekolah_sd.mapel');
     }
+    function data_mapel_create(Request $request){
+        return view('sekolah_sd.input.mapel.create');
+    }
+    
     function data_rekap_nilai_index(Request $request){
         return view('sekolah_sd.rekap_nilai_formatif');
     }

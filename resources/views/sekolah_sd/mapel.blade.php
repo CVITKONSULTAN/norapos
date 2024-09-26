@@ -9,25 +9,8 @@
 </section>
 
 <!-- Main content -->
-{{-- 
-<section class="content">
-<div class="row">
-    <div class="col-md-12">
-    @component('components.filters', ['title' => __('report.filters')])
-    
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>Tanggal</label>
-                <input id="tanggal_filter" name="date" type="date" class="form-control" />
-            </div>
-            <button class="btn btn-primary" id="reset">RESET</button>
-        </div>
 
-       
-    @endcomponent
-    </div>
-</div>
- --}}
+<section class="content">
 
     <div class="row">
         <div class="col-md-12">
@@ -37,6 +20,14 @@
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
                     </li>
+                    <li>
+                        <a 
+                            target="_blank" 
+                            href="{{ route('sekolah_sd.mapel.create') }}"
+                        >
+                            <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -45,11 +36,40 @@
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
                                     <tr>
-                                        <td>ID</td>
-                                        <td>Mapel</td>
-                                        <td>Tahun</td>
+                                        <th>ID</th>
+                                        <th>Mapel</th>
+                                        <th>Tindakan</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Agama Islam</td>
+                                        <td>
+                                            <a 
+                                                class="btn btn-primary btn-xs" 
+                                                href="{{ route('sekolah_sd.mapel.create') }}"
+                                                target="_blank"
+                                            >
+                                                Edit
+                                            </a>
+                                            <a 
+                                                class="btn btn-primary btn-xs" 
+                                                href="{{ route('sekolah_sd.mapel.create') }}"
+                                                target="_blank"
+                                            >
+                                                Melihat
+                                            </a>
+                                            <a 
+                                                class="btn btn-danger btn-xs" 
+                                                href="#"
+                                                target="_blank"
+                                            >
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -71,29 +91,35 @@
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                pageLength: -1,
-                processing: true,
-                serverSide: true,
-                aaSorting: [[0, 'desc']],
-                "ajax": {
-                    "url": "/reservasi/data",
-                    "data": function ( d ) {
-                        d.datatable = 1;
-                        d.date = $("#tanggal_filter").val();
-
-                        d = __datatable_ajax_callback(d);
-                    }
-                },
                 columnDefs: [ {
                     "targets": [0],
                     "orderable": false,
                     "searchable": false
                 } ],
-                columns: [
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                ]
+                // processing: true,
+                // serverSide: true,
+                // "ajax": {
+                //     "url": "/reservasi/data",
+                //     "data": function ( d ) {
+                //         d.datatable = 1;
+                //         d.date = $("#tanggal_filter").val();
+
+                //         d = __datatable_ajax_callback(d);
+                //     }
+                // },
+                // columns: [
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                // ]
             });
             // Array to track the ids of the details displayed rows
             var detailRows = [];

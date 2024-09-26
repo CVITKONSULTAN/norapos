@@ -9,25 +9,8 @@
 </section>
 
 <!-- Main content -->
-{{-- 
-<section class="content">
-<div class="row">
-    <div class="col-md-12">
-    @component('components.filters', ['title' => __('report.filters')])
-    
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>Tanggal</label>
-                <input id="tanggal_filter" name="date" type="date" class="form-control" />
-            </div>
-            <button class="btn btn-primary" id="reset">RESET</button>
-        </div>
 
-       
-    @endcomponent
-    </div>
-</div>
- --}}
+<section class="content">
 
     <div class="row" style="margin-top: 10px;">
         <div class="col-md-12">

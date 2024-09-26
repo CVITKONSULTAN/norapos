@@ -95,6 +95,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('data-mapel',"SekolahSDController@data_mapel_index")
         ->name('sekolah_sd.mapel.index');
+        Route::get('data-mapel/create',"SekolahSDController@data_mapel_create")
+        ->name('sekolah_sd.mapel.create');
+
         Route::get('data-rekap-nilai',"SekolahSDController@data_rekap_nilai_index")
         ->name('sekolah_sd.rekap_nilai.index');
         Route::get('data-rekap-nilai-sumatif',"SekolahSDController@data_rekap_nilai_sumatif_index")

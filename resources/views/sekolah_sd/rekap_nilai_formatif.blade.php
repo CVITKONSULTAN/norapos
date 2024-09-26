@@ -227,7 +227,8 @@
                             <tr>
                                 <td>Juliani Okta Farida</td> 
                                 @for ($i = 1; $i <= 11; $i++)   
-                                    <td>{{$i}}</td> 
+                                    {{-- <td>{{$i}}</td>  --}}
+                                    <td>0</td> 
                                 @endfor
                                 <td>100</td> 
                                 <td class="text-center">

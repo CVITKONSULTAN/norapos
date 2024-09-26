@@ -62,6 +62,11 @@ class SekolahSDController extends Controller
     function project_index(Request $request){
         return view('sekolah_sd.project');
     }
+    function project_create(Request $request){
+        return view('sekolah_sd.input.project.create');
+
+    }
+
     function raport_tengah_index(Request $request){
         return view('sekolah_sd.raport_tengah');
     }

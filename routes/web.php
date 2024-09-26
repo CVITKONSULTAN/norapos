@@ -131,6 +131,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('raport-akhir',"SekolahSDController@raport_akhir_index")
         ->name('sekolah_sd.raport_akhir.index');
+
+        Route::get('peserta-didik-baru',function(){
+            return view('sekolah_sd.peserta_didik_baru');
+        })
+        ->name('sekolah_sd.peserta_didik_baru');
     });
 
     Route::get('/card', "CardLogController@index");

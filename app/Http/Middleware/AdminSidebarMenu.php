@@ -1179,15 +1179,20 @@ class AdminSidebarMenu
                 "Buku Induk Siswa",
                 [
                     'icon' => 'fa fas fa-book', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'buku-induk' 
                 ]
             );
             $menu->url(
-                action('SekolahSDController@data_rekap_nilai_index'),
+                // "#",
+                route('sekolah_sd.peserta_didik_baru'),
                 "Peserta Didik Baru",
                 [
                     'icon' => 'fa fas fa-user-plus', 
-                    'active' => request()->segment(1) == 'users'
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'peserta-didik-baru' 
                 ]
             );
         });

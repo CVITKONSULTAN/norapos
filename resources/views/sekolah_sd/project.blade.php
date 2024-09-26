@@ -21,7 +21,7 @@
                 <iframe 
                     height="750"
                     width="100%"
-                    src="https://docs.google.com/gview?url={{url('raport/rapot project.pdf')}}"></iframe>
+                    src="{{url('raport/rapot project.pdf')}}"></iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>

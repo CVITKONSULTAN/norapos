@@ -29,13 +29,18 @@
 </div>
  --}}
 
-    <div class="row">
+    <div class="row" style="margin-top: 10px;">
         <div class="col-md-12">
            <!-- Custom Tabs -->
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
+                    </li>
+                    <li>
+                        <a target="_blank" href="{{ route('sekolah_sd.siswa.create') }}">
+                            <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
+                        </a>
                     </li>
                 </ul>
 
@@ -45,19 +50,51 @@
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
                                     <tr>
-                                        <td>ID</td>
-                                        <td>NISN</td>
-                                        <td>Nama Lengkap</td>
-                                        <td>Nama Panggilan</td>
-                                        <td>Tempat / Tanggal Lahir</td>
-                                        <td>Jenis Kelamin</td>
-                                        <td>Agama</td>
-                                        <td>Pendidikan Sebelumnya</td>
-                                        <td>Alamat Peserta Didik</td>
-                                        <td>Ayah</td>
-                                        <td>Ibu</td>
+                                        <th>ID</th>
+                                        <th>NISN</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>Nama Panggilan</th>
+                                        <th>Tempat / Tanggal Lahir</th>
+                                        <th>Jenis Kelamin</th>
+                                        <th>Agama</th>
+                                        <th>Pendidikan Sebelumnya</th>
+                                        <th>Alamat Peserta Didik</th>
+                                        <th>Ayah</th>
+                                        <th>Ibu</th>
+                                        <th>Tindakan</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>123</td>
+                                        <td>Juliani Okta Farida</td>
+                                        <td>Ani</td>
+                                        <td>Sandai, 13 Oktober 1995</td>
+                                        <td>Perempuan</td>
+                                        <td>Lainnya</td>
+                                        <td>PAUD</td>
+                                        <td>Parit mayor</td>
+                                        <td>Fabullah</td>
+                                        <td>Dahlia</td>
+                                        <td>
+                                            <a 
+                                                class="btn btn-primary btn-xs" 
+                                                href="{{ route('sekolah_sd.tendik.create') }}"
+                                                target="_blank"
+                                            >
+                                                Edit
+                                            </a>
+                                            <a 
+                                                class="btn btn-danger btn-xs" 
+                                                href="#"
+                                                target="_blank"
+                                            >
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -79,37 +116,35 @@
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                pageLength: -1,
-                processing: true,
-                serverSide: true,
-                aaSorting: [[3, 'asc']],
-                "ajax": {
-                    "url": "/reservasi/data",
-                    "data": function ( d ) {
-                        d.datatable = 1;
-                        d.date = $("#tanggal_filter").val();
-
-                        d = __datatable_ajax_callback(d);
-                    }
-                },
                 columnDefs: [ {
                     "targets": [0],
                     "orderable": false,
                     "searchable": false
                 } ],
-                columns: [
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                ]
+                // processing: true,
+                // serverSide: true,
+                // "ajax": {
+                //     "url": "/reservasi/data",
+                //     "data": function ( d ) {
+                //         d.datatable = 1;
+                //         d.date = $("#tanggal_filter").val();
+
+                //         d = __datatable_ajax_callback(d);
+                //     }
+                // },
+                // columns: [
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                // ]
             });
             // Array to track the ids of the details displayed rows
             var detailRows = [];

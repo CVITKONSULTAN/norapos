@@ -12,9 +12,14 @@ class SekolahSDController extends Controller
     function kelas_index(Request $request){
         return view('sekolah_sd.ruang_kelas');
     }
+
     function data_siswa_index(Request $request){
         return view('sekolah_sd.siswa');
     }
+    function data_siswa_create(Request $request){
+        return view('sekolah_sd.input.siswa.create');
+    }
+    
     function data_mapel_index(Request $request){
         return view('sekolah_sd.mapel');
     }
@@ -27,7 +32,11 @@ class SekolahSDController extends Controller
     function data_ekskul_index(Request $request){
         return view('sekolah_sd.ekstrakurikuler');
     }
+
     function data_tendik_index(Request $request){
         return view('sekolah_sd.tendik');
+    }
+    function data_tendik_create(Request $request){
+        return view('sekolah_sd.input.tendik.create');
     }
 }

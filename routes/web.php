@@ -87,8 +87,12 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('kelas-siswa',"SekolahSDController@kelas_index")
         ->name('sekolah_sd.kelas.index');
+
         Route::get('data-siswa',"SekolahSDController@data_siswa_index")
         ->name('sekolah_sd.siswa.index');
+        Route::get('data-siswa/create',"SekolahSDController@data_siswa_create")
+        ->name('sekolah_sd.siswa.create');
+
         Route::get('data-mapel',"SekolahSDController@data_mapel_index")
         ->name('sekolah_sd.mapel.index');
         Route::get('data-rekap-nilai',"SekolahSDController@data_rekap_nilai_index")
@@ -97,8 +101,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.rekap_nilai_sumatif.index');
         Route::get('data-ekskul',"SekolahSDController@data_ekskul_index")
         ->name('sekolah_sd.rekap_nilai.index');
+
         Route::get('data-tendik',"SekolahSDController@data_tendik_index")
         ->name('sekolah_sd.tendik.index');
+        Route::get('data-tendik/create',"SekolahSDController@data_tendik_create")
+        ->name('sekolah_sd.tendik.create');
     });
 
     Route::get('/card', "CardLogController@index");

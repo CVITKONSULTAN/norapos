@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', "Ekstrakurikuler")
+@section('title', "Tenaga Pendidik")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Ekstrakurikuler</h1>
+    <h1>Tenaga Pendidik</h1>
 </section>
 
 <!-- Main content -->
@@ -29,13 +29,18 @@
 </div>
  --}}
 
-    <div class="row">
+    <div class="row" style="margin-top: 10px;">
         <div class="col-md-12">
            <!-- Custom Tabs -->
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
+                    </li>
+                    <li>
+                        <a target="_blank" href="{{ route('sekolah_sd.tendik.create') }}">
+                            <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
+                        </a>
                     </li>
                 </ul>
 
@@ -56,8 +61,40 @@
                                         <td>Status</td>
                                         <td>Keterangan Lain</td>
                                         <td>Foto Profil</td>
+                                        <td>Tindakan</td>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>123</td>
+                                        <td>Juliani Okta Farida</td>
+                                        <td>Sandai, 13 Oktober 1995</td>
+                                        <td>Parit Mayor</td>
+                                        <td>081254197359</td>
+                                        <td>Perempuan</td>
+                                        <td>Agama Islam</td>
+                                        <td>Kontrak</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <a 
+                                                class="btn btn-primary btn-xs" 
+                                                href="{{ route('sekolah_sd.tendik.create') }}"
+                                                target="_blank"
+                                            >
+                                                Edit
+                                            </a>
+                                            <a 
+                                                class="btn btn-danger btn-xs" 
+                                                href="#"
+                                                target="_blank"
+                                            >
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -79,30 +116,35 @@
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                pageLength: -1,
-                processing: true,
-                serverSide: true,
-                aaSorting: [[3, 'asc']],
-                "ajax": {
-                    "url": "/reservasi/data",
-                    "data": function ( d ) {
-                        d.datatable = 1;
-                        d.date = $("#tanggal_filter").val();
-
-                        d = __datatable_ajax_callback(d);
-                    }
-                },
                 columnDefs: [ {
                     "targets": [0],
                     "orderable": false,
                     "searchable": false
                 } ],
-                columns: [
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  },
-                    { data: 'ID'  }
-                ]
+                // processing: true,
+                // serverSide: true,
+                // "ajax": {
+                //     "url": "/reservasi/data",
+                //     "data": function ( d ) {
+                //         d.datatable = 1;
+                //         d.date = $("#tanggal_filter").val();
+
+                //         d = __datatable_ajax_callback(d);
+                //     }
+                // },
+                // columns: [
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                //     { data: 'ID'  },
+                // ]
             });
             // Array to track the ids of the details displayed rows
             var detailRows = [];

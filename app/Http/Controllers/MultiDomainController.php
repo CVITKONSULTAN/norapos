@@ -9,6 +9,9 @@ class MultiDomainController extends Controller
     public function index($domain, $tld, Request $request)
     {
         // return "Domain : $domain.$tld";
+        // $domain = $domain.$tld;
+        return view("compro.$domain.index");
+
         return view("compro.beautypro.index");
     }
 

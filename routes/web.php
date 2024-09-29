@@ -15,7 +15,7 @@ include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
 
-$database_domain = ['beautyproclinic.com'];
+$database_domain = ['beautyproclinic.com','koneksiedu.com'];
 
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     $host = request()->getHost();

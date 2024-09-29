@@ -23,7 +23,7 @@
                   <a class="nav-link {{ Request::is('/web/blog') ? 'active' : ''}}" href="{{ route('web.index') }}">Blog</a>
                 </li> --}}
                 <li class="nav-item">
-                  <a href="/" class="btn btn-primary px-lg-5 mx-lg-1 {{ Request::is('/web/blog') ? 'active' : ''}}" >
+                  <a href="/login" class="btn btn-primary px-lg-5 mx-lg-1 {{ Request::is('/web/blog') ? 'active' : ''}}" >
                     Login
                   </a>
                 </li>

@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\Artisan;
 
 $database_domain = ['beautyproclinic.com','koneksiedu.com'];
 
+// Route::get('/test-login', function(){
+//     $domain = "koneksiedu";
+//     $data = [];
+//     return view("compro.$domain.login",$data);
+// });
+
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     $host = request()->getHost();
     if(in_array($host,$database_domain)){

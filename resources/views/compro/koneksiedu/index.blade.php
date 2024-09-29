@@ -325,7 +325,7 @@
                 </p>
                 <div class="button_container">
                     <a href="https://wa.me/6285157815452" class="btn btn-primary btn-lg mb-2" type="button">Uji Coba Gratis Sekarang!</a>
-                    <a href="/" class="btn btn-outline-primary btn-lg mb-2 masuk" type="button">Masuk</a>
+                    <a href="/login" class="btn btn-outline-primary btn-lg mb-2 masuk" type="button">Masuk</a>
                 </div>
             </div>
         </section>
@@ -621,7 +621,7 @@
                 <button class="btn btn-primary input_submit">Subscribe</button>
             </form>
 
-            <p class="text-center"><b>© {{ date('Y') }} NORAPOS</b></p>
+            <p class="text-center"><b>© {{ date('Y') }} KONEKSIEDU</b></p>
 
         </div>
     </footer>

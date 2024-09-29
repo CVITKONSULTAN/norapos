@@ -32,6 +32,7 @@
                           placeholder="password"
                           name="password"
                           required
+                          type="password"
                           />
                         </div>
                         <div class="d-grid mt-3">

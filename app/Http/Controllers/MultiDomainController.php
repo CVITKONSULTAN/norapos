@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 
 class MultiDomainController extends Controller
 {
+    public function login($domain, $tld, Request $request)
+    {
+        $data['domain'] = $domain;
+        $data['tld'] = $tld;
+        return view("compro.$domain.login",$data);
+    }
     public function index($domain, $tld, Request $request)
     {
-        // return "Domain : $domain.$tld";
-        // $domain = $domain.$tld;
         $data['domain'] = $domain;
         $data['tld'] = $tld;
         return view("compro.$domain.index",$data);

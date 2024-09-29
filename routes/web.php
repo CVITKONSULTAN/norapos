@@ -26,6 +26,9 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
         Route::get('/contact', "MultiDomainController@contact")->name("multi.contact");
         Route::get('/product', "MultiDomainController@product")->name("multi.product");
         Route::get('/services', "MultiDomainController@services")->name("multi.services");
+        if($host == 'koneksiedu.com'){
+            Route::get('/login', "MultiDomainController@login")->name("multi.login");
+        }
     }
 });
 

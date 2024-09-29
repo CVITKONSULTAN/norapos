@@ -10,7 +10,9 @@ class MultiDomainController extends Controller
     {
         // return "Domain : $domain.$tld";
         // $domain = $domain.$tld;
-        return view("compro.$domain.index");
+        $data['domain'] = $domain;
+        $data['tld'] = $tld;
+        return view("compro.$domain.index",$data);
 
         return view("compro.beautypro.index");
     }

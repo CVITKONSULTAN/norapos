@@ -1,4 +1,4 @@
-@extends('compro.norapos.layouts.app')
+@extends('compro.koneksiedu.layouts.app')
 
 @push('styles')
     <link defer rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />

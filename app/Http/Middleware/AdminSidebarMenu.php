@@ -1017,6 +1017,16 @@ class AdminSidebarMenu
 
         Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
 
+            $menu->url(
+                '/home',
+                "Dashboard",
+                [
+                    'icon' => 'fa fas fa-tachometer-alt', 
+                    'active' => 
+                    request()->segment(1) == 'home'
+                ]
+            );
+
             $menu->dropdown(
                 "Kontrol Pengguna",
                 function ($sub) {
@@ -1127,6 +1137,7 @@ class AdminSidebarMenu
                 },
                 ['icon' => 'fa fas fa-server']
             )->order(1);
+
             $menu->url(
                 action('SekolahSDController@data_rekap_absen_index'),
                 "Rekap Absen Siswa",
@@ -1137,6 +1148,31 @@ class AdminSidebarMenu
                     request()->segment(2) == 'data-rekap-absen' 
                 ]
             );
+
+            //Absensi dropdown
+            if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
+                $menu->dropdown(
+                    "Absensi",
+                    function ($sub) {
+                        if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
+                            $sub->url(
+                                route('absensi.list'),
+                                "Daftar Absensi",
+                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
+                            );
+                        }
+                        if (auth()->user()->can('absensi.create')) {
+                            $sub->url(
+                                route('absensi.create'),
+                                "Tambah",
+                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
+                )->order(1);
+            }
+
             $menu->dropdown(
                 "E-Raport",
                 function ($sub) {

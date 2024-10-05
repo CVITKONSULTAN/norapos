@@ -1170,7 +1170,7 @@ class AdminSidebarMenu
                         }
                     },
                     ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
-                )->order(1);
+                )->order(12);
             }
 
             $menu->dropdown(

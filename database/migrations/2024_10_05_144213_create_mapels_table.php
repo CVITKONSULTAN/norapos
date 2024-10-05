@@ -19,8 +19,16 @@ class CreateMapelsTable extends Migration
             $table->enum('kategori',['mulok','wajib','pilihan']);
             $table->json('lingkup_materi')->nullable();
             $table->json('tujuan_pembelajaran')->nullable();
+
+            $table->unsignedBigInteger('business_id');
+            $table->foreign('business_id')
+            ->references('id')->on('business')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
+
             $table->timestamps();
             $table->softDeletes();
+            
         });
     }
 

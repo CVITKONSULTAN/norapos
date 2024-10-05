@@ -43,6 +43,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+{{-- 
                                     <tr>
                                         <td>1</td>
                                         <td>Agama Islam</td>
@@ -71,6 +72,7 @@
                                             </a>
                                         </td>
                                     </tr>
+  --}}
                                 </tbody>
                             </table>
                         </div>
@@ -93,38 +95,59 @@
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                columnDefs: [ {
-                    "targets": [0],
-                    "orderable": false,
-                    "searchable": false
-                } ],
-                // processing: true,
-                // serverSide: true,
-                // "ajax": {
-                //     "url": "/reservasi/data",
-                //     "data": function ( d ) {
-                //         d.datatable = 1;
-                //         d.date = $("#tanggal_filter").val();
-
-                //         d = __datatable_ajax_callback(d);
-                //     }
-                // },
-                // columns: [
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                // ]
+                columnDefs: [
+                    {
+                        "targets": [0],
+                        "orderable": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [3],
+                        "orderable": false,
+                        "searchable": false
+                    },
+                ],
+                processing: true,
+                serverSide: true,
+                "ajax": {
+                    "url": "{{ route('sekolah_sd.mapel.data') }}",
+                },
+                columns: [
+                    { data: 'id'  },
+                    { data: 'nama'  },
+                    { data: 'kategori'  },
+                    { 
+                        data: 'id',
+                        className:"text-center",
+                        render:(data)=> {
+                            const template = `
+                                <a 
+                                    class="btn btn-primary btn-xs" 
+                                    href="{{ route('sekolah_sd.mapel.index') }}/${data}/edit"
+                                    target="_blank"
+                                >
+                                    Edit
+                                </a>
+                                <a 
+                                    class="btn btn-primary btn-xs" 
+                                    href="{{ route('sekolah_sd.mapel.create') }}"
+                                    target="_blank"
+                                >
+                                    Melihat
+                                </a>
+                                <a 
+                                    class="btn btn-danger btn-xs delete-product" 
+                                    href="{{ route('sekolah_sd.mapel.index') }}/${data}"
+                                    target="_blank"
+                                >
+                                    Hapus
+                                </a>
+                            `
+                            return template;
+                        }
+                    },
+                ]
             });
-            // Array to track the ids of the details displayed rows
-            var detailRows = [];
 
             $('table#product_table tbody').on('click', 'a.delete-product', function(e){
                 e.preventDefault();
@@ -173,16 +196,6 @@
                     $('input#selected_rows').val('');
                     swal('@lang("lang_v1.no_row_selected")');
                 }    
-            });
-
-            $("#reset").click(()=>{
-                $("#tanggal_filter").val("").trigger('change');
-            })
-
-            $(document).on('change', 
-                '#tanggal_filter', 
-                function() {
-                    product_table.ajax.reload();
             });
 
 

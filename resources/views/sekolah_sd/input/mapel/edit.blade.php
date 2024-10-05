@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', "Tambah Mata Pelajaran")
+@section('title', "Edit Mata Pelajaran")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Tambah Mata Pelajaran</h1>
+    <h1>Edit Mata Pelajaran</h1>
 </section>
 
 <!-- Main content -->
@@ -17,13 +17,15 @@
                 <div class="box-header with-border" style="cursor: pointer;">
                     <h3 class="box-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter">
-                        Tambah Mata Pelajaran
+                        Edit Mata Pelajaran
                     </a>
                     </h3>
                 </div>
                 <div id="collapseFilter" class="panel-collapse active collapse in" aria-expanded="true">
                     <div class="box-body">
-                        <form method="POST" action="{{route('sekolah_sd.mapel.store')}}">
+                        <form method="POST" action="{{route('sekolah_sd.mapel.update',$data->id)}}">
+                            @csrf
+                            {{ method_field('PUT') }}
                             <input type="hidden" name="business_id" value="{{Auth::user()->business->id}}" />
                             @include('sekolah_sd.forms.mapel.form')
                         </form>
@@ -40,7 +42,7 @@
 @section('javascript')
     <script>
         const LMLIST = $(".lingkup_materi_list")
-        let LM_INDEX = 0;
+        let LM_INDEX = {{count($data['lingkup_materi'])}};
         const addLingkupMateri = () => {
             LM_INDEX++;
             const template_lingkup_materi = `
@@ -51,12 +53,9 @@
             `
             LMLIST.append(template_lingkup_materi);
         }
-        $(document).ready(function(){
-            addLingkupMateri();
-        });
 
         const TPLIST = $(".tujuan_pembelajaran_list")
-        let TP_INDEX = 0;
+        let TP_INDEX = {{count($data['tujuan_pembelajaran'])}};
         const addTujuanPembelajaran = () => {
             TP_INDEX++;
             const template_lingkup_materi = `
@@ -67,8 +66,5 @@
             `
             TPLIST.append(template_lingkup_materi);
         }
-        $(document).ready(function(){
-            addTujuanPembelajaran();
-        });
     </script>
 @endsection

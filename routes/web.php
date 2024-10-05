@@ -106,6 +106,17 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.mapel.index');
         Route::get('data-mapel/create',"SekolahSDController@data_mapel_create")
         ->name('sekolah_sd.mapel.create');
+        Route::get('data-mapel/{id}/edit',"Sekolah\MapelController@edit")
+        ->name('sekolah_sd.mapel.edit');
+
+        Route::post('data-mapel',"Sekolah\MapelController@store")
+        ->name('sekolah_sd.mapel.store');
+        Route::get('data-mapel/data',"Sekolah\MapelController@data")
+        ->name('sekolah_sd.mapel.data');
+        Route::put('data-mapel/{id}',"Sekolah\MapelController@update")
+        ->name('sekolah_sd.mapel.update');
+        Route::delete('data-mapel/{id}',"Sekolah\MapelController@destroy")
+        ->name('sekolah_sd.mapel.delete');
 
         Route::get('data-rekap-nilai',"SekolahSDController@data_rekap_nilai_index")
         ->name('sekolah_sd.rekap_nilai.index');

@@ -26,6 +26,11 @@ class SekolahSDController extends Controller
     function data_mapel_create(Request $request){
         return view('sekolah_sd.input.mapel.create');
     }
+
+    // function data_mapel_edit(Request $request, $id){
+    //     $data['data'] = Mapel::findorfail($id);
+    //     return view('sekolah_sd.input.mapel.edit',$data);
+    // }
     
     function data_rekap_nilai_index(Request $request){
         return view('sekolah_sd.rekap_nilai_formatif');

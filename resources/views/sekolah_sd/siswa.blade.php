@@ -99,19 +99,18 @@
 
     $(document).ready( function(){
         product_table = $('#product_table').DataTable({
-            "orderable": false,
-            "searchable": false,
             processing: true,
             serverSide: true,
             "ajax": {
                 "url": "{{ route('sekolah_sd.siswa.data') }}",
             },
             columns: [
-                { data: 'id'  },
+                { searchable: false, data: 'id'  },
                 { data: 'nisn'  },
                 { data: 'nama'  },
-                { data: 'detail.nama_panggilan'  },
+                { searchable: false, data: 'detail.nama_panggilan'  },
                 { 
+                    searchable: false,
                     data: 'id',
                     render:(data,type,row)=> {
                         const tl = row.detail.tempat_lahir ?? ""
@@ -119,13 +118,14 @@
                         return `${tl} / ${ttl}`;
                     }
                 },
-                { data: 'detail.jenis_kelamin'  },
-                { data: 'detail.agama'  },
-                { data: 'detail.pendidikan_sebelumnya'  },
-                { data: 'detail.alamat'  },
-                { data: 'detail.nama_ayah'  },
-                { data: 'detail.nama_ibu'  },
+                { searchable: false, data: 'detail.jenis_kelamin'  },
+                { searchable: false, data: 'detail.agama'  },
+                { searchable: false, data: 'detail.pendidikan_sebelumnya'  },
+                { searchable: false, data: 'detail.alamat'  },
+                { searchable: false, data: 'detail.nama_ayah'  },
+                { searchable: false, data: 'detail.nama_ibu'  },
                 { 
+                    searchable: false,
                     data: 'id',
                     className:"text-center",
                     render:(data)=> {

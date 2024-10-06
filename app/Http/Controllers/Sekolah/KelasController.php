@@ -71,7 +71,24 @@ class KelasController extends Controller
                 isset($input['show']) &&
                 $input['show'] == 1
             ){
-                $m = KelasSiswa::findorfail($input['id']);
+                $m = KelasSiswa::where('id',$input['id'])
+                ->with([
+                    'siswa' => function($q){
+                        $q->select('id','nama','nisn');
+                    },
+                    'kelas' => function($q){
+                        $q->select(
+                            'id',
+                            'tahun_ajaran',
+                            'semester',
+                            'nama_kelas',
+                        );
+                    },
+                ])
+                ->first();
+                if(empty($m))
+                    return ['success'=>false,'msg'=>'not found','data'=>$m];
+
                 return ['success'=>true,'msg'=>'OK','data'=>$m];
             }
             if(

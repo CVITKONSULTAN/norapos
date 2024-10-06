@@ -71,10 +71,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                         <div class="form-group">
                             <label>Kelas</label>
                             <select name="kelas_id" class="kelas_selection"></select>
+                            <p class="edit_kelas_container">Sebelumnya : <b class="edit_kelas_val"></b> </p>
                         </div>
                         <div class="form-group">
                             <label>Siswa</label>
                             <select name="siswa_id" class="siswa_selection"></select>
+                            <p class="edit_kelas_container">Sebelumnya : <b class="edit_siswa_val"></b> </p>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -87,7 +89,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
     </div>
 
     <section class="content">
-        
+{{--         
         <div class="row">
             <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
@@ -115,8 +117,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             @endcomponent
             </div>
         </div>
-
-
+  --}}
         <div class="row">
             <div class="col-md-12">
             <!-- Custom Tabs -->
@@ -183,9 +184,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
     <script
     src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
     ></script>
-    <script>
+    <script type="text/javascript">
+
+        let selectizeInstanceKelas;
+        let selectizeInstanceSiswa;
+
         $(function () {
-            $(".kelas_selection").selectize({
+            selectizeInstanceKelas = $(".kelas_selection").selectize({
                 placeholder: 'Cari disini...',
                 maxItems: 1,
                 create: false,
@@ -203,6 +208,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             callback();
                         },
                         success: function(res) {
+                            console.log("Options Loaded:", res);
                             const results = res.data.map(item => ({
                                 id: item.id,
                                 name: `${item.nama_kelas} (Semester ${item.semester} - ${item.tahun_ajaran})`
@@ -211,8 +217,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                         }
                     });
                 }
-            });
-            $(".siswa_selection").selectize({
+            })[0].selectize;
+            selectizeInstanceSiswa = $(".siswa_selection").selectize({
                 placeholder: 'Cari disini...',
                 maxItems: 1,
                 create: false,
@@ -238,11 +244,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                         }
                     });
                 }
-            });
+            })[0].selectize;
         });
-
-      </script>
-    <script type="text/javascript">
 
         const tambahKelasSiswa = () => {
             const modals_dom = $("#editor_kelas_siswa_modal");
@@ -251,15 +254,43 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             modals_dom.find('input[name=update]').val(0);
             modals_dom.find('input[name=id]').val(0);
             modals_dom.modal('show');
+            $('.edit_kelas_container').hide();
         }
-        $(document).ready(function() {
-            $('#your-select-element').select2({
-                placeholder: "Select an option",
-                allowClear: true, // Optional: allows the user to clear the selection
-                minimumResultsForSearch: Infinity // This disables the search box
-            });
-        });
-        
+
+        const editKelasSiswa = (id) => {
+            const modals_dom = $("#editor_kelas_siswa_modal");
+            const href = "{{route('sekolah_sd.kelas.store')}}";
+            modals_dom.find('input[name=insert]').val(0);
+            modals_dom.find('input[name=update]').val(1);
+            modals_dom.find('input[name=id]').val(id);
+            modals_dom.modal('show');
+            $.ajax({
+                method: "POST",
+                url: href,
+                data: {
+                    show:1,
+                    id:id
+                },
+                dataType: "json",
+                beforeSend: () => {
+                    modals_dom.find('input:not([type=hidden])').attr('disabled');
+                    modals_dom.find('button').attr('disabled');
+                },
+                complete: () => {
+                    modals_dom.find('input:not([type=hidden])').removeAttr('disabled');
+                    modals_dom.find('button').removeAttr('disabled');
+                },
+                success: function(result){
+                    const {data} = result;
+                    if(!data) return;
+                    const kelas = data.kelas;
+                    const siswa = data.siswa;
+                    $('.edit_kelas_val').text(`${kelas.nama_kelas} - (Semester ${kelas.semester} - ${kelas.tahun_ajaran})`);
+                    $('.edit_siswa_val').text(`${siswa.nama} (${siswa.nisn})`);
+                    $('.edit_kelas_container').show();
+                }
+            })
+        }
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
@@ -287,13 +318,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             const template = `
                                 <button 
                                     class="btn btn-primary btn-xs" 
-                                    onclick="editKelas(${data})"
+                                    onclick="editKelasSiswa(${data})"
                                 >
                                     Edit
                                 </button>
                                 <a 
                                     class="btn btn-danger btn-xs delete-product" 
-                                    href="{{ route('sekolah_sd.kelas_repo.store') }}"
+                                    href="{{ route('sekolah_sd.kelas.store') }}"
                                     data-id="${data}"
                                     target="_blank"
                                 >
@@ -308,6 +339,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
 
             $('table#product_table tbody').on('click', 'a.delete-product', function(e){
                 e.preventDefault();
+                const id = $(this).data('id')
                 swal({
                   title: LANG.sure,
                   icon: "warning",
@@ -317,8 +349,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     if (willDelete) {
                         var href = $(this).attr('href');
                         $.ajax({
-                            method: "DELETE",
+                            method: "POST",
                             url: href,
+                            data: {
+                                delete:1,
+                                id:id
+                            },
                             dataType: "json",
                             success: function(result){
                                 if(result.success == true){
@@ -391,7 +427,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                 console.log("result",result);
                 if(result.success == true){
                     toastr.success(result.msg);
-                    kelas_table.ajax.reload();
+                    product_table.ajax.reload();
                 } else {
                     toastr.error(result.msg);
                 }

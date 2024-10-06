@@ -9,6 +9,77 @@
 </section>
 
 <!-- Main content -->
+<div id="editor_modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="form_kelas" method="POST" action="{{route('sekolah_sd.kelas_repo.store')}}">
+                @csrf
+                <input value="1" type="hidden" name="insert" />
+                <input value="0" type="hidden" name="update" />
+                <input value="0" type="hidden" name="id" />
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Kelas / Tahun Ajaran
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Tahun Ajaran</label>
+                        <input type="text" name="tahun_ajaran" required class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <input type="text" name="semester" required class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Kelas</label>
+                        <input type="text" name="nama_kelas" required class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="editor_kelas_siswa_modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="form_kelas_siswa" method="POST" action="{{route('sekolah_sd.kelas_repo.store')}}">
+                @csrf
+                <input value="1" type="hidden" name="insert" />
+                <input value="0" type="hidden" name="update" />
+                <input value="0" type="hidden" name="id" />
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Kelas / Tahun Ajaran
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Tahun Ajaran</label>
+                        <input type="text" name="tahun_ajaran" required class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <input type="text" name="semester" required class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Kelas</label>
+                        <input type="text" name="nama_kelas" required class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <section class="content">
     
@@ -49,19 +120,44 @@
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
                     </li>
+                    <li>
+                        <a href="#kelas_ajar_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i> Kelas / Tahun Ajaran</a>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="product_list_tab">
+                        <div class="text-right" style="margin-bottom: 10px;">
+                            <button onclick="tambahKelasSiswa()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah</button>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
                                     <tr>
                                         <td>ID</td>
+                                        <td>NISN</td>
                                         <td>NAMA LENGKAP</td>
                                         <td>KELAS</td>
                                         <td>TAHUN AJARAN</td>
-                                        <td>NISN</td>
+                                        <td>Tindakan</td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="kelas_ajar_list_tab">
+                        <div class="text-right" style="margin-bottom: 10px;">
+                            <button onclick="tambahKelas()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table width="100%" class="table table-bordered table-striped ajax_view hide-footer" id="kelas_table">
+                                <thead>
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>TAHUN AJARAN</td>
+                                        <td>SEMESTER</td>
+                                        <td>NAMA KELAS</td>
+                                        <td>Tindakan</td>
                                     </tr>
                                 </thead>
                             </table>
@@ -79,40 +175,61 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
     <script type="text/javascript">
+
+        const tambahKelasSiswa = () => {
+            const modals_dom = $("#editor_modal");
+            modals_dom.find('input:not([type=hidden])').val("");
+            modals_dom.find('input[name=insert]').val(1);
+            modals_dom.find('input[name=update]').val(0);
+            modals_dom.find('input[name=id]').val(0);
+            modals_dom.modal('show');
+        }
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                pageLength: -1,
                 processing: true,
                 serverSide: true,
-                aaSorting: [[3, 'asc']],
                 "ajax": {
-                    "url": "/reservasi/data",
-                    "data": function ( d ) {
-                        d.datatable = 1;
-                        d.date = $("#tanggal_filter").val();
+                    "url": "{{route('sekolah_sd.kelas.data')}}",
+                    // "data": function ( d ) {
+                    //     d.datatable = 1;
+                    //     d.date = $("#tanggal_filter").val();
 
-                        d = __datatable_ajax_callback(d);
-                    }
+                    //     d = __datatable_ajax_callback(d);
+                    // }
                 },
-                columnDefs: [ {
-                    "targets": [0],
-                    "orderable": false,
-                    "searchable": false
-                } ],
                 columns: [
-                    { data: 'ID'  },
-                    { data: 'HARGA'  },
-                    { data: 'OTA'  },
-                    { data: 'CID'  },
-                    { data: 'NAMA'  }
+                    { data: 'id'  },
+                    { data: 'siswa.nisn'  },
+                    { data: 'siswa.nama'  },
+                    { data: 'kelas.nama_kelas'  },
+                    { data: 'kelas.tahun_ajaran'  },
+                    { 
+                        data: 'id',
+                        className:"text-center",
+                        render:(data)=> {
+                            const template = `
+                                <button 
+                                    class="btn btn-primary btn-xs" 
+                                    onclick="editKelas(${data})"
+                                >
+                                    Edit
+                                </button>
+                                <a 
+                                    class="btn btn-danger btn-xs delete-product" 
+                                    href="{{ route('sekolah_sd.kelas_repo.store') }}"
+                                    data-id="${data}"
+                                    target="_blank"
+                                >
+                                    Hapus
+                                </a>
+                            `
+                            return template;
+                        }
+                    },
                 ]
             });
-            // Array to track the ids of the details displayed rows
-            var detailRows = [];
 
             $('table#product_table tbody').on('click', 'a.delete-product', function(e){
                 e.preventDefault();
@@ -141,50 +258,150 @@
                 });
             });
 
-            $(document).on('click', '#delete-selected', function(e){
-                e.preventDefault();
-                var selected_rows = getSelectedRows();
-                
-                if(selected_rows.length > 0){
-                    $('input#selected_rows').val(selected_rows);
-                    swal({
-                        title: LANG.sure,
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    }).then((willDelete) => {
-                        if (willDelete) {
-                            $('form#mass_delete_form').submit();
-                        }
-                    });
-                } else{
-                    $('input#selected_rows').val('');
-                    swal('@lang("lang_v1.no_row_selected")');
-                }    
-            });
-
-            $("#reset").click(()=>{
-                $("#tanggal_filter").val("").trigger('change');
-            })
-
-            $(document).on('change', 
-                '#tanggal_filter', 
-                function() {
-                    product_table.ajax.reload();
-            });
-
-
         });
 
-        function getSelectedRows() {
-            var selected_rows = [];
-            var i = 0;
-            $('.row-select:checked').each(function () {
-                selected_rows[i++] = $(this).val();
+        const tambahKelas = () => {
+            const modals_dom = $("#editor_modal");
+            modals_dom.find('input:not([type=hidden])').val("");
+            modals_dom.find('input[name=insert]').val(1);
+            modals_dom.find('input[name=update]').val(0);
+            modals_dom.find('input[name=id]').val(0);
+            modals_dom.modal('show');
+        }
+
+        const editKelas = (id) => {
+            const modals_dom = $("#editor_modal");
+            const href = "{{route('sekolah_sd.kelas_repo.store')}}";
+            $.ajax({
+                method: "POST",
+                url: href,
+                data: {
+                    show:1,
+                    id:id
+                },
+                dataType: "json",
+                beforeSend: () => {
+                    modals_dom.find('input:not([type=hidden])').attr('disabled');
+                    modals_dom.find('button').attr('disabled');
+                },
+                complete: () => {
+                    modals_dom.find('input:not([type=hidden])').removeAttr('disabled');
+                    modals_dom.find('button').removeAttr('disabled');
+                },
+                success: function(result){
+                    const {data} = result;
+                    if(!data) return;
+                    modals_dom.find('input[name=tahun_ajaran]').val( data.tahun_ajaran );
+                    modals_dom.find('input[name=semester]').val( data.semester );
+                    modals_dom.find('input[name=nama_kelas]').val( data.nama_kelas );
+                }
+            })
+            
+            modals_dom.find('input[name=insert]').val(0);
+            modals_dom.find('input[name=update]').val(1);
+            modals_dom.find('input[name=id]').val(id);
+            modals_dom.modal('show');
+        }
+
+        $("#form_kelas").on('submit', (function(e) {
+            e.preventDefault();
+            $.ajax({
+            url: $(this).attr('action'),
+            type: "POST",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(result) {
+                console.log("result",result);
+                if(result.success == true){
+                    toastr.success(result.msg);
+                    kelas_table.ajax.reload();
+                } else {
+                    toastr.error(result.msg);
+                }
+                $("#form_kelas").trigger("reset"); // to reset form input fields
+                $("#editor_modal").modal("hide");
+            },
+            error: function(e) {
+                console.log(e);
+            }
+            });
+        }));
+
+        let kelas_table;
+
+        $(document).ready( function(){
+            kelas_table = $('#kelas_table').DataTable({
+                processing: true,
+                serverSide: true,
+                "ajax": {
+                    "url": "{{ route('sekolah_sd.kelas_repo.data') }}",
+                },
+                columns: [
+                    { data: 'id'  },
+                    { data: 'tahun_ajaran'  },
+                    { data: 'semester'  },
+                    { data: 'nama_kelas'  },
+                    { 
+                        data: 'id',
+                        className:"text-center",
+                        render:(data)=> {
+                            const template = `
+                                <button 
+                                    class="btn btn-primary btn-xs" 
+                                    onclick="editKelas(${data})"
+                                >
+                                    Edit
+                                </button>
+                                <a 
+                                    class="btn btn-danger btn-xs delete-product" 
+                                    href="{{ route('sekolah_sd.kelas_repo.store') }}"
+                                    data-id="${data}"
+                                    target="_blank"
+                                >
+                                    Hapus
+                                </a>
+                            `
+                            return template;
+                        }
+                    },
+                ]
             });
 
-            return selected_rows; 
-        }
+            $('table#kelas_table tbody').on('click', 'a.delete-product', function(e){
+                e.preventDefault();
+                const id = $(this).data('id')
+                swal({
+                  title: LANG.sure,
+                  icon: "warning",
+                  buttons: true,
+                  dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        var href = $(this).attr('href');
+                        $.ajax({
+                            method: "POST",
+                            url: href,
+                            data: {
+                                delete:1,
+                                id:id
+                            },
+                            dataType: "json",
+                            success: function(result){
+                                if(result.success == true){
+                                    toastr.success(result.msg);
+                                    kelas_table.ajax.reload();
+                                } else {
+                                    toastr.error(result.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
 
     </script>
 @endsection

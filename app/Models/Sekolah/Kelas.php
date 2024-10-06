@@ -11,7 +11,7 @@ class Kelas extends Model
 
     protected $fillable = [
         'tahun_ajaran',
-        'smester',
+        'semester',
         'nama_kelas',
     ];
     

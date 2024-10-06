@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', "Tambah Data Siswa")
+@section('title', "Edit Data Siswa")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Tambah Data Siswa</h1>
+    <h1>Edit Data Siswa</h1>
 </section>
 
 <!-- Main content -->
@@ -17,13 +17,14 @@
                 <div class="box-header with-border" style="cursor: pointer;">
                     <h3 class="box-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter">
-                        Tambah Data Siswa
+                        Edit Data Siswa
                     </a>
                     </h3>
                 </div>
                 <div id="collapseFilter" class="panel-collapse active collapse in" aria-expanded="true">
                     <div class="box-body">
-                        <form method="POST" action="{{route('sekolah_sd.siswa.store')}}">
+                        <form method="POST" action="{{route('sekolah_sd.siswa.update',$data->id)}}">
+                            {{ method_field('PUT') }}
                             @include('sekolah_sd.forms.siswa.form')
                         </form>
                     </div>

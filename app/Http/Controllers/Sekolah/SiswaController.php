@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Sekolah;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Yajra\DataTables\Facades\DataTables;
 
-use \App\Models\Sekolah\Mapel;
+use \App\Models\Sekolah\Siswa;
+use DataTables;
 
-class MapelController extends Controller
+class SiswaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,9 +27,7 @@ class MapelController extends Controller
      */
     public function data(Request $request)
     {
-        $business_id = $request->user()->business->id;
-        $query = Mapel::select('id','nama','kategori')
-        ->where('business_id',$business_id);
+        $query = Siswa::query();
 
         return DataTables::of($query)
         ->make(true);
@@ -55,10 +53,10 @@ class MapelController extends Controller
     {
         try{
             $input = $request->all();
-            Mapel::create($input);
+            Siswa::create($input);
 
             return redirect()
-            ->route('sekolah_sd.mapel.index')
+            ->route('sekolah_sd.siswa.index')
             ->with('message', 'success|Data berhasil disimpan');
         } catch(Exception $e){
             $msg = $e->getMessage();
@@ -87,8 +85,8 @@ class MapelController extends Controller
      */
     public function edit($id)
     {
-        $data['data'] = Mapel::findorfail($id);
-        return view('sekolah_sd.input.mapel.edit',$data);
+        $data['data'] = Siswa::findorfail($id);
+        return view('sekolah_sd.input.siswa.edit',$data);
     }
 
     /**
@@ -101,11 +99,11 @@ class MapelController extends Controller
     public function update(Request $request, $id)
     {
         try{
-            $m = Mapel::findorfail($id);
+            $m = Siswa::findorfail($id);
             $input = $request->all();
             $m->update($input);
             return redirect()
-            ->route('sekolah_sd.mapel.index')
+            ->route('sekolah_sd.siswa.index')
             ->with('message', 'success|Data berhasil disimpan');
         } catch(Exception $e){
             $msg = $e->getMessage();
@@ -124,7 +122,7 @@ class MapelController extends Controller
     public function destroy($id)
     {
         try{
-            $m = Mapel::findorfail($id);
+            $m = Siswa::findorfail($id);
             $m->delete();
             return ['success'=>true,'msg'=>'Data berhasil dihapus'];
         } catch(Exception $e){

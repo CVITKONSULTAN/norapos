@@ -96,11 +96,30 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('kelas-siswa',"SekolahSDController@kelas_index")
         ->name('sekolah_sd.kelas.index');
+        Route::get('kelas-siswa/data',"Sekolah\KelasController@data")
+        ->name('sekolah_sd.kelas.data');
+
+        Route::post('kelas-repo',"Sekolah\KelasController@KelasRepo")
+        ->name('sekolah_sd.kelas_repo.store');
+        Route::get('kelas-data',"Sekolah\KelasController@KelasData")
+        ->name('sekolah_sd.kelas_repo.data');
+        
 
         Route::get('data-siswa',"SekolahSDController@data_siswa_index")
         ->name('sekolah_sd.siswa.index');
         Route::get('data-siswa/create',"SekolahSDController@data_siswa_create")
         ->name('sekolah_sd.siswa.create');
+        Route::get('data-siswa/{id}/edit',"Sekolah\SiswaController@edit")
+        ->name('sekolah_sd.siswa.edit');
+
+        Route::post('data-siswa',"Sekolah\SiswaController@store")
+        ->name('sekolah_sd.siswa.store');
+        Route::get('data-siswa/data',"Sekolah\SiswaController@data")
+        ->name('sekolah_sd.siswa.data');
+        Route::put('data-siswa/{id}',"Sekolah\SiswaController@update")
+        ->name('sekolah_sd.siswa.update');
+        Route::delete('data-siswa/{id}',"Sekolah\SiswaController@destroy")
+        ->name('sekolah_sd.siswa.delete');
 
         Route::get('data-mapel',"SekolahSDController@data_mapel_index")
         ->name('sekolah_sd.mapel.index');

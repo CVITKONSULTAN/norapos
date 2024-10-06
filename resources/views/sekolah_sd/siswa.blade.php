@@ -48,6 +48,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+{{-- 
                                     <tr>
                                         <td>1</td>
                                         <td>123</td>
@@ -77,6 +78,7 @@
                                             </a>
                                         </td>
                                     </tr>
+  --}}
                                 </tbody>
                             </table>
                         </div>
@@ -93,116 +95,123 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        $(document).ready( function(){
-            product_table = $('#product_table').DataTable({
-                columnDefs: [ {
-                    "targets": [0],
-                    "orderable": false,
-                    "searchable": false
-                } ],
-                // processing: true,
-                // serverSide: true,
-                // "ajax": {
-                //     "url": "/reservasi/data",
-                //     "data": function ( d ) {
-                //         d.datatable = 1;
-                //         d.date = $("#tanggal_filter").val();
-
-                //         d = __datatable_ajax_callback(d);
-                //     }
-                // },
-                // columns: [
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                // ]
-            });
-            // Array to track the ids of the details displayed rows
-            var detailRows = [];
-
-            $('table#product_table tbody').on('click', 'a.delete-product', function(e){
-                e.preventDefault();
-                swal({
-                  title: LANG.sure,
-                  icon: "warning",
-                  buttons: true,
-                  dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        var href = $(this).attr('href');
-                        $.ajax({
-                            method: "DELETE",
-                            url: href,
-                            dataType: "json",
-                            success: function(result){
-                                if(result.success == true){
-                                    toastr.success(result.msg);
-                                    product_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            }
-                        });
+    $(document).ready( function(){
+        product_table = $('#product_table').DataTable({
+            "orderable": false,
+            "searchable": false,
+            processing: true,
+            serverSide: true,
+            "ajax": {
+                "url": "{{ route('sekolah_sd.siswa.data') }}",
+            },
+            columns: [
+                { data: 'id'  },
+                { data: 'nisn'  },
+                { data: 'nama'  },
+                { data: 'detail.nama_panggilan'  },
+                { 
+                    data: 'id',
+                    render:(data,type,row)=> {
+                        const tl = row.detail.tempat_lahir ?? ""
+                        const ttl = row.detail.tanggal_lahir ?? ""
+                        return `${tl} / ${ttl}`;
                     }
-                });
-            });
-
-            $(document).on('click', '#delete-selected', function(e){
-                e.preventDefault();
-                var selected_rows = getSelectedRows();
-                
-                if(selected_rows.length > 0){
-                    $('input#selected_rows').val(selected_rows);
-                    swal({
-                        title: LANG.sure,
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    }).then((willDelete) => {
-                        if (willDelete) {
-                            $('form#mass_delete_form').submit();
-                        }
-                    });
-                } else{
-                    $('input#selected_rows').val('');
-                    swal('@lang("lang_v1.no_row_selected")');
-                }    
-            });
-
-            $("#reset").click(()=>{
-                $("#tanggal_filter").val("").trigger('change');
-            })
-
-            $(document).on('change', 
-                '#tanggal_filter', 
-                function() {
-                    product_table.ajax.reload();
-            });
-
-
+                },
+                { data: 'detail.jenis_kelamin'  },
+                { data: 'detail.agama'  },
+                { data: 'detail.pendidikan_sebelumnya'  },
+                { data: 'detail.alamat'  },
+                { data: 'detail.nama_ayah'  },
+                { data: 'detail.nama_ibu'  },
+                { 
+                    data: 'id',
+                    className:"text-center",
+                    render:(data)=> {
+                        const template = `
+                            <a 
+                                class="btn btn-primary btn-xs" 
+                                href="{{ route('sekolah_sd.siswa.index') }}/${data}/edit"
+                                target="_blank"
+                            >
+                                Edit
+                            </a>
+                            <a 
+                                class="btn btn-danger btn-xs delete-product" 
+                                href="{{ route('sekolah_sd.siswa.index') }}/${data}"
+                                target="_blank"
+                            >
+                                Hapus
+                            </a>
+                        `
+                        return template;
+                    }
+                },
+            ]
         });
 
-        function getSelectedRows() {
-            var selected_rows = [];
-            var i = 0;
-            $('.row-select:checked').each(function () {
-                selected_rows[i++] = $(this).val();
+        $('table#product_table tbody').on('click', 'a.delete-product', function(e){
+            e.preventDefault();
+            swal({
+              title: LANG.sure,
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).attr('href');
+                    $.ajax({
+                        method: "DELETE",
+                        url: href,
+                        dataType: "json",
+                        success: function(result){
+                            if(result.success == true){
+                                toastr.success(result.msg);
+                                product_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        }
+                    });
+                }
             });
+        });
 
-            return selected_rows; 
-        }
+        $(document).on('click', '#delete-selected', function(e){
+            e.preventDefault();
+            var selected_rows = getSelectedRows();
+            
+            if(selected_rows.length > 0){
+                $('input#selected_rows').val(selected_rows);
+                swal({
+                    title: LANG.sure,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $('form#mass_delete_form').submit();
+                    }
+                });
+            } else{
+                $('input#selected_rows').val('');
+                swal('@lang("lang_v1.no_row_selected")');
+            }    
+        });
 
-    </script>
+
+    });
+
+    function getSelectedRows() {
+        var selected_rows = [];
+        var i = 0;
+        $('.row-select:checked').each(function () {
+            selected_rows[i++] = $(this).val();
+        });
+
+        return selected_rows; 
+    }
+
+</script>
 @endsection

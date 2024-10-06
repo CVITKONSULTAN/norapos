@@ -98,6 +98,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.kelas.index');
         Route::get('kelas-siswa/data',"Sekolah\KelasController@data")
         ->name('sekolah_sd.kelas.data');
+        Route::post('kelas-siswa/store',"Sekolah\KelasController@store")
+        ->name('sekolah_sd.kelas.store');
 
         Route::post('kelas-repo',"Sekolah\KelasController@KelasRepo")
         ->name('sekolah_sd.kelas_repo.store');

@@ -57,8 +57,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
     <div id="editor_kelas_siswa_modal" class="modal fade">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                {{-- <form id="form_kelas_siswa" method="POST" action="{{route('sekolah_sd.kelas_repo.store')}}"> --}}
-                <form>
+                <form id="form_kelas_siswa" method="POST" action="{{route('sekolah_sd.kelas.store')}}">
                     @csrf
                     <input value="1" type="hidden" name="insert" />
                     <input value="0" type="hidden" name="update" />
@@ -95,14 +94,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label>Kelas</label>
+                        <label>Kelas / Tahun Ajaran / Semester</label>
                         <select name="kelas_id" class="kelas_selection"></select>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label>Tahun Ajaran</label>
-                        <input name="tahun" type="text" class="form-control" />
+                        <label>Siswa</label>
+                        <select name="siswa_id" class="siswa_selection"></select>
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -378,6 +377,32 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             modals_dom.find('input[name=id]').val(id);
             modals_dom.modal('show');
         }
+
+        $("#form_kelas_siswa").on('submit', (function(e) {
+            e.preventDefault();
+            $.ajax({
+            url: $(this).attr('action'),
+            type: "POST",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(result) {
+                console.log("result",result);
+                if(result.success == true){
+                    toastr.success(result.msg);
+                    kelas_table.ajax.reload();
+                } else {
+                    toastr.error(result.msg);
+                }
+                $("#form_kelas_siswa").trigger("reset"); // to reset form input fields
+                $("#editor_kelas_siswa_modal").modal("hide");
+            },
+            error: function(e) {
+                console.log(e);
+            }
+            });
+        }));
 
         $("#form_kelas").on('submit', (function(e) {
             e.preventDefault();

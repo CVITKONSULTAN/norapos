@@ -65,7 +65,36 @@ class KelasController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $input = $request->all();
+            if(
+                isset($input['show']) &&
+                $input['show'] == 1
+            ){
+                $m = KelasSiswa::findorfail($input['id']);
+                return ['success'=>true,'msg'=>'OK','data'=>$m];
+            }
+            if(
+                isset($input['insert']) &&
+                $input['insert'] == 1
+            ){
+                KelasSiswa::create($input);
+                return ['success'=>true,'msg'=>'Data berhasil disimpan'];
+            }
+            if(isset($input['update']) && $input['update'] == 1){
+                $m = KelasSiswa::findorfail($input['id']);
+                $m->update($input);
+                return ['success'=>true,'msg'=>'Data berhasil disimpan'];
+            }
+            if(isset($input['delete']) && $input['delete'] == 1){
+                $m = KelasSiswa::findorfail($input['id']);
+                $m->delete();
+                return ['success'=>true,'msg'=>'Data berhasil dihapus'];
+            }
+        } catch(Exception $e){
+            $msg = $e->getMessage();
+            return ['success'=>false,'msg'=>$msg];
+        }
     }
 
     /**

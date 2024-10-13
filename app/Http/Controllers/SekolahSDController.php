@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use \App\Models\Sekolah\Kelas;
+use \App\Models\Sekolah\Siswa;
 use \App\Models\Sekolah\NilaiSiswa;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
@@ -78,7 +79,7 @@ class SekolahSDController extends Controller
                 return $q->select('id','nama');
             },
         ])->get();
-        
+
         return view('sekolah_sd.rekap_nilai_sumatif',$data);
     }
 
@@ -119,6 +120,36 @@ class SekolahSDController extends Controller
         return view('sekolah_sd.raport_tengah');
     }
     function raport_akhir_index(Request $request){
-        return view('sekolah_sd.raport_akhir');
+
+        $filter = $request->all();
+
+        $data['business'] = $request->user()->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // dd($data);
+
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
+        $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+
+        $kelas = Kelas::first();
+        $siswa = Siswa::first();
+
+        $data['kelas_siswa'] = KelasSiswa::where([
+            'kelas_id'=> $kelas->id,
+            'siswa_id'=> $siswa->id,
+        ])
+        ->with('kelas','siswa')
+        ->first();
+
+        $data['nilai_list'] = NilaiSiswa::where([
+            'kelas_id'=> $kelas->id,
+            'siswa_id'=> $siswa->id,
+        ])
+        ->with('mapel')
+        ->get();
+        // dd($data['nilai_list']);
+
+        return view('sekolah_sd.raport_akhir',$data);
     }
 }

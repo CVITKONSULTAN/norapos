@@ -58,10 +58,39 @@
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="product_list_tab">
-                        <div class="form-group">
-                            <label>Cari NISN/Nama Siswa</label>
-                            <input placeholder="Tulis disini..." class="form-control" name="cari" placeholder="" />
-                        </div>
+                        <form class="row">
+                            <div class="form-group col-md-2">
+                                <label>Tahun Ajaran</label>
+                                <select class="form-control" name="tahun_ajaran">
+                                    @foreach ($tahun_ajaran as $item)
+                                        <option>{{ $item }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Semester</label>
+                                <select class="form-control" name="tahun_ajaran">
+                                    @foreach ($semester as $item)
+                                        <option>{{ $item }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Kelas</label>
+                                <select class="form-control" name="kelas">
+                                    @foreach ($nama_kelas as $item)
+                                        <option>{{ $item }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Cari NISN/Nama Siswa</label>
+                                <input type="search" placeholder="Tulis disini..." class="form-control" name="cari" placeholder="" />
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary" style="margin-top:25px;"><i class="fa fa-search"></i> Cari</button>
+                            </div>
+                        </form>
                         <hr />
                         <div id="printableArea" class="row">
                             <div class="col-md-6">
@@ -69,22 +98,22 @@
                                     <tr>
                                         <td>NISN</td>
                                         <td>:</td>
-                                        <td>123456</td>
+                                        <td>{{ $kelas_siswa->siswa->nisn }}</td>
                                     </tr>
                                     <tr>
                                         <td>Nama Peserta Didik</td>
                                         <td>:</td>
-                                        <td>Juliani Okta Farida</td>
+                                        <td>{{ $kelas_siswa->siswa->nama }}</td>
                                     </tr>
                                     <tr>
                                         <td>Nama Sekolah</td>
                                         <td>:</td>
-                                        <td>SD Muhammadiyah 2</td>
+                                        <td>{{ $business->name }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Alamat Sekolah</td>
-                                        <td>:</td>
-                                        <td>Jl. Ahmad Yani</td>
+                                        <td style="vertical-align: top">Alamat Sekolah</td>
+                                        <td style="vertical-align: top">:</td>
+                                        <td>{!! $alamat !!}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -93,7 +122,7 @@
                                     <tr>
                                         <td>Kelas</td>
                                         <td>:</td>
-                                        <td>4 A</td>
+                                        <td>{{ $kelas_siswa->kelas->nama_kelas }}</td>
                                     </tr>
                                     <tr>
                                         <td>Fase</td>
@@ -103,12 +132,12 @@
                                     <tr>
                                         <td>Semester</td>
                                         <td>:</td>
-                                        <td>2</td>
+                                        <td>{{ $kelas_siswa->kelas->semester }}</td>
                                     </tr>
                                     <tr>
                                         <td>Tahun Pelajaran</td>
                                         <td>:</td>
-                                        <td>2024/2025</td>
+                                        <td>{{ $kelas_siswa->kelas->tahun_ajaran }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -123,18 +152,20 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="text-center">1</td>
-                                            <td>Pendidikan Agama dan Budi Pekerti</td>
-                                            <td class="text-center">83</td>
-                                            <td>
-                                                <ol>
-                                                    <li>Catatan TP pertama</li>
-                                                    <li>Catatan TP kedua</li>
-                                                    <li>Catatan TP ketiga</li>
-                                                </ol>
-                                            </td>
-                                        </tr>
+                                        @foreach ($nilai_list as $key => $item)    
+                                            <tr>
+                                                <td class="text-center">{{ $key+1 }}</td>
+                                                <td>{{ $item->mapel->nama }}</td>
+                                                <td class="text-center">{{ $item->nilai_rapor }}</td>
+                                                <td>
+                                                    <ol>
+                                                        <li>{{ $item->catatan_max_tp }}</li>
+                                                        <li>{{ $item->catatan_min_tp }}</li>
+                                                    </ol>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+{{-- 
                                         <tr>
                                             <td class="text-center">2</td>
                                             <td>Pendidikan Agama Pancasila</td>
@@ -159,6 +190,7 @@
                                                 </ol>
                                             </td>
                                         </tr>
+  --}}
                                     </tbody>
                                 </table>
 

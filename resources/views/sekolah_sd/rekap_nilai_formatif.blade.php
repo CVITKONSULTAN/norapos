@@ -282,10 +282,10 @@
                                 @endforeach
                                 <td class="text-center">100</td> 
                                 <td class="text-center">
-                                    @if ($k == 0)
-                                        <i class="fa fa-times unchecked"></i>
-                                    @else
+                                    @if (!empty($item->catatan_max_tp) && !empty($item->catatan_min_tp))
                                         <i class="fa fa-check checked"></i>
+                                    @else
+                                        <i class="fa fa-times unchecked"></i>
                                     @endif
                                 </td> 
                                 <td>

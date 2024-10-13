@@ -22,6 +22,13 @@ class NilaiSiswa extends Model
         'nilai_sumatif',
         'nilai_akhir_sumatif',
         'nilai_rapor',
+        
+        'kolom_max_tp',
+        'nilai_max_tp',
+        'catatan_max_tp',
+        'kolom_min_tp',
+        'nilai_min_tp',
+        'catatan_min_tp',
     ];
     
     function siswa(){

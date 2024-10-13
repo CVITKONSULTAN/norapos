@@ -14,5 +14,9 @@ class Kelas extends Model
         'semester',
         'nama_kelas',
     ];
+
+    public static function getGroupBy($column){
+        return self::groupBy($column)->select($column)->get()->pluck($column);
+    }
     
 }

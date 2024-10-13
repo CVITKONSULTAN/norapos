@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use \App\Models\Sekolah\Kelas;
+use \App\Models\Sekolah\NilaiSiswa;
+use \App\Models\Sekolah\Mapel;
+use \App\Models\Sekolah\KelasSiswa;
+
+
 class SekolahSDController extends Controller
 {
     function dashboard(Request $request){
@@ -33,7 +39,27 @@ class SekolahSDController extends Controller
     // }
     
     function data_rekap_nilai_index(Request $request){
-        return view('sekolah_sd.rekap_nilai_formatif');
+        
+        $filter = $request->all();
+
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
+        $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+        $data['mapel'] = Mapel::all();
+
+        $data['mapel_choices'] = $data['mapel']->first();
+        if(isset($filter['mapel_id'])){
+            $data['mapel_choices'] = $data['mapel']->where('id',$filter['mapel_id'])->first();
+        }
+        // dd($data['mapel_choices']);
+
+        $data['list_data'] = NilaiSiswa::with([
+            'siswa'=>function($q){
+                return $q->select('id','nama');
+            },
+        ])->get();
+        // dd($data['list_data']);
+        return view('sekolah_sd.rekap_nilai_formatif',$data);
     }
     function data_rekap_nilai_sumatif_index(Request $request){
         return view('sekolah_sd.rekap_nilai_sumatif');

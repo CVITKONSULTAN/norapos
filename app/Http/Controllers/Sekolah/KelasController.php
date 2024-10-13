@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 
 use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\NilaiSiswa;
+use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
 use DataTables;
 
@@ -95,7 +96,8 @@ class KelasController extends Controller
                 isset($input['insert']) &&
                 $input['insert'] == 1
             ){
-                KelasSiswa::create($input);
+                $k = KelasSiswa::create($input);
+                $this->storeKelasMapel($k);
                 return ['success'=>true,'msg'=>'Data berhasil disimpan'];
             }
             if(isset($input['update']) && $input['update'] == 1){
@@ -196,6 +198,23 @@ class KelasController extends Controller
         $query = Kelas::query();
         return DataTables::of($query)
         ->make(true);
+    }
+
+    function storeKelasMapel($k){
+        try{
+            $mapel = Mapel::all();
+            foreach($mapel as $item){
+                NilaiSiswa::create([
+                    'siswa_id'=> $k->siswa_id,
+                    'kelas_id'=> $k->kelas_id,
+                    'mapel_id'=> $item->id
+                ]);
+            }
+            return ['success'=>true,'msg'=>'Data berhasil dihapus'];
+        } catch(Exception $e){
+            $msg = $e->getMessage();
+            return ['success'=>false,'msg'=>$msg];
+        }
     }
 
 }

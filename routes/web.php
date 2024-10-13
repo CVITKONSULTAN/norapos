@@ -141,6 +141,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('data-rekap-nilai',"SekolahSDController@data_rekap_nilai_index")
         ->name('sekolah_sd.rekap_nilai.index');
+        Route::get('data-rekap-nilai/{id}/show',"Sekolah\NilaiSiswaController@showNilaiFormatif")
+        ->name('sekolah_sd.rekap_nilai.show');
+        Route::post('data-rekap-nilai',"Sekolah\NilaiSiswaController@storeNilaiFormatif")
+        ->name('sekolah_sd.rekap_nilai.store');
+
         Route::get('data-rekap-nilai-sumatif',"SekolahSDController@data_rekap_nilai_sumatif_index")
         ->name('sekolah_sd.rekap_nilai_sumatif.index');
 

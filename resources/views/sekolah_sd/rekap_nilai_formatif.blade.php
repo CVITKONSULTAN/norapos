@@ -391,6 +391,7 @@
                 }
                 $("#form_nilai_formatif button[type=submit]").removeAttr('disabled')
                 $("#form_nilai_formatif").trigger("reset"); // to reset form input fields
+                window.location.reload();
                 $("#editor_modal").modal("hide");
             },
             error: function(e) {
@@ -449,6 +450,7 @@
                 }
                 $("#form_catan_penilaian button[type=submit]").removeAttr('disabled')
                 $("#form_catan_penilaian").trigger("reset"); // to reset form input fields
+                window.location.reload();
                 $("#editor_modal_catatan_penilaian").modal("hide");
             },
             error: function(e) {

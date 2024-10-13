@@ -51,18 +51,35 @@ class SekolahSDController extends Controller
         if(isset($filter['mapel_id'])){
             $data['mapel_choices'] = $data['mapel']->where('id',$filter['mapel_id'])->first();
         }
-        // dd($data['mapel_choices']);
 
         $data['list_data'] = NilaiSiswa::with([
             'siswa'=>function($q){
                 return $q->select('id','nama');
             },
         ])->get();
-        // dd($data['list_data']);
+
         return view('sekolah_sd.rekap_nilai_formatif',$data);
     }
     function data_rekap_nilai_sumatif_index(Request $request){
-        return view('sekolah_sd.rekap_nilai_sumatif');
+        $filter = $request->all();
+
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
+        $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+        $data['mapel'] = Mapel::all();
+
+        $data['mapel_choices'] = $data['mapel']->first();
+        if(isset($filter['mapel_id'])){
+            $data['mapel_choices'] = $data['mapel']->where('id',$filter['mapel_id'])->first();
+        }
+
+        $data['list_data'] = NilaiSiswa::with([
+            'siswa'=>function($q){
+                return $q->select('id','nama');
+            },
+        ])->get();
+        
+        return view('sekolah_sd.rekap_nilai_sumatif',$data);
     }
 
     function data_ekskul_index(Request $request){

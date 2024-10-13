@@ -46,8 +46,22 @@ class NilaiSiswaController extends Controller
             $update['nilai_tp'] = json_encode($nilai_tp);
         }
 
-        $update['catatan_max_tp'] = $input['catatan_max_tp'] ?? "";
-        $update['catatan_min_tp'] = $input['catatan_min_tp'] ?? "";
+        if(isset($input['catatan_max_tp']))
+        $update['catatan_max_tp'] = $input['catatan_max_tp'];
+
+        if(isset($input['catatan_min_tp']))
+        $update['catatan_min_tp'] = $input['catatan_min_tp'];
+
+        if(isset($input['nilai_sumatif'])){
+            $nilai_sumatif = $input['nilai_sumatif'] ?? [];
+            $update['nilai_sumatif'] = json_encode($nilai_sumatif);
+
+            $update['sumatif_tes'] = $input['sumatif_tes'] ?? 0;
+            $update['sumatif_non_tes'] = $input['sumatif_non_tes'] ?? 0;
+            
+            $update['nilai_akhir_sumatif'] = $input['nilai_akhir_sumatif'] ?? 0;
+            $update['nilai_rapor'] = $input['nilai_rapor'] ?? 0;
+        }
 
         $data->update($update);
 

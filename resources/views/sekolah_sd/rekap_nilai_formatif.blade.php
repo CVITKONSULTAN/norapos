@@ -184,61 +184,57 @@
 </div>
 
 <section class="content">
-<div class="row">
-    <div class="col-md-12">
-    @component('components.filters', ['title' => __('report.filters')])
-    
-        <div class="col-md-2">
-            <div class="form-group">
-                <label>Tahun Ajaran</label>
-                <select class="form-control" name="tahun_ajaran">
-                    @foreach ($tahun_ajaran as $item)
-                        <option>{{ $item }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <label>Semester</label>
-                <select class="form-control" name="tahun_ajaran">
-                    @foreach ($semester as $item)
-                        <option>{{ $item }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <label>Mata Pelajaran</label>
-                <select class="form-control" name="mapel">
-                    @foreach ($mapel as $item)
-                        <option>{{ $item->nama }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <label>Kelas</label>
-                <select class="form-control" name="kelas">
-                    @foreach ($nama_kelas as $item)
-                        <option>{{ $item }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div style="margin-top: 2.5rem;">
-                <button class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
-                <button class="btn btn-primary" id="reset">RESET</button>
-            </div>
-        </div>
 
-       
-    @endcomponent
-    </div>
-</div>
+    <form>
+        @component('components.filters', ['title' => __('report.filters')])
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Tahun Ajaran</label>
+                    <select required class="form-control" name="tahun_ajaran">
+                        @foreach ($tahun_ajaran as $item)
+                            <option>{{ $item }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Semester</label>
+                    <select required class="form-control" name="semester">
+                        @foreach ($semester as $item)
+                            <option>{{ $item }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Mata Pelajaran</label>
+                    <select required class="form-control" name="mapel_id">
+                        @foreach ($mapel as $item)
+                            <option value="{{$item->id}}">{{ $item->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Kelas</label>
+                    <select required class="form-control" name="nama_kelas">
+                        @foreach ($nama_kelas as $item)
+                            <option>{{ $item }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div style="margin-top: 2.5rem;">
+                    <button type="submit" class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
+                    {{-- <button class="btn btn-primary" id="reset">RESET</button> --}}
+                </div>
+            </div>
+        @endcomponent
+    </form>
 
 
     <div class="row">

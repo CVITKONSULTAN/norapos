@@ -48,6 +48,21 @@ class SekolahSDController extends Controller
         $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
         $data['mapel'] = Mapel::all();
 
+        if(
+            empty($data['tahun_ajaran']) ||
+            empty($data['semester']) ||
+            empty($data['nama_kelas']) ||
+            empty($data['mapel'])
+        ){
+            return redirect()
+            ->route('sekolah_sd.dashboard')
+            ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
+        }
+
+        $filter['tahun_ajaran'] = $filter['tahun_ajaran'] ?? $data['tahun_ajaran']->first();
+        $filter['semester'] = $filter['semester'] ?? $data['semester']->first();
+        $filter['nama_kelas'] = $filter['nama_kelas'] ?? $data['nama_kelas']->first();
+
         $data['mapel_choices'] = $data['mapel']->first();
         if(isset($filter['mapel_id'])){
             $data['mapel_choices'] = $data['mapel']->where('id',$filter['mapel_id'])->first();
@@ -57,11 +72,31 @@ class SekolahSDController extends Controller
             'siswa'=>function($q){
                 return $q->select('id','nama');
             },
-        ])->get();
+        ])
+        ->where([
+            'mapel_id'=> $data['mapel_choices']->id
+        ]);
+
+        $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
+            if(isset($filter['tahun_ajaran'])){
+                $q->where('tahun_ajaran',$filter['tahun_ajaran']);
+            }
+            if(isset($filter['semester'])){
+                $q->where('semester',$filter['semester']);
+            }
+            if(isset($filter['nama_kelas'])){
+                $q->where('nama_kelas',$filter['nama_kelas']);
+            }
+            return $q;
+        });
+
+        $data['list_data'] = $data['list_data']->get();
 
         return view('sekolah_sd.rekap_nilai_formatif',$data);
     }
+
     function data_rekap_nilai_sumatif_index(Request $request){
+        
         $filter = $request->all();
 
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
@@ -69,6 +104,21 @@ class SekolahSDController extends Controller
         $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
         $data['mapel'] = Mapel::all();
 
+        if(
+            empty($data['tahun_ajaran']) ||
+            empty($data['semester']) ||
+            empty($data['nama_kelas']) ||
+            empty($data['mapel'])
+        ){
+            return redirect()
+            ->route('sekolah_sd.dashboard')
+            ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
+        }
+
+        $filter['tahun_ajaran'] = $filter['tahun_ajaran'] ?? $data['tahun_ajaran']->first();
+        $filter['semester'] = $filter['semester'] ?? $data['semester']->first();
+        $filter['nama_kelas'] = $filter['nama_kelas'] ?? $data['nama_kelas']->first();
+
         $data['mapel_choices'] = $data['mapel']->first();
         if(isset($filter['mapel_id'])){
             $data['mapel_choices'] = $data['mapel']->where('id',$filter['mapel_id'])->first();
@@ -78,7 +128,25 @@ class SekolahSDController extends Controller
             'siswa'=>function($q){
                 return $q->select('id','nama');
             },
-        ])->get();
+        ])
+        ->where([
+            'mapel_id'=> $data['mapel_choices']->id
+        ]);
+
+        $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
+            if(isset($filter['tahun_ajaran'])){
+                $q->where('tahun_ajaran',$filter['tahun_ajaran']);
+            }
+            if(isset($filter['semester'])){
+                $q->where('semester',$filter['semester']);
+            }
+            if(isset($filter['nama_kelas'])){
+                $q->where('nama_kelas',$filter['nama_kelas']);
+            }
+            return $q;
+        });
+
+        $data['list_data'] = $data['list_data']->get();
 
         return view('sekolah_sd.rekap_nilai_sumatif',$data);
     }

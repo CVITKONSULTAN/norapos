@@ -210,6 +210,8 @@ class SekolahSDController extends Controller
         ->with('kelas','siswa')
         ->first();
 
+        // dd($data['kelas_siswa']);
+
         $data['nilai_list'] = NilaiSiswa::where([
             'kelas_id'=> $kelas->id,
             'siswa_id'=> $siswa->id,

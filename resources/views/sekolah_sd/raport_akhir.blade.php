@@ -98,12 +98,12 @@
                                     <tr>
                                         <td>NISN</td>
                                         <td>:</td>
-                                        <td>{{ $kelas_siswa->siswa->nisn }}</td>
+                                        <td>{{ $kelas_siswa->siswa->nisn ?? "" }}</td>
                                     </tr>
                                     <tr>
                                         <td>Nama Peserta Didik</td>
                                         <td>:</td>
-                                        <td>{{ $kelas_siswa->siswa->nama }}</td>
+                                        <td>{{ $kelas_siswa->siswa->nama ?? "" }}</td>
                                     </tr>
                                     <tr>
                                         <td>Nama Sekolah</td>

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
+use Excel;
+
+use \App\Imports\MapelImport;
 use \App\Models\Sekolah\Mapel;
 
 class MapelController extends Controller
@@ -131,5 +134,22 @@ class MapelController extends Controller
             $msg = $e->getMessage();
             return ['success'=>false,'msg'=>$msg];
         }
+    }
+
+    public function import(Request $request) 
+    {
+        $business = $request->user()->business;
+        // dd($business);
+        Excel::import(
+            new MapelImport([
+                'business_id'=>$business->id,
+                'kategori'=>'wajib'
+            ]), 
+            request()->file('import_file')
+        );
+        
+        return redirect()
+        ->back()
+        ->with('success', 'All good!');
     }
 }

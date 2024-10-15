@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 
 use \App\Models\Sekolah\Siswa;
 use DataTables;
+use Excel;
 
+use \App\Imports\SiswaImport;
 class SiswaController extends Controller
 {
     /**
@@ -129,5 +131,18 @@ class SiswaController extends Controller
             $msg = $e->getMessage();
             return ['success'=>false,'msg'=>$msg];
         }
+    }
+
+    public function import(Request $request) 
+    {
+        $business = $request->user()->business;
+        Excel::import(
+            new SiswaImport(), 
+            request()->file('import_file')
+        );
+        
+        return redirect()
+        ->back()
+        ->with('success', 'All good!');
     }
 }

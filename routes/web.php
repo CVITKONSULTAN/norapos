@@ -122,6 +122,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.siswa.update');
         Route::delete('data-siswa/{id}',"Sekolah\SiswaController@destroy")
         ->name('sekolah_sd.siswa.delete');
+        Route::post('data-siswa/import',"Sekolah\SiswaController@import")
+        ->name('sekolah_sd.siswa.import');
 
         Route::get('data-mapel',"SekolahSDController@data_mapel_index")
         ->name('sekolah_sd.mapel.index');

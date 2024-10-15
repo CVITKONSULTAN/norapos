@@ -139,7 +139,6 @@ class MapelController extends Controller
     public function import(Request $request) 
     {
         $business = $request->user()->business;
-        // dd($business);
         Excel::import(
             new MapelImport([
                 'business_id'=>$business->id,

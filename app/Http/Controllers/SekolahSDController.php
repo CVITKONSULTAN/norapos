@@ -223,8 +223,8 @@ class SekolahSDController extends Controller
         // dd($data['kelas_siswa']);
 
         $data['nilai_list'] = NilaiSiswa::where([
-            'kelas_id'=> $kelas->id,
-            'siswa_id'=> $siswa->id,
+            'kelas_id'=> $data['kelas_siswa']->kelas_id,
+            'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
         ->with('mapel')
         ->get();

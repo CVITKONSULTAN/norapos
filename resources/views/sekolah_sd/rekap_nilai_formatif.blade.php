@@ -276,7 +276,7 @@
                                 @foreach ($tp as $j => $item_tp)
                                     <td class="text-center">{{ isset($nilai_tp[$j]) ? $nilai_tp[$j] : 0 }}</td> 
                                 @endforeach
-                                <td class="text-center">100</td> 
+                                <td class="text-center">{{ $item['nilai_akhir_tp'] }}</td> 
                                 <td class="text-center">
                                     @if (!empty($item->catatan_max_tp) && !empty($item->catatan_min_tp))
                                         <i class="fa fa-check checked"></i>

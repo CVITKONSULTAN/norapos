@@ -210,6 +210,16 @@ class SekolahSDController extends Controller
         ->with('kelas','siswa')
         ->first();
 
+        if(empty($data['kelas_siswa'])){
+            $data['kelas_siswa'] = KelasSiswa::first();
+            if(empty($data['kelas_siswa'])){
+                return redirect()->route('sekolah_sd.kelas.index')
+                ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+            }
+        }
+
+        
+
         // dd($data['kelas_siswa']);
 
         $data['nilai_list'] = NilaiSiswa::where([

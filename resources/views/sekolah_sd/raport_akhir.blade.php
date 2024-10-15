@@ -122,7 +122,7 @@
                                     <tr>
                                         <td>Kelas</td>
                                         <td>:</td>
-                                        <td>{{ $kelas_siswa->kelas->nama_kelas }}</td>
+                                        <td>{{ $kelas_siswa->kelas->nama_kelas ?? "" }}</td>
                                     </tr>
                                     <tr>
                                         <td>Fase</td>
@@ -132,12 +132,12 @@
                                     <tr>
                                         <td>Semester</td>
                                         <td>:</td>
-                                        <td>{{ $kelas_siswa->kelas->semester }}</td>
+                                        <td>{{ $kelas_siswa->kelas->semester ?? "" }}</td>
                                     </tr>
                                     <tr>
                                         <td>Tahun Pelajaran</td>
                                         <td>:</td>
-                                        <td>{{ $kelas_siswa->kelas->tahun_ajaran }}</td>
+                                        <td>{{ $kelas_siswa->kelas->tahun_ajaran ?? "" }}</td>
                                     </tr>
                                 </table>
                             </div>

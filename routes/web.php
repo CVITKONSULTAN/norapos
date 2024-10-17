@@ -178,10 +178,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('raport-tengah',"SekolahSDController@raport_tengah_index")
         ->name('sekolah_sd.raport_tengah.index');
+        Route::get('raport-tengah/{id}/print',"SekolahSDController@raport_tengah_print")
+        ->name('sekolah_sd.raport_tengah.print');
 
         Route::get('raport-akhir',"SekolahSDController@raport_akhir_index")
         ->name('sekolah_sd.raport_akhir.index');
-
         Route::get('raport-akhir/{id}/print',"SekolahSDController@raport_akhir_print")
         ->name('sekolah_sd.raport_akhir.print');
 

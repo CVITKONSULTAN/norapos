@@ -282,7 +282,8 @@
                         <div class="text-center" style="margin-top:10px;">
                             <button type="button" class="btn btn-primary">Simpan</button>
                             {{-- <button type="button" class="btn btn-warning">Ubah</button> --}}
-                            <button onclick="printDiv('printableArea')" type="button" class="btn btn-success">Cetak</button>
+                            {{-- <button onclick="printDiv('printableArea')" type="button" class="btn btn-success">Cetak</button> --}}
+                            <a href="{{ route('sekolah_sd.raport_tengah.print', $kelas_siswa->id ) }}" type="button" class="btn btn-success">Cetak</a>
                         </div>
                     </div>
                     <div class="tab-pane" id="ekskul">

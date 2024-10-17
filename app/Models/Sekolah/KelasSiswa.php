@@ -15,6 +15,9 @@ class KelasSiswa extends Model
     protected $fillable = [
         'siswa_id',
         'kelas_id',
+        'catatan_tengah',
+        'catatan_akhir',
+        'kesimpulan',
     ];
     
     function siswa(){

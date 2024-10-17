@@ -278,15 +278,14 @@ class SekolahSDController extends Controller
         return view('sekolah_sd.raport_akhir',$data);
     }
 
-    function raport_akhir_print(Request $request){
-
-        $filter = $request->all();
+    function raport_akhir_print(Request $request, Int $id){
+        
+        $data['kelas_siswa'] = KelasSiswa::findorfail($id);
 
         $data['business'] = $request->user()->business;
         $data['location'] = $data['business']->locations[0];
         $data['alamat'] = $data['location']->getLocationAddressAttribute();
 
-        $data['kelas_siswa'] = KelasSiswa::first();
         if(empty($data['kelas_siswa'])){
             return redirect()->route('sekolah_sd.kelas.index')
             ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
@@ -299,6 +298,29 @@ class SekolahSDController extends Controller
         ->with('mapel')
         ->get();
 
-        return view('sekolah_sd.prints.layout',$data);
+        return view('sekolah_sd.prints.akhir',$data);
+    }
+
+    function raport_tengah_print(Request $request, Int $id){
+        
+        $data['kelas_siswa'] = KelasSiswa::findorfail($id);
+
+        $data['business'] = $request->user()->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+
+        if(empty($data['kelas_siswa'])){
+            return redirect()->route('sekolah_sd.kelas.index')
+            ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+        }
+
+        $data['nilai_list'] = NilaiSiswa::where([
+            'kelas_id'=> $data['kelas_siswa']->kelas_id,
+            'siswa_id'=> $data['kelas_siswa']->siswa_id,
+        ])
+        ->with('mapel')
+        ->get();
+
+        return view('sekolah_sd.prints.tengah',$data);
     }
 }

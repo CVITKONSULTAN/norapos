@@ -13,6 +13,9 @@ class Kelas extends Model
         'tahun_ajaran',
         'semester',
         'nama_kelas',
+        'nama_wali_kelas',
+        'nbm_wali_kelas',
+        'wali_kelas_id',
     ];
 
     public static function getGroupBy($column){

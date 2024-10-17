@@ -184,8 +184,53 @@ class SekolahSDController extends Controller
 
     }
 
+    // function raport_tengah_index(Request $request){
+    //     return view('sekolah_sd.raport_tengah');
+    // }
     function raport_tengah_index(Request $request){
-        return view('sekolah_sd.raport_tengah');
+
+        $filter = $request->all();
+
+        $data['business'] = $request->user()->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // dd($data);
+
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
+        $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+
+        $kelas = Kelas::first();
+        $siswa = Siswa::first();
+
+        $data['kelas_siswa'] = KelasSiswa::where([
+            'kelas_id'=> $kelas->id,
+            'siswa_id'=> $siswa->id,
+        ])
+        ->with('kelas','siswa')
+        ->first();
+
+        if(empty($data['kelas_siswa'])){
+            $data['kelas_siswa'] = KelasSiswa::first();
+            if(empty($data['kelas_siswa'])){
+                return redirect()->route('sekolah_sd.kelas.index')
+                ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+            }
+        }
+
+        
+
+        // dd($data['kelas_siswa']);
+
+        $data['nilai_list'] = NilaiSiswa::where([
+            'kelas_id'=> $data['kelas_siswa']->kelas_id,
+            'siswa_id'=> $data['kelas_siswa']->siswa_id,
+        ])
+        ->with('mapel')
+        ->get();
+        // dd($data['nilai_list']);
+
+        return view('sekolah_sd.raport_tengah',$data);
     }
     function raport_akhir_index(Request $request){
 
@@ -231,5 +276,29 @@ class SekolahSDController extends Controller
         // dd($data['nilai_list']);
 
         return view('sekolah_sd.raport_akhir',$data);
+    }
+
+    function raport_akhir_print(Request $request){
+
+        $filter = $request->all();
+
+        $data['business'] = $request->user()->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+
+        $data['kelas_siswa'] = KelasSiswa::first();
+        if(empty($data['kelas_siswa'])){
+            return redirect()->route('sekolah_sd.kelas.index')
+            ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+        }
+
+        $data['nilai_list'] = NilaiSiswa::where([
+            'kelas_id'=> $data['kelas_siswa']->kelas_id,
+            'siswa_id'=> $data['kelas_siswa']->siswa_id,
+        ])
+        ->with('mapel')
+        ->get();
+
+        return view('sekolah_sd.prints.layout',$data);
     }
 }

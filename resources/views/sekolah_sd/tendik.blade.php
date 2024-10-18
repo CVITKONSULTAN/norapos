@@ -65,7 +65,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    {{-- <tr>
                                         <td>1</td>
                                         <td>123</td>
                                         <td>Juliani Okta Farida</td>
@@ -93,7 +93,7 @@
                                                 Hapus
                                             </a>
                                         </td>
-                                    </tr>
+                                    </tr> --}}
                                 </tbody>
                             </table>
                         </div>
@@ -110,116 +110,129 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
-    <script type="text/javascript">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
+<script type="text/javascript">
 
-        $(document).ready( function(){
-            product_table = $('#product_table').DataTable({
-                columnDefs: [ {
-                    "targets": [0],
-                    "orderable": false,
-                    "searchable": false
-                } ],
-                // processing: true,
-                // serverSide: true,
-                // "ajax": {
-                //     "url": "/reservasi/data",
-                //     "data": function ( d ) {
-                //         d.datatable = 1;
-                //         d.date = $("#tanggal_filter").val();
-
-                //         d = __datatable_ajax_callback(d);
-                //     }
-                // },
-                // columns: [
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                //     { data: 'ID'  },
-                // ]
-            });
-            // Array to track the ids of the details displayed rows
-            var detailRows = [];
-
-            $('table#product_table tbody').on('click', 'a.delete-product', function(e){
-                e.preventDefault();
-                swal({
-                  title: LANG.sure,
-                  icon: "warning",
-                  buttons: true,
-                  dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        var href = $(this).attr('href');
-                        $.ajax({
-                            method: "DELETE",
-                            url: href,
-                            dataType: "json",
-                            success: function(result){
-                                if(result.success == true){
-                                    toastr.success(result.msg);
-                                    product_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            }
-                        });
+    $(document).ready( function(){
+        product_table = $('#product_table').DataTable({
+            processing: true,
+            serverSide: true,
+            "ajax": {
+                "url": "{{ route('sekolah_sd.tendik.data') }}",
+            },
+            columns: [
+                { searchable: false, data: 'id'  },
+                { data: 'nip'  },
+                { data: 'nama'  },
+                { 
+                    data: 'tempat_lahir',
+                    render:(data,type,row)=> {
+                        const tgl_lahir = moment(row.tanggal_lahir).format("DD/MM/YYYY");
+                        return `${row.tempat_lahir}, ${tgl_lahir}`;
                     }
-                });
-            });
-
-            $(document).on('click', '#delete-selected', function(e){
-                e.preventDefault();
-                var selected_rows = getSelectedRows();
-                
-                if(selected_rows.length > 0){
-                    $('input#selected_rows').val(selected_rows);
-                    swal({
-                        title: LANG.sure,
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    }).then((willDelete) => {
-                        if (willDelete) {
-                            $('form#mass_delete_form').submit();
-                        }
-                    });
-                } else{
-                    $('input#selected_rows').val('');
-                    swal('@lang("lang_v1.no_row_selected")');
-                }    
-            });
-
-            $("#reset").click(()=>{
-                $("#tanggal_filter").val("").trigger('change');
-            })
-
-            $(document).on('change', 
-                '#tanggal_filter', 
-                function() {
-                    product_table.ajax.reload();
-            });
-
-
+                },
+                { data: 'alamat'  },
+                { data: 'no_hp'  },
+                { data: 'jenis_kelamin'  },
+                { data: 'bidang_studi'  },
+                { data: 'status'  },
+                { data: 'keterangan'  },
+                { 
+                    data: 'foto',
+                    render:(data)=> {
+                        if(!data)
+                        return '';
+                        return `<img width="50" height="50" src="${data}" />`;
+                    }
+                },
+                { 
+                    searchable: false,
+                    data: 'id',
+                    className:"text-center",
+                    render:(data)=> {
+                        const template = `
+                            <a 
+                                class="btn btn-primary btn-xs" 
+                                href="{{ route('sekolah_sd.tendik.index') }}/${data}/edit"
+                                target="_blank"
+                            >
+                                Edit
+                            </a>
+                            <a 
+                                class="btn btn-danger btn-xs delete-product" 
+                                href="{{ route('sekolah_sd.tendik.index') }}/${data}"
+                                target="_blank"
+                            >
+                                Hapus
+                            </a>
+                        `
+                        return template;
+                    }
+                },
+            ]
         });
 
-        function getSelectedRows() {
-            var selected_rows = [];
-            var i = 0;
-            $('.row-select:checked').each(function () {
-                selected_rows[i++] = $(this).val();
+        $('table#product_table tbody').on('click', 'a.delete-product', function(e){
+            e.preventDefault();
+            swal({
+              title: LANG.sure,
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).attr('href');
+                    $.ajax({
+                        method: "DELETE",
+                        url: href,
+                        dataType: "json",
+                        success: function(result){
+                            if(result.success == true){
+                                toastr.success(result.msg);
+                                product_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        }
+                    });
+                }
             });
+        });
 
-            return selected_rows; 
-        }
+        $(document).on('click', '#delete-selected', function(e){
+            e.preventDefault();
+            var selected_rows = getSelectedRows();
+            
+            if(selected_rows.length > 0){
+                $('input#selected_rows').val(selected_rows);
+                swal({
+                    title: LANG.sure,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $('form#mass_delete_form').submit();
+                    }
+                });
+            } else{
+                $('input#selected_rows').val('');
+                swal('@lang("lang_v1.no_row_selected")');
+            }    
+        });
 
-    </script>
+
+    });
+
+    function getSelectedRows() {
+        var selected_rows = [];
+        var i = 0;
+        $('.row-select:checked').each(function () {
+            selected_rows[i++] = $(this).val();
+        });
+
+        return selected_rows; 
+    }
+
+</script>
 @endsection

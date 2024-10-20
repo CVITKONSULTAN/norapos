@@ -51,17 +51,17 @@
             class="hidden md:flex justify-between items-center gap-6 lg:gap-12"
           >
             <a
-              href="/peta"
+              href="/"
               class="text-gray-800 hover:text-[#286D6B] transition-colors"
               >Home</a
             >
             <a
-              href="/peta"
+              href="/"
               class="text-gray-800 hover:text-[#286D6B] transition-colors"
               >About Us</a
             >
             <a
-              href="/peta"
+              href="/"
               class="text-gray-800 hover:text-[#286D6B] transition-colors"
               >Contact</a
             >

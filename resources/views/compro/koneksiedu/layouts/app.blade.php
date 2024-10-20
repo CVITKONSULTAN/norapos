@@ -42,7 +42,7 @@
           class="container mx-auto px-4 md:px-10 py-4 md:py-5 flex justify-between items-center"
         >
           <img
-            src="./assets/images/logo.png"
+            src="/compro/koneksiedu/assets/images/logo.png"
             class="w-40 md:w-48"
             alt="KoneksiEdu Logo"
           />
@@ -66,7 +66,7 @@
               >Contact</a
             >
             <a
-              href="/peta"
+              href="/login"
               class="text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-4 lg:px-8 rounded-md"
               >Login</a
             >
@@ -132,7 +132,7 @@
           </div>
         </div>
         <img
-        src="./assets/images/logowhite.png"
+        src="/compro/koneksiedu/assets/images/logowhite.png"
         class="w-64 h-18 mt-8"
         alt="Kurikulum Siswa"
       />

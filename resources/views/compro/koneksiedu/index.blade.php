@@ -7,7 +7,7 @@
   class="hero relative min-h-[50vh] md:min-h-screen flex flex-col md:flex-row justify-center items-center text-center px-6 md:px-12 py-6"
 >
 <div class="flex flex-col items-center md:items-start">
-  <img src="./assets/images/herotitle.png" class="h-40" alt="Hero Guru" />
+  <img src="/compro/koneksiedu/assets/images/herotitle.png" class="h-40" alt="Hero Guru" />
   <p class="text-black w-[70%] mt-8 md:mb-12 text-center md:text-left">
     Dengan desain antarmuka yang sederhana dan mudah digunakan, KoneksiEdu,
     Sistem Informasi Manajemen Sekolah cerdas terintegrasi untuk analisis
@@ -23,7 +23,7 @@
 </div>
 
   <img
-    src="./assets/images/heroperson.png"
+    src="/compro/koneksiedu/assets/images/heroperson.png"
     class="h-auto max-h-[800px] md:max-h-[600px] md:mt-8"
     alt="hero person"
   />
@@ -39,7 +39,7 @@
           class="flex flex-col items-center bg-white py-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
         >
           <img
-            src="./assets/icons/guru.png"
+            src="/compro/koneksiedu/assets/icons/guru.png"
             class="w-16 h-16"
             alt="Ikon Guru"
           />
@@ -57,7 +57,7 @@
           class="flex flex-col items-center bg-white py-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
         >
           <img
-            src="./assets/icons/guru.png"
+            src="/compro/koneksiedu/assets/icons/guru.png"
             class="w-16 h-16"
             alt="Ikon Kepala Sekolah"
           />
@@ -75,7 +75,7 @@
           class="flex flex-col items-center bg-white py-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
         >
           <img
-            src="./assets/icons/orangtua.png"
+            src="/compro/koneksiedu/assets/icons/orangtua.png"
             class="w-16 h-16"
             alt="Ikon Orang Tua"
           />
@@ -93,7 +93,7 @@
           class="flex flex-col items-center bg-white py-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
         >
           <img
-            src="./assets/icons/yayasan.png"
+            src="/compro/koneksiedu/assets/icons/yayasan.png"
             class="w-16 h-16"
             alt="Ikon Dinas Pendidikan / Yayasan"
           />
@@ -111,7 +111,7 @@
           class="flex flex-col items-center bg-white py-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
         >
           <img
-            src="./assets/icons/siswa.png"
+            src="/compro/koneksiedu/assets/icons/siswa.png"
             class="w-16 h-16"
             alt="Ikon Siswa"
           />
@@ -129,7 +129,7 @@
           class="flex flex-col items-center bg-white py-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
         >
           <img
-            src="./assets/icons/siswa.png"
+            src="/compro/koneksiedu/assets/icons/siswa.png"
             class="w-16 h-16"
             alt="Ikon Staff Tata Usaha"
           />
@@ -150,7 +150,7 @@
       class="bg-[#286D6B] flex flex-col md:flex-row justify-between items-center px-6 md:px-10 py-10 gap-8"
     >
       <img
-        src="./assets/images/feature.png"
+        src="/compro/koneksiedu/assets/images/feature.png"
         class="w-full md:w-1/2 h-80 object-contain"
         alt="Fitur KoneksiEdu"
       />
@@ -196,7 +196,7 @@
           <ul class="text-[#60605F] space-y-2 mt-4">
             <li class="flex items-center gap-3 font-bold">
               <img
-                src="./assets/images/bullet.png"
+                src="/compro/koneksiedu/assets/images/bullet.png"
                 class="w-5"
                 alt="KoneksiEdu Logo"
               />
@@ -204,7 +204,7 @@
             </li>
             <li class="flex items-center gap-3 font-bold">
               <img
-                src="./assets/images/bullet.png"
+                src="/compro/koneksiedu/assets/images/bullet.png"
                 class="w-5"
                 alt="KoneksiEdu Logo"
               />
@@ -212,7 +212,7 @@
             </li>
             <li class="flex items-center gap-3 font-bold">
               <img
-                src="./assets/images/bullet.png"
+                src="/compro/koneksiedu/assets/images/bullet.png"
                 class="w-5"
                 alt="KoneksiEdu Logo"
               />
@@ -221,7 +221,7 @@
             </li>
             <li class="flex items-center gap-3 font-bold">
               <img
-                src="./assets/images/bullet.png"
+                src="/compro/koneksiedu/assets/images/bullet.png"
                 class="w-5"
                 alt="KoneksiEdu Logo"
               />
@@ -229,7 +229,7 @@
             </li>
             <li class="flex items-center gap-3 font-bold">
               <img
-                src="./assets/images/bullet.png"
+                src="/compro/koneksiedu/assets/images/bullet.png"
                 class="w-5"
                 alt="KoneksiEdu Logo"
               />
@@ -237,7 +237,7 @@
             </li>
             <li class="flex items-center gap-3 font-bold">
               <img
-                src="./assets/images/bullet.png"
+                src="/compro/koneksiedu/assets/images/bullet.png"
                 class="w-5"
                 alt="KoneksiEdu Logo"
               />Dukungan training dan support kepada sekolah
@@ -246,7 +246,7 @@
         </div>
       </div>
       <img
-        src="./assets/images/tentang.png"
+        src="/compro/koneksiedu/assets/images/tentang.png"
         class="w-[500px] h-[500px] hidden md:block"
         alt="Ikon Siswa"
       />
@@ -254,7 +254,7 @@
 
     <section class="flex flex-col flex-col-reverse md:flex-row items-end justify-between px-6 md:px-12 py-8">
       <img
-        src="./assets/images/download.png"
+        src="/compro/koneksiedu/assets/images/download.png"
         class="w-[600px] h-[400px]"
         alt="Download"
       />
@@ -269,12 +269,12 @@
 
           <div class="flex justify-start gap-8 items-center mt-8">
             <img
-            src="./assets/images/gplay.png"
+            src="/compro/koneksiedu/assets/images/gplay.png"
             class="w-48 h-18 cursor-pointer"
             alt="Ikon Siswa"
           />
             <img
-            src="./assets/images/kurikulum.png"
+            src="/compro/koneksiedu/assets/images/kurikulum.png"
             class="w-48 h-18"
             alt="Kurikulum Siswa"
           />

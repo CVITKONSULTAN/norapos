@@ -1,65 +1,66 @@
-<form class="row" action="{{route('sekolah_sd.tendik.store')}}" enctype="multipart/form-data" method="POST">
     @csrf
     <div class="form-group col-sm-6">
         <label>NIP</label>
-        <input minlength="6" required name="nip" class="form-control" />
+        <input value="{{$data['nip'] ?? ""}}" minlength="6" required name="nip" class="form-control" />
     </div>
     <div class="form-group col-sm-6">
         <label>Nama Lengkap</label>
-        <input required name="nama" class="form-control" />
+        <input value="{{$data['nama'] ?? ""}}" required name="nama" class="form-control" />
     </div>
     <div class="form-group col-sm-6">
         <label>Tempat lahir</label>
-        <input required name="tempat_lahir" class="form-control" />
+        <input value="{{$data['tempat_lahir'] ?? ""}}" required name="tempat_lahir" class="form-control" />
     </div>
     <div class="form-group col-sm-6">
         <label>Tanggal lahir</label>
-        <input required name="tanggal_lahir" type="date" class="form-control" />
+        <input value="{{$data['tanggal_lahir'] ?? ""}}" required name="tanggal_lahir" type="date" class="form-control" />
     </div>
     <div class="form-group col-sm-6">
         <label>Pendidikan Terakhir</label>
-        <input required name="pendidikan_terakhir" class="form-control" />
+        <input value="{{$data['pendidikan_terakhir'] ?? ""}}" required name="pendidikan_terakhir" class="form-control" />
     </div>
     <div class="form-group col-sm-6">
         <label>No. HP/Telepon</label>
-        <input required name="no_hp" maxlength="12" class="form-control" />
+        <input value="{{$data['no_hp'] ?? ""}}" required name="no_hp" maxlength="12" class="form-control" />
     </div>
     <div class="form-group col-sm-6">
         <label>Jenis kelamin</label>
         <select required class="form-control" name="jenis_kelamin">
-            <option value="laki-laki">Laki-laki</option>
-            <option value="perempuan">Perempuan</option>
+            <option {{$data['jenis_kelamin'] == "laki-laki" ? 'selected' : ''}} value="laki-laki">Laki-laki</option>
+            <option {{$data['jenis_kelamin'] == "perempuan" ? 'selected' : ''}} value="perempuan">Perempuan</option>
         </select>
     </div>
     <div class="form-group col-sm-6">
         <label>Nama Bidang Studi</label>
-        <input required name="bidang_studi" class="form-control" />
+        <input value="{{$data['bidang_studi'] ?? ""}}" required name="bidang_studi" class="form-control" />
     </div>
     <div class="form-group col-sm-12">
         <label>Status</label>
         <select required class="form-control" name="status">
-            <option value='tetap'>Tetap</option>
-            <option value='tidak tetap'>Tidak Tetap</option>
-            <option value='honorer'>Honorer</option>
-            <option value='kontrak'>Kontrak</option>
+            <option {{ $data['status'] == 'tetap' ? 'selected' : "" }} value='tetap'>Tetap</option>
+            <option {{ $data['status'] == 'tidak tetap' ? 'selected' : "" }} value='tidak tetap'>Tidak Tetap</option>
+            <option {{ $data['status'] == 'honorer' ? 'selected' : "" }} value='honorer'>Honorer</option>
+            <option {{ $data['status'] == 'kontrak' ? 'selected' : "" }} value='kontrak'>Kontrak</option>
         </select>
     </div>
     <div class="form-group col-sm-6">
         <label>Alamat</label>
-        <textarea rows="4" class="form-control" name="alamat"></textarea>
+        <textarea rows="4" class="form-control" name="alamat">{{ $data['alamat'] ?? "" }}</textarea>
     </div>
     <div class="form-group col-sm-6">
         <label>Keterangan lain</label>
-        <textarea rows="4" class="form-control" name="keterangan"></textarea>
+        <textarea rows="4" class="form-control" name="keterangan">{{ $data['keterangan'] ?? "" }}</textarea>
     </div>
     <div class="form-group col-sm-12">
         <label>Foto</label>
         <input 
         accept="image/*" 
         type="file" class="form-control" name="foto" />
+        @if($data['foto'])
+            <img src="{{ $data['foto'] }}" class="foto" />
+        @endif
     </div>
     <div class="text-right">
         <a href="{{route('sekolah_sd.tendik.index')}}" type="button" class="btn btn-danger">Kembali</a>
         <button class="btn btn-primary">Simpan</button>
     </div>
-</form>

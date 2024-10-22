@@ -66,7 +66,7 @@ class TenagaPendidikController extends Controller
      */
     public function store(Request $request)
     {
-        // try{
+        try{
             $input = $request->all();
             $validator = Validator::make($input, [
                 'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -108,12 +108,12 @@ class TenagaPendidikController extends Controller
             return redirect()
             ->route('sekolah_sd.tendik.index')
             ->with('message', 'success|Data berhasil disimpan');
-        // } catch(Exception $e){
-        //     $msg = $e->getMessage();
-        //     return redirect()
-        //     ->back()
-        //     ->with('message', "error|$msg");
-        // }
+        } catch(Exception $e){
+            $msg = $e->getMessage();
+            return redirect()
+            ->back()
+            ->with('message', "error|$msg");
+        }
     }
 
     /**
@@ -135,7 +135,8 @@ class TenagaPendidikController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data['data'] = TenagaPendidik::findorfail($id);
+        return view('sekolah_sd.input.tendik.edit',$data);
     }
 
     /**

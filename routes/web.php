@@ -166,6 +166,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.tendik.store');
         Route::get('data-tendik/data',"Sekolah\TenagaPendidikController@data")
         ->name('sekolah_sd.tendik.data');
+        Route::get('data-tendik/{id}/edit',"Sekolah\TenagaPendidikController@edit")
+        ->name('sekolah_sd.tendik.edit');
 
         Route::get('data-rekap-absen',"SekolahSDController@data_rekap_absen_index")
         ->name('sekolah_sd.rekap_absen.index');

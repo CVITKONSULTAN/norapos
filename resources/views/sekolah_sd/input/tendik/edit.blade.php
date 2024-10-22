@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', "Tambah Data Tenaga Pendidik")
+@section('title', "Ubah Data Tenaga Pendidik")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Tambah Data Tenaga Pendidik</h1>
+    <h1>Ubah Data Tenaga Pendidik</h1>
 </section>
 
 <!-- Main content -->
@@ -17,7 +17,7 @@
                 <div class="box-header with-border" style="cursor: pointer;">
                     <h3 class="box-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter">
-                        Tambah Data Tenaga Pendidik
+                        Ubah Data Tenaga Pendidik
                     </a>
                     </h3>
                 </div>

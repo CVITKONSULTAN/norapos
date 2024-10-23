@@ -232,7 +232,9 @@ class SekolahSDController extends Controller
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
-        ->with('mapel')
+        ->with(['mapel'=> function($q){
+            $q->whereNull('deleted_at');
+        }])
         ->get();
         // dd($data['nilai_list']);
 
@@ -277,7 +279,9 @@ class SekolahSDController extends Controller
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
-        ->with('mapel')
+        ->with(['mapel'=> function($q){
+            $q->whereNull('deleted_at');
+        }])
         ->get();
         // dd($data['nilai_list']);
 
@@ -301,7 +305,9 @@ class SekolahSDController extends Controller
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
-        ->with('mapel')
+        ->with(['mapel'=> function($q){
+            $q->whereNull('deleted_at');
+        }])
         ->get();
 
         return view('sekolah_sd.prints.akhir',$data);
@@ -324,7 +330,9 @@ class SekolahSDController extends Controller
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
-        ->with('mapel')
+        ->with(['mapel'=> function($q){
+            $q->whereNull('deleted_at');
+        }])
         ->get();
 
         return view('sekolah_sd.prints.tengah',$data);

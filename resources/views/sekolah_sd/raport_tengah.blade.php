@@ -155,7 +155,7 @@
                                         @foreach ($nilai_list as $key => $item)    
                                             <tr>
                                                 <td class="text-center">{{ $key+1 }}</td>
-                                                <td>{{ $item->mapel->nama }}</td>
+                                                <td>{{ $item->mapel->nama ?? "" }}</td>
                                                 <td class="text-center">{{ $item->nilai_rapor }}</td>
                                                 <td>
                                                     <ol>

@@ -19,6 +19,12 @@ class SekolahSDController extends Controller
     function kelas_index(Request $request){
         return view('sekolah_sd.ruang_kelas');
     }
+    function jurnal_kelas(Request $request){
+        $data['mapel'] = Mapel::all();
+        $data['kelas'] = Kelas::orderBy('id','desc')->get();
+        $data['tgl'] = \Carbon\Carbon::now()->format('Y-m-d');
+        return view('sekolah_sd.jurnal_kelas',$data);
+    }
 
     function data_siswa_index(Request $request){
         return view('sekolah_sd.siswa');

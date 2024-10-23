@@ -1149,6 +1149,17 @@ class AdminSidebarMenu
                 ]
             );
 
+            $menu->url(
+                action('SekolahSDController@jurnal_kelas'),
+                "Jurnal Kelas",
+                [
+                    'icon' => 'fa fas fa-address-book', 
+                    'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'jurnal-kelas' 
+                ]
+            );
+
             //Absensi dropdown
             if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
                 $menu->dropdown(

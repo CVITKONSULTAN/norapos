@@ -33,50 +33,92 @@
       }
     </style>
     @yield('styles')
+    
   </head>
   <body>
     <!-- Header / Navigation -->
-    <header>
-      <nav class="sticky top-0 w-full z-20 bg-white shadow-md">
-        <div
-          class="container mx-auto px-4 md:px-10 py-4 md:py-5 flex justify-between items-center"
-        >
-          <img
-            src="/compro/koneksiedu/assets/images/logo.png"
-            class="w-40 md:w-48"
-            alt="KoneksiEdu Logo"
-          />
-
+      <!-- Header / Navigation -->
+      <header>
+        <nav class="sticky top-0 w-full z-20 bg-[#FAF8F4] shadow-md">
           <div
-            class="hidden md:flex justify-between items-center gap-6 lg:gap-12"
+            class="mx-auto px-4 md:px-10 py-4 md:py-5 flex justify-between items-center"
           >
-            <a
-              href="/"
-              class="text-gray-800 hover:text-[#286D6B] transition-colors"
-              >Home</a
+            <img
+              src="/compro/koneksiedu/assets/images/logo.png"
+              class="w-40 md:w-48"
+              alt="KoneksiEdu Logo"
+            />
+  
+            <!-- Desktop Menu -->
+            <div
+              class="hidden md:flex justify-between items-center gap-6 lg:gap-12"
             >
-            <a
-              href="/"
-              class="text-gray-800 hover:text-[#286D6B] transition-colors"
-              >About Us</a
-            >
-            <a
-              href="/"
-              class="text-gray-800 hover:text-[#286D6B] transition-colors"
-              >Contact</a
-            >
-            <a
-              href="/login"
-              class="text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-4 lg:px-8 rounded-md"
-              >Login</a
-            >
+              <a
+                href="/"
+                class="text-gray-800 hover:text-[#286D6B] transition-colors"
+                >Home</a
+              >
+              <a
+                href="/about"
+                class="text-gray-800 hover:text-[#286D6B] transition-colors"
+                >About Us</a
+              >
+              <a
+                href="/contact"
+                class="text-gray-800 hover:text-[#286D6B] transition-colors"
+                >Contact</a
+              >
+              <a
+                href="/login"
+                class="text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-4 lg:px-8 rounded-md"
+                >Login</a
+              >
+            </div>
+  
+            <!-- Mobile Menu Button -->
+            <button id="burgerMenu" class="md:hidden text-[#286D6B] text-2xl">
+              ☰
+            </button>
           </div>
-
-          <!-- Mobile Menu Button -->
-          <button class="md:hidden text-[#286D6B]">☰</button>
-        </div>
-      </nav>
-    </header>
+  
+          <!-- Mobile Navigation Menu -->
+          <div
+            id="mobileMenu"
+            class="mobile-menu bg-[#FAF8F4] max-h-0 overflow-hidden"
+          >
+            <ul class="flex flex-col items-center space-y-4 py-6">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-800 hover:text-[#286D6B] transition-colors"
+                  >Home</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-800 hover:text-[#286D6B] transition-colors"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-800 hover:text-[#286D6B] transition-colors"
+                  >Contact</a
+                >
+              </li>
+              <li class="w-full px-4">
+                <a
+                  href="#"
+                  class="flex items-center justify-center text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-8 rounded-md"
+                  >Login</a
+                >
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
 
 
     @yield('main')

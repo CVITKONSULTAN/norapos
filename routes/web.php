@@ -91,6 +91,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
+        Route::get('jurnal-kelas',"SekolahSDController@jurnal_kelas")
+        ->name('sekolah_sd.jurnal_kelas.index');
+        
         Route::get('dashboard',"SekolahSDController@dashboard")
         ->name('sekolah_sd.dashboard');
 

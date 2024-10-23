@@ -88,9 +88,9 @@
                                 <input class="form-control" type="date" required name="tanggal" value="{{$tgl}}" />
                             </div>
                         </div>
-                        <div class="text-right" style="margin-bottom:20px;">
+                        {{-- <div class="text-right" style="margin-bottom:20px;">
                             <button onclick="simpanData()" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
-                        </div>
+                        </div> --}}
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
@@ -106,6 +106,7 @@
                                 <tbody></tbody>
                             </table>
                         </div>
+                        <button onclick="simpanData()" class="btn btn-primary btn-lg btn-block" style="margin-top: 20px;"><i class="fa fa-save"></i> Simpan</button>
                     </div>
                 </div>
             </div>

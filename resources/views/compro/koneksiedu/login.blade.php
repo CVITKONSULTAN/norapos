@@ -20,6 +20,9 @@
         background-size: cover;
         background-position: center;
       }
+      .help-block{
+        color: red;
+      }
       /* Background image for mobile devices */
       @media (max-width: 768px) {
         section.hero {

@@ -11,7 +11,7 @@
       name="keywords"
       content="platform pendidikan, administrasi sekolah, KoneksiEdu, manajemen sekolah, pendidikan Indonesia"
     />
-    <title>KoneksiEdu - Platform Pendidikan Terintegrasi</title>
+    <title>Login KoneksiEdu - Platform Pendidikan Terintegrasi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       /* Default background image for desktop */
@@ -173,14 +173,26 @@
           <div class="flex flex-col items-start gap-4 mt-4 w-full">
             <input
               type="text"
+              name="username"
               placeholder="Masukkan username sekolah anda"
               class="w-full p-3 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-[#286D6B]"
             />
+            @if ($errors->has('username'))
+                <span class="help-block">
+                    <strong>{{ $errors->first('username') }}</strong>
+                </span>
+            @endif
             <input
+              name="password"
               type="password"
               placeholder="Masukkan password anda"
               class="w-full p-3 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-[#286D6B]"
             />
+            @if ($errors->has('password'))
+                <span class="help-block">
+                    <strong>{{ $errors->first('password') }}</strong>
+                </span>
+            @endif
           </div>
 
           <!-- Remember me checkbox and forgot password link -->

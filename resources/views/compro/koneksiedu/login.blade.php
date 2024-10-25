@@ -160,9 +160,10 @@
         />
 
         <!-- Login form container -->
-        <div
+        <form method="POST" action="{{ route('login') }}" id="login-form"
           class="bg-[#538A89] px-4 py-6 md:p-8 rounded-md text-white mt-[-12px] md:mt-[-16px] shadow-lg max-w-md w-full relative z-10"
         >
+          {{ csrf_field() }}
           <!-- Login title -->
           <h3 class="font-bold text-2xl md:text-3xl text-center mb-4">
             Log in to KoneksiEdu
@@ -193,16 +194,19 @@
 
           <!-- Login button -->
           <button
+            type="submit"
             class="mt-6 bg-[#CBA523] text-white font-bold py-3 px-6 w-full rounded-md hover:opacity-80 transition duration-200"
           >
             Masuk
           </button>
-          <button
+          <a
+            type="button"
+            href="https://wa.me/6285157815452"
             class="mt-2 bg-white text-[#CBA523] font-bold py-3 px-6 w-full rounded-md hover:opacity-80 transition duration-200"
           >
             Request Demo Sistem
-          </button>
-        </div>
+          </a>
+        </form>
       </section>
     </div>
     <script>

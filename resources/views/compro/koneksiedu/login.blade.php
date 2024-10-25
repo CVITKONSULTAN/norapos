@@ -199,13 +199,13 @@
           >
             Masuk
           </button>
-          <a
+          <button
             type="button"
-            href="https://wa.me/6285157815452"
+            onclick="gotoLink()"
             class="mt-2 bg-white text-[#CBA523] font-bold py-3 px-6 w-full rounded-md hover:opacity-80 transition duration-200"
           >
             Request Demo Sistem
-          </a>
+          </button>
         </form>
       </section>
     </div>
@@ -229,6 +229,10 @@
           mobileMenu.style.maxHeight = "0px"; // Hide mobile menu
         }
       });
+
+      const gotoLink = () => {
+        window.location.href = "https://wa.me/6285157815452";
+      }
     </script>
   </body>
 </html>

@@ -192,7 +192,7 @@
                     <label>Tahun Ajaran</label>
                     <select required class="form-control" name="tahun_ajaran">
                         @foreach ($tahun_ajaran as $item)
-                            <option>{{ $item }}</option>
+                            <option {{ isset($filter['tahun_ajaran']) && $filter['tahun_ajaran'] == $item ? 'selected' : ''}}>{{ $item }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -202,7 +202,7 @@
                     <label>Semester</label>
                     <select required class="form-control" name="semester">
                         @foreach ($semester as $item)
-                            <option>{{ $item }}</option>
+                            <option {{ isset($filter['semester']) && $filter['semester'] == $item ? 'selected' : ''}} value="{{ $item }}">{{ $item }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -212,7 +212,7 @@
                     <label>Mata Pelajaran</label>
                     <select required class="form-control" name="mapel_id">
                         @foreach ($mapel as $item)
-                            <option value="{{$item->id}}">{{ $item->nama }}</option>
+                            <option {{ isset($filter['mapel_id']) && $filter['mapel_id'] == $item->id ? 'selected' : ''}} value="{{$item->id}}">{{ $item->nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -222,7 +222,7 @@
                     <label>Kelas</label>
                     <select required class="form-control" name="nama_kelas">
                         @foreach ($nama_kelas as $item)
-                            <option>{{ $item }}</option>
+                            <option {{ isset($filter['nama_kelas']) && $filter['nama_kelas'] == $item ? 'selected' : ''}} value="{{ $item }}">{{ $item }}</option>
                         @endforeach
                     </select>
                 </div>

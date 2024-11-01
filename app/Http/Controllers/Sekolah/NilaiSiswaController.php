@@ -10,15 +10,16 @@ use \App\Models\Sekolah\NilaiSiswa;
 class NilaiSiswaController extends Controller
 {
     function showNilaiFormatif($id){
-        $data = NilaiSiswa::find($id);
-        if(empty($data))
-        return ['success'=>false,'mesage'=>"Data not found"];
 
-        $data = $data->with([
+        $data = NilaiSiswa::with([
             'siswa'=>function($q){
                 return $q->select('id','nama','nisn');
             }
-        ])->first();
+        ])->find($id);
+
+        if(empty($data))
+        return ['success'=>false,'mesage'=>"Data not found"];
+
         return ['success'=>true,'mesage'=>"OK","data"=>$data];
 
     }

@@ -435,7 +435,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             },
             error: function(e) {
                 console.log(e);
-            }
+            },
+            complete:()=>{
+                    $(this).find('button').removeAttr('disabled')
+                }
             });
         }));
 
@@ -461,7 +464,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             },
             error: function(e) {
                 console.log(e);
-            }
+            },
+            complete:()=>{
+                    $(this).find('button').removeAttr('disabled')
+                }
             });
         }));
 

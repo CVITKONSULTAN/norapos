@@ -18,6 +18,10 @@ class KelasSiswa extends Model
         'catatan_tengah',
         'catatan_akhir',
         'kesimpulan',
+        'hadir',
+        'izin',
+        'sakit',
+        'tanpa_keterangan',
     ];
     
     function siswa(){

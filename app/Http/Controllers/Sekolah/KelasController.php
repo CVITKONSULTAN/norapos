@@ -29,7 +29,11 @@ class KelasController extends Controller
         $query = KelasSiswa::select(
             'id',
             'siswa_id',
-            'kelas_id',    
+            'kelas_id',
+            'hadir',
+            'izin',
+            'sakit',
+            'tanpa_keterangan',
         )
         // ->with('siswa','kelas');
         ->with([

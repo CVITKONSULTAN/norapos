@@ -174,7 +174,8 @@ class SekolahSDController extends Controller
     }
 
     function data_rekap_absen_index(Request $request){
-        return view('sekolah_sd.rekap_absen');
+        $data['kelas'] = Kelas::orderBy('id','desc')->get();
+        return view('sekolah_sd.rekap_absen',$data);
     }
 
     function buku_induk_index(Request $request){

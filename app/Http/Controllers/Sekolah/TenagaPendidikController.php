@@ -6,15 +6,17 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;
 use DataTables;
+use Excel;
 
 use App\Models\Sekolah\TenagaPendidik;
 use App\User;
+use \App\Imports\TendikImport;
 
 
 class TenagaPendidikController extends Controller
 {
 
-    private function checkNip(
+    public function checkNip(
         $username,
         $exclude_id = null,
         $exclude_user_id = null
@@ -165,5 +167,18 @@ class TenagaPendidikController extends Controller
     function data(Request $request){
         $query = TenagaPendidik::query();
         return DataTables::of($query)->make(true);
+    }
+
+    public function import(Request $request) 
+    {
+        $business = $request->user()->business;
+        Excel::import(
+            new TendikImport(['business_id'=>$business->id]), 
+            request()->file('import_file')
+        );
+        
+        return redirect()
+        ->back()
+        ->with('success', 'All good!');
     }
 }

@@ -22,14 +22,14 @@ class CreateTenagaPendidiksTable extends Migration
             ->onDelete('cascade')
             ->onUpdate('cascade');
 
-            $table->string('nip');
+            $table->string('nip')->nullable();
             $table->string('nama');
             $table->string('no_hp');
             $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
             $table->string('pendidikan_terakhir');
             $table->enum('jenis_kelamin',['perempuan','laki-laki']);
-            $table->string('bidang_studi');
+            $table->string('bidang_studi')->nullable();
             $table->enum('status',[
                 'tetap',
                 'tidak tetap',

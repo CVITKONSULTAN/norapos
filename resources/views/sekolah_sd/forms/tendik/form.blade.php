@@ -26,8 +26,8 @@
     <div class="form-group col-sm-6">
         <label>Jenis kelamin</label>
         <select required class="form-control" name="jenis_kelamin">
-            <option {{$data['jenis_kelamin'] == "laki-laki" ? 'selected' : ''}} value="laki-laki">Laki-laki</option>
-            <option {{$data['jenis_kelamin'] == "perempuan" ? 'selected' : ''}} value="perempuan">Perempuan</option>
+            <option {{isset($data['jenis_kelamin']) && $data['jenis_kelamin'] == "laki-laki" ? 'selected' : ''}} value="laki-laki">Laki-laki</option>
+            <option {{isset($data['jenis_kelamin']) && $data['jenis_kelamin'] == "perempuan" ? 'selected' : ''}} value="perempuan">Perempuan</option>
         </select>
     </div>
     <div class="form-group col-sm-6">
@@ -37,10 +37,10 @@
     <div class="form-group col-sm-12">
         <label>Status</label>
         <select required class="form-control" name="status">
-            <option {{ $data['status'] == 'tetap' ? 'selected' : "" }} value='tetap'>Tetap</option>
-            <option {{ $data['status'] == 'tidak tetap' ? 'selected' : "" }} value='tidak tetap'>Tidak Tetap</option>
-            <option {{ $data['status'] == 'honorer' ? 'selected' : "" }} value='honorer'>Honorer</option>
-            <option {{ $data['status'] == 'kontrak' ? 'selected' : "" }} value='kontrak'>Kontrak</option>
+            <option {{ isset($data['status']) && $data['status'] == 'tetap' ? 'selected' : "" }} value='tetap'>Tetap</option>
+            <option {{ isset($data['status']) && $data['status'] == 'tidak tetap' ? 'selected' : "" }} value='tidak tetap'>Tidak Tetap</option>
+            <option {{ isset($data['status']) && $data['status'] == 'honorer' ? 'selected' : "" }} value='honorer'>Honorer</option>
+            <option {{ isset($data['status']) && $data['status'] == 'kontrak' ? 'selected' : "" }} value='kontrak'>Kontrak</option>
         </select>
     </div>
     <div class="form-group col-sm-6">
@@ -56,7 +56,7 @@
         <input 
         accept="image/*" 
         type="file" class="form-control" name="foto" />
-        @if($data['foto'])
+        @if(isset($data['foto']))
             <img src="{{ $data['foto'] }}" class="foto" />
         @endif
     </div>

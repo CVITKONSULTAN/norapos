@@ -21,6 +21,15 @@ class TenagaPendidik extends Model
         'keterangan',
         'pendidikan_terakhir',
         'foto',
+        'nik',
+        'tahun_sertifikasi',
+        'nbm',
+        'nuptk',
+        'pangkat_golongan',
+        'jabatan',
+        'mulai_bertugas',
+        'status_perkawinan',
+        'status_kepegawaian',
     ];
 
     function user(){

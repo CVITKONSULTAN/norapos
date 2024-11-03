@@ -9,25 +9,34 @@
 </section>
 
 <!-- Main content -->
-{{-- 
 <section class="content">
-<div class="row">
-    <div class="col-md-12">
-    @component('components.filters', ['title' => __('report.filters')])
-    
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>Tanggal</label>
-                <input id="tanggal_filter" name="date" type="date" class="form-control" />
-            </div>
-            <button class="btn btn-primary" id="reset">RESET</button>
+    <div id="import_modal" class="modal fade">
+        <div class="modal-dialog">
+            <form 
+                enctype="multipart/form-data" 
+                method="POST" 
+                action="{{route('sekolah_sd.tendik.import')}}"
+                class="modal-content"
+            >
+                @csrf
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Import Tenaga Pendidik
+                    </h4>
+                </div>
+                <div class="modal-body">
+                   <div class="form-group">
+                        <label>File</label>
+                        <input required class="form-control" type="file" name="import_file" />
+                   </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                  </div>
+            </form>
         </div>
-
-       
-    @endcomponent
     </div>
-</div>
- --}}
 
     <div class="row" style="margin-top: 10px;">
         <div class="col-md-12">
@@ -46,6 +55,9 @@
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="product_list_tab">
+                        <div class="text-right" style="margin-bottom:20px;">
+                            <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
@@ -102,8 +114,6 @@
             </div>
         </div>
     </div>
-
-
 </section>
 <!-- /.content -->
 

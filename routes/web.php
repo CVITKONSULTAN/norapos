@@ -93,6 +93,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('jurnal-kelas',"SekolahSDController@jurnal_kelas")
         ->name('sekolah_sd.jurnal_kelas.index');
+        Route::post('jurnal-kelas',"Sekolah\KelasController@storeJurnalKelas")
+        ->name('sekolah_sd.jurnal_kelas.store');
         
         Route::get('dashboard',"SekolahSDController@dashboard")
         ->name('sekolah_sd.dashboard');

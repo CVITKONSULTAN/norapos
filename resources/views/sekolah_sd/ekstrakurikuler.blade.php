@@ -74,7 +74,7 @@
                                         <th>Nama Siswa</th>
                                         <th>Ekstrakurikuler</th>
                                         <th>Kategori</th>
-                                        <th>Deksripsi</th>
+                                        <th>Keterangan</th>
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>

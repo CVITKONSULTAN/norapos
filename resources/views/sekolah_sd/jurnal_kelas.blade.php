@@ -26,42 +26,14 @@
 
 <section class="content">
 
-    <div id="import_modal" class="modal fade">
-        <div class="modal-dialog">
-            <form enctype="multipart/form-data" method="POST" action="{{route('sekolah_sd.siswa.import')}}" class="modal-content">
-                @csrf
-                <div class="modal-header">
-                    <h4 class="modal-title">
-                        Import Siswa
-                    </h4>
-                </div>
-                <div class="modal-body">
-                   <div class="form-group">
-                        <label>File</label>
-                        <input required class="form-control" type="file" name="import_file" />
-                   </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-                  </div>
-            </form>
-        </div>
-    </div>
-
     <div class="row" style="margin-top: 10px;">
         <div class="col-md-12">
            <!-- Custom Tabs -->
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active">
-                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
+                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Data</a>
                     </li>
-                    {{-- <li>
-                        <a target="_blank" href="{{ route('sekolah_sd.siswa.create') }}">
-                            <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
-                        </a>
-                    </li> --}}
                 </ul>
 
                 <div class="tab-content">
@@ -69,7 +41,7 @@
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label>Mata Pelajaran</label>
-                                <select class="form-control" name="mapel_id" required>
+                                <select id="mapel_id" class="form-control" name="mapel_id" required>
                                     @foreach ($mapel as $item)
                                         <option value="{{$item->id}}">{{ $item->nama }}</option>
                                     @endforeach
@@ -77,7 +49,7 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label>Kelas</label>
-                                <select class="form-control" name="kelas_id" required>
+                                <select id="kelas_id" class="form-control" name="kelas_id" required>
                                     @foreach ($kelas as $item)
                                         <option value="{{$item->id}}">{{ $item->nama_kelas }} (Semester {{$item->semester}} - {{$item->tahun_ajaran}})</option>
                                     @endforeach
@@ -85,7 +57,7 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label>Tanggal</label>
-                                <input class="form-control" type="date" required name="tanggal" value="{{$tgl}}" />
+                                <input readonly class="form-control" type="date" required name="tanggal" value="{{$tgl}}" />
                             </div>
                         </div>
                         {{-- <div class="text-right" style="margin-bottom:20px;">
@@ -130,14 +102,19 @@
             processing: true,
             serverSide: true,
             "ajax": {
-                "url": "{{ route('sekolah_sd.siswa.data') }}",
+                "url": "{{ route('sekolah_sd.kelas.data') }}",
+                "data": function ( d ) {
+                    d.kelas_id = $('select[name=kelas_id]').val();
+                    d.mapel_id = $('select[name=mapel_id]').val();
+                    d = __datatable_ajax_callback(d);
+                }
             },
             columns: [
                 { searchable: false, data: 'id'  },
-                { data: 'nama'  },
+                { data: 'siswa.nama'  },
                 { 
                     searchable: false, 
-                    data: 'id',
+                    data: 'siswa.id',
                     className:"text-center",
                     render:(data)=> {
                         return `<input type="radio" name="masuk[${data}]" value="hadir" checked />`
@@ -145,7 +122,7 @@
                 },
                 { 
                     searchable: false, 
-                    data: 'id',
+                    data: 'siswa.id',
                     className:"text-center",
                     render:(data)=> {
                         return `<input type="radio" name="masuk[${data}]" value="izin" />`
@@ -153,7 +130,7 @@
                 },
                 { 
                     searchable: false, 
-                    data: 'id',
+                    data: 'siswa.id',
                     className:"text-center",
                     render:(data)=> {
                         return `<input type="radio" name="masuk[${data}]" value="sakit" />`
@@ -161,7 +138,7 @@
                 },
                 { 
                     searchable: false, 
-                    data: 'id',
+                    data: 'siswa.id',
                     className:"text-center",
                     render:(data)=> {
                         return `<input type="radio" name="masuk[${data}]" value="tanpa keterangan" />`
@@ -169,76 +146,19 @@
                 },
             ]
         });
-
-        $('table#product_table tbody').on('click', 'a.delete-product', function(e){
-            e.preventDefault();
-            swal({
-              title: LANG.sure,
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    var href = $(this).attr('href');
-                    $.ajax({
-                        method: "DELETE",
-                        url: href,
-                        dataType: "json",
-                        success: function(result){
-                            if(result.success == true){
-                                toastr.success(result.msg);
-                                product_table.ajax.reload();
-                            } else {
-                                toastr.error(result.msg);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        $(document).on('click', '#delete-selected', function(e){
-            e.preventDefault();
-            var selected_rows = getSelectedRows();
-            
-            if(selected_rows.length > 0){
-                $('input#selected_rows').val(selected_rows);
-                swal({
-                    title: LANG.sure,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        $('form#mass_delete_form').submit();
-                    }
-                });
-            } else{
-                $('input#selected_rows').val('');
-                swal('@lang("lang_v1.no_row_selected")');
-            }    
-        });
-
-
     });
 
-    function getSelectedRows() {
-        var selected_rows = [];
-        var i = 0;
-        $('.row-select:checked').each(function () {
-            selected_rows[i++] = $(this).val();
-        });
-
-        return selected_rows; 
-    }
+    $("#kelas_id").change(function(){
+        product_table.ajax.reload();
+    })
 
     const simpanData = () => {
         let json = {};
         let list_hadir = {};
         $('input[type="radio"]:checked').each(function() {
-            const radioName = $(this).attr('name');
+            let radioName = $(this).attr('name');
+            radioName = radioName.replace(/\D/g, ''); 
             const radioValue = $(this).val();
-            // console.log('Name: ' + radioName + ', Value: ' + radioValue);
             list_hadir[radioName] = radioValue;
         });
         json.kelas_id = $('select[name=kelas_id]').val();
@@ -246,6 +166,25 @@
         json.tanggal = $('input[name=tanggal]').val();
         json.jurnal = list_hadir;
         console.log("json",json)
+        $.ajax({
+            url:"{{route('sekolah_sd.jurnal_kelas.store')}}",
+            type:"POST",
+            data:json,
+            beforeSend:()=>{
+                $('button').attr('disabled')
+            },
+            complete:()=>{
+                $('button').removeAttr('disabled')
+            },
+            success:(result)=>{
+                // console.log("res",result)
+                if(result.success == true){
+                    toastr.success(result.msg);
+                } else {
+                    toastr.error(result.msg);
+                }
+            }
+        })
     }
 
 </script>

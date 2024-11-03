@@ -9,6 +9,7 @@ use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\NilaiSiswa;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
+use \App\Models\Sekolah\JurnalKelas;
 use DataTables;
 
 class KelasController extends Controller
@@ -23,7 +24,7 @@ class KelasController extends Controller
         //
     }
 
-    public function data()
+    public function data(Request $request)
     {
         $query = KelasSiswa::select(
             'id',
@@ -44,6 +45,10 @@ class KelasController extends Controller
                 );
             },
         ]);
+
+        if($request->has('kelas_id')){
+            $query = $query->where('kelas_id',$request->kelas_id);
+        }
 
         return DataTables::of($query)->make(true);
     }
@@ -215,6 +220,30 @@ class KelasController extends Controller
             $msg = $e->getMessage();
             return ['success'=>false,'msg'=>$msg];
         }
+    }
+
+    function storeJurnalKelas(Request $request){
+        $user_id = $request->user()->id;
+        $check = JurnalKelas::where([
+            "kelas_id" => $request->kelas_id,
+            "mapel_id" => $request->mapel_id,
+            "tanggal" => $request->tanggal
+        ])->first();
+        if(!empty($check)){
+            return ['success'=>false,'msg'=>'Data sudah pernah di simpan sebelumnya'];
+        }
+        $input = [
+            'user_id'=>$user_id,
+            "kelas_id" => $request->kelas_id,
+            "mapel_id" => $request->mapel_id,
+            "tanggal" => $request->tanggal,
+            "jurnal" => json_encode($request->jurnal ?? [])
+        ];
+        JurnalKelas::create($input);
+        return [
+            'success'=>true,
+            'msg'=>'Data berhasil disimpan'
+        ];
     }
 
 }

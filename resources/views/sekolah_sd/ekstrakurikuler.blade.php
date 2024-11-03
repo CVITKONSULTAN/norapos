@@ -5,7 +5,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Ekstrakurikuler</h1>
+    <h1>Ekstrakurikulers</h1>
 </section>
 
 <!-- Main content -->

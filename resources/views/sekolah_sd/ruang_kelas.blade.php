@@ -326,7 +326,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                     class="btn btn-danger btn-xs delete-product" 
                                     href="{{ route('sekolah_sd.kelas.store') }}"
                                     data-id="${data}"
-                                    target="_blank"
                                 >
                                     Hapus
                                 </a>

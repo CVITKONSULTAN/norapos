@@ -160,6 +160,12 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.ekskul.index');
         Route::get('data-ekskul/create',"SekolahSDController@data_ekskul_create")
         ->name('sekolah_sd.ekskul.create');
+        Route::post('data-ekskul',"Sekolah\EkstrakurikulerController@store")
+        ->name('sekolah_sd.ekskul.store');
+        Route::get('data-ekskul/data',"Sekolah\EkstrakurikulerController@data")
+        ->name('sekolah_sd.ekskul.data');
+        Route::delete('data-ekskul/{id}',"Sekolah\EkstrakurikulerController@destroy")
+        ->name('sekolah_sd.ekskul.delete');
 
         Route::get('data-tendik',"SekolahSDController@data_tendik_index")
         ->name('sekolah_sd.tendik.index');

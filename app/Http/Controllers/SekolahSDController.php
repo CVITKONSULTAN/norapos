@@ -107,6 +107,8 @@ class SekolahSDController extends Controller
         
         $filter = $request->all();
 
+        $data['filter'] = $filter;
+
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
         $data['semester'] = Kelas::getGroupBy('semester');
         $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');

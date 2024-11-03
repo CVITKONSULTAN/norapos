@@ -5,7 +5,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Tenaga Pendidiks</h1>
+    <h1>Tenaga Pendidik</h1>
 </section>
 
 <!-- Main content -->

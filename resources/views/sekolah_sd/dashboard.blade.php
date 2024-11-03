@@ -389,8 +389,6 @@
                 offsetX: 40
             }
           }).render();
-          //var chart = new ApexCharts(document.querySelector("#chart"), options);
-        //   chart.render();
     </script>
     <script>
         $(document).ready(function(){

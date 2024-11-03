@@ -1,6 +1,14 @@
 @extends('layouts.app')
 @section('title', "Ubah Data Tenaga Pendidik")
 
+@section('css')
+    <style>
+        img.foto{
+            max-height: 200px;
+        }
+    </style>
+@endsection
+
 @section('content')
 
 <!-- Content Header (Page header) -->

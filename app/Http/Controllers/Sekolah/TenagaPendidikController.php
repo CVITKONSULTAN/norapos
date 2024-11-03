@@ -161,11 +161,18 @@ class TenagaPendidikController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $m = TenagaPendidik::findorfail($id);
+            $m->delete();
+            return ['success'=>true,'msg'=>'Data berhasil dihapus'];
+        } catch(Exception $e){
+            $msg = $e->getMessage();
+            return ['success'=>false,'msg'=>$msg];
+        }
     }
 
     function data(Request $request){
-        $query = TenagaPendidik::query();
+        $query = TenagaPendidik::orderBy('id','desc');
         return DataTables::of($query)->make(true);
     }
 

@@ -173,6 +173,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.tendik.edit');
         Route::post('data-tendik/import',"Sekolah\TenagaPendidikController@import")
         ->name('sekolah_sd.tendik.import');
+        Route::delete('data-tendik/{id}',"Sekolah\TenagaPendidikController@destroy")
+        ->name('sekolah_sd.tendik.delete');
 
         Route::get('data-rekap-absen',"SekolahSDController@data_rekap_absen_index")
         ->name('sekolah_sd.rekap_absen.index');

@@ -51,14 +51,16 @@
         <label>Keterangan lain</label>
         <textarea rows="4" class="form-control" name="keterangan">{{ $data['keterangan'] ?? "" }}</textarea>
     </div>
-    <div class="form-group col-sm-12">
-        <label>Foto</label>
-        <input 
-        accept="image/*" 
-        type="file" class="form-control" name="foto" />
+    <div class="col-sm-12">
         @if(isset($data['foto']))
             <img src="{{ $data['foto'] }}" class="foto" />
         @endif
+        <div class="form-group">
+            <label>Foto</label>
+            <input 
+            accept="image/*" 
+            type="file" class="form-control" name="foto" />
+        </div>
     </div>
     <div class="text-right">
         <a href="{{route('sekolah_sd.tendik.index')}}" type="button" class="btn btn-danger">Kembali</a>

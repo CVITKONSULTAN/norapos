@@ -52,16 +52,16 @@
            <!-- Custom Tabs -->
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
-                    <li class="active">
+                    {{-- <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Ekstrakurikuler Siswa</a>
-                    </li>
-                    <li class="">
+                    </li> --}}
+                    <li class="active">
                         <a href="#ekskul" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i> Data Ekstrakurikuler</a>
                     </li>
                 </ul>
 
                 <div class="tab-content">
-                    <div class="tab-pane active" id="product_list_tab">
+                    <div class="tab-pane" id="product_list_tab">
                         <div class="text-right" style="margin-bottom: 10px;">
                             <a target="_blank" href="{{ route('sekolah_sd.ekskul.create') }}" class="btn btn-primary">Tambah</a>
                         </div>
@@ -107,7 +107,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="tab-pane" id="ekskul">
+                    <div class="tab-pane active" id="ekskul">
                         <div class="text-right" style="margin-bottom: 10px;">
                             <button onclick='addEkskul()' class="btn btn-primary">Tambah</button>
                         </div>

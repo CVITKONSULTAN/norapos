@@ -48,7 +48,9 @@ class TendikImport implements ToModel, WithHeadingRow
                 $text
             );
         }
-        $text = str_replace(" ",'-',$text);
+        $split = explode(" ",$text);
+        $text = $split[2]."-".$split[1]."-".$split[0];
+        // $text = str_replace(" ",'-',$text);
         return $text;
     }
 
@@ -62,6 +64,9 @@ class TendikImport implements ToModel, WithHeadingRow
         try {    
             $ttl = explode(',',$row['tempat_dan_tgl_lahir']);
             $tgl = $this->parsingTanggal($ttl[1]);
+
+            $timestamp = ($row['mulai_bertugas'] - 25569) * 86400;
+            $mulai_bertugas = Carbon::createFromTimestamp($timestamp)->format('Y-m-d');
 
             $check = $this->tpcontrol->checkNip($row['nik']);
             if($check)
@@ -93,7 +98,7 @@ class TendikImport implements ToModel, WithHeadingRow
                 'nuptk' => $row['nuptk'],
                 'pangkat_golongan' => $row['pangkat_golongan'],
                 'jabatan' => $row['jabatan'],
-                'mulai_bertugas' => $row['mulai_bertugas'],
+                'mulai_bertugas' => $mulai_bertugas,
                 'status_perkawinan' => $row['statusperkawinan'],
                 'status_kepegawaian' => $row['status_kepegawaian']
             ];

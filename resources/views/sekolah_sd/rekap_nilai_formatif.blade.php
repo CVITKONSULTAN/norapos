@@ -3,7 +3,7 @@
 @endphp
 
 @extends('layouts.app')
-@section('title', "Rekap Nilai Formatif")
+@section('title', "Rekap Nilai Formatifs")
 
 @section('css')
     <style>

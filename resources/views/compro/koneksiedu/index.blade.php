@@ -51,22 +51,22 @@
             class="hidden md:flex justify-between items-center gap-6 lg:gap-12"
           >
             <a
-              href="/peta"
+              href="/"
               class="text-gray-800 hover:text-[#286D6B] transition-colors"
               >Home</a
             >
             <a
-              href="/peta"
+              href="#"
               class="text-gray-800 hover:text-[#286D6B] transition-colors"
               >About Us</a
             >
             <a
-              href="/peta"
+              href="#"
               class="text-gray-800 hover:text-[#286D6B] transition-colors"
               >Contact</a
             >
             <a
-              href="/peta"
+              href="/login"
               class="text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-4 lg:px-8 rounded-md"
               >Login</a
             >
@@ -107,7 +107,7 @@
             </li>
             <li class="w-full px-4">
               <a
-                href="#"
+                href="login"
                 class="flex items-center justify-center text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-8 rounded-md"
                 >Login</a
               >

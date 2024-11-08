@@ -278,7 +278,7 @@
                                 @endforeach
                                 <td class="text-center">{{ $item['nilai_akhir_tp'] }}</td> 
                                 <td class="text-center">
-                                    @if (!empty($item->catatan_max_tp) && !empty($item->catatan_min_tp))
+                                    @if (!empty($item->catatan_max_tp) || !empty($item->catatan_min_tp))
                                         <i class="fa fa-check checked"></i>
                                     @else
                                         <i class="fa fa-times unchecked"></i>
@@ -387,7 +387,7 @@
                 }
                 $("#form_nilai_formatif button[type=submit]").removeAttr('disabled')
                 $("#form_nilai_formatif").trigger("reset"); // to reset form input fields
-                window.location.reload();
+                // window.location.reload();
                 $("#editor_modal").modal("hide");
             },
             error: function(e) {
@@ -418,6 +418,10 @@
                 form.find('input[name=kolom_min_tp]').val("TP "+kolom_min_tp);
                 form.find('input[name=nilai_min_tp]').val(res.nilai_min_tp ?? "");
                 form.find("#textbox_terendah").text(res.catatan_min_tp ?? "")
+
+                // if(kolom_max_tp == ){
+
+                // }
                 
                 
                 form.modal("show")
@@ -444,7 +448,7 @@
                 }
                 $("#form_catan_penilaian button[type=submit]").removeAttr('disabled')
                 $("#form_catan_penilaian").trigger("reset"); // to reset form input fields
-                window.location.reload();
+                // window.location.reload();
                 $("#editor_modal_catatan_penilaian").modal("hide");
             },
             error: function(e) {

@@ -14,7 +14,7 @@ class AddNullableToJurnalKelas extends Migration
     public function up()
     {
         Schema::table('jurnal_kelas', function (Blueprint $table) {
-            $table->unsignedBigInteger('mapel_id')->nullable()->change();
+            // $table->unsignedBigInteger('mapel_id')->nullable()->change();
             //
         });
     }

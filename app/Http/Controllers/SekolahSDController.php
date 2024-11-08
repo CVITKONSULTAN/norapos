@@ -160,6 +160,13 @@ class SekolahSDController extends Controller
 
         $data['list_data'] = $data['list_data']->get();
 
+
+        if(empty($data['list_data']->first()))
+        return redirect()->route('sekolah_sd.kelas.index')
+        ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
+
+        $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+
         return view('sekolah_sd.rekap_nilai_sumatif',$data);
     }
 

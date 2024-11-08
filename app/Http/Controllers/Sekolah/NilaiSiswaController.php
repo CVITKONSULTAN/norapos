@@ -117,6 +117,7 @@ class NilaiSiswaController extends Controller
 
             $update['sumatif_tes'] = $input['sumatif_tes'] ?? 0;
             $update['sumatif_non_tes'] = $input['sumatif_non_tes'] ?? 0;
+            // dd($input,$update);
             
             $update['nilai_akhir_sumatif'] = $input['nilai_akhir_sumatif'] ?? 0;
             $update['nilai_rapor'] = $input['nilai_rapor'] ?? 0;
@@ -164,6 +165,9 @@ class NilaiSiswaController extends Controller
         return DataTables::of($data['list_data'])
         ->editColumn('nilai_tp',function($data){
             return json_decode($data->nilai_tp,true);
+        })
+        ->editColumn('nilai_sumatif',function($data){
+            return json_decode($data->nilai_sumatif,true);
         })
         ->make(true);
     }

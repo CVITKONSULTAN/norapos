@@ -529,7 +529,6 @@
     $('#filter_tahun_ajaran').change(reloadTable)
     $('#filter_semester').change(reloadTable)
     $('#filter_nama_kelas').change(reloadTable)
-    $('#filter_mapel').change(reloadTable)
 
     $("#filter_mapel").change(function(){
         $("#form_filter").submit();

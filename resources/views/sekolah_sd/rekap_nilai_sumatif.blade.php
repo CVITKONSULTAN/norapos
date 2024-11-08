@@ -1,6 +1,6 @@
-@php
+{{-- @php
     $lm = $mapel_choices->lingkup_materi ?? [];
-@endphp
+@endphp --}}
 
 @extends('layouts.app')
 @section('title', "Rekap Nilai Sumatif")
@@ -55,7 +55,7 @@
                 <div class="row">
                     @foreach ($lm as $i => $item)
                         <div class="form-group col-sm-4">
-                            <label>S{{$i}}
+                            <label>S{{$i+1}}
                                 <i 
                                     data-toggle="tooltip" 
                                     data-placement="top" 
@@ -64,9 +64,11 @@
                                 ></i>
                             </label>
                             <input name="nilai_sumatif[]" required type="number" 
-                            class="form-control lm_{{$i}}" />
+                            class="form-control lm_{{$i}} tp_field_satuan" />
                         </div>
-                        @endforeach
+                    @endforeach
+                </div>
+                <div class="row">
                     <div class="form-group col-sm-6">
                         <label>Sumatif Akhir (Non Tes)</label>
                         <input id="field_sumatif_akhir_non_tes" name="sumatif_non_tes" required type="number" class="form-control" />
@@ -77,12 +79,16 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label>Nilai Akhir Formatif</label>
+                    <input id="field_formatif" readonly name="nilai_akhir_formatif" type="number" required class="form-control" />
+                </div>
+                <div class="form-group">
                     <label>Nilai Akhir Sumatif</label>
-                    <input name="nilai_akhir_sumatif" type="number" required class="form-control" />
+                    <input readonly name="nilai_akhir_sumatif" type="number" required class="form-control" />
                 </div>
                 <div class="form-group">
                     <label>Nilai Rapor</label>
-                    <input name="nilai_rapor" type="number" class="form-control" />
+                    <input id="nilai_rapor" readonly name="nilai_rapor" type="number" class="form-control" />
                 </div>
             </div>
             <div class="modal-footer">
@@ -96,12 +102,12 @@
 
 <section class="content">
     
-    <form>
+    <form id="form_filter">
         @component('components.filters', ['title' => __('report.filters')])
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Tahun Ajaran</label>
-                    <select required class="form-control" name="tahun_ajaran">
+                    <select id="filter_tahun_ajaran" required class="form-control" name="tahun_ajaran">
                         @foreach ($tahun_ajaran as $item)
                             <option {{ isset($filter['tahun_ajaran']) && $filter['tahun_ajaran'] == $item ? 'selected' : ''}}>{{ $item }}</option>
                         @endforeach
@@ -111,7 +117,7 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Semester</label>
-                    <select required class="form-control" name="semester">
+                    <select id="filter_semester" required class="form-control" name="semester">
                         @foreach ($semester as $item)
                             <option {{ isset($filter['semester']) && $filter['semester'] == $item ? 'selected' : ''}} value="{{ $item }}">{{ $item }}</option>
                         @endforeach
@@ -121,7 +127,7 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Mata Pelajaran</label>
-                    <select required class="form-control" name="mapel_id">
+                    <select id="filter_mapel" required class="form-control" name="mapel_id">
                         @foreach ($mapel as $item)
                             <option {{ isset($filter['mapel_id']) && $filter['mapel_id'] == $item->id ? 'selected' : ''}} value="{{$item->id}}">{{ $item->nama }}</option>
                         @endforeach
@@ -131,32 +137,33 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Kelas</label>
-                    <select required class="form-control" name="nama_kelas">
+                    <select id="filter_nama_kelas" required class="form-control" name="nama_kelas">
                         @foreach ($nama_kelas as $item)
                             <option {{ isset($filter['nama_kelas']) && $filter['nama_kelas'] == $item ? 'selected' : ''}} value="{{ $item }}">{{ $item }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
-            <div class="col-md-2">
+            {{-- <div class="col-md-2">
                 <div style="margin-top: 2.5rem;">
                     <button type="submit" class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
-                    {{-- <button class="btn btn-primary" id="reset">RESET</button> --}}
+                    <button class="btn btn-primary" id="reset">RESET</button>
                 </div>
-            </div>
+            </div> --}}
         @endcomponent
     </form>
 
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped ajax_view hide-footer">
+                <table id="product_table" class="table table-bordered table-striped ajax_view hide-footer">
                     <thead>
                         <tr>
                             {{-- <th rowspan="2">No.</th> --}}
                             <th rowspan="2">Nama Siswa</th>
                             <th colspan="{{count($lm)}}">Sumatif Lingkup Materi</th>
                             <th colspan="2">Sumatif Akhir</th>
+                            <th rowspan="2">Nilai Akhir Formatif</th>
                             <th rowspan="2">Nilai Rapor</th>
                             <th rowspan="2">Tindakan</th>
                         </tr>
@@ -177,6 +184,7 @@
                         </tr>
                     </thead>
                     <tbody>
+{{--  
                         @foreach ($list_data as $item)   
                             @php
                                 $nilai_sumatif = [];
@@ -205,6 +213,7 @@
                                 </td>
                             </tr>
                         @endforeach
+ --}}
                     </tbody>
                 </table>
             </div>
@@ -223,10 +232,32 @@
             if(type == 'tes') $('#field_sumatif_akhir_non_tes').val("0")
             if(type == 'nontes') $('#field_sumatif_akhir_tes').val("0")
         }
-        $('#field_sumatif_akhir_tes').change(()=>sumatifAkhir('tes'))
-        $('#field_sumatif_akhir_non_tes').change(()=>sumatifAkhir('nontes'))
-        $('#field_sumatif_akhir_tes').keyup(()=>sumatifAkhir('tes'))
-        $('#field_sumatif_akhir_non_tes').keyup(()=>sumatifAkhir('nontes'))
+
+        $('#field_sumatif_akhir_tes').change(function(){
+            const val = $(this).val();
+            if(parseInt(val) > 100) $(this).val(100)
+            sumatifAkhir('tes')
+            calculateRaport()
+        })
+        $('#field_sumatif_akhir_tes').keyup(function(){
+            const val = $(this).val();
+            if(parseInt(val) > 100) $(this).val(100)
+            sumatifAkhir('tes')
+            calculateRaport()
+        })
+
+        $('#field_sumatif_akhir_non_tes').change(function(){
+            const val = $(this).val();
+            if(parseInt(val) > 100) $(this).val(100)
+            sumatifAkhir('nontes')
+            calculateRaport()
+        })
+        $('#field_sumatif_akhir_non_tes').keyup(function(){
+            const val = $(this).val();
+            if(parseInt(val) > 100) $(this).val(100)
+            sumatifAkhir('nontes')
+            calculateRaport()
+        })
         
         const editNilaiSumatif = (id) => {
             const form = $("#editor_modal");
@@ -244,6 +275,8 @@
                     form.find('input[name=nilai_rapor]').val(res?.nilai_rapor ?? "0");
                     form.find('input[name=sumatif_tes]').val(res?.sumatif_tes ?? "0");
                     form.find('input[name=sumatif_non_tes]').val(res?.sumatif_non_tes ?? "0");
+
+                    form.find('input[name=nilai_akhir_formatif]').val(res?.nilai_akhir_tp ?? "0");
 
                     let nilai_sumatif = [];
                     try{
@@ -273,13 +306,13 @@
                 console.log("result",result);
                 if(result.success){
                     toastr.success(result.message);
-                    // product_table.ajax.reload();
+                    product_table.ajax.reload();
                 } else {
                     toastr.error(result.message);
                 }
                 $("#form_nilai_sumatif button[type=submit]").removeAttr('disabled')
                 $("#form_nilai_sumatif").trigger("reset"); // to reset form input fields
-                window.location.reload();
+                // window.location.reload();
                 $("#editor_modal").modal("hide");
             },
             error: function(e) {
@@ -287,5 +320,126 @@
             }
             });
         }));
+
+        const reloadTable = () => {
+            product_table.ajax.reload();
+        }
+
+        $('#filter_tahun_ajaran').change(reloadTable)
+        $('#filter_semester').change(reloadTable)
+        $('#filter_nama_kelas').change(reloadTable)
+
+        $("#filter_mapel").change(function(){
+            $("#form_filter").submit();
+        });
+
+        $(document).ready( function(){
+        product_table = $('#product_table').DataTable({
+            processing: true,
+            serverSide: true,
+            ordering:false,
+            "paging": false,      // Disable pagination
+            "pageLength": -1,     // Show all rows
+            "lengthChange": false, // Disable the page length dropdown
+            "ajax": {
+                "url": "{{ route('sekolah_sd.rekap_nilai.data') }}",
+                "data": function(d){
+                    d.tahun_ajaran = $('#filter_tahun_ajaran').val();
+                    d.semester = $('#filter_semester').val();
+                    d.nama_kelas = $('#filter_nama_kelas').val();
+                    d.mapel_id = $('#filter_mapel').val();
+                    d = __datatable_ajax_callback(d);
+                }
+            },
+            columns: [
+                { searchable: true, data: 'siswa.nama'  },
+                @foreach ($lm as $i => $item)
+                    { 
+                        searchable: false, 
+                        data: 'id',
+                        className:"text-center",
+                        render:(data,type,row)=> {
+                            let val = 0;
+                            if(row.nilai_sumatif){
+                                val = row.nilai_sumatif[{{$i}}] ?? 0;
+                            }
+                            return val;
+                        }
+                    },
+                @endforeach
+                { 
+                    searchable: false, 
+                    data: 'sumatif_non_tes',
+                    className:"text-center",
+                },
+                { 
+                    searchable: false, 
+                    data: 'sumatif_tes',
+                    className:"text-center"
+                },
+                { 
+                    searchable: false, 
+                    data: 'nilai_akhir_tp',
+                    className:"text-center"
+                },
+                { 
+                    searchable: false, 
+                    data: 'nilai_rapor',
+                    className:"text-center"
+                },
+                { 
+                    searchable: false,
+                    data: 'id',
+                    className:"text-center",
+                    render:(data)=> {
+                        const template = `
+                            <a 
+                                class="btn btn-primary btn-xs" 
+                                href="#"
+                                onclick='editNilaiSumatif("${data}")'
+                            >
+                                Edit
+                            </a>
+                        `
+                        return template;
+                    }
+                },
+            ]
+        })
+    })
+
+    function calculateRaport() {
+        let total = 0;
+        $('.tp_field_satuan').each(function() {
+            total += parseInt($(this).val());
+        })
+        let count = $('.tp_field_satuan').length;
+        let nilai_SLM = 0;
+        if(count > 0){
+            nilai_SLM = total / count;
+        }
+
+        let nilai_SLA = 0;
+        const nontes = $("#field_sumatif_akhir_non_tes").val();
+        const tes = $("#field_sumatif_akhir_tes").val();
+        if(parseInt(nontes) >= 0){
+            nilai_SLA += parseInt(nontes)
+        }
+        if(parseInt(tes) >= 0){
+            nilai_SLA += parseInt(tes)
+        }
+
+        const formatif = parseInt($("#field_formatif").val());
+
+        let nilai_rapor = 0;
+        nilai_rapor = (nilai_SLM * 0.25) + (nilai_SLA * 0.5) + (formatif * 0.25);
+        $("#nilai_rapor").val(nilai_rapor.toFixed(0));
+    }
+
+    $(document).on('keyup','.tp_field_satuan',function(){
+        const val = $(this).val();
+        if(parseInt(val) > 100) $(this).val(100)
+        calculateRaport()
+    })
     </script>
 @endsection

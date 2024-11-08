@@ -63,7 +63,7 @@
                                 <thead>
                                     <tr>
                                         <td>ID</td>
-                                        <td>NIP</td>
+                                        <td>NIP/NRG</td>
                                         <td>Nama Lengkap</td>
                                         <td>Tempat / Tanggal Lahir</td>
                                         <td>Alamat</td>

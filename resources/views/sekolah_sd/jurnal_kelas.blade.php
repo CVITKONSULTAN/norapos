@@ -101,6 +101,7 @@
             buttons: [],
             processing: true,
             serverSide: true,
+            "ordering": false,
             "ajax": {
                 "url": "{{ route('sekolah_sd.kelas.data') }}",
                 "data": function ( d ) {

@@ -1200,15 +1200,15 @@ class AdminSidebarMenu
                             request()->segment(2) == 'project' 
                         ]
                     );
-                    $sub->url(
-                        action('SekolahSDController@raport_tengah_index'),
-                        "Raport Tengah Semester",
-                        ['icon' => 'fa fas fa-user', 
-                        'active' => 
-                            request()->segment(1) == 'sekolah_sd' &&
-                            request()->segment(2) == 'raport-tengah' 
-                        ]
-                    );
+                    // $sub->url(
+                    //     action('SekolahSDController@raport_tengah_index'),
+                    //     "Raport Tengah Semester",
+                    //     ['icon' => 'fa fas fa-user', 
+                    //     'active' => 
+                    //         request()->segment(1) == 'sekolah_sd' &&
+                    //         request()->segment(2) == 'raport-tengah' 
+                    //     ]
+                    // );
                     $sub->url(
                         action('SekolahSDController@raport_akhir_index'),
                         "Raport Akhir",

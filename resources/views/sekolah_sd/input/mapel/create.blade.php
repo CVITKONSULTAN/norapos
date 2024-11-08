@@ -38,37 +38,5 @@
 @endsection
 
 @section('javascript')
-    <script>
-        const LMLIST = $(".lingkup_materi_list")
-        let LM_INDEX = 0;
-        const addLingkupMateri = () => {
-            LM_INDEX++;
-            const template_lingkup_materi = `
-                <div class="input-group input_mb">
-                    <div class="input-group-addon">LM${LM_INDEX}</div>
-                    <input name="lingkup_materi[]" required placeholder="Lingkup materi..." type="text" class="form-control">
-                </div>
-            `
-            LMLIST.append(template_lingkup_materi);
-        }
-        $(document).ready(function(){
-            addLingkupMateri();
-        });
-
-        const TPLIST = $(".tujuan_pembelajaran_list")
-        let TP_INDEX = 0;
-        const addTujuanPembelajaran = () => {
-            TP_INDEX++;
-            const template_lingkup_materi = `
-                <div class="input-group input_mb">
-                    <div class="input-group-addon">TP${TP_INDEX}</div>
-                    <input name="tujuan_pembelajaran[]" required placeholder="Tujuan Pembelajaran..." type="text" class="form-control">
-                </div>
-            `
-            TPLIST.append(template_lingkup_materi);
-        }
-        $(document).ready(function(){
-            addTujuanPembelajaran();
-        });
-    </script>
+    
 @endsection

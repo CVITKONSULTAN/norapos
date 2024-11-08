@@ -91,6 +91,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
+        Route::get('create-role-seeder',"SekolahSDController@create_role_sekolah")
+        ->name('sekolah_sd.seed.role');
+
         Route::get('jurnal-kelas',"SekolahSDController@jurnal_kelas")
         ->name('sekolah_sd.jurnal_kelas.index');
         Route::post('jurnal-kelas',"Sekolah\KelasController@storeJurnalKelas")

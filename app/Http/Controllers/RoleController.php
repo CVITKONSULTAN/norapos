@@ -46,7 +46,10 @@ class RoleController extends Controller
 
             return DataTables::of($roles)
                 ->addColumn('action', function ($row) {
-                    if (!$row->is_default || $row->name == "Cashier#" . $row->business_id) {
+                    if (
+                        auth()->user()->business->business_category != 'sekolah_sd' &&
+                        (!$row->is_default || $row->name == "Cashier#" . $row->business_id)
+                    ) {
                         $action = '';
                         if (auth()->user()->can('roles.update')) {
                             $action .= '<a href="' . action('RoleController@edit', [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a>';

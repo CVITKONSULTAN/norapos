@@ -69,11 +69,11 @@
                         @endforeach
                     <div class="form-group col-sm-6">
                         <label>Sumatif Akhir (Non Tes)</label>
-                        <input name="sumatif_tes" required type="number" class="form-control" />
+                        <input id="field_sumatif_akhir_non_tes" name="sumatif_non_tes" required type="number" class="form-control" />
                     </div>
                     <div class="form-group col-sm-6">
                         <label>Sumatif Akhir (Tes)</label>
-                        <input name="sumatif_non_tes" required type="number" class="form-control" />
+                        <input id="field_sumatif_akhir_tes" name="sumatif_tes" required type="number" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -219,6 +219,15 @@
 
 @section('javascript')
     <script>
+        const sumatifAkhir = (type) => {
+            if(type == 'tes') $('#field_sumatif_akhir_non_tes').val("0")
+            if(type == 'nontes') $('#field_sumatif_akhir_tes').val("0")
+        }
+        $('#field_sumatif_akhir_tes').change(()=>sumatifAkhir('tes'))
+        $('#field_sumatif_akhir_non_tes').change(()=>sumatifAkhir('nontes'))
+        $('#field_sumatif_akhir_tes').keyup(()=>sumatifAkhir('tes'))
+        $('#field_sumatif_akhir_non_tes').keyup(()=>sumatifAkhir('nontes'))
+        
         const editNilaiSumatif = (id) => {
             const form = $("#editor_modal");
             $.ajax({

@@ -10,6 +10,7 @@ use \App\Models\Sekolah\NilaiSiswa;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
 
+use Spatie\Permission\Models\Role;
 
 class SekolahSDController extends Controller
 {
@@ -39,11 +40,6 @@ class SekolahSDController extends Controller
     function data_mapel_create(Request $request){
         return view('sekolah_sd.input.mapel.create');
     }
-
-    // function data_mapel_edit(Request $request, $id){
-    //     $data['data'] = Mapel::findorfail($id);
-    //     return view('sekolah_sd.input.mapel.edit',$data);
-    // }
     
     function data_rekap_nilai_index(Request $request){
         
@@ -333,5 +329,46 @@ class SekolahSDController extends Controller
         ->get();
 
         return view('sekolah_sd.prints.tengah',$data);
+    }
+
+    function create_role_sekolah(Request $request){
+        try {
+            $output = ['success' => 1,
+                'msg' => __("user.role_added")
+            ];
+            $business_id = $request->session()->get('user.business_id');
+            $roleList = ['guru','admin','kepala sekolah'];
+            foreach($roleList as $key => $item){
+                $count = Role::where('name', $item . '#' . $business_id)
+                            ->where('business_id', $business_id)
+                            ->count();
+                if ($count == 0) {
+                    $is_service_staff = 0;
+                    if ($request->input('is_service_staff') == 1) {
+                        $is_service_staff = 1;
+                    }
+    
+                    $role = Role::create([
+                                'name' => $item . '#' . $business_id ,
+                                'business_id' => $business_id,
+                                'is_service_staff' => $is_service_staff
+                            ]);
+                }
+                // } else {
+                //     $output = ['success' => 0,
+                //                 'msg' => __("user.role_already_exists")
+                //             ];
+                // }
+            }
+        } catch (\Exception $e) {
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
+            $output = ['success' => 0,
+                            'msg' => __("messages.something_went_wrong")
+                        ];
+        }
+        return $output;
+        // return redirect('roles')->with('status', $output);
+        
     }
 }

@@ -420,8 +420,6 @@
                 form.find("#textbox_terendah").text(res.catatan_min_tp ?? "")
                 
                 
-                
-                
                 form.modal("show")
             }
         })

@@ -54,6 +54,23 @@ class KelasController extends Controller
             $query = $query->where('kelas_id',$request->kelas_id);
         }
 
+        // if(
+        //     $request->has('filter_tahun_ajaran') || 
+        // ){
+            $query = $query->whereHas('kelas',function($q) use ($request){
+                if($request->has('filter_tahun_ajaran')){
+                    $q->where('tahun_ajaran',$request->filter_tahun_ajaran);
+                }
+                if($request->has('filter_semester')){
+                    $q->where('semester',$request->filter_semester);
+                }
+                if($request->has('filter_kelas')){
+                    $q->where('nama_kelas',$request->filter_kelas);
+                }
+                return $q;
+            });
+        // }
+
         return DataTables::of($query)->make(true);
     }
 

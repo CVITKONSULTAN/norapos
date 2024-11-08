@@ -74,7 +74,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             <p class="edit_kelas_container">Sebelumnya : <b class="edit_kelas_val"></b> </p>
                         </div>
                         <div class="form-group">
-                            <label>Siswa</label>
+                            <label>Siswa (NISN/NAMA)</label>
                             <select name="siswa_id" class="siswa_selection"></select>
                             <p class="edit_kelas_container">Sebelumnya : <b class="edit_siswa_val"></b> </p>
                         </div>

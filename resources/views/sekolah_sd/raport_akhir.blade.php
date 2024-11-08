@@ -2,6 +2,10 @@
 @section('title', "Raport Akhir Semester")
 
 @section('css')
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+/>
     <style>
         table.head_table tr td{
             padding: 5px 10px;
@@ -61,7 +65,7 @@
                         <form class="row">
                             <div class="form-group col-md-2">
                                 <label>Tahun Ajaran</label>
-                                <select class="form-control" name="tahun_ajaran">
+                                <select id="filter_tahun_ajaran" class="form-control" name="tahun_ajaran">
                                     @foreach ($tahun_ajaran as $item)
                                         <option>{{ $item }}</option>
                                     @endforeach
@@ -69,7 +73,7 @@
                             </div>
                             <div class="form-group col-md-2">
                                 <label>Semester</label>
-                                <select class="form-control" name="tahun_ajaran">
+                                <select id="filter_semester" class="form-control" name="semester">
                                     @foreach ($semester as $item)
                                         <option>{{ $item }}</option>
                                     @endforeach
@@ -77,7 +81,7 @@
                             </div>
                             <div class="form-group col-md-2">
                                 <label>Kelas</label>
-                                <select class="form-control" name="kelas">
+                                <select id="filter_kelas" class="form-control" name="kelas">
                                     @foreach ($nama_kelas as $item)
                                         <option>{{ $item }}</option>
                                     @endforeach
@@ -85,7 +89,8 @@
                             </div>
                             <div class="form-group col-md-2">
                                 <label>Cari NISN/Nama Siswa</label>
-                                <input type="search" placeholder="Tulis disini..." class="form-control" name="cari" placeholder="" />
+                                {{-- <input type="search" placeholder="Tulis disini..." class="form-control" name="cari" placeholder="" /> --}}
+                                <select name="kelas_id" class="siswa_selection"></select>
                             </div>
                             <div class="col-md-2">
                                 <button class="btn btn-primary" style="margin-top:25px;"><i class="fa fa-search"></i> Cari</button>
@@ -333,6 +338,9 @@
 @endsection
 
 @section('javascript')
+    <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+    ></script>
     <script type="text/javascript">
         function printDiv(divId) {
             var printContents = document.getElementById(divId).innerHTML;
@@ -344,5 +352,59 @@
 
             document.body.innerHTML = originalContents;
         }
+
+        let selectizeInstanceSiswa;
+
+        $(function () {
+            selectizeInstanceSiswa = $(".siswa_selection").selectize({
+                placeholder: 'Cari disini...',
+                maxItems: 1,
+                create: false,
+                valueField: 'id',         // Field to use as the value
+                labelField: 'name',       // Field to use as the label
+                searchField: 'name',      // Field to use for searching
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+                    const tahun_ajaran = $("#filter_tahun_ajaran").val();
+                    const semester = $("#filter_semester").val();
+                    const kelas = $("#filter_kelas").val();
+                    const url = '/sekolah_sd/kelas-siswa/data?draw=30&columns%5B0%5D%5Bdata%5D=id&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=siswa.nisn&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=siswa.nama&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=kelas.nama_kelas&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=kelas.tahun_ajaran&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=id&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc&start=0&length=25&search%5Bvalue%5D='+query+
+                        '&filter_tahun_ajaran='+tahun_ajaran+
+                        '&filter_semester='+semester+
+                        '&filter_kelas='+kelas;
+                    // console.log("url",url)
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            selectizeInstanceSiswa[0].selectize.clearOptions();
+                        },
+                        error: function(error) {
+                            console.log(error)
+                            callback();
+                        },
+                        success: function(res) {
+                            const results = res.data.map(item => ({
+                                id: item.id,
+                                name: `${item.siswa.nama} (${item.siswa.nisn})`
+                            }));
+                            // console.log(results)
+                            callback(results);
+                        }
+                    });
+                }
+            })
+
+            const clearSelectize = () => {
+                selectizeInstanceSiswa[0].selectize.setValue(null);
+                selectizeInstanceSiswa[0].selectize.clearOptions();
+            }
+
+            $("#filter_tahun_ajaran").change(clearSelectize);
+            $("#filter_semester").change(clearSelectize);
+            $("#filter_kelas").change(clearSelectize);
+
+        })
     </script>
 @endsection

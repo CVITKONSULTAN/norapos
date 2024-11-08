@@ -284,7 +284,9 @@ class SekolahSDController extends Controller
         }
 
         
-
+        if($request->has('kelas_id')){
+            $data['kelas_siswa'] = KelasSiswa::find($request->kelas_id);
+        }
         // dd($data['kelas_siswa']);
 
         $data['nilai_list'] = NilaiSiswa::where([

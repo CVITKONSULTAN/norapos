@@ -32,6 +32,14 @@ class NilaiSiswa extends Model
 
         'sumatif_tes',
         'sumatif_non_tes',
+
+        'tp_mapel',
+        'lm_mapel'
+    ];
+
+    protected $casts = [
+        'tp_mapel' => 'array',
+        'lm_mapel' => 'array'
     ];
     
     function siswa(){

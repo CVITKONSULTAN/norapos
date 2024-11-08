@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use \App\Models\Sekolah\NilaiSiswa;
+use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\NilaiIntervalKeyword;
-
+use DataTables;
 class NilaiSiswaController extends Controller
 {
 
@@ -97,17 +98,18 @@ class NilaiSiswaController extends Controller
             }
     
             $update['nilai_tp'] = json_encode($nilai_tp);
-            
+
             if(isset($data->tp_keterangan))
             unset($data->tp_keterangan);
 
         }
 
-        if(isset($input['catatan_max_tp']))
-        $update['catatan_max_tp'] = $input['catatan_max_tp'];
+        // if(isset($input['catatan_max_tp']))
+        $update['catatan_max_tp'] = $input['catatan_max_tp'] ?? "";
 
-        if(isset($input['catatan_min_tp']))
-        $update['catatan_min_tp'] = $input['catatan_min_tp'];
+        // dd(isset($input['catatan_min_tp']) , $input['catatan_min_tp'] );
+        // if(isset($input['catatan_min_tp']))
+        $update['catatan_min_tp'] = $input['catatan_min_tp'] ?? "";
 
         if(isset($input['nilai_sumatif'])){
             $nilai_sumatif = $input['nilai_sumatif'] ?? [];
@@ -123,5 +125,46 @@ class NilaiSiswaController extends Controller
         $data->update($update);
 
         return ['success'=>true,'mesage'=>"Data berhasil di simpan"];
+    }
+
+    function data(Request $request){
+
+        $filter = $request->all();
+
+        $mapel = null;
+        if(isset($filter['mapel_id'])){
+            $mapel = Mapel::find($filter['mapel_id']);
+        }
+
+        if(empty($mapel))
+        $mapel = Mapel::first();
+
+        $data['list_data'] = NilaiSiswa::with([
+            'siswa'=>function($q){
+                return $q->select('id','nama');
+            },
+        ])
+        ->where([
+            'mapel_id'=> $mapel->id
+        ]);
+
+        $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
+            if(isset($filter['tahun_ajaran'])){
+                $q->where('tahun_ajaran',$filter['tahun_ajaran']);
+            }
+            if(isset($filter['semester'])){
+                $q->where('semester',$filter['semester']);
+            }
+            if(isset($filter['nama_kelas'])){
+                $q->where('nama_kelas',$filter['nama_kelas']);
+            }
+            return $q;
+        });
+
+        return DataTables::of($data['list_data'])
+        ->editColumn('nilai_tp',function($data){
+            return json_decode($data->nilai_tp,true);
+        })
+        ->make(true);
     }
 }

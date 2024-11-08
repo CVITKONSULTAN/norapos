@@ -1,6 +1,6 @@
-@php
+{{-- @php
     $tp = $mapel_choices->tujuan_pembelajaran ?? [];
-@endphp
+@endphp --}}
 
 @extends('layouts.app')
 @section('title', "Rekap Nilai Formatifs")
@@ -85,7 +85,7 @@
                                 ></i>
                             </label>
                             <input required max="100" min="0" name="nilai_tp[]" type="number" 
-                            class="form-control tp_{{$i}}"
+                            class="form-control tp_{{$i}} tp_field_satuan"
                             />
                         </div>
                     @endforeach
@@ -93,7 +93,7 @@
                 </div>
                 <div class="form-group">
                     <label>Nilai Akhir</label>
-                <input name="nilai_akhir_tp" required max="100" min="0" type="number" class="form-control" />
+                    <input readonly id="nilai_akhir_tp" name="nilai_akhir_tp" required max="100" min="0" type="number" class="form-control" />
                 </div>
             </div>
             <div class="modal-footer">
@@ -185,12 +185,12 @@
 
 <section class="content">
 
-    <form>
+    <form id="form_filter">
         @component('components.filters', ['title' => __('report.filters')])
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Tahun Ajaran</label>
-                    <select required class="form-control" name="tahun_ajaran">
+                    <select id="filter_tahun_ajaran" required class="form-control" name="tahun_ajaran">
                         @foreach ($tahun_ajaran as $item)
                             <option {{ isset($filter['tahun_ajaran']) && $filter['tahun_ajaran'] == $item ? 'selected' : ''}}>{{ $item }}</option>
                         @endforeach
@@ -200,7 +200,7 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Semester</label>
-                    <select required class="form-control" name="semester">
+                    <select id="filter_semester" required class="form-control" name="semester">
                         @foreach ($semester as $item)
                             <option {{ isset($filter['semester']) && $filter['semester'] == $item ? 'selected' : ''}} value="{{ $item }}">{{ $item }}</option>
                         @endforeach
@@ -210,7 +210,7 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Mata Pelajaran</label>
-                    <select required class="form-control" name="mapel_id">
+                    <select id="filter_mapel" required class="form-control" name="mapel_id">
                         @foreach ($mapel as $item)
                             <option {{ isset($filter['mapel_id']) && $filter['mapel_id'] == $item->id ? 'selected' : ''}} value="{{$item->id}}">{{ $item->nama }}</option>
                         @endforeach
@@ -220,19 +220,19 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Kelas</label>
-                    <select required class="form-control" name="nama_kelas">
+                    <select id="filter_nama_kelas" required class="form-control" name="nama_kelas">
                         @foreach ($nama_kelas as $item)
                             <option {{ isset($filter['nama_kelas']) && $filter['nama_kelas'] == $item ? 'selected' : ''}} value="{{ $item }}">{{ $item }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
-            <div class="col-md-2">
+            {{-- <div class="col-md-2">
                 <div style="margin-top: 2.5rem;">
                     <button type="submit" class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
-                    {{-- <button class="btn btn-primary" id="reset">RESET</button> --}}
+                    <button class="btn btn-primary" id="reset">RESET</button>
                 </div>
-            </div>
+            </div> --}}
         @endcomponent
     </form>
 
@@ -240,7 +240,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped ajax_view hide-footer">
+                <table id="product_table" class="table table-bordered table-striped ajax_view hide-footer">
                     <thead>
                         <tr>
                             <td>Nama Siswa</td> 
@@ -257,11 +257,12 @@
                                 </td> 
                             @endforeach
                             <td>Nilai Akhir</td> 
-                            <td>Catatan Penilaian</td> 
+                            <td width="200" >Catatan Penilaian</td> 
                             <td>Tindakan</td> 
                         </tr>
                     </thead>
                     <tbody>
+{{-- 
                         @foreach ($list_data as $k => $item)
                             @php
                                 $nilai_tp = [];
@@ -299,18 +300,10 @@
                                     >
                                         Catatan Penilaian
                                     </a>
-{{-- 
-                                    <a 
-                                        class="btn btn-danger btn-xs" 
-                                        href="#"
-                                        target="_blank"
-                                    >
-                                        Hapus
-                                    </a>
-  --}}
                                 </td>
                             </tr>
                         @endforeach
+  --}}
                     </tbody>
                 </table>
             </div>
@@ -381,13 +374,12 @@
                 console.log("result",result);
                 if(result.success){
                     toastr.success(result.message);
-                    // product_table.ajax.reload();
+                    product_table.ajax.reload();
                 } else {
                     toastr.error(result.message);
                 }
                 $("#form_nilai_formatif button[type=submit]").removeAttr('disabled')
                 $("#form_nilai_formatif").trigger("reset"); // to reset form input fields
-                // window.location.reload();
                 $("#editor_modal").modal("hide");
             },
             error: function(e) {
@@ -442,13 +434,12 @@
                 console.log("result",result);
                 if(result.success){
                     toastr.success(result.message);
-                    // product_table.ajax.reload();
+                    product_table.ajax.reload();
                 } else {
                     toastr.error(result.message);
                 }
                 $("#form_catan_penilaian button[type=submit]").removeAttr('disabled')
                 $("#form_catan_penilaian").trigger("reset"); // to reset form input fields
-                // window.location.reload();
                 $("#editor_modal_catatan_penilaian").modal("hide");
             },
             error: function(e) {
@@ -456,5 +447,105 @@
             }
             });
     }));
+
+    $(document).ready( function(){
+        product_table = $('#product_table').DataTable({
+            processing: true,
+            serverSide: true,
+            ordering:false,
+            "paging": false,      // Disable pagination
+            "pageLength": -1,     // Show all rows
+            "lengthChange": false, // Disable the page length dropdown
+            "ajax": {
+                "url": "{{ route('sekolah_sd.rekap_nilai.data') }}",
+                "data": function(d){
+                    d.tahun_ajaran = $('#filter_tahun_ajaran').val();
+                    d.semester = $('#filter_semester').val();
+                    d.nama_kelas = $('#filter_nama_kelas').val();
+                    d.mapel_id = $('#filter_mapel').val();
+                    d = __datatable_ajax_callback(d);
+                }
+            },
+            columns: [
+                { searchable: true, data: 'siswa.nama'  },
+                @foreach ($tp as $i => $item)
+                    { 
+                        searchable: false, 
+                        data: 'id',
+                        className:"text-center",
+                        render:(data,type,row)=> {
+                            let val = 0;
+                            if(row.nilai_tp){
+                                val = row.nilai_tp[{{$i}}] ?? 0;
+                            }
+                            return val;
+                        }
+                    },
+                @endforeach
+                { 
+                    searchable: false, 
+                    data: 'nilai_akhir_tp',
+                    className:"text-center",
+                },
+                { 
+                    searchable: false, 
+                    data: 'catatan_max_tp',
+                    render:(data,type,row)=> {
+                        return `TP Maks : <br /> ${data ?? '-'}<br />TP Min : <br />${row.catatan_min_tp ?? '-'}`
+                    }
+                },
+                { 
+                    searchable: false,
+                    data: 'id',
+                    className:"text-center",
+                    render:(data)=> {
+                        const template = `
+                            <a 
+                                class="btn btn-primary btn-xs" 
+                                href="#"
+                                onclick='editNilaiFormatif("${data}")'
+                            >
+                                Edit
+                            </a>
+                            <a 
+                                class="btn btn-primary btn-xs" 
+                                href="#"
+                                onclick='editCatatanPenilaian("${data}")'
+                            >
+                                Catatan Penilaian
+                            </a>
+                        `
+                        return template;
+                    }
+                },
+            ]
+        })
+    })
+
+    const reloadTable = () => {
+        product_table.ajax.reload();
+    }
+
+    $('#filter_tahun_ajaran').change(reloadTable)
+    $('#filter_semester').change(reloadTable)
+    $('#filter_nama_kelas').change(reloadTable)
+    $('#filter_mapel').change(reloadTable)
+
+    $("#filter_mapel").change(function(){
+        $("#form_filter").submit();
+    });
+
+    $(document).on('keyup','.tp_field_satuan',function(){
+        let total = 0;
+        $('.tp_field_satuan').each(function() {
+            total += parseInt($(this).val());
+        })
+        const count = $('.tp_field_satuan').length;
+        let nilai_rapor = 0;
+        if(count > 0)
+        nilai_rapor = total / count;
+        $("#nilai_akhir_tp").val(nilai_rapor.toFixed(0));
+    })
+
 </script>
 @endsection

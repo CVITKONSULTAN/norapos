@@ -216,7 +216,9 @@ class KelasController extends Controller
                 NilaiSiswa::create([
                     'siswa_id'=> $k->siswa_id,
                     'kelas_id'=> $k->kelas_id,
-                    'mapel_id'=> $item->id
+                    'mapel_id'=> $item->id,
+                    'tp_mapel' => json_encode($item->tujuan_pembelajaran),
+                    'lm_mapel' => json_encode($item->lingkup_materi),
                 ]);
             }
             return ['success'=>true,'msg'=>'Data berhasil dihapus'];

@@ -151,6 +151,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::delete('data-mapel/{id}',"Sekolah\MapelController@destroy")
         ->name('sekolah_sd.mapel.delete');
 
+        Route::get('data-rekap-nilai/data',"Sekolah\NilaiSiswaController@data")
+        ->name('sekolah_sd.rekap_nilai.data');
         Route::get('data-rekap-nilai',"SekolahSDController@data_rekap_nilai_index")
         ->name('sekolah_sd.rekap_nilai.index');
         Route::get('data-rekap-nilai/{id}/show',"Sekolah\NilaiSiswaController@showNilaiFormatif")

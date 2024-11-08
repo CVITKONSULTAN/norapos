@@ -105,10 +105,12 @@ class NilaiSiswaController extends Controller
         }
 
         // if(isset($input['catatan_max_tp']))
+        if(!isset($input['tipe']))
         $update['catatan_max_tp'] = $input['catatan_max_tp'] ?? "";
 
         // dd(isset($input['catatan_min_tp']) , $input['catatan_min_tp'] );
         // if(isset($input['catatan_min_tp']))
+        if(!isset($input['tipe']))
         $update['catatan_min_tp'] = $input['catatan_min_tp'] ?? "";
 
         if(isset($input['nilai_sumatif'])){

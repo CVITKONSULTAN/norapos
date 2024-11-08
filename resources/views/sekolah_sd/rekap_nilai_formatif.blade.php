@@ -57,6 +57,7 @@
 <form id="form_nilai_formatif" method="POST" action="{{route('sekolah_sd.rekap_nilai.store')}}">
     @csrf
     <input value="" type="hidden" name="id" />
+    <input value="update_nilai_tp" type="hidden" name="tipe" />
             <div class="modal-body">
 {{--                  
                 <div class="form-group">
@@ -535,6 +536,7 @@
     });
 
     $(document).on('keyup','.tp_field_satuan',function(){
+        if(parseInt($(this).val()) > 100) $(this).val(100)
         let total = 0;
         $('.tp_field_satuan').each(function() {
             total += parseInt($(this).val());

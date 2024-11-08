@@ -242,17 +242,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                         <tr>
                                             <td>Sakit</td>
                                             <td>:</td>
-                                            <td>12 hari</td>
+                                            <td>{{$kelas_siswa->kelas->sakit ?? 0}} hari</td>
                                         </tr>
                                         <tr>
                                             <td>Izin</td>
                                             <td>:</td>
-                                            <td>1 hari</td>
+                                            <td>{{$kelas_siswa->kelas->izin ?? 0}} hari</td>
                                         </tr>
                                         <tr>
                                             <td>Tanpa Keterangan</td>
                                             <td>:</td>
-                                            <td>- hari</td>
+                                            <td>{{$kelas_siswa->kelas->tanpa_keterangan ?? 0}} hari</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -267,9 +267,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                         <tr>
                                             <td>
                                                 <textarea 
-                                                rows="5"
-                                                class="form-control" 
-                                                placeholder="Tulis catatan disini..."></textarea>
+                                                    rows="5"
+                                                    class="form-control" 
+                                                    placeholder="Tulis catatan disini..."
+                                                >
+                                                {{$kelas_siswa->kelas->catatan_akhir}}
+                                                </textarea>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -285,9 +288,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                         <tr>
                                             <td>
                                                 <textarea 
-                                                rows="5"
-                                                class="form-control" 
-                                                placeholder="Tulis catatan disini..."></textarea>
+                                                    rows="5"
+                                                    class="form-control" 
+                                                    placeholder="Tulis catatan disini..."
+                                                >
+                                                {{$kelas_siswa->kelas->kesimpulan}}
+                                                </textarea>
                                             </td>
                                         </tr>
                                     </tbody>

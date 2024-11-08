@@ -157,17 +157,17 @@
             <tr>
                 <td>Sakit</td>
                 <td>:</td>
-                <td>12 hari</td>
+                <td>{{$kelas_siswa->kelas->sakit ?? 0}} hari</td>
             </tr>
             <tr>
                 <td>Izin</td>
                 <td>:</td>
-                <td>1 hari</td>
+                <td>{{$kelas_siswa->kelas->izin ?? 0}} hari</td>
             </tr>
             <tr>
                 <td>Tanpa Keterangan</td>
                 <td>:</td>
-                <td>- hari</td>
+                <td>{{$kelas_siswa->kelas->tanpa_keterangan ?? 0}} hari</td>
             </tr>
         </tbody>
     </table>

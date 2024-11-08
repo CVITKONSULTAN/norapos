@@ -161,9 +161,9 @@
                         <tr>
                             {{-- <th rowspan="2">No.</th> --}}
                             <th rowspan="2">Nama Siswa</th>
-                            <th colspan="{{count($lm)}}">Sumatif Lingkup Materi</th>
-                            <th colspan="2">Sumatif Akhir</th>
-                            <th rowspan="2">Nilai Akhir Formatif</th>
+                            <th colspan="{{count($lm)}}">Sumatif Lingkup Materi (25%)</th>
+                            <th colspan="2">Sumatif Akhir (50%)</th>
+                            <th rowspan="2">Nilai Akhir Formatif (25%)</th>
                             <th rowspan="2">Nilai Rapor</th>
                             <th rowspan="2">Tindakan</th>
                         </tr>
@@ -432,6 +432,9 @@
         const formatif = parseInt($("#field_formatif").val());
 
         let nilai_rapor = 0;
+        // console.log("SLM",(nilai_SLM * 0.25))
+        // console.log("SLA",(nilai_SLA * 0.5))
+        // console.log("FORMATIF",(formatif * 0.25))
         nilai_rapor = (nilai_SLM * 0.25) + (nilai_SLA * 0.5) + (formatif * 0.25);
         $("#nilai_rapor").val(nilai_rapor.toFixed(0));
     }

@@ -157,11 +157,22 @@
                                                 <td class="text-center">{{ $key+1 }}</td>
                                                 <td>{{ $item->mapel->nama ?? "" }}</td>
                                                 <td class="text-center">{{ $item->nilai_rapor }}</td>
-                                                <td>
-                                                    <ol>
-                                                        <li>{{ $item->catatan_max_tp }}</li>
-                                                        <li>{{ $item->catatan_min_tp }}</li>
-                                                    </ol>
+                                                <td style="padding:0px;">
+                                                    @if(!empty($item->catatan_max_tp))
+                                                    <div style="
+                                                    @if(!empty($item->catatan_min_tp))
+                                                    border-bottom: 1px solid black;
+                                                    @endif
+                                                    padding: 3px 5px;
+                                                    text-align:justify;
+                                                    ">{{ $item->catatan_max_tp }}</div>
+                                                    @endif
+                                                    @if(!empty($item->catatan_min_tp))
+                                                    <div style="
+                                                    padding: 3px 5px;
+                                                    text-align:justify;
+                                                    ">{{ $item->catatan_min_tp }}</div>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

@@ -19,8 +19,14 @@ class NilaiSiswaController extends Controller
         if($tipe == "max")
         $params = 'tertinggi';
 
-        $list_data = NilaiIntervalKeyword::query();
-        $list_data->whereRaw('CAST(nilai_minimum AS UNSIGNED) <= ? AND CAST(nilai_maksimum AS UNSIGNED) >= ?', [$nilai, $nilai]);
+        $list_data = NilaiIntervalKeyword::query()
+        ->whereRaw('CAST(nilai_minimum AS UNSIGNED) <= ? AND CAST(nilai_maksimum AS UNSIGNED) >= ?', [$nilai, $nilai])
+        ->where('tipe',$params);
+
+        // if($tipe == "min"){
+        //     dd($nilai,$params,$list_data->first());
+        // }
+
         $check = $list_data->first();
         if(empty($check))
         return "";
@@ -86,7 +92,7 @@ class NilaiSiswaController extends Controller
                 $update['catatan_min_tp'] = "";
             } else {
                 $catatan_min = $this->prosesPesan(
-                    $update['nilai_max_tp'],
+                    $update['nilai_min_tp'],
                     'min',
                     $data
                 );

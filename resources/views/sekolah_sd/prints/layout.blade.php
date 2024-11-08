@@ -20,7 +20,7 @@
         .page {
             width: 210mm;
             min-height: 297mm;
-            padding: 20mm;
+            padding: 0mm 20mm;
             margin: 10mm auto;
             border: 1px #D3D3D3 solid;
             border-radius: 5px;

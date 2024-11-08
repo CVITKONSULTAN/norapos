@@ -492,7 +492,7 @@
                     searchable: false, 
                     data: 'catatan_max_tp',
                     render:(data,type,row)=> {
-                        return `TP Maks : <br /> ${data ?? '-'}<br />TP Min : <br />${row.catatan_min_tp ?? '-'}`
+                        return `<b>TP Maks</b> : <br /> ${data ?? '-'}<br /><b>TP Min</b> : <br />${row.catatan_min_tp ?? '-'}`
                     }
                 },
                 { 

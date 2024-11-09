@@ -10,7 +10,7 @@ use \App\Models\Sekolah\Kelas;
 
 class KelasSiswa extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $fillable = [
         'siswa_id',

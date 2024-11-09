@@ -324,4 +324,9 @@ class User extends Authenticatable
     function isHotel() {
         return str_contains( strtolower($this->business->name) , 'hotel' );
     }
+
+    function checkGuru(){
+        $business_id = $this->business->id;
+        return $this->hasRole('guru#'.$business_id);
+    }
 }

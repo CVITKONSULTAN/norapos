@@ -1102,18 +1102,18 @@ class AdminSidebarMenu
                         request()->segment(2) == 'peserta-didik-baru' 
                     ]
                 );
+                $menu->url(
+                    action('SekolahSDController@data_mapel_index'),
+                    "Mata Pelajaran",
+                    [
+                        'icon' => 'fa fas fa-cubes', 
+                        'active' =>
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'data-mapel' 
+                    ]
+                );
             }
 
-            $menu->url(
-                action('SekolahSDController@data_mapel_index'),
-                "Mata Pelajaran",
-                [
-                    'icon' => 'fa fas fa-cubes', 
-                    'active' =>
-                    request()->segment(1) == 'sekolah_sd' &&
-                    request()->segment(2) == 'data-mapel' 
-                ]
-            );
 
             // $menu->url(
             //     action('SekolahSDController@data_rekap_nilai_index'),

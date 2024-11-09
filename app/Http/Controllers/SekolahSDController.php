@@ -214,6 +214,10 @@ class SekolahSDController extends Controller
 
     function data_rekap_absen_index(Request $request){
         $data['kelas'] = Kelas::orderBy('id','desc')->get();
+        $user = auth()->user();
+        if($user->checkGuru()){
+            $data['kelas'] = Kelas::where('wali_kelas_id',$user->id)->get();
+        }
         return view('sekolah_sd.rekap_absen',$data);
     }
 

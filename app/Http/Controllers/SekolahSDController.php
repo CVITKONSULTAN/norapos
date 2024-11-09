@@ -104,6 +104,7 @@ class SekolahSDController extends Controller
 
         try{
             $data['tp'] = json_decode($data['list_data']->first()->tp_mapel,true);
+            if(empty($data['tp'])) $data['tp'] = [];
         }catch(Exception $e){
             $data['tp'] = [];
         }
@@ -174,6 +175,7 @@ class SekolahSDController extends Controller
         // $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
         try{
             $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+            if(empty($data['lm'])) $data['lm'] = [];
         }catch(Exception $e){
             $data['lm'] = [];
         }

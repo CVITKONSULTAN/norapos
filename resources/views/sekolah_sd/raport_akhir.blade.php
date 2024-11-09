@@ -2,10 +2,10 @@
 @section('title', "Raport Akhir Semester")
 
 @section('css')
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
-/>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+    />
     <style>
         table.head_table tr td{
             padding: 5px 10px;
@@ -242,17 +242,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                         <tr>
                                             <td>Sakit</td>
                                             <td>:</td>
-                                            <td>{{$kelas_siswa->kelas->sakit ?? 0}} hari</td>
+                                            <td>{{$kelas_siswa->sakit ?? 0}} hari</td>
                                         </tr>
                                         <tr>
                                             <td>Izin</td>
                                             <td>:</td>
-                                            <td>{{$kelas_siswa->kelas->izin ?? 0}} hari</td>
+                                            <td>{{$kelas_siswa->izin ?? 0}} hari</td>
                                         </tr>
                                         <tr>
                                             <td>Tanpa Keterangan</td>
                                             <td>:</td>
-                                            <td>{{$kelas_siswa->kelas->tanpa_keterangan ?? 0}} hari</td>
+                                            <td>{{$kelas_siswa->tanpa_keterangan ?? 0}} hari</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -270,9 +270,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                                     rows="5"
                                                     class="form-control" 
                                                     placeholder="Tulis catatan disini..."
-                                                >
-                                                {{$kelas_siswa->kelas->catatan_akhir}}
-                                                </textarea>
+                                                    id="catatan_akhir"
+                                                >{{$kelas_siswa->catatan_akhir}}</textarea>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -291,9 +290,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                                     rows="5"
                                                     class="form-control" 
                                                     placeholder="Tulis catatan disini..."
-                                                >
-                                                {{$kelas_siswa->kelas->kesimpulan}}
-                                                </textarea>
+                                                    id="kesimpulan"
+                                                >{{$kelas_siswa->kesimpulan}}</textarea>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -302,9 +300,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             </div>
                         </div>
                         <div class="text-center" style="margin-top:10px;">
-                            <button type="button" class="btn btn-primary">Simpan</button>
-                            {{-- <button type="button" class="btn btn-warning">Ubah</button> --}}
-                            {{-- <button onclick="printDiv('printableArea')" type="button" class="btn btn-success">Cetak</button> --}}
+                            <button onclick="simpanRaport(this,'{{$kelas_siswa->id}}')" type="button" class="btn btn-primary">Simpan</button>
                             <a href="{{ route('sekolah_sd.raport_akhir.print', $kelas_siswa->id ) }}" type="button" class="btn btn-success">Cetak</a>
                         </div>
                     </div>
@@ -412,5 +408,40 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             $("#filter_kelas").change(clearSelectize);
 
         })
+
+        const simpanRaport = (elm,id) => {
+            const btn = $(elm)
+            const kesimpulan = $('#kesimpulan').val();
+            const catatan_akhir = $('#catatan_akhir').val();
+            $.ajax({
+                type:"POST",
+                url:"{{route('sekolah_sd.kelas.store')}}",
+                data:{
+                    "update":1,
+                    "kesimpulan":kesimpulan,
+                    "catatan_akhir":catatan_akhir,
+                    "id":id
+                },
+                beforeSend:function(){
+                    btn.attr('disabled')
+                },
+                complete:function(){
+                    btn.removeAttr('disabled')
+                },
+                success:function(result){
+                    if(result.success == true){
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error:function(error){
+                    console.log("error",error)
+                }
+            })
+            // console.log("kesimpulan",kesimpulan)
+            // console.log("catatan_akhir",catatan_akhir)
+        }
+
     </script>
 @endsection

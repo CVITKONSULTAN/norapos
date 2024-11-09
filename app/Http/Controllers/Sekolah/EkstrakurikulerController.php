@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use \App\Models\Sekolah\Ekstrakurikuler;
+use \App\Models\Sekolah\EkskulSiswa;
 use DataTables;
 
 class EkstrakurikulerController extends Controller
@@ -132,6 +133,100 @@ class EkstrakurikulerController extends Controller
         } catch(Exception $e){
             $msg = $e->getMessage();
             return ['success'=>false,'msg'=>$msg];
+        }
+    }
+
+    function ekskul_siswa(Request $request){
+        try {
+
+            $ekskul = EkskulSiswa::where([
+                'kelas_id' => $request->kelas_id,
+                'siswa_id' => $request->siswa_id
+            ])
+            ->with('siswa','ekskul')
+            ->get();
+
+            return [
+                'success'=>true,
+                'msg'=>'OK',
+                'data' => $ekskul
+            ];
+
+        } catch(Exception $e){
+            $msg = $e->getMessage();
+            return ['success'=>false,'msg'=>$msg];
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeEkskulSiswa(Request $request)
+    {
+        try {
+            $input = $request->all();
+            if($request->show == 1){
+
+                $data = EkskulSiswa::where('id',$request->id)
+                ->with('ekskul')
+                ->first();
+
+                if(empty($data))
+                return [
+                    'success'=>false,
+                    'msg'=>'Data tidak ditemukan'
+                ];
+
+                return [
+                    'success'=>true,
+                    'msg'=>'OK',
+                    'data'=>$data
+                ];
+            }
+            if($request->insert == 1){
+                EkskulSiswa::create($input);
+                return [
+                    'success'=>true,
+                    'msg'=>'Data berhasil disimpan'
+                ];
+            }
+            if($request->update == 1){
+                $data = EkskulSiswa::find($request->id);
+                if(empty($data))
+                return [
+                    'success'=>false,
+                    'msg'=>'Data tidak ditemukan'
+                ];
+
+                $data->update($input);
+                return [
+                    'success'=>true,
+                    'msg'=>'Data berhasil disimpan'
+                ];
+            }
+            if($request->delete == 1){
+                $data = EkskulSiswa::find($request->id);
+                if(empty($data))
+                return [
+                    'success'=>false,
+                    'msg'=>'Data tidak ditemukan'
+                ];
+
+                $data->delete();
+                return [
+                    'success'=>true,
+                    'msg'=>'Data berhasil dihapus'
+                ];
+            }
+        } catch(Exception $e){
+            $msg = $e->getMessage();
+            return [
+                'success'=>false,
+                'msg'=>$msg
+            ];
         }
     }
 }

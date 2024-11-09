@@ -13,7 +13,8 @@ class EkskulSiswa extends Model
         'siswa_id',
         'kelas_id',
         'ekskul_id',
-        'keterangan'
+        'keterangan',
+        'nilai'
     ];
 
     function siswa(){

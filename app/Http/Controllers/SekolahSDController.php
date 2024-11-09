@@ -9,6 +9,7 @@ use \App\Models\Sekolah\Siswa;
 use \App\Models\Sekolah\NilaiSiswa;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
+use \App\Models\Sekolah\Ekstrakurikuler;
 
 use Spatie\Permission\Models\Role;
 
@@ -267,6 +268,8 @@ class SekolahSDController extends Controller
 
         $kelas = Kelas::first();
         $siswa = Siswa::first();
+
+        $data['ekskul'] = Ekstrakurikuler::orderBy('id','desc')->get();
 
         $data['kelas_siswa'] = KelasSiswa::where([
             'kelas_id'=> $kelas->id,

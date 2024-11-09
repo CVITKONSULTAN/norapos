@@ -43,6 +43,50 @@
 
 <section class="content">
 
+    <div id="ekskul_modal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="form_kelas_siswa_store" method="POST" action="{{route('sekolah_sd.ekskul-siswa.store')}}">
+                    @csrf
+                    <input value="1" type="hidden" name="insert" />
+                    <input value="0" type="hidden" name="update" />
+                    <input value="0" type="hidden" name="id" />
+                    <input type="hidden" name="kelas_id" value="{{$kelas_siswa->kelas_id}}" />
+                    <input type="hidden" name="siswa_id" value="{{$kelas_siswa->siswa_id}}" />
+
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            Form Ekskul
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Ekstrakurikuler</label>
+                            <select required class="form-control" name="ekskul_id">
+                                <option value="">-- Pilih Ekskul --</option>
+                                @foreach ($ekskul as $key => $item)
+                                    <option value="{{$item->id}}">{{$item->nama}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nilai</label>
+                            <input maxlength="1" class="form-control" name="nilai" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Keterangan</label>
+                            <textarea rows="5" required class="form-control" name="keterangan"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
            <!-- Custom Tabs -->
@@ -209,27 +253,19 @@
   --}}
                                     </tbody>
                                 </table>
-
+                                <div class="text-right" style="margin-top: 10px;">
+                                    <button onclick="tambahEkskul()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Ekskul</button>
+                                </div>
                                 <table class="tabel_penilaian">
                                     <thead>
                                         <tr>
                                             <th>No</th>
                                             <th>Ekstrakurikuler</th>
                                             <th>Keterangan</th>
+                                            <th>Tindakan</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center">1</td>
-                                            <td>Hizbul Wathan</td>
-                                            <td>Kurang aktif mengikuti kegiatan Ekstrakurikuler</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">2</td>
-                                            <td>Renang</td>
-                                            <td>Kurang aktif mengikuti kegiatan Ekstrakurikuler</td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody id="ekskul_list"></tbody>
                                 </table>
 
                                 <table class="tabel_penilaian">
@@ -439,9 +475,154 @@
                     console.log("error",error)
                 }
             })
-            // console.log("kesimpulan",kesimpulan)
-            // console.log("catatan_akhir",catatan_akhir)
         }
+
+        const loadEkskul = () => {
+            $.ajax({
+                type:"GET",
+                url:`{{ route('sekolah_sd.ekskul-siswa.show') }}`,
+                data:{
+                    kelas_id:"{{$kelas_siswa->kelas_id}}",
+                    siswa_id:"{{$kelas_siswa->siswa_id}}",
+                },
+                beforeSend:function(){
+                    $("#ekskul_list").empty();
+                },
+                complete:function(){
+
+                },
+                success:function(result){
+                    // console.log("result",result);
+                    if(!result.success) return;
+                    for(const k in result.data){
+                        const val = result.data[k]
+                        const template = `
+                        <tr>
+                            <td class="text-center">${parseInt(k)+1}</td>
+                            <td>${val.ekskul.nama}</td>
+                            <td>${val.keterangan}</td>
+                            <td class="text-center">
+                                <button onclick="editEkskul(this,${val.id})" class="btn btn-primary btn-xs"><i class="fa fa-pencil-alt"></i></button>
+                                <button onclick="deleteEkskul(this,${val.id})" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        `;
+                        $("#ekskul_list").append(template);
+                    }
+                },
+                error:function(error){
+
+                },
+            })
+        }
+
+        const tambahEkskul = () => {
+            const modals = $("#ekskul_modal");
+            modals.find('input[name=insert]').val(1);
+            modals.find('input[name=update]').val(0);
+            modals.find('input[name=id]').val(0);
+            $("#form_kelas_siswa_store").trigger("reset");
+            modals.modal("show");
+        }
+
+        $(document).ready(function(){
+            loadEkskul();
+        })
+
+        $("#form_kelas_siswa_store").on('submit', (function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                data: new FormData(this),
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function(result) {
+                    console.log("result",result);
+                    if(result.success == true){
+                        loadEkskul();
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                    $("#form_kelas_siswa_store").trigger("reset");
+                    $("#ekskul_modal").modal("hide");
+                },
+                error: function(e) {
+                    console.log(e);
+                },
+                complete:()=>{
+                    $(this).find('button').removeAttr('disabled')
+                }
+            });
+        }));
+
+        const deleteEkskul = (elm,id) => {
+            const btn = $(elm)
+            $.ajax({
+                url: "{{route('sekolah_sd.ekskul-siswa.store')}}",
+                type: "POST",
+                data: {delete:1,id:id},
+                beforeSend:function(){
+                    btn.attr('disabled')
+                },
+                complete:function(){
+                    btn.removeAttr('disabled')
+                },
+                success: function(result) {
+                    console.log("result",result);
+                    if(result.success == true){
+                        loadEkskul();
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        const editEkskul = (elm,id) => {
+            const btn = $(elm)
+            const form = $("#form_kelas_siswa_store")
+            $.ajax({
+                url: "{{route('sekolah_sd.ekskul-siswa.store')}}",
+                type: "POST",
+                data: {show:1,id:id},
+                beforeSend:function(){
+                    btn.attr('disabled')
+                },
+                complete:function(){
+                    btn.removeAttr('disabled')
+                },
+                success: function(result) {
+
+                    console.log("result",result);
+
+                    if(!result.success)
+                    return toastr.error(result.msg);
+
+                    const {data} = result
+
+                    form.find('input[name=insert]').val(0);
+                    form.find('input[name=update]').val(1);
+                    form.find('input[name=id]').val(data.id);
+
+                    form.find('select[name=ekskul_id]').val(data.ekskul_id);
+                    form.find('input[name=nilai]').val(data.nilai);
+                    form.find('textarea[name=keterangan]').val(data.keterangan);
+                    $("#ekskul_modal").modal("show");
+                    
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
 
     </script>
 @endsection

@@ -173,6 +173,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.ekskul.data');
         Route::delete('data-ekskul/{id}',"Sekolah\EkstrakurikulerController@destroy")
         ->name('sekolah_sd.ekskul.delete');
+        Route::post('data-ekskul-siswa',"Sekolah\EkstrakurikulerController@storeEkskulSiswa")
+        ->name('sekolah_sd.ekskul-siswa.store');
+
+        Route::get('ekskul-siswa/show',"Sekolah\EkstrakurikulerController@ekskul_siswa")
+        ->name('sekolah_sd.ekskul-siswa.show');
 
         Route::get('data-tendik',"SekolahSDController@data_tendik_index")
         ->name('sekolah_sd.tendik.index');

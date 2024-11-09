@@ -75,6 +75,7 @@
                 </div>
                 <div class="row">
                     {{-- @for ($i = 1; $i <= 11; $i++)    --}}
+                    {{dd($tp)}}
                     @foreach ($tp as $i => $item)
                         <div class="form-group col-sm-4">
                             <label>TP {{$i+1}}

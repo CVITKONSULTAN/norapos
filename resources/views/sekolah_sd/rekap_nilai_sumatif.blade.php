@@ -145,12 +145,12 @@
                     </select>
                 </div>
             </div>
-            {{-- <div class="col-md-2">
+            <div class="col-md-2">
                 <div style="margin-top: 2.5rem;">
                     <button type="submit" class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
                     <button class="btn btn-primary" id="reset">RESET</button>
                 </div>
-            </div> --}}
+            </div>
         @endcomponent
     </form>
 
@@ -326,13 +326,13 @@
             product_table.ajax.reload();
         }
 
-        $('#filter_tahun_ajaran').change(reloadTable)
-        $('#filter_semester').change(reloadTable)
-        $('#filter_nama_kelas').change(reloadTable)
+        // $('#filter_tahun_ajaran').change(reloadTable)
+        // $('#filter_semester').change(reloadTable)
+        // $('#filter_nama_kelas').change(reloadTable)
 
-        $("#filter_mapel").change(function(){
-            $("#form_filter").submit();
-        });
+        // $("#filter_mapel").change(function(){
+        //     $("#form_filter").submit();
+        // });
 
         $(document).ready( function(){
         product_table = $('#product_table').DataTable({

@@ -102,8 +102,12 @@ class SekolahSDController extends Controller
         // return redirect()->route('sekolah_sd.kelas.index')
         // ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
 
+        $tp_mapel = "[]";
+        if( !empty($data['list_data']) || !empty($data['list_data']->first())){
+            $tp_mapel = $data['list_data']->tp_mapel;
+        }
         try{
-            $data['tp'] = json_decode($data['list_data']->first()->tp_mapel,true);
+            $data['tp'] = json_decode($tp_mapel,true);
             if(empty($data['tp'])) $data['tp'] = [];
         }catch(Exception $e){
             $data['tp'] = [];
@@ -168,13 +172,24 @@ class SekolahSDController extends Controller
         $data['list_data'] = $data['list_data']->get();
 
 
-        if(empty($data['list_data']->first()))
-        return redirect()->route('sekolah_sd.kelas.index')
-        ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
+        // if(empty($data['list_data']->first()))
+        // return redirect()->route('sekolah_sd.kelas.index')
+        // ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
 
-        // $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+        // // $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+        // try{
+        //     $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+        //     if(empty($data['lm'])) $data['lm'] = [];
+        // }catch(Exception $e){
+        //     $data['lm'] = [];
+        // }
+
+        $tp_mapel = "[]";
+        if( !empty($data['list_data']) || !empty($data['list_data']->first())){
+            $tp_mapel = $data['list_data']->tp_mapel;
+        }
         try{
-            $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+            $data['lm'] = json_decode($tp_mapel,true);
             if(empty($data['lm'])) $data['lm'] = [];
         }catch(Exception $e){
             $data['lm'] = [];

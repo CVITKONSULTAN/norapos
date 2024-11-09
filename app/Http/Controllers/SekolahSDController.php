@@ -10,6 +10,7 @@ use \App\Models\Sekolah\NilaiSiswa;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\Ekstrakurikuler;
+use \App\Models\Sekolah\EkskulSiswa;
 
 use Spatie\Permission\Models\Role;
 
@@ -316,11 +317,17 @@ class SekolahSDController extends Controller
             ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
         }
 
-        $data['nilai_list'] = NilaiSiswa::where([
+        $where = [
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
-        ])
+        ];
+
+        $data['nilai_list'] = NilaiSiswa::where($where)
         ->with('mapel')
+        ->get();
+
+        $data['ekskul_siswa'] = EkskulSiswa::where($where)
+        ->with('ekskul')
         ->get();
 
         return view('sekolah_sd.prints.akhir',$data);

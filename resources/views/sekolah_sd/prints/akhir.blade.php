@@ -104,16 +104,18 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="text-center">1</td>
-                <td>Hizbul Wathan</td>
-                <td>Kurang aktif mengikuti kegiatan Ekstrakurikuler</td>
-            </tr>
-            <tr>
+            @foreach ($ekskul_siswa as $key => $item)    
+                <tr>
+                    <td class="text-center">{{ $key+1 }}</td>
+                    <td>{{ $item->ekskul->nama }}</td>
+                    <td>{{ $item->keterangan }}</td>
+                </tr>
+            @endforeach
+            {{-- <tr>
                 <td class="text-center">2</td>
                 <td>Renang</td>
                 <td>Kurang aktif mengikuti kegiatan Ekstrakurikuler</td>
-            </tr>
+            </tr> --}}
         </tbody>
     </table>
 
@@ -157,17 +159,17 @@
             <tr>
                 <td>Sakit</td>
                 <td>:</td>
-                <td>{{$kelas_siswa->kelas->sakit ?? 0}} hari</td>
+                <td>{{$kelas_siswa->sakit ?? 0}} hari</td>
             </tr>
             <tr>
                 <td>Izin</td>
                 <td>:</td>
-                <td>{{$kelas_siswa->kelas->izin ?? 0}} hari</td>
+                <td>{{$kelas_siswa->izin ?? 0}} hari</td>
             </tr>
             <tr>
                 <td>Tanpa Keterangan</td>
                 <td>:</td>
-                <td>{{$kelas_siswa->kelas->tanpa_keterangan ?? 0}} hari</td>
+                <td>{{$kelas_siswa->tanpa_keterangan ?? 0}} hari</td>
             </tr>
         </tbody>
     </table>

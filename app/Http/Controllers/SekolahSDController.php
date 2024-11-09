@@ -103,7 +103,7 @@ class SekolahSDController extends Controller
         // ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
 
         $tp_mapel = "[]";
-        if( !empty($data['list_data']) || !empty($data['list_data']->first())){
+        if( !empty($data['list_data']) && !empty($data['list_data']->first())){
             $tp_mapel = $data['list_data']->tp_mapel;
         }
         try{
@@ -185,7 +185,7 @@ class SekolahSDController extends Controller
         // }
 
         $tp_mapel = "[]";
-        if( !empty($data['list_data']) || !empty($data['list_data']->first())){
+        if( !empty($data['list_data']) && !empty($data['list_data']->first())){
             $tp_mapel = $data['list_data']->tp_mapel;
         }
         try{

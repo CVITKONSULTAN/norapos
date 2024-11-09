@@ -10,6 +10,7 @@ use \App\Models\Sekolah\NilaiSiswa;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\JurnalKelas;
+use \App\Models\Sekolah\TenagaPendidik;
 use DataTables;
 
 class KelasController extends Controller
@@ -206,6 +207,13 @@ class KelasController extends Controller
             }
             if(isset($input['update']) && $input['update'] == 1){
                 $m = Kelas::findorfail($input['id']);
+                $tendik = TenagaPendidik::find($request->wali_kelas_id);
+                if(!empty($tendik)){
+                    $input['nama_wali_kelas'] = $tendik->nama;
+                    $input['nbm_wali_kelas'] = $tendik->nbm;
+                    $user_id = $tendik->user->id;
+                    $input['wali_kelas_id'] = $user_id;
+                }
                 $m->update($input);
                 return ['success'=>true,'msg'=>'Data berhasil disimpan'];
             }

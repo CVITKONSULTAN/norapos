@@ -44,6 +44,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             <label>Nama Kelas</label>
                             <input type="text" name="nama_kelas" required class="form-control" />
                         </div>
+                        <div class="form-group">
+                            <label>Wali Kelas</label>
+                            <select name="wali_kelas_id" class="wali_kelas_selection"></select>
+                            <p class="edit_wali_kelas_container">Sebelumnya : <b class="edit_wali_kelas_val"></b> </p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
@@ -188,6 +193,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
 
         let selectizeInstanceKelas;
         let selectizeInstanceSiswa;
+        let selectizeInstanceWaliKelas;
 
         $(function () {
             selectizeInstanceKelas = $(".kelas_selection").selectize({
@@ -239,6 +245,34 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             const results = res.data.map(item => ({
                                 id: item.id,
                                 name: `${item.nama} (${item.nisn})`
+                            }));
+                            callback(results);
+                        }
+                    });
+                }
+            })[0].selectize;
+
+            selectizeInstanceWaliKelas = $(".wali_kelas_selection").selectize({
+                placeholder: 'Cari disini...',
+                maxItems: 1,
+                create: false,
+                valueField: 'id',         // Field to use as the value
+                labelField: 'name',       // Field to use as the label
+                searchField: 'name',      // Field to use for searching
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+                    $.ajax({
+                        url: '/sekolah_sd/data-tendik/data?draw=1&columns%5B0%5D%5Bdata%5D=id&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=nip&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=nama&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=tempat_lahir&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=alamat&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=no_hp&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=jenis_kelamin&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=bidang_studi&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=status&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=true&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B9%5D%5Bdata%5D=keterangan&columns%5B9%5D%5Bname%5D=&columns%5B9%5D%5Bsearchable%5D=true&columns%5B9%5D%5Borderable%5D=true&columns%5B9%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B9%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B10%5D%5Bdata%5D=foto&columns%5B10%5D%5Bname%5D=&columns%5B10%5D%5Bsearchable%5D=true&columns%5B10%5D%5Borderable%5D=true&columns%5B10%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B10%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B11%5D%5Bdata%5D=id&columns%5B11%5D%5Bname%5D=&columns%5B11%5D%5Bsearchable%5D=false&columns%5B11%5D%5Borderable%5D=true&columns%5B11%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B11%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc&start=0&length=25&search%5Bvalue%5D='+query,
+                        type: 'GET',
+                        dataType: 'json',
+                        error: function(error) {
+                            console.log(error)
+                            callback();
+                        },
+                        success: function(res) {
+                            const results = res.data.map(item => ({
+                                id: item.id,
+                                name: `${item.nama} (${item.nik})`
                             }));
                             callback(results);
                         }
@@ -376,6 +410,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
             modals_dom.find('input[name=insert]').val(1);
             modals_dom.find('input[name=update]').val(0);
             modals_dom.find('input[name=id]').val(0);
+            $('.edit_wali_kelas_container').hide();
             modals_dom.modal('show');
         }
 
@@ -404,6 +439,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     modals_dom.find('input[name=tahun_ajaran]').val( data.tahun_ajaran );
                     modals_dom.find('input[name=semester]').val( data.semester );
                     modals_dom.find('input[name=nama_kelas]').val( data.nama_kelas );
+                    $('.edit_wali_kelas_container').show();
+                    $('.edit_wali_kelas_val').text(data.nama_wali_kelas);
+                    selectizeInstanceWaliKelas.setValue(null)
                 }
             })
             

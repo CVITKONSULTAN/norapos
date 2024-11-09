@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use \App\Models\Sekolah\Siswa;
 use \App\Models\Sekolah\Kelas;
+use \App\Models\Sekolah\TenagaPendidik;
 
 class KelasSiswa extends Model
 {
@@ -23,7 +24,6 @@ class KelasSiswa extends Model
         'sakit',
         'tanpa_keterangan',
     ];
-    
     function siswa(){
         return $this->belongsTo(Siswa::class,'siswa_id','id');
     }

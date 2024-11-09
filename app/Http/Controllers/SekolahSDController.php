@@ -98,9 +98,9 @@ class SekolahSDController extends Controller
 
         $data['list_data'] = $data['list_data']->get();
 
-        if(empty($data['list_data']->first()))
-        return redirect()->route('sekolah_sd.kelas.index')
-        ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
+        // if(empty($data['list_data']->first()))
+        // return redirect()->route('sekolah_sd.kelas.index')
+        // ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
 
         try{
             $data['tp'] = json_decode($data['list_data']->first()->tp_mapel,true);

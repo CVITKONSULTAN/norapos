@@ -102,7 +102,11 @@ class SekolahSDController extends Controller
         return redirect()->route('sekolah_sd.kelas.index')
         ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
 
-        $data['tp'] = json_decode($data['list_data']->first()->tp_mapel,true);
+        try{
+            $data['tp'] = json_decode($data['list_data']->first()->tp_mapel,true);
+        }catch(Exception $e){
+            $data['tp'] = [];
+        }
 
         return view('sekolah_sd.rekap_nilai_formatif',$data);
     }
@@ -167,7 +171,12 @@ class SekolahSDController extends Controller
         return redirect()->route('sekolah_sd.kelas.index')
         ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
 
-        $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+        // $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+        try{
+            $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
+        }catch(Exception $e){
+            $data['lm'] = [];
+        }
 
         return view('sekolah_sd.rekap_nilai_sumatif',$data);
     }

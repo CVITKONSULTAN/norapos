@@ -14,7 +14,8 @@ class Mapel extends Model
         'kategori',
         'lingkup_materi',
         'tujuan_pembelajaran',
-        'business_id'
+        'business_id',
+        'kelas',
     ];
 
     protected $casts = [

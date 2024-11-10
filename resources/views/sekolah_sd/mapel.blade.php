@@ -23,8 +23,17 @@
                 </div>
                 <div class="modal-body">
                    <div class="form-group">
+                        <label>Kelas</label>
+                        <select class="form-control">
+                            @for ($i = 1; $i <= 6; $i++)
+                                <option value="{{$i}}">{{$i}}</option>
+                            @endfor
+                        </select>
+                   </div>
+                   <div class="form-group">
                         <label>File</label>
                         <input required class="form-control" type="file" name="import_file" />
+                        <p>Format file import data mapel : <a href="#">Download</a></p>
                    </div>
                 </div>
                 <div class="modal-footer">
@@ -55,6 +64,16 @@
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="product_list_tab">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Filter Kelas</label>
+                                <select id="filter_kelas" class="form-control">
+                                    @for ($i = 1; $i <= 6; $i++)
+                                        <option value="{{$i}}">Kelas {{$i}}</option>
+                                    @endfor
+                                </select>
+                           </div>
+                        </div>
                         <div class="text-right" style="margin-bottom:20px;">
                             <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
                         </div>
@@ -64,6 +83,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Mapel</th>
+                                        <th>Kelas</th>
                                         <th>Kategori</th>
                                         <th>Tindakan</th>
                                     </tr>
@@ -105,10 +125,16 @@
                 serverSide: true,
                 "ajax": {
                     "url": "{{ route('sekolah_sd.mapel.data') }}",
+                    "data":function(d){
+                        const kelas = $("#filter_kelas").val();
+                        d.kelas = kelas;
+                        d = __datatable_ajax_callback(d);
+                    }
                 },
                 columns: [
                     { data: 'id'  },
                     { data: 'nama'  },
+                    { data: 'kelas'  },
                     { data: 'kategori'  },
                     { 
                         data: 'id',
@@ -161,42 +187,13 @@
                         });
                     }
                 });
-            });
-
-            $(document).on('click', '#delete-selected', function(e){
-                e.preventDefault();
-                var selected_rows = getSelectedRows();
-                
-                if(selected_rows.length > 0){
-                    $('input#selected_rows').val(selected_rows);
-                    swal({
-                        title: LANG.sure,
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    }).then((willDelete) => {
-                        if (willDelete) {
-                            $('form#mass_delete_form').submit();
-                        }
-                    });
-                } else{
-                    $('input#selected_rows').val('');
-                    swal('@lang("lang_v1.no_row_selected")');
-                }    
-            });
-
+            });å
 
         });
 
-        function getSelectedRows() {
-            var selected_rows = [];
-            var i = 0;
-            $('.row-select:checked').each(function () {
-                selected_rows[i++] = $(this).val();
-            });
-
-            return selected_rows; 
-        }
+        $("#filter_kelas").change(function(){
+            product_table.ajax.reload();
+        })
 
     </script>
 @endsection

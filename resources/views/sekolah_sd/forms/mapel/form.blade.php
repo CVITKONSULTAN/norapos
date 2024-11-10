@@ -13,6 +13,19 @@
         </td>
     </tr>
     <tr>
+        <th colspan="2">Kelas</th>
+        <td>
+            <select required name="kelas" class="form-control">
+                @for ($i = 1; $i <= 6; $i++)
+                    <option 
+                        {{ isset($data) && $data['kelas'] == $i ? 'selected' : '' }} 
+                        value="{{$i}}"
+                    >{{$i}}</option>
+                @endfor
+            </select>
+        </td>
+    </tr>
+    <tr>
         <th colspan="2">Kategori Mapel</th>
         <td>
             <select name="kategori" required class="form-control">

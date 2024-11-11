@@ -185,6 +185,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.tendik.create');
         Route::post('data-tendik',"Sekolah\TenagaPendidikController@store")
         ->name('sekolah_sd.tendik.store');
+        Route::put('data-tendik/{id}',"Sekolah\TenagaPendidikController@update")
+        ->name('sekolah_sd.tendik.update');
         Route::get('data-tendik/data',"Sekolah\TenagaPendidikController@data")
         ->name('sekolah_sd.tendik.data');
         Route::get('data-tendik/{id}/edit',"Sekolah\TenagaPendidikController@edit")

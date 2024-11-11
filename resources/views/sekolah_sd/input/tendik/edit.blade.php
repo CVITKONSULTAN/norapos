@@ -31,8 +31,9 @@
                 </div>
                 <div id="collapseFilter" class="panel-collapse active collapse in" aria-expanded="true">
                     <div class="box-body">
-                        <form class="row" action="{{route('sekolah_sd.tendik.store')}}" enctype="multipart/form-data" method="POST">
-                        @include('sekolah_sd.forms.tendik.form')
+                        <form class="row" action="{{route('sekolah_sd.tendik.update',$data['id'])}}" enctype="multipart/form-data" method="POST">
+                            @method('PUT')
+                            @include('sekolah_sd.forms.tendik.form')
                         </form>
                     </div>
                 </div>

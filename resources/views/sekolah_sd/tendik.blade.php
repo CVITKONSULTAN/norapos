@@ -63,6 +63,7 @@
                                 <thead>
                                     <tr>
                                         <td>ID</td>
+                                        <td>NIK</td>
                                         <td>NIP/NRG</td>
                                         <td>Nama Lengkap</td>
                                         <td>Tempat / Tanggal Lahir</td>
@@ -132,6 +133,7 @@
             },
             columns: [
                 { searchable: false, data: 'id'  },
+                { data: 'nik'  },
                 { data: 'nip'  },
                 { data: 'nama'  },
                 { 

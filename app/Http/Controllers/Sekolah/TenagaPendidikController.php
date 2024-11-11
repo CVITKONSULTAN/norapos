@@ -8,6 +8,7 @@ use Validator;
 use DataTables;
 use Excel;
 
+use App\Models\Sekolah\Mapel;
 use App\Models\Sekolah\TenagaPendidik;
 use App\User;
 use \App\Imports\TendikImport;
@@ -23,19 +24,19 @@ class TenagaPendidikController extends Controller
     ) {
         $user = User::where('username',$username);
         if($exclude_user_id != null){
-            $user = $user->whereNot('id',$exclude_user_id);
+            $user = $user->where('id','!=',$exclude_user_id);
         }
-        $tendik = TenagaPendidik::where('nip',$username);
+        $tendik = TenagaPendidik::where('nik',$username);
         if($exclude_id != null){
-            $tendik = $tendik->whereNot('id',$exclude_id);
+            $tendik = $tendik->where('id','!=',$exclude_id);
         }
 
         if($user->first()){
-            return "NIP sudah digunakan";
+            return "NIK sudah digunakan";
         }
 
         if($tendik->first())
-            return "NIP sudah di gunakan";
+            return "NIK sudah di gunakan";
 
         return false;
     }
@@ -86,7 +87,7 @@ class TenagaPendidikController extends Controller
                 $input['foto'] = '/uploads/'.$input['foto'];
             }
 
-            $check = $this->checkNip($input['nip']);
+            $check = $this->checkNip($input['nik']);
 
             if($check){
                 return redirect()
@@ -98,9 +99,9 @@ class TenagaPendidikController extends Controller
             $user_details['business_id'] = $business_id;
             $user = User::create([
                 'first_name'=>$input['nama'],
-                'username'=>$input['nip'],
+                'username'=>$input['nik'],
                 'business_id'=>$business_id,
-                'password'=> bcrypt($input['nip'])
+                'password'=> bcrypt($input['nik'])
             ]);
 
             $input['user_id'] = $user->id;
@@ -138,6 +139,13 @@ class TenagaPendidikController extends Controller
     public function edit($id)
     {
         $data['data'] = TenagaPendidik::findorfail($id);
+        try{
+            $data['data']->mapel_id_list_array = json_decode($data['data']->mapel_id_list,true);
+        } catch(Exception $e){
+            $data['data']->mapel_id_list_array = [];
+        }
+        $data['list_mapel'] = Mapel::whereIn('id',$data['data']->mapel_id_list_array)->get();
+        // dd($data['list_mapel']);
         return view('sekolah_sd.input.tendik.edit',$data);
     }
 
@@ -150,7 +158,66 @@ class TenagaPendidikController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // try{
+            $input = $request->all();
+            // dd($input,$id);
+
+            $tendik = TenagaPendidik::find($id);
+
+            $validator = Validator::make($input, [
+                'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+        
+            if ($validator->fails()) {
+                $error_msg = $validator->errors()->first();
+                return redirect()
+                ->back()
+                ->with('message', 'error|'.$error_msg);
+            }
+
+            if($request->foto){
+                $input['foto'] = $request->foto->store('foto_tendik');
+                $input['foto'] = '/uploads/'.$input['foto'];
+            }
+
+            $check = $this->checkNip(
+                $input['nik'],
+                $tendik->id,
+                $tendik->user_id
+            );
+
+            if($check){
+                return redirect()
+                ->back()
+                ->with('message', "error|$check");
+            }
+
+            // $business_id = $request->session()->get('user.business_id');
+            // $user_details['business_id'] = $business_id;
+            // $user = User::create([
+            //     'first_name'=>$input['nama'],
+            //     'username'=>$input['nip'],
+            //     'business_id'=>$business_id,
+            //     'password'=> bcrypt($input['nip'])
+            // ]);
+
+            // dd($input);
+            $tendik->user()->update([
+                'first_name'=>$input['nama'],
+                'username'=>$input['nik']
+            ]);
+
+            $tendik->update($input);
+
+            return redirect()
+            ->route('sekolah_sd.tendik.index')
+            ->with('message', 'success|Data berhasil disimpan');
+        // } catch(Exception $e){
+        //     $msg = $e->getMessage();
+        //     return redirect()
+        //     ->back()
+        //     ->with('message', "error|$msg");
+        // }
     }
 
     /**

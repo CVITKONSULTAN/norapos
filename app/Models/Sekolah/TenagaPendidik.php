@@ -30,6 +30,11 @@ class TenagaPendidik extends Model
         'mulai_bertugas',
         'status_perkawinan',
         'status_kepegawaian',
+        'mapel_id_list',
+    ];
+
+    protected $casts = [
+        'mapel_id_list' => 'array'
     ];
 
     function user(){

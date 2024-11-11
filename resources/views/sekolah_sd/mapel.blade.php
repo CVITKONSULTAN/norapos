@@ -52,6 +52,7 @@
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
                     </li>
+                    @if(!auth()->user()->checkGuru())
                     <li>
                         <a 
                             target="_blank" 
@@ -60,6 +61,7 @@
                             <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
                         </a>
                     </li>
+                    @endif
                 </ul>
 
                 <div class="tab-content">

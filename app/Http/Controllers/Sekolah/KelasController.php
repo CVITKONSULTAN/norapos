@@ -198,6 +198,21 @@ class KelasController extends Controller
                 $m = Kelas::findorfail($input['id']);
                 return ['success'=>true,'msg'=>'OK','data'=>$m];
             }
+            if(isset($input['delete']) && $input['delete'] == 1){
+                $m = Kelas::findorfail($input['id']);
+                $m->delete();
+                return ['success'=>true,'msg'=>'Data berhasil dihapus'];
+            }
+            if($request->has('wali_kelas_id')){
+                $tendik = TenagaPendidik::find($request->wali_kelas_id);
+                if(!empty($tendik)){
+                    $input['nama_wali_kelas'] = $tendik->nama;
+                    $input['nbm_wali_kelas'] = $tendik->nbm;
+                    $user_id = $tendik->user->id;
+                    $input['wali_kelas_id'] = $user_id;
+                }
+            }
+
             if(
                 isset($input['insert']) &&
                 $input['insert'] == 1
@@ -207,20 +222,9 @@ class KelasController extends Controller
             }
             if(isset($input['update']) && $input['update'] == 1){
                 $m = Kelas::findorfail($input['id']);
-                $tendik = TenagaPendidik::find($request->wali_kelas_id);
-                if(!empty($tendik)){
-                    $input['nama_wali_kelas'] = $tendik->nama;
-                    $input['nbm_wali_kelas'] = $tendik->nbm;
-                    $user_id = $tendik->user->id;
-                    $input['wali_kelas_id'] = $user_id;
-                }
+                
                 $m->update($input);
                 return ['success'=>true,'msg'=>'Data berhasil disimpan'];
-            }
-            if(isset($input['delete']) && $input['delete'] == 1){
-                $m = Kelas::findorfail($input['id']);
-                $m->delete();
-                return ['success'=>true,'msg'=>'Data berhasil dihapus'];
             }
         } catch(Exception $e){
             $msg = $e->getMessage();

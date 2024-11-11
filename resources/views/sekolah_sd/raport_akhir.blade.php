@@ -43,6 +43,7 @@
 
 <section class="content">
 
+    @if(!empty($kelas_siswa))
     <div id="ekskul_modal" class="modal fade">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -51,8 +52,8 @@
                     <input value="1" type="hidden" name="insert" />
                     <input value="0" type="hidden" name="update" />
                     <input value="0" type="hidden" name="id" />
-                    <input type="hidden" name="kelas_id" value="{{$kelas_siswa->kelas_id}}" />
-                    <input type="hidden" name="siswa_id" value="{{$kelas_siswa->siswa_id}}" />
+                    <input type="hidden" name="kelas_id" value="{{$kelas_siswa->kelas_id ?? 0}}" />
+                    <input type="hidden" name="siswa_id" value="{{$kelas_siswa->siswa_id ?? 0}}" />
 
                     <div class="modal-header">
                         <h4 class="modal-title">
@@ -86,6 +87,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <div class="row">
         <div class="col-md-12">
@@ -97,11 +99,13 @@
                             Raport Akhir Semester (Individu)
                         </a>
                     </li>
-                    <li class="">
-                        <a href="#ekskul" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i>
-                            Cetak Raport Akhir Semester (Perkelas)
-                        </a>
-                    </li>
+                    @if(!empty($kelas_siswa))
+                        <li class="">
+                            <a href="#ekskul" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i>
+                                Cetak Raport Akhir Semester (Perkelas)
+                            </a>
+                        </li>
+                    @endif
                 </ul>
 
                 <div class="tab-content">
@@ -141,6 +145,7 @@
                             </div>
                         </form>
                         <hr />
+                        @if(!empty($kelas_siswa))
                         <div id="printableArea" class="row">
                             <div class="col-md-6">
                                 <table class="head_table">
@@ -225,32 +230,6 @@
                                                 </td>
                                             </tr>
                                         @endforeach
-{{-- 
-                                        <tr>
-                                            <td class="text-center">2</td>
-                                            <td>Pendidikan Agama Pancasila</td>
-                                            <td class="text-center">83</td>
-                                            <td>
-                                                <ol>
-                                                    <li>Catatan TP pertama</li>
-                                                    <li>Catatan TP kedua</li>
-                                                    <li>Catatan TP ketiga</li>
-                                                </ol>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">3</td>
-                                            <td>Matematika</td>
-                                            <td class="text-center">83</td>
-                                            <td>
-                                                <ol>
-                                                    <li>Catatan TP pertama</li>
-                                                    <li>Catatan TP kedua</li>
-                                                    <li>Catatan TP ketiga</li>
-                                                </ol>
-                                            </td>
-                                        </tr>
-  --}}
                                     </tbody>
                                 </table>
                                 <div class="text-right" style="margin-top: 10px;">
@@ -307,7 +286,7 @@
                                                     class="form-control" 
                                                     placeholder="Tulis catatan disini..."
                                                     id="catatan_akhir"
-                                                >{{$kelas_siswa->catatan_akhir}}</textarea>
+                                                >{{$kelas_siswa->catatan_akhir ?? ""}}</textarea>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -327,7 +306,7 @@
                                                     class="form-control" 
                                                     placeholder="Tulis catatan disini..."
                                                     id="kesimpulan"
-                                                >{{$kelas_siswa->kesimpulan}}</textarea>
+                                                >{{$kelas_siswa->kesimpulan ?? ""}}</textarea>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -336,35 +315,38 @@
                             </div>
                         </div>
                         <div class="text-center" style="margin-top:10px;">
-                            <button onclick="simpanRaport(this,'{{$kelas_siswa->id}}')" type="button" class="btn btn-primary">Simpan</button>
-                            <a href="{{ route('sekolah_sd.raport_akhir.print', $kelas_siswa->id ) }}" type="button" class="btn btn-success">Cetak</a>
+                            <button onclick="simpanRaport(this,'{{$kelas_siswa->id ?? 0}}')" type="button" class="btn btn-primary">Simpan</button>
+                            <a href="{{ route('sekolah_sd.raport_akhir.print', $kelas_siswa->id ?? 0 ) }}" type="button" class="btn btn-success">Cetak</a>
                         </div>
+                        @endif
                     </div>
-                    <div class="tab-pane" id="ekskul">
-                        
-                        <div class="row">
-                            <div class="form-group col-md-4">
-                                <label>Kelas</label>
-                                <select class="form-control">
-                                    <option>4 A</option>
-                                </select>
+                    @if(!empty($kelas_siswa))
+                        <div class="tab-pane" id="ekskul">
+                            
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label>Kelas</label>
+                                    <select class="form-control">
+                                        <option>4 A</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Tahun Pelajaran</label>
+                                    <select class="form-control">
+                                        <option>2024/2025</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Semester</label>
+                                    <select class="form-control">
+                                        <option>1</option>
+                                        <option>2</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group col-md-4">
-                                <label>Tahun Pelajaran</label>
-                                <select class="form-control">
-                                    <option>2024/2025</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label>Semester</label>
-                                <select class="form-control">
-                                    <option>1</option>
-                                    <option>2</option>
-                                </select>
-                            </div>
+                            <button type="button" class="btn btn-primary btn-block">Cetak</button>
                         </div>
-                        <button type="button" class="btn btn-primary btn-block">Cetak</button>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -482,8 +464,8 @@
                 type:"GET",
                 url:`{{ route('sekolah_sd.ekskul-siswa.show') }}`,
                 data:{
-                    kelas_id:"{{$kelas_siswa->kelas_id}}",
-                    siswa_id:"{{$kelas_siswa->siswa_id}}",
+                    kelas_id:"{{$kelas_siswa->kelas_id ?? 0}}",
+                    siswa_id:"{{$kelas_siswa->siswa_id ?? 0}}",
                 },
                 beforeSend:function(){
                     $("#ekskul_list").empty();

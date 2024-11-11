@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Passport\HasApiTokens;
 
+use \App\Models\Sekolah\TenagaPendidik;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -328,5 +330,9 @@ class User extends Authenticatable
     function checkGuru(){
         $business_id = $this->business->id;
         return $this->hasRole('guru#'.$business_id);
+    }
+
+    function tendik(){
+        return $this->hasOne(TenagaPendidik::class,'user_id','id');
     }
 }

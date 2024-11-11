@@ -141,6 +141,8 @@ class TenagaPendidikController extends Controller
         $data['data'] = TenagaPendidik::findorfail($id);
         try{
             $data['data']->mapel_id_list_array = json_decode($data['data']->mapel_id_list,true);
+            if(empty($data['data']->mapel_id_list_array)) 
+            $data['data']->mapel_id_list_array = [];
         } catch(Exception $e){
             $data['data']->mapel_id_list_array = [];
         }

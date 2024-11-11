@@ -37,7 +37,20 @@ class SekolahSDController extends Controller
     }
     
     function data_mapel_index(Request $request){
-        return view('sekolah_sd.mapel');
+        
+        $data['mapel_id_list'] = [];
+        
+        if($request->user()->checkGuru()){
+            // $data['mapel_id_list'] = $request->user()->tendik->mapel_id_list ?? null;
+            try {
+                $data['mapel_id_list'] = json_decode($request->user()->tendik->mapel_id_list,true);
+                if(empty($data['mapel_id_list']))
+                $data['mapel_id_list'] = [];
+            } catch (\Throwable $th) {
+                $data['mapel_id_list'] = [];
+            }
+        }
+        return view('sekolah_sd.mapel',$data);
     }
     function data_mapel_create(Request $request){
         return view('sekolah_sd.input.mapel.create');

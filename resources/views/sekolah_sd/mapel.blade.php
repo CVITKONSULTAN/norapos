@@ -128,6 +128,13 @@
                     "data":function(d){
                         const kelas = $("#filter_kelas").val();
                         d.kelas = kelas;
+                        @if(!empty($mapel_id_list))
+                            d.mapel_list = [
+                                @foreach($mapel_id_list as $key => $item)
+                                    {{$item}},
+                                @endforeach
+                            ];
+                        @endif
                         d = __datatable_ajax_callback(d);
                     }
                 },
@@ -187,7 +194,7 @@
                         });
                     }
                 });
-            });å
+            });
 
         });
 

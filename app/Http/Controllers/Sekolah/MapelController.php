@@ -34,8 +34,12 @@ class MapelController extends Controller
         $query = Mapel::select('id','nama','kategori','kelas')
         ->where('business_id',$business_id);
 
+        if($request->has('mapel_list'))
+        $query = $query->whereIn('id',$request->mapel_list);
+
         if($request->has('kelas'))
         $query = $query->where('kelas',$request->kelas);
+
 
         return DataTables::of($query)
         ->make(true);

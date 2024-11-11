@@ -80,10 +80,30 @@ class SekolahSDController extends Controller
 
         $data['filter'] = $filter;
 
-        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
-        $data['semester'] = Kelas::getGroupBy('semester');
-        $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
-        $data['mapel'] = Mapel::all();
+        $user = $request->user();
+        if($user->checkGuru()){
+
+            $list = $user->tendik->mapel_list();
+            $mapel = Mapel::whereIn('id',$list)->get();
+            $data['mapel'] = Mapel::whereIn('id',$list)
+            ->groupBy('nama')
+            ->get();
+            $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
+
+            $kelas = Kelas::whereIn('kelas',$data['list_kelas'])->get();
+
+            $data['tahun_ajaran'] = $kelas->groupBy('tahun_ajaran')->keys();
+            $data['semester'] = $kelas->groupBy('semester')->keys();
+            $data['nama_kelas'] = $kelas->groupBy('nama_kelas')->keys();
+
+        }else {
+
+            $data['mapel'] = Mapel::groupBy('nama')->get();
+
+            $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+            $data['semester'] = Kelas::getGroupBy('semester');
+            $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+        }
 
         if(
             empty($data['tahun_ajaran']) ||
@@ -127,15 +147,16 @@ class SekolahSDController extends Controller
             return $q;
         });
 
-        $data['list_data'] = $data['list_data']->get();
+        $data['list_data'] = $data['list_data']->first();
 
         // if(empty($data['list_data']->first()))
         // return redirect()->route('sekolah_sd.kelas.index')
         // ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
 
         $tp_mapel = "[]";
-        if( !empty($data['list_data']) && !empty($data['list_data']->first())){
-            $tp_mapel = $data['list_data']->first()->tp_mapel;
+        // if( !empty($data['list_data']) && !empty($data['list_data']->first())){
+        if( !empty($data['list_data'])){
+            $tp_mapel = $data['list_data']->tp_mapel;
         }
         try{
             $data['tp'] = json_decode($tp_mapel,true);
@@ -152,11 +173,31 @@ class SekolahSDController extends Controller
         $filter = $request->all();
 
         $data['filter'] = $filter;
+        
+        $user = $request->user();
+        if($user->checkGuru()){
 
-        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
-        $data['semester'] = Kelas::getGroupBy('semester');
-        $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
-        $data['mapel'] = Mapel::all();
+            $list = $user->tendik->mapel_list();
+            $mapel = Mapel::whereIn('id',$list)->get();
+            $data['mapel'] = Mapel::whereIn('id',$list)
+            ->groupBy('nama')
+            ->get();
+            $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
+
+            $kelas = Kelas::whereIn('kelas',$data['list_kelas'])->get();
+
+            $data['tahun_ajaran'] = $kelas->groupBy('tahun_ajaran')->keys();
+            $data['semester'] = $kelas->groupBy('semester')->keys();
+            $data['nama_kelas'] = $kelas->groupBy('nama_kelas')->keys();
+
+        }else {
+
+            $data['mapel'] = Mapel::groupBy('nama')->get();
+
+            $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+            $data['semester'] = Kelas::getGroupBy('semester');
+            $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+        }
 
         if(
             empty($data['tahun_ajaran']) ||

@@ -232,7 +232,7 @@
             <div class="col-md-2">
                 <div style="margin-top: 2.5rem;">
                     <button type="submit" class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
-                    <button class="btn btn-primary" id="reset">RESET</button>
+                    {{-- <button class="btn btn-primary" id="reset">RESET</button> --}}
                 </div>
             </div>
         @endcomponent

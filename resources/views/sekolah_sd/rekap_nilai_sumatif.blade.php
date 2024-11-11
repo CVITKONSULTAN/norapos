@@ -148,7 +148,7 @@
             <div class="col-md-2">
                 <div style="margin-top: 2.5rem;">
                     <button type="submit" class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
-                    <button class="btn btn-primary" id="reset">RESET</button>
+                    {{-- <button class="btn btn-primary" id="reset">RESET</button> --}}
                 </div>
             </div>
         @endcomponent
@@ -162,7 +162,9 @@
                         <tr>
                             {{-- <th rowspan="2">No.</th> --}}
                             <th rowspan="2">Nama Siswa</th>
-                            <th colspan="{{count($lm)}}">Sumatif Lingkup Materi (25%)</th>
+                            @if(count($lm) > 0)
+                                <th colspan="{{count($lm)}}">Sumatif Lingkup Materi (25%)</th>
+                            @endif
                             <th colspan="2">Sumatif Akhir (50%)</th>
                             <th rowspan="2">Nilai Akhir Formatif (25%)</th>
                             <th rowspan="2">Nilai Rapor</th>
@@ -353,7 +355,13 @@
                 }
             },
             columns: [
-                { searchable: true, data: 'siswa.nama'  },
+                { 
+                    searchable: true, 
+                    data: 'siswa.nama',
+                    render: function(data, type, row) {
+                        return data ? data : '';
+                    }
+                },
                 @foreach ($lm as $i => $item)
                     { 
                         searchable: false, 
@@ -404,7 +412,7 @@
                         `
                         return template;
                     }
-                },
+                }
             ]
         })
     })

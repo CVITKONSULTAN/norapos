@@ -45,6 +45,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             <input type="text" name="nama_kelas" required class="form-control" />
                         </div>
                         <div class="form-group">
+                            <label>Level Kelas</label>
+                            <select name="kelas" class="form-control">
+                                @for ($i = 1; $i <= 6; $i++)
+                                    <option value="{{$i}}">Kelas {{$i}}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Wali Kelas</label>
                             <select name="wali_kelas_id" class="wali_kelas_selection"></select>
                             <p class="edit_wali_kelas_container">Sebelumnya : <b class="edit_wali_kelas_val"></b> </p>
@@ -436,6 +444,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                 success: function(result){
                     const {data} = result;
                     if(!data) return;
+                    modals_dom.find('select[name=kelas]').val( data.kelas );
                     modals_dom.find('input[name=tahun_ajaran]').val( data.tahun_ajaran );
                     modals_dom.find('input[name=semester]').val( data.semester );
                     modals_dom.find('input[name=nama_kelas]').val( data.nama_kelas );

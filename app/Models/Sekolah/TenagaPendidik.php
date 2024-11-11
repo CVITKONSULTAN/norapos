@@ -40,4 +40,16 @@ class TenagaPendidik extends Model
     function user(){
         return $this->belongsTo(User::class,'user_id','id');
     }
+
+    function mapel_list(){
+        try {
+            $list = json_decode($this->mapel_id_list,true);
+            if(empty($list))
+            $list = [];
+        } catch (\Throwable $th) {
+            $list = [];
+        }
+        // dd($list);
+        return $list;
+    }
 }

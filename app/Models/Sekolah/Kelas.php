@@ -16,6 +16,7 @@ class Kelas extends Model
         'nama_wali_kelas',
         'nbm_wali_kelas',
         'wali_kelas_id',
+        'kelas'
     ];
 
     public static function getGroupBy($column){

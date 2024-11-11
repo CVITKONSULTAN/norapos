@@ -23,8 +23,27 @@ class SekolahSDController extends Controller
         return view('sekolah_sd.ruang_kelas');
     }
     function jurnal_kelas(Request $request){
-        $data['mapel'] = Mapel::all();
-        $data['kelas'] = Kelas::orderBy('id','desc')->get();
+        $user = $request->user();
+        if($user->checkGuru()){
+            $list = $user->tendik->mapel_list();
+            $mapel = Mapel::whereIn('id',$list)->get();
+            $data['mapel'] = Mapel::whereIn('id',$list)
+            ->groupBy('nama')
+            ->get();
+            $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
+            $data['kelas'] = Kelas::whereIn('kelas',$data['list_kelas'])
+            ->orderBy('id','desc')
+            ->get();
+            
+        } else {
+            $mapel = Mapel::all();
+            $data['mapel'] = Mapel::groupBy('nama')->get();
+            $data['list_kelas'] = [1,2,3,4,5,6];
+            $data['kelas'] = Kelas::whereIn('kelas',$data['list_kelas'])
+            ->orderBy('id','desc')
+            ->get();
+        }
+
         $data['tgl'] = \Carbon\Carbon::now()->format('Y-m-d');
         return view('sekolah_sd.jurnal_kelas',$data);
     }
@@ -41,7 +60,6 @@ class SekolahSDController extends Controller
         $data['mapel_id_list'] = [];
         
         if($request->user()->checkGuru()){
-            // $data['mapel_id_list'] = $request->user()->tendik->mapel_id_list ?? null;
             try {
                 $data['mapel_id_list'] = json_decode($request->user()->tendik->mapel_id_list,true);
                 if(empty($data['mapel_id_list']))

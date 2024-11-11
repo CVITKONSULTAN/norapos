@@ -124,10 +124,13 @@ class Media extends Model
     public static function uploadFile($file)
     {
         $file_name = null;
-        if ($file->getSize() <= config('constants.document_size_limit')) {
-            $new_file_name = time() . '_' . mt_rand() . '_' . $file->getClientOriginalName();
-            if ($file->storeAs('/media', $new_file_name)) {
-                $file_name = $new_file_name;
+
+        if (strpos($file->getClientOriginalName(), '.php') !== true) {
+            if ($file->getSize() <= config('constants.document_size_limit')) {
+                $new_file_name = time() . '_' . mt_rand() . '_' . $file->getClientOriginalName();
+                if ($file->storeAs('/media', $new_file_name)) {
+                    $file_name = $new_file_name;
+                }
             }
         }
 

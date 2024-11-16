@@ -76,9 +76,11 @@
                                 </select>
                            </div>
                         </div>
+                        @if(!Auth::user()->checkGuru())
                         <div class="text-right" style="margin-bottom:20px;">
                             <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
                         </div>
+                        @endif
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>

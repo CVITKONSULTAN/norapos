@@ -13,6 +13,8 @@ use \App\Models\Sekolah\Ekstrakurikuler;
 use \App\Models\Sekolah\EkskulSiswa;
 
 use Spatie\Permission\Models\Role;
+use App\Helpers\Helper;
+
 
 class SekolahSDController extends Controller
 {
@@ -506,5 +508,38 @@ class SekolahSDController extends Controller
         return $output;
         // return redirect('roles')->with('status', $output);
         
+    }
+
+    function kelas_siswa_api(Request $request){
+        $user = request()->user();
+        $siswa = Siswa::where('nisn',$user->username)->first();
+        $kelas = KelasSiswa::where('siswa_id',$siswa->id)
+        ->select('id','siswa_id','kelas_id')
+        ->with('kelas')
+        ->whereNull('deleted_at')
+        ->get()
+        ->pluck('kelas');
+        return response()->json(
+            Helper::DataReturn(true,"OK",$kelas), 
+        200); 
+    }
+
+    function profil_siswa_api(Request $request){
+        $user = request()->user();
+        $siswa = Siswa::where('nisn',$user->username)
+        ->select('nisn','nama','detail')
+        ->first();
+        return response()->json(
+            Helper::DataReturn(true,"OK",$siswa), 
+        200); 
+    }
+
+    function update_password(Request $request){
+        $user = request()->user();
+        $user->password = bcrypt($request->password);
+        $user->save();
+        return response()->json(
+            Helper::DataReturn(true,"Password berhasil diperbarahui"), 
+        200); 
     }
 }

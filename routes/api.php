@@ -56,6 +56,13 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::post('/checkin/update', 'APIController@checkinUpdate');
     // end hotel kartika
 
+
+    Route::group(['prefix'=>'sekolah_sd'],function(){
+        Route::get('kelas','SekolahSDController@kelas_siswa_api');
+        Route::get('profil','SekolahSDController@profil_siswa_api');
+        Route::post('update-password','SekolahSDController@update_password');
+    });
+
 });
 
 Route::post('/blog', 'APIController@list_blog');

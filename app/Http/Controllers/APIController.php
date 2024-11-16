@@ -223,7 +223,8 @@ class APIController extends Controller
     
             return Helper::DataReturn(true,"OK",[
                 "token" => $token,
-                "role" => $role
+                "role" => $role,
+                "user_id" => $user->id
             ]);
         } catch (\Throwable $th) {
             return response()->json(

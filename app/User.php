@@ -329,7 +329,7 @@ class User extends Authenticatable
 
     function checkGuru(){
         $business_id = $this->business->id;
-        return $this->hasRole('guru#'.$business_id);
+        return $this->hasRole('guru#'.$business_id) || $this->hasRole('Guru#'.$business_id);;
     }
 
     function tendik(){

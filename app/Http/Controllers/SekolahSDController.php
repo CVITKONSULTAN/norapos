@@ -419,6 +419,8 @@ class SekolahSDController extends Controller
 
     function raport_akhir_print(Request $request, Int $id){
         
+        // dd($id);
+
         $data['kelas_siswa'] = KelasSiswa::findorfail($id);
 
         $data['business'] = $request->user()->business;
@@ -517,8 +519,8 @@ class SekolahSDController extends Controller
         ->select('id','siswa_id','kelas_id')
         ->with('kelas')
         ->whereNull('deleted_at')
-        ->get()
-        ->pluck('kelas');
+        ->get();
+        // ->pluck('kelas');
         return response()->json(
             Helper::DataReturn(true,"OK",$kelas), 
         200); 
@@ -533,6 +535,16 @@ class SekolahSDController extends Controller
             Helper::DataReturn(true,"OK",$siswa), 
         200); 
     }
+
+    // function raport_siswa_api(Request $request){
+    //     $user = request()->user();
+    //     $siswa = Siswa::where('nisn',$user->username)
+    //     ->select('nisn','nama','detail')
+    //     ->first();
+    //     return response()->json(
+    //         Helper::DataReturn(true,"OK",$siswa), 
+    //     200); 
+    // }
 
     function update_password(Request $request){
         $user = request()->user();

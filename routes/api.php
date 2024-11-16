@@ -61,6 +61,7 @@ Route::group(['middleware'=>'auth:api'],function(){
         Route::get('kelas','SekolahSDController@kelas_siswa_api');
         Route::get('profil','SekolahSDController@profil_siswa_api');
         Route::post('update-password','SekolahSDController@update_password');
+        Route::get('raport-akhir/{id}/print',"SekolahSDController@raport_akhir_print");
     });
 
 });

@@ -123,7 +123,7 @@
                         <td>
                             <img
                                 width="100" 
-                                src="/img/logo_dikbud.png"
+                                src="{{url('/img/logo_dikbud.png')}}"
                             />
                         </td>
                         <td class="kop_detail">
@@ -136,7 +136,7 @@
                         <td>
                             <img 
                                 width="130" 
-                                src="/img/sd_muhamamdiyah_2.png"
+                                src="{{url('/img/sd_muhamamdiyah_2.png')}}"
                             />
                         </td>
                     </tr>

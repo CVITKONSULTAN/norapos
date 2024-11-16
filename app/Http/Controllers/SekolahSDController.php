@@ -11,6 +11,7 @@ use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\Ekstrakurikuler;
 use \App\Models\Sekolah\EkskulSiswa;
+use \App\Models\Sekolah\NotifikasiSekolah;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
@@ -552,6 +553,19 @@ class SekolahSDController extends Controller
         $user->save();
         return response()->json(
             Helper::DataReturn(true,"Password berhasil diperbarahui"), 
+        200); 
+    }
+
+    function notifikasi_api(Request $request){
+        
+        $user = request()->user();
+
+        $data = NotifikasiSekolah::where('user_id',$user->id)
+        ->orderBy('id','desc')
+        ->get();
+        
+        return response()->json(
+            Helper::DataReturn(true,"OK",$data), 
         200); 
     }
 }

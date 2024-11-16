@@ -20,6 +20,7 @@ use App\VariationLocationDetails;
 use App\Contact;
 use App\User;
 use App\Media;
+use App\FCMToken;
 
 use App\Utils\BusinessUtil;
 use App\Utils\ProductUtil;
@@ -1715,6 +1716,21 @@ class APIController extends Controller
         $list = \App\Brands::where('business_id',$business_id)->get();
         return response()->json(
             Helper::DataReturn(true,"OK",$list), 
+        200); 
+    }
+
+    function fcm_token_store(Request $request) {
+        $input = $request->all();
+        $user = $request->user() ?? null;
+        $new_data = [
+            'token' => $input['token'],
+            'devices' => json_encode($input['devices'] ?? null),
+            'business_id' => $user->business->id ?? null,
+            'user_id' => $user->id ?? null,
+        ];
+        FCMToken::create($new_data);
+        return response()->json(
+            Helper::DataReturn(true,"OK"), 
         200); 
     }
     

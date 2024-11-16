@@ -72,6 +72,8 @@ Route::group(['prefix'=>'sekolah_sd'],function(){
     Route::get('raport-project/{id}/print',"SekolahSDController@raport_project_print");
 });
 
+Route::post('fcm-token','APIController@fcm_token_store');
+
 Route::post('/blog', 'APIController@list_blog');
 
 Route::post('login',"APIController@login");

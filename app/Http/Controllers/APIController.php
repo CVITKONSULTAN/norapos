@@ -212,8 +212,18 @@ class APIController extends Controller
             $user->forceFill([
                 'api_token' => hash('sha256', $token),
             ])->save();
+
+            $role = [];
+            $list_role = $user->roles()->select('name')->get()->pluck('name');
+            foreach ($list_role as $key => $value) {
+                $role_arr = explode("#",$value);
+                $role[] = $role_arr[0];
+            }
     
-            return Helper::DataReturn(true,"OK",["token" => $token]);
+            return Helper::DataReturn(true,"OK",[
+                "token" => $token,
+                "role" => $role
+            ]);
         } catch (\Throwable $th) {
             return response()->json(
                 Helper::DataReturn(false,$th->getMessage(),$request->all()),

@@ -473,7 +473,7 @@ class SekolahSDController extends Controller
                 'msg' => __("user.role_added")
             ];
             $business_id = $request->session()->get('user.business_id');
-            $roleList = ['guru','admin','kepala sekolah'];
+            $roleList = ['guru','admin','kepala sekolah','orang tua'];
             foreach($roleList as $key => $item){
                 $count = Role::where('name', $item . '#' . $business_id)
                             ->where('business_id', $business_id)

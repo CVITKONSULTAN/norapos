@@ -12,6 +12,7 @@ use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\Ekstrakurikuler;
 use \App\Models\Sekolah\EkskulSiswa;
 use \App\Models\Sekolah\NotifikasiSekolah;
+use \App\Models\Sekolah\JurnalKelas;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
@@ -561,6 +562,7 @@ class SekolahSDController extends Controller
         ->select('id','siswa_id','kelas_id')
         ->with('kelas')
         ->whereNull('deleted_at')
+        ->orderBy('id','desc')
         ->get();
         // ->pluck('kelas');
         return response()->json(
@@ -607,6 +609,41 @@ class SekolahSDController extends Controller
         
         return response()->json(
             Helper::DataReturn(true,"OK",$data), 
+        200); 
+    }
+
+    function jurnal_kelas_api(Request $request){
+
+        $user = request()->user();
+
+        $siswa = Siswa::where('nisn',$user->username)->first();
+
+        $data = JurnalKelas::where('kelas_id',$request->kelas_id)
+        ->where('tanggal',$request->tgl)
+        ->orderBy('id','desc')
+        ->get();
+
+        $list_absen = [];
+
+        foreach ($data as $key => $value) {
+            $jurnal = [];
+            try {
+                $jurnal = json_decode($value->jurnal,true);
+            } catch (\Throwable $th) {
+                $jurnal = [];
+            }
+            $mapel = $value->mapel()->select('nama')->first();
+            $nama_mapel = $mapel->nama ?? "";
+
+            $list_absen[] = [
+                "mapel"=>$nama_mapel,
+                "status"=>$jurnal[$siswa->id] ?? "-"
+            ];
+        }
+
+        
+        return response()->json(
+            Helper::DataReturn(true,"OK",$list_absen), 
         200); 
     }
 }

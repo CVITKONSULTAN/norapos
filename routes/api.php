@@ -62,6 +62,7 @@ Route::group(['middleware'=>'auth:api'],function(){
         Route::get('profil','SekolahSDController@profil_siswa_api');
         Route::post('update-password','SekolahSDController@update_password');
         Route::get('notifikasi','SekolahSDController@notifikasi_api');
+        Route::get('jurnal-kelas','SekolahSDController@jurnal_kelas_api');
     });
 
 });

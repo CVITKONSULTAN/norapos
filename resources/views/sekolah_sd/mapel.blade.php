@@ -87,7 +87,7 @@
                                         <th>Mapel</th>
                                         <th>Kelas</th>
                                         <th>Kategori</th>
-                                        @if(Auth::user()->checkGuru())
+                                        @if(!Auth::user()->checkGuru())
                                         <th>Tindakan</th>
                                         @endif
                                     </tr>
@@ -147,7 +147,7 @@
                     { data: 'nama'  },
                     { data: 'kelas'  },
                     { data: 'kategori'  },
-                    @if(Auth::user()->checkGuru())
+                    @if(!Auth::user()->checkGuru())
                     { 
                         data: 'id',
                         className:"text-center",

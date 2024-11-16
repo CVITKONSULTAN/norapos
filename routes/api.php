@@ -61,10 +61,14 @@ Route::group(['middleware'=>'auth:api'],function(){
         Route::get('kelas','SekolahSDController@kelas_siswa_api');
         Route::get('profil','SekolahSDController@profil_siswa_api');
         Route::post('update-password','SekolahSDController@update_password');
-        Route::get('raport-akhir/{id}/print',"SekolahSDController@raport_akhir_print");
         Route::get('notifikasi','SekolahSDController@notifikasi_api');
     });
 
+});
+
+Route::group(['prefix'=>'sekolah_sd'],function(){
+    Route::get('raport-akhir/{id}/print',"SekolahSDController@raport_akhir_print");
+    Route::get('raport-project/{id}/print',"SekolahSDController@raport_project_print");
 });
 
 Route::post('/blog', 'APIController@list_blog');

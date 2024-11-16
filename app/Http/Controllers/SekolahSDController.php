@@ -423,8 +423,49 @@ class SekolahSDController extends Controller
         // dd($id);
 
         $data['kelas_siswa'] = KelasSiswa::findorfail($id);
+        $user = $request->user();
+        if(empty($user)){
+            $token = $request->token ?? "-1";
+            $token  = hash('sha256', $token);
+            $user = \App\User::where('api_token',$token)->firstorfail();
+        }
+        $data['business'] = $user->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
 
-        $data['business'] = $request->user()->business;
+        if(empty($data['kelas_siswa'])){
+            return redirect()->route('sekolah_sd.kelas.index')
+            ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+        }
+
+        $where = [
+            'kelas_id'=> $data['kelas_siswa']->kelas_id,
+            'siswa_id'=> $data['kelas_siswa']->siswa_id,
+        ];
+
+        $data['nilai_list'] = NilaiSiswa::where($where)
+        ->with('mapel')
+        ->get();
+
+        $data['ekskul_siswa'] = EkskulSiswa::where($where)
+        ->with('ekskul')
+        ->get();
+
+        return view('sekolah_sd.prints.akhir',$data);
+    }
+
+    function raport_project_print(Request $request, Int $id){
+        
+        // dd($id);
+
+        $data['kelas_siswa'] = KelasSiswa::findorfail($id);
+        $user = $request->user();
+        if(empty($user)){
+            $token = $request->token ?? "-1";
+            $token  = hash('sha256', $token);
+            $user = \App\User::where('api_token',$token)->firstorfail();
+        }
+        $data['business'] = $user->business;
         $data['location'] = $data['business']->locations[0];
         $data['alamat'] = $data['location']->getLocationAddressAttribute();
 
@@ -530,7 +571,7 @@ class SekolahSDController extends Controller
     function profil_siswa_api(Request $request){
         $user = request()->user();
         $siswa = Siswa::where('nisn',$user->username)
-        ->select('nisn','nama','detail')
+        ->select('nisn','nama','detail','foto')
         ->first();
         return response()->json(
             Helper::DataReturn(true,"OK",$siswa), 
@@ -557,7 +598,7 @@ class SekolahSDController extends Controller
     }
 
     function notifikasi_api(Request $request){
-        
+
         $user = request()->user();
 
         $data = NotifikasiSekolah::where('user_id',$user->id)

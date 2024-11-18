@@ -223,6 +223,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             return view('sekolah_sd.peserta_didik_baru');
         })
         ->name('sekolah_sd.peserta_didik_baru');
+        
+        Route::get('dashboard/api',"SekolahSDController@dashboard_api")
+        ->name('sekolah_sd.dashboard.api');
     });
 
     Route::get('/card', "CardLogController@index");

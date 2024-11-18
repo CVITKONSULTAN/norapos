@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use \App\Models\Sekolah\TenagaPendidik;
 use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\Siswa;
 use \App\Models\Sekolah\NilaiSiswa;
@@ -16,6 +17,7 @@ use \App\Models\Sekolah\JurnalKelas;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
+use DB;
 
 
 class SekolahSDController extends Controller
@@ -23,6 +25,7 @@ class SekolahSDController extends Controller
     function dashboard(Request $request){
         return view('sekolah_sd.dashboard');
     }
+    
     function kelas_index(Request $request){
         return view('sekolah_sd.ruang_kelas');
     }
@@ -645,5 +648,71 @@ class SekolahSDController extends Controller
         return response()->json(
             Helper::DataReturn(true,"OK",$list_absen), 
         200); 
+    }
+
+    private function getDataTahunanSiswa() {
+        $tahun = [2024];
+        $data['list_tahun_interval'] = [];
+        foreach ($tahun as $key => $value) {
+            $period_tahun = [];
+            $period_tahun['laki-laki'] = DB::table('siswas')
+            ->select(DB::raw('COUNT(*) as total'))
+            ->where('tahun_masuk', $value)
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin')) = ?", ['Laki-Laki'])
+            ->first()
+            ->total;
+            $period_tahun['perempuan'] = DB::table('siswas')
+            ->select(DB::raw('COUNT(*) as total'))
+            ->where('tahun_masuk', $value)
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin')) = ?", ['Perempuan'])
+            ->first()
+            ->total;
+            $period_tahun['total'] = DB::table('siswas')
+            ->select(DB::raw('COUNT(*) as total'))
+            ->where('tahun_masuk', $value)
+            ->first()
+            ->total;
+            $data['list_tahun_interval'][$value] = $period_tahun;
+        }
+        return $data['list_tahun_interval'];
+    }
+
+    private function getKelasSiswaTahunan($tahun_ajaran) {
+        // $tahun_ajaran = Kelas::groupBy('tahun_ajaran')->get()->pluck('tahun_ajaran');
+        // $tahun_ajaran = "2023/2024";
+        $kelas = [1,2,3,4,5,6];
+        $agregate = [];
+        foreach ($kelas as $key => $value) {
+            $counter = KelasSiswa::whereHas('kelas',function($q) use($tahun_ajaran,$value){
+                $q->where([
+                    'tahun_ajaran'=>$tahun_ajaran,
+                    'kelas'=>$value,
+                ]);
+            })
+            ->count();
+            $agregate[$value] = $counter;
+        }
+        // dd($agregate);
+        return $agregate;
+    }
+
+    function dashboard_api(Request $request){
+
+        $user = $request->user();
+
+        if($user->checkGuru()){
+            return [];
+        }
+
+        $data['total_siswa'] = Siswa::count();
+        $data['total_tendik'] = TenagaPendidik::count();
+
+        $data['list_jumlah_siswa_perkelas'] = $this->getKelasSiswaTahunan("2023/2024");
+        $data['list_tahun_interval'] = $this->getDataTahunanSiswa();
+
+        return response()->json(
+            Helper::DataReturn(true,"OK",$data), 
+        200); 
+
     }
 }

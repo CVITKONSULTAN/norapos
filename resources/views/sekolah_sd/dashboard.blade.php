@@ -64,6 +64,7 @@
 	      <!-- /.info-box -->
 	    </div>
 	    <!-- /.col -->
+{{--  
 	    <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
 	      <div class="info-box info-box-new-style">
 	        <span class="info-box-icon">
@@ -80,6 +81,7 @@
 	      </div>
 	      <!-- /.info-box -->
 	    </div>
+ --}}
 	    <!-- /.col -->
 
   	</div>
@@ -95,7 +97,7 @@
                     <div id="chart"></div>
                 </div>
                 <!-- /.box-body -->
-            </div>
+            </div> 
             <div class="box box-solid">
                 <div class="box-header">
                     Grafik kelas berdasarkan jumlah siswa
@@ -225,18 +227,23 @@
     <script src="{{ asset('js/home.js?v=' . $asset_v) }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.53.0/apexcharts.min.js"></script>
     <script>
-        var options = {
+
+        const options = {
             series: [
                 {
                     name: 'Laki-laki',
                     type: 'column',
-                    data: [100,200,300,400]
-                }, {
+                    data: [0,0,0,0]
+                }, 
+                {
                     name: 'Perempuan',
                     type: 'column',
-                    data: [150,100,200,500]
+                    data: [0,0,0,0]
                 },
             ],
+            xaxis: {
+                categories: [2021,2022,2023,2024],
+            },
             chart: {
                 height: 350,
                 type: 'line',
@@ -247,9 +254,6 @@
             },
             stroke: {
                 width: [1, 1, 4]
-            },
-            xaxis: {
-                categories: [2021,2022,2023,2024],
             },
             yaxis: [
                 {
@@ -311,91 +315,155 @@
                 horizontalAlign: 'left',
                 offsetX: 40
             }
-          };
+        };
   
-          new ApexCharts(document.querySelector("#chart"), options).render();
-          new ApexCharts(document.querySelector("#chart_kelas"), {
-            series: [
-                {
-                    name: 'Kelas',
-                    type: 'column',
-                    data: [
-                        100,
-                        200,
-                        300,
-                        400,
-                        500,
-                        600,
-                    ]
-                }
-            ],
-            chart: {
-                height: 350,
-                type: 'line',
-                stacked: false
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                width: [1, 1, 4]
-            },
-            xaxis: {
-                categories: [
-                    "I",
-                    "II",
-                    "III",
-                    "IV",
-                    "V",
-                    "VI",
-                ],
-            },
-            yaxis: [
-                {
-                    seriesName: 'Laki-laki',
-                    axisTicks: {
-                        show: true,
-                    },
-                    axisBorder: {
-                        show: true,
-                        color: '#008FFB'
-                    },
-                    labels: {
-                        style: {
-                        colors: '#008FFB',
-                        }
-                    },
-                    title: {
-                        text: "Laki-laki",
-                        style: {
-                        color: '#008FFB',
-                        }
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                }
-            ],
-            tooltip: {
-                fixed: {
-                enabled: true,
-                position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
-                offsetY: 30,
-                offsetX: 60
-                },
-            },
-            legend: {
-                horizontalAlign: 'left',
-                offsetX: 40
+        const chartSiswa = new ApexCharts(document.querySelector("#chart"), options);
+        chartSiswa.render();
+
+        const kelasOptions = {
+        series: [
+            {
+                name: 'Kelas',
+                type: 'column',
+                data: [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ]
             }
-          }).render();
-    </script>
-    <script>
+        ],
+        chart: {
+            height: 350,
+            type: 'line',
+            stacked: false
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            width: [1, 1, 4]
+        },
+        xaxis: {
+            categories: [
+                "I",
+                "II",
+                "III",
+                "IV",
+                "V",
+                "VI",
+            ],
+        },
+        yaxis: [
+            {
+                seriesName: 'Laki-laki',
+                axisTicks: {
+                    show: true,
+                },
+                axisBorder: {
+                    show: true,
+                    color: '#008FFB'
+                },
+                labels: {
+                    style: {
+                    colors: '#008FFB',
+                    }
+                },
+                title: {
+                    text: "Laki-laki",
+                    style: {
+                    color: '#008FFB',
+                    }
+                },
+                tooltip: {
+                    enabled: true
+                }
+            }
+        ],
+        tooltip: {
+            fixed: {
+            enabled: true,
+            position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+            offsetY: 30,
+            offsetX: 60
+            },
+        },
+        legend: {
+            horizontalAlign: 'left',
+            offsetX: 40
+        }
+        };
+
+        const chartKelas = new ApexCharts(document.querySelector("#chart_kelas"),kelasOptions)
+        chartKelas.render();
+
         $(document).ready(function(){
-            $(".total_murid").html(10);
-            $(".total_tendik").html(20);
-            $(".total_tata_usaha").html(30);
+            getDataDashboard();
         });
+
+        const getDataDashboard = () => {
+            $.ajax({
+                url:"{{route('sekolah_sd.dashboard.api')}}",
+                beforeSend:() => {
+                    $('.total_murid').html('<i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>');
+                },
+                success: response => {
+                    console.log("response",response)
+                    if(!response.status) return;
+                    const {data} = response;
+                    $(".total_murid").html(data.total_siswa);
+                    $(".total_tendik").html(data.total_tendik);
+
+                    let updateChartSiswa = {
+                        series: [
+                            {
+                                name: 'Laki-laki',
+                                type: 'column',
+                                data: []
+                            }, {
+                                name: 'Perempuan',
+                                type: 'column',
+                                data: []
+                            },
+                        ],
+                        xaxis: {
+                            categories: [],
+                        }
+                    };
+                    for(const k in data.list_tahun_interval){
+                        const val = data.list_tahun_interval[k]
+                        updateChartSiswa.xaxis.categories.push(k);
+                        for(const j in val){
+                            const value = val[j]
+                            if(j == "laki-laki") updateChartSiswa.series[0].data.push(value)
+                            if(j == "perempuan") updateChartSiswa.series[1].data.push(value)
+                        }
+                    }
+                    chartSiswa.updateOptions(updateChartSiswa);
+
+                    let updateChartKelas = {
+                        series: [
+                            {
+                                name: 'Kelas',
+                                type: 'column',
+                                data: []
+                            }
+                        ],
+                        xaxis: {
+                            categories: [],
+                        }
+                    };
+                    for(const k in data.list_jumlah_siswa_perkelas){
+                        const val = data.list_jumlah_siswa_perkelas[k]
+                        updateChartKelas.xaxis.categories.push(k);
+                        updateChartKelas.series[0].data.push(val)
+                    }
+                    chartKelas.updateOptions(updateChartKelas);
+                }
+            })
+        }
     </script>
 @endsection
 

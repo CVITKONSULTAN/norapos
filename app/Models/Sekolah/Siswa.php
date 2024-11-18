@@ -12,7 +12,9 @@ class Siswa extends Model
     protected $fillable = [
         'nisn',
         'nama',
-        'detail'
+        'detail',
+        'foto',
+        'tahun_masuk'
     ];
 
     protected $casts = [

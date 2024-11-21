@@ -23,12 +23,25 @@ class KelasSiswa extends Model
         'izin',
         'sakit',
         'tanpa_keterangan',
+        'project_id_list'
     ];
     function siswa(){
         return $this->belongsTo(Siswa::class,'siswa_id','id');
     }
     function kelas(){
         return $this->belongsTo(Kelas::class,'kelas_id','id');
+    }
+
+    function projects(){
+        $data = [];
+        $project_id_list = [];
+        try {
+            $project_id_list = json_decode($this->project_id_list,true);
+            if(empty($project_id_list)) $project_id_list = [];
+        } catch (\Throwable $th) {
+            $project_id_list = [];
+        }
+        return RaporProjek::whereIn('id',$project_id_list)->get();
     }
     
 }

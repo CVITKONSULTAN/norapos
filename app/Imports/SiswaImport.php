@@ -49,6 +49,8 @@ class SiswaImport implements ToModel, WithHeadingRow
                 'detail'=>$detail
             ];
 
+            if(empty($nisn)) dd("ada nisn kosong pada",$row);
+
             $check = Siswa::where('nisn',$nisn)->first();
             if($check){
                 $check->update($insert);

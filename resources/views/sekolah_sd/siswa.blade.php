@@ -25,6 +25,7 @@
                    <div class="form-group">
                         <label>File</label>
                         <input required class="form-control" type="file" name="import_file" />
+                        <p>Format file untuk import siswa <a href="/files/format_import_siswa.xlsx">Download format</a></p>
                    </div>
                 </div>
                 <div class="modal-footer">

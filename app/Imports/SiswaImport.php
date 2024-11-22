@@ -48,9 +48,11 @@ class SiswaImport implements ToModel, WithHeadingRow
                 'nama'=>$nama,
                 'detail'=>$detail
             ];
-            
-            if(Siswa::where('nisn',$nisn)->first()){
-                return;
+
+            $check = Siswa::where('nisn',$nisn)->first();
+            if($check){
+                $check->update($insert);
+                return $check;
             }
 
             return new Siswa($insert);

@@ -722,6 +722,7 @@ class SekolahSDController extends Controller
     function dimensi_projek(Request $request){
         return view('sekolah_sd.dimensi_projek');
     }
+
     function skenario_projek(Request $request){
         $data['rapor_projek'] = [];
         $data['dimensi'] = DataDimensiID::all();
@@ -730,4 +731,15 @@ class SekolahSDController extends Controller
         }
         return view('sekolah_sd.skenario_projek',$data);
     }
+
+    function test(Request $request){
+        $tendik = TenagaPendidik::all();
+        foreach($tendik as $key => $value){
+            $u = User::where('username',$value->nik)->first();
+            $value->user_id = $u->id;
+            $value->save();
+        }
+        return count($tendik);
+    }
+
 }

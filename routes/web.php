@@ -91,6 +91,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
+        Route::get('test','SekolahSDController@test');
+
         Route::post('dimensi-projek/import',"Sekolah\ProjekController@import_dimensi_projek")
         ->name('sekolah_sd.dimensi_projek.import');
         Route::get('dimensi-projek',"SekolahSDController@dimensi_projek")

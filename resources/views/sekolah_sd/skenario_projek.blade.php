@@ -103,30 +103,30 @@
                 { searchable: false, data: 'fase_a'  },
                 { searchable: false, data: 'fase_b'  },
                 { searchable: false, data: 'fase_c'  },
-                // { 
-                //     searchable: false,
-                //     data: 'fase_id',
-                //     className:"text-center",
-                //     render:(data)=> {
-                //         const template = `
-                //             <a 
-                //                 class="btn btn-primary btn-xs" 
-                //                 href="{{ route('sekolah_sd.siswa.index') }}/${data}/edit"
-                //                 target="_blank"
-                //             >
-                //                 Edit
-                //             </a>
-                //             <a 
-                //                 class="btn btn-danger btn-xs delete-product" 
-                //                 href="{{ route('sekolah_sd.siswa.index') }}/${data}"
-                //                 target="_blank"
-                //             >
-                //                 Hapus
-                //             </a>
-                //         `
-                //         return template;
-                //     }
-                // },
+                { 
+                    searchable: false,
+                    data: 'fase_id',
+                    className:"text-center",
+                    render:(data)=> {
+                        const template = `
+                            <a 
+                                class="btn btn-primary btn-xs" 
+                                href="{{ route('sekolah_sd.siswa.index') }}/${data}/edit"
+                                target="_blank"
+                            >
+                                Edit
+                            </a>
+                            <a 
+                                class="btn btn-danger btn-xs delete-product" 
+                                href="{{ route('sekolah_sd.siswa.index') }}/${data}"
+                                target="_blank"
+                            >
+                                Hapus
+                            </a>
+                        `
+                        return template;
+                    }
+                },
             ]
         });
 

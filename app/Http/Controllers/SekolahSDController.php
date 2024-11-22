@@ -737,7 +737,7 @@ class SekolahSDController extends Controller
         $tendik = TenagaPendidik::all();
         foreach($tendik as $key => $value){
             $u = User::where('username',$value->nik)->first();
-            if(empty($u)) dd($u);
+            if(empty($u)) dd($u,$value);
             $value->user_id = $u->id;
             $value->save();
         }

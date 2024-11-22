@@ -66,7 +66,7 @@
                                         <th>Fase A</th>
                                         <th>Fase B</th>
                                         <th>Fase C</th>
-                                        <th>Tindakan</th>
+                                        {{-- <th>Tindakan</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody></tbody>

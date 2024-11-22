@@ -49,6 +49,10 @@ class SiswaImport implements ToModel, WithHeadingRow
                 'detail'=>$detail
             ];
             
+            if(Siswa::where('nisn',$nisn)->first()){
+                return;
+            }
+
             return new Siswa($insert);
         } catch (\Throwable $th) {
             return $th->getMessage();

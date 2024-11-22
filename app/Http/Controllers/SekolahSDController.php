@@ -734,6 +734,7 @@ class SekolahSDController extends Controller
     }
 
     function test(Request $request){
+        $business_id = $request->user()->business->id;
         $tendik = TenagaPendidik::all();
         foreach($tendik as $key => $value){
             $u = User::where('username',$value->nik)->first();
@@ -741,7 +742,7 @@ class SekolahSDController extends Controller
                 $insert_user = [
                     'first_name'=>$value->nama,
                     'username'=>$value->nik,
-                    'business_id'=>$this->business_id,
+                    'business_id'=>$business_id,
                     'password'=> bcrypt($value->nik)
                 ];
                 $u = User::create($insert_user);

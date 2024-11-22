@@ -715,4 +715,8 @@ class SekolahSDController extends Controller
         200); 
 
     }
+
+    function dimensi_projek(Request $request){
+        return view('sekolah_sd.dimensi_projek');
+    }
 }

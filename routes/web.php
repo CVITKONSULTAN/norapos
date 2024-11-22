@@ -91,6 +91,18 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
+        Route::post('dimensi-projek/import',"Sekolah\ProjekController@import_dimensi_projek")
+        ->name('sekolah_sd.dimensi_projek.import');
+        Route::get('dimensi-projek',"SekolahSDController@dimensi_projek")
+        ->name('sekolah_sd.dimensi_projek');
+        Route::get('dimensi-projek/data',"Sekolah\ProjekController@data_dimensi_projek")
+        ->name('sekolah_sd.dimensi_projek.data');
+
+        Route::get('skenario-projek',"SekolahSDController@skenarion_projek")
+        ->name('sekolah_sd.skenarion_projek');
+        Route::get('penilaian-projek',"SekolahSDController@penilaian_projek")
+        ->name('sekolah_sd.penilaian_projek');
+
         Route::get('create-role-seeder',"SekolahSDController@create_role_sekolah")
         ->name('sekolah_sd.seed.role');
 

@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class DimensiProjek extends Model
 {
     protected $fillable = [
+        // 'dimensi',
+        'dimensi_id',
         'elemen',
-        'subelemen',
+        // 'subelemen',
     ];
+
+    function dimensi(){
+        return $this->belongsTo(DataDimensiID::class,'dimensi_id','id');
+    }
 }

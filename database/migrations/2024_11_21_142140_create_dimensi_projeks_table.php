@@ -15,8 +15,16 @@ class CreateDimensiProjeksTable extends Migration
     {
         Schema::create('dimensi_projeks', function (Blueprint $table) {
             $table->bigIncrements('id');
+
+            $table->unsignedBigInteger('dimensi_id')->nullable();
+            $table->foreign('dimensi_id')
+            ->references('id')->on('data_dimensi_i_d_s')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
+
+            // $table->text('dimensi');
             $table->text('elemen');
-            $table->json('subelemen')->nullable();
+            // $table->json('subelemen')->nullable();
             $table->timestamps();
         });
     }

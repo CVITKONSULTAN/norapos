@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddProjectIdToKelasSiswas extends Migration
+class CreateDataDimensiIDSTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class AddProjectIdToKelasSiswas extends Migration
      */
     public function up()
     {
-        Schema::table('kelas_siswas', function (Blueprint $table) {
-            if(!Schema::hasColumn('kelas_siswas', 'project_id_list'))
-            $table->json('project_id_list')->nullable();
+        Schema::create('data_dimensi_i_d_s', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->text('keterangan');
+            $table->timestamps();
         });
     }
 
@@ -26,8 +27,6 @@ class AddProjectIdToKelasSiswas extends Migration
      */
     public function down()
     {
-        Schema::table('kelas_siswas', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('data_dimensi_i_d_s');
     }
 }

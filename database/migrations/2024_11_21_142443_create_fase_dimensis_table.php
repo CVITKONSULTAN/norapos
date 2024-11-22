@@ -14,9 +14,14 @@ class CreateFaseDimensisTable extends Migration
     public function up()
     {
         Schema::create('fase_dimensis', function (Blueprint $table) {
+
             $table->bigIncrements('id');
-            $table->integer('subelemen_index');
-            $table->text('keterangan');
+            $table->integer('subelemen_index')->nullable();
+            $table->text('subelemen');
+
+            $table->text('fase_a')->nullable();
+            $table->text('fase_b')->nullable();
+            $table->text('fase_c')->nullable();
 
             $table->unsignedBigInteger('elemen_id')->nullable();
             $table->foreign('elemen_id')

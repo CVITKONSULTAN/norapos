@@ -1240,6 +1240,56 @@ class AdminSidebarMenu
                 },
                 ['icon' => 'fa fas fa-address-book']
             )->order(1);
+
+            $menu->dropdown(
+                "Projek Siswa",
+                function ($sub) {
+                    $sub->url(
+                        action('SekolahSDController@dimensi_projek'),
+                        "Dimensi",
+                        ['icon' => 'fa fas fa-user', 'active' => 
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'dimensi-projek' 
+                        ]
+                    );
+                    $sub->url(
+                        action('SekolahSDController@project_index'),
+                        "Skenario Projek",
+                        ['icon' => 'fa fas fa-user', 'active' => 
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'skenario-projek' 
+                        ]
+                    );
+                    $sub->url(
+                        action('SekolahSDController@project_index'),
+                        "Penilaian Projek",
+                        ['icon' => 'fa fas fa-user', 'active' => 
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'penilaian-projek' 
+                        ]
+                    );
+                    // $sub->url(
+                    //     action('SekolahSDController@raport_tengah_index'),
+                    //     "Raport Tengah Semester",
+                    //     ['icon' => 'fa fas fa-user', 
+                    //     'active' => 
+                    //         request()->segment(1) == 'sekolah_sd' &&
+                    //         request()->segment(2) == 'raport-tengah' 
+                    //     ]
+                    // );
+                    // $sub->url(
+                    //     action('SekolahSDController@raport_akhir_index'),
+                    //     "Raport Akhir",
+                    //     ['icon' => 'fa fas fa-user', 
+                    //     'active' =>
+                    //         request()->segment(1) == 'sekolah_sd' &&
+                    //         request()->segment(2) == 'raport-akhir' 
+                    //     ]
+                    // );
+                },
+                ['icon' => 'fa fas fa-address-book']
+            )->order(1);
+
             $menu->url(
                 action('SekolahSDController@buku_induk_index'),
                 "Buku Induk Siswa",

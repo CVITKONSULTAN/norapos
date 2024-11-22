@@ -17,6 +17,7 @@ use \App\Models\Sekolah\JurnalKelas;
 use \App\Models\Sekolah\RaporProjek;
 use \App\Models\Sekolah\DimensiProjek;
 use \App\Models\Sekolah\DataDimensiID;
+use \App\User;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;

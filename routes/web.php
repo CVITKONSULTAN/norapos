@@ -98,8 +98,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('dimensi-projek/data',"Sekolah\ProjekController@data_dimensi_projek")
         ->name('sekolah_sd.dimensi_projek.data');
 
-        Route::get('skenario-projek',"SekolahSDController@skenarion_projek")
+        Route::get('skenario-projek',"SekolahSDController@skenario_projek")
         ->name('sekolah_sd.skenarion_projek');
+        Route::post('rapor-projek',"Sekolah\ProjekController@rapor_projek_store")
+        ->name('sekolah_sd.rapor_projek.store');
+        Route::get('fase-dimensi',"Sekolah\ProjekController@fase_dimensi_data")
+        ->name('sekolah_sd.fase_dimensi.data');
+
         Route::get('penilaian-projek',"SekolahSDController@penilaian_projek")
         ->name('sekolah_sd.penilaian_projek');
 

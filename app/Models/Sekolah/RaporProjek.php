@@ -10,5 +10,10 @@ class RaporProjek extends Model
         'nama',
         'deskripsi',
         'elemen_list',
+        'kelas',
     ];
+
+    function dimensi(){
+        return $this->hasMany(RaporDimensiProjek::class,'rapor_projek_id','id');
+    }
 }

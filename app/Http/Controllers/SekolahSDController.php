@@ -14,6 +14,9 @@ use \App\Models\Sekolah\Ekstrakurikuler;
 use \App\Models\Sekolah\EkskulSiswa;
 use \App\Models\Sekolah\NotifikasiSekolah;
 use \App\Models\Sekolah\JurnalKelas;
+use \App\Models\Sekolah\RaporProjek;
+use \App\Models\Sekolah\DimensiProjek;
+use \App\Models\Sekolah\DataDimensiID;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
@@ -718,5 +721,13 @@ class SekolahSDController extends Controller
 
     function dimensi_projek(Request $request){
         return view('sekolah_sd.dimensi_projek');
+    }
+    function skenario_projek(Request $request){
+        $data['rapor_projek'] = [];
+        $data['dimensi'] = DataDimensiID::all();
+        if($request->kelas){
+            $data['rapor_projek'] = RaporProjek::where('kelas',$request->kelas)->get();
+        }
+        return view('sekolah_sd.skenario_projek',$data);
     }
 }

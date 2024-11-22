@@ -1253,7 +1253,7 @@ class AdminSidebarMenu
                         ]
                     );
                     $sub->url(
-                        action('SekolahSDController@project_index'),
+                        action('SekolahSDController@skenario_projek'),
                         "Skenario Projek",
                         ['icon' => 'fa fas fa-user', 'active' => 
                             request()->segment(1) == 'sekolah_sd' &&

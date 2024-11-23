@@ -101,6 +101,36 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
         </div>
     </div>
 
+    <div id="import_kelas_siswa_modal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form enctype="multipart/form-data" id="form_import_kelas_siswa" method="POST" action="{{route('sekolah_sd.kelas.import')}}">
+                    @csrf
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            Import Kelas & Siswa
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Kelas</label>
+                            <select name="kelas_id" class="kelas_selection"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>File</label>
+                            <input required class="form-control" type="file" name="import_file" />
+                            <p>Format file import data kelas & siswa : <a href="#">Download</a></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <section class="content">
 {{--         
         <div class="row">
@@ -148,6 +178,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                         <div class="tab-pane active" id="product_list_tab">
                             <div class="text-right" style="margin-bottom: 10px;">
                                 <button onclick="tambahKelasSiswa()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah</button>
+                                <button onclick='$("#import_kelas_siswa_modal").modal("show");' class="btn btn-primary">Import</button>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
@@ -176,6 +207,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                             <td>TAHUN AJARAN</td>
                                             <td>SEMESTER</td>
                                             <td>NAMA KELAS</td>
+                                            <td>LEVEL KELAS</td>
+                                            <td>WALI KELAS</td>
                                             <td>Tindakan</td>
                                         </tr>
                                     </thead>
@@ -532,6 +565,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     { data: 'tahun_ajaran'  },
                     { data: 'semester'  },
                     { data: 'nama_kelas'  },
+                    { data: 'nama_wali_kelas'  },
+                    { data: 'kelas'  },
                     { 
                         data: 'id',
                         className:"text-center",

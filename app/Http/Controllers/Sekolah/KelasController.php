@@ -13,6 +13,9 @@ use \App\Models\Sekolah\JurnalKelas;
 use \App\Models\Sekolah\TenagaPendidik;
 use DataTables;
 
+use Excel;
+use \App\Imports\KelasSiswaImport;
+
 class KelasController extends Controller
 {
     /**
@@ -242,7 +245,11 @@ class KelasController extends Controller
         try{
             $mapel = Mapel::all();
             foreach($mapel as $item){
-                NilaiSiswa::create([
+                NilaiSiswa::where([
+                    'siswa_id'=> $k->siswa_id,
+                    'kelas_id'=> $k->kelas_id,
+                    'mapel_id'=> $item->id,
+                ])->firstOrCreate([
                     'siswa_id'=> $k->siswa_id,
                     'kelas_id'=> $k->kelas_id,
                     'mapel_id'=> $item->id,
@@ -279,6 +286,21 @@ class KelasController extends Controller
             'success'=>true,
             'msg'=>'Data berhasil disimpan'
         ];
+    }
+
+    function kelasSiswaImport(Request $request){
+
+        $kelas_id = $request->kelas_id;
+
+        Excel::import(
+            new KelasSiswaImport([
+                'kelas_id'=>$kelas_id
+            ]), 
+            request()->file('import_file')
+        );
+        return redirect()
+        ->back()
+        ->with('success', 'All good!');
     }
 
 }

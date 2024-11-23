@@ -1,3 +1,13 @@
+@php
+    $total_dimensi = count($dimensi_list['dimensi'] ?? []);
+    $total_subelemen = 0;
+    foreach ($dimensi_list['dimensi'] ?? [] as $i => $val){
+        $dimensi = $data_projek['dimensi'][$i] ?? [];
+        foreach($val['subelemen_fase'] ??[] as $j => $v){
+            $total_subelemen++;
+        }
+    }
+@endphp
 @extends('layouts.app')
 @section('title', "Raport Project Siswa")
 
@@ -74,27 +84,41 @@
 
     <div id="editor_modal_project" class="modal fade">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <form method="POST" class="modal-content" action="{{route('sekolah_sd.rapor_projek.storeNilai')}}" >
+                @csrf
+                {{-- {{dd($dimensi_list)}} --}}
+                <input type="hidden" name="projek_id" value="{{ $dimensi_list['id'] ?? 0 }}" />
+                <input type="hidden" name="projek_nama" value="{{ $dimensi_list['nama'] ?? 0 }}" />
+                <input type="hidden" name="kelas_siswa_id" value="0" />
                 <div class="modal-header">
 	                <h4 class="modal-title">
                         Form Nilai Projek
                     </h4>
                 </div>
                 <div class="modal-body">
-                    @foreach ($dimensi_list['dimensi'] ?? [] as $item)
+                    @foreach ($dimensi_list['dimensi'] ?? [] as $i => $item)
+                        <input type="hidden" name="dimensi[{{$i}}][id]" value="{{$item['dimensi_id']}}" />
+                        <input type="hidden" name="dimensi[{{$i}}][nama]" value="{{$item['dimensi_text']}}" />
+                        <h4 class="text-center">Penilaian Dimensi</h4>
                         <div class="form-group">
                             <label>{{ $item['dimensi_text'] }}</label>
-                            <select required class="form-control" name="dimensi[nilai]">
+                            <select required class="form-control" name="dimensi[{{$i}}][nilai]">
                                 <option value="BB">Belum Berkembang (BB)</option>
                                 <option value="MB">Mulai Berkembang (MB)</option>
                                 <option value="BSH">Berkembang Sesuai Harapan (BSH)</option>
                                 <option value="SB">Sangat Baik (SB)</option>
                             </select>
                         </div>
-                        @foreach ($item['subelemen_fase'] ??[] as $key => $val)
+                        @php
+                            $subelemen = $item['subelemen_fase'] ??[];
+                        @endphp
+                        @if(count($subelemen) > 0)
+                        <h4 class="text-center">Penilaian Subelemen</h4>
+                        @endif
+                        @foreach ($subelemen as $key => $val)
                             <div class="form-group">
                                 <label>{{ $val['text'] }}</label>
-                                <select required class="form-control" name="dimensi[subelemen][{{ $key }}][nilai]">
+                                <select required class="form-control" name="dimensi[{{$i}}][subelemen][{{ $key }}][nilai]">
                                     <option value="BB">Belum Berkembang (BB)</option>
                                     <option value="MB">Mulai Berkembang (MB)</option>
                                     <option value="BSH">Berkembang Sesuai Harapan (BSH)</option>
@@ -102,13 +126,14 @@
                                 </select>
                             </div>
                         @endforeach
+                        <hr />
                     @endforeach
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
                   </div>
-            </div>
+            </form>
         </div>
     </div>
  
@@ -156,6 +181,10 @@
                         @if(isset($dimensi_list['nama']))
                             <hr />
                             <div style="text-align: center;margin-bottom:10px;">
+                                <h5 style="margin-block: 0px;">Kelas:</h5>
+                                <b><h4>{{ $kelas->nama_kelas }}</h4></b>
+                            </div>
+                            <div style="text-align: center;margin-bottom:10px;">
                                 <h5 style="margin-block: 0px;">Nama Projek:</h5>
                                 <b><h4>{{ $dimensi_list['nama'] }}</h4></b>
                             </div>
@@ -167,14 +196,14 @@
                                     <thead>
                                         <tr>
                                             <th rowspan="2">Nama</th>
-                                            <th class="text-center">Dimensi</th>
-                                            <th class="text-center">Subelemen</th>
+                                            <th style="background: #1880ca;color:#000;" colspan="{{$total_dimensi}}" id="dimensi_header" class="text-center">Penilaian Dimensi</th>
+                                            <th style="background: #55a3db;color:#000;" colspan="{{$total_subelemen}}" id="subelemen_header" class="text-center">Penilaian Subelemen</th>
                                             <th rowspan="2">Tindakan</th>
                                         </tr>
                                         <tr>
                                             @foreach ($dimensi_list['dimensi'] ?? [] as $item)
                                                 <th class="text-center">{{ $item['dimensi_text'] }}</th>
-                                                @foreach ($item['subelemen_fase'] ??[] as $val)
+                                                @foreach ($item['subelemen_fase'] ?? [] as $val)
                                                     <th class="text-center">{{ $val['text'] }}</th>
                                                 @endforeach
                                             @endforeach
@@ -190,23 +219,27 @@
                                                     $data_projek = $nilai_projek[$index_projek] ?? [];
                                                 @endphp
 
-                                                @foreach ($dimensi_list['dimensi'] ?? [] as $i => $item)
+                                                @foreach ($dimensi_list['dimensi'] ?? [] as $i => $val)
                                                     @php
-                                                        $dimensi = $data['dimensi'][$i] ?? [];
+                                                        $dimensi = $data_projek['dimensi'][$i] ?? [];
                                                     @endphp
                                                     <td class="text-center">{{$dimensi['nilai'] ?? 0}}</td>
-                                                    @foreach ($item['subelemen_fase'] ??[] as $j => $val)
+                                                @endforeach
+
+                                                @foreach ($dimensi_list['dimensi'] ?? [] as $i => $val)
+                                                    @php
+                                                        $dimensi = $data_projek['dimensi'][$i] ?? [];
+                                                    @endphp
+                                                    @foreach ($val['subelemen_fase'] ??[] as $j => $val)
                                                         @php
                                                             $subelemen = $dimensi['subelemen'] ?? [];
                                                         @endphp
-                                                        <td class="text-center">{{ $subelemen['nilai'] ?? 0 }}</td>
+                                                        <td class="text-center">{{ $subelemen[$j]['nilai'] ?? 0 }}</td>
                                                     @endforeach
                                                 @endforeach
 
                                                 <td>
                                                     <button
-                                                        {{-- target="_blank"  --}}
-                                                        {{-- href="{{ route('sekolah_sd.project.create') }}"  --}}
                                                         onclick='editData({{$item->id}})'
                                                         class="btn btn-primary btn-xs"
                                                     >
@@ -434,10 +467,20 @@
         })
 
         const editData = (id) => {
+            const modals = $("#editor_modal_project")
             $.ajax({
-                url:
+                url:`/sekolah_sd/kelas-siswa/${id}/detail`,
+                success:res => {
+                    console.log(res);
+                    modals.find('[name=kelas_siswa_id]').val(id);
+                    modals.modal("show")
+                }
             })
         }
+
+        @if($total_dimensi > 0)
+            $("#dimensi_header").attr("colspan",{{$total_dimensi}});
+        @endif
 
     </script>
 @endsection

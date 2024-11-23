@@ -313,9 +313,11 @@ class SekolahSDController extends Controller
 
     function project_index(Request $request){
         $kelas = Kelas::find($request->kelas_id);
+        $data['kelas'] = $kelas;
         $data['dimensi_list'] = [];
         if(!empty($kelas) && $request->has('index_projek')){
             $data['dimensi_list'] = $kelas->dimensi_list[$request->index_projek];
+            // dd($data);
         }
         $data['kelas_siswa'] = KelasSiswa::where('kelas_id',$request->kelas_id)
         ->get();

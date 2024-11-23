@@ -125,6 +125,8 @@ class ProjekController extends Controller
         ->with('dimensi')
         ->get();
 
+        // dd($raporProjek->toArray());
+
 
         $kelasList = Kelas::where([
             'tahun_ajaran' => $request->tahun_ajaran,
@@ -134,6 +136,8 @@ class ProjekController extends Controller
         foreach ($kelasList as $key => $value) {
             // dd($raporProjek->toArray());
             $value->dimensi_list = $raporProjek->toArray();
+            // $value->dimensi_list = json_encode($raporProjek->toArray());
+            // dd($value->dimensi_list);
             $value->save();
         }
         // return ['status'=>];
@@ -145,5 +149,31 @@ class ProjekController extends Controller
         $kelas = Kelas::where('id',2)->first();
         $query = KelasSiswa::where('kelas_id',$kelas->id);
         return DataTables::of($query)->make(true);
+    }
+
+    function storeNilai(Request $request){
+        $dimensi = $request->dimensi ?? [];
+        $projek = [
+            'projek_id'=>$request->projek_id,
+            'projek_nama'=>$request->projek_id,
+            'dimensi'=>$dimensi
+        ];
+        $k = KelasSiswa::findorfail($request->kelas_siswa_id);
+        $nilai_project = $k->nilai_project ?? [];
+        if(count($nilai_project) > 0){
+            foreach($nilai_project as $k => $item){
+                if($item['projek_id'] == $projek['projek_id']){
+                    $nilai_project[$k] = $projek;
+                    break;
+                }
+            }
+        } else {
+            $nilai_project[] = $projek;
+        }
+        // dd($nilai_project);
+        $k->nilai_projek = $nilai_project;
+        $k->save();
+        return redirect()->back()
+                ->with(['success'=>true,'Data berhasil dikaitkan']);
     }
 }

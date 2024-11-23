@@ -106,6 +106,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.rapor_projek.store');
         Route::post('rapor-projek/apply',"Sekolah\ProjekController@applyProjek")
         ->name('sekolah_sd.rapor_projek.apply');
+        Route::post('rapor-projek/store',"Sekolah\ProjekController@storeNilai")
+        ->name('sekolah_sd.rapor_projek.storeNilai');
 
         Route::get('rapor-projek/data',"Sekolah\ProjekController@data_rapor_projek")
         ->name('sekolah_sd.rapor_projek.data');
@@ -131,6 +133,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.kelas.index');
         Route::get('kelas-siswa/data',"Sekolah\KelasController@data")
         ->name('sekolah_sd.kelas.data');
+        Route::get('kelas-siswa/{id}/detail',"Sekolah\KelasController@detail")
+        ->name('sekolah_sd.kelas.detail');
         Route::post('kelas-siswa/store',"Sekolah\KelasController@store")
         ->name('sekolah_sd.kelas.store');
         Route::post('kelas-siswa/import',"Sekolah\KelasController@kelasSiswaImport")

@@ -315,4 +315,9 @@ class KelasController extends Controller
         ->with('success', 'All good!');
     }
 
+    function detail(Request $request,$id){
+        $kelas = KelasSiswa::find($id);
+        return ['status'=>true,'data'=>$kelas];
+    }
+
 }

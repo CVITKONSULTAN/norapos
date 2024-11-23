@@ -263,7 +263,7 @@
                 </div>
                 @if(Request::get('kelas') > 0)
                     <button onclick="tambahProjek()" style="margin-top: 10px;" class="btn btn-block btn-primary btn-lg"><i class="fa fa-plus"></i> Projek</button>
-                    <button onclick="applyProjek()" style="margin-top: 10px;" class="btn btn-block btn-success btn-lg"><i class="fa fa-plus"></i> Apply</button>
+                    <button onclick="applyProjek()" style="margin-top: 10px;" class="btn btn-block btn-success btn-lg">Apply</button>
                 @endif
                 {{-- <button style="margin-top: 10px;" class="btn btn-block btn-success btn-lg"><i class="fa fa-save"></i> Simpan</button> --}}
             </div>

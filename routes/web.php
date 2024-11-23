@@ -235,6 +235,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('buku-induk/create',"SekolahSDController@buku_induk_create")
         ->name('sekolah_sd.buku_induk.create');
 
+        Route::get('project-rapor',"SekolahSDController@rapor_project_index")
+        ->name('sekolah_sd.project.rapor');
+        
         Route::get('project',"SekolahSDController@project_index")
         ->name('sekolah_sd.project.index');
         Route::get('project/create',"SekolahSDController@project_create")

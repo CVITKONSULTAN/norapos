@@ -9,13 +9,13 @@
     }
 @endphp
 @extends('layouts.app')
-@section('title', "Raport Project Siswa")
+@section('title', "Penilaian Project Siswa")
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Raport Project Siswa</h1>
+    <h1>Penilaian Project Siswa</h1>
 </section>
 
 <!-- Main content -->

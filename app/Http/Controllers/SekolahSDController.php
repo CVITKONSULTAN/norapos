@@ -764,4 +764,62 @@ class SekolahSDController extends Controller
         }
         return count($tendik);
     }
+
+    function rapor_project_index(Request $request){
+
+        $filter = $request->all();
+
+        $data['business'] = $request->user()->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['ekskul'] = Ekstrakurikuler::orderBy('id','desc')->get();
+
+        $user = $request->user();
+        if($user->checkGuru()){
+            $kelas = Kelas::where('wali_kelas_id',$user->id)->get();
+            $data['tahun_ajaran'] = $kelas->groupBy('tahun_ajaran')->keys();
+            $data['semester'] = $kelas->groupBy('semester')->keys();
+            $data['nama_kelas'] = $kelas->groupBy('nama_kelas')->keys();
+        } else {
+            $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+            $data['semester'] = Kelas::getGroupBy('semester');
+            $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+        }
+
+
+        // $kelas = Kelas::first();
+        // $siswa = Siswa::first();
+
+        // $data['kelas_siswa'] = KelasSiswa::first();
+        $data['kelas_siswa'] = null;
+        $data['nilai_list'] = [];
+        if($request->has('kelas_id')){
+            $data['kelas_siswa'] = KelasSiswa::find($request->kelas_id);
+        }
+
+        // $data['kelas_siswa'] = KelasSiswa::where([
+        //     'kelas_id'=> $kelas->id,
+        //     'siswa_id'=> $siswa->id,
+        // ])
+        // ->with('kelas','siswa')
+        // ->first();
+
+        // if(empty($data['kelas_siswa'])){
+            // return redirect()->route('sekolah_sd.kelas.index')
+            // ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+        //     return view('sekolah_sd.raport_akhir',$data)
+        //     ->with(['success'=>false,'message'=>"Data kelas anda kosong"]);
+        // }
+
+        // dd($data['kelas_siswa']);
+
+        $data['nilai_list'] = NilaiSiswa::where([
+            'kelas_id'=> $data['kelas_siswa']->kelas_id ?? 0,
+            'siswa_id'=> $data['kelas_siswa']->siswa_id ?? 0,
+        ])
+        ->with('mapel')
+        ->get();
+        
+        return view('sekolah_sd.rapor_projek',$data);
+    }
 }

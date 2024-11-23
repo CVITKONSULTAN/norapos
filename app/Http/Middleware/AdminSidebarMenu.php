@@ -1212,11 +1212,11 @@ class AdminSidebarMenu
                     //     ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
                     // );
                     $sub->url(
-                        action('SekolahSDController@project_index'),
+                        action('SekolahSDController@rapor_project_index'),
                         "Raport Project Siswa",
                         ['icon' => 'fa fas fa-user', 'active' => 
                             request()->segment(1) == 'sekolah_sd' &&
-                            request()->segment(2) == 'project' 
+                            request()->segment(2) == 'project-rapor' 
                         ]
                     );
                     // $sub->url(
@@ -1264,8 +1264,8 @@ class AdminSidebarMenu
                         action('SekolahSDController@project_index'),
                         "Penilaian Projek",
                         ['icon' => 'fa fas fa-user', 'active' => 
-                            request()->segment(1) == 'sekolah_sd' &&
-                            request()->segment(2) == 'penilaian-projek' 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'project' 
                         ]
                     );
                     // $sub->url(

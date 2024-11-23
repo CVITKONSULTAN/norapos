@@ -40,7 +40,7 @@
                             <option>Belum Berkembang (BB)</option>
                             <option>Mulai Berkembang (MB)</option>
                             <option>Berkembang Sesuai Harapan (BSH)</option>
-                            <option>Sangat Baik(SB)</option>
+                            <option>Sangat Baik (SB)</option>
                         </select>
                         {{-- <input type="number" class="form-control" name="Nama Lengkap" /> --}}
                     </div>

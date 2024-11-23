@@ -127,7 +127,8 @@ class KelasController extends Controller
                 $input['insert'] == 1
             ){
                 $k = KelasSiswa::create($input);
-                $this->storeKelasMapel($k);
+                $kelas_data = Kelas::find($input['kelas_id']);
+                $this->storeKelasMapel($k,$kelas_data->kelas);
                 return ['success'=>true,'msg'=>'Data berhasil disimpan'];
             }
             if(isset($input['update']) && $input['update'] == 1){
@@ -237,25 +238,36 @@ class KelasController extends Controller
 
     function KelasData(Request $request){
         $query = Kelas::query();
+        if($request->kelas){
+            $query = $query->where('kelas',$request->kelas);
+        }
         return DataTables::of($query)
         ->make(true);
     }
 
-    function storeKelasMapel($k){
+    function storeKelasMapel($k,$kelas){
         try{
-            $mapel = Mapel::all();
+            $mapel = Mapel::where('kelas',$kelas)->get();
             foreach($mapel as $item){
-                NilaiSiswa::where([
+                $n = NilaiSiswa::where([
                     'siswa_id'=> $k->siswa_id,
                     'kelas_id'=> $k->kelas_id,
                     'mapel_id'=> $item->id,
-                ])->firstOrCreate([
-                    'siswa_id'=> $k->siswa_id,
-                    'kelas_id'=> $k->kelas_id,
-                    'mapel_id'=> $item->id,
-                    'tp_mapel' => json_encode($item->tujuan_pembelajaran),
-                    'lm_mapel' => json_encode($item->lingkup_materi),
-                ]);
+                ])->first();
+                if(empty($n)){
+                    $n = NilaiSiswa::create([
+                        'siswa_id'=> $k->siswa_id,
+                        'kelas_id'=> $k->kelas_id,
+                        'mapel_id'=> $item->id,
+                        'tp_mapel' => json_encode($item->tujuan_pembelajaran),
+                        'lm_mapel' => json_encode($item->lingkup_materi),
+                    ]);
+                } else {
+                    $n->update([
+                        'tp_mapel' => json_encode($item->tujuan_pembelajaran),
+                        'lm_mapel' => json_encode($item->lingkup_materi)
+                    ]);
+                }
             }
             return ['success'=>true,'msg'=>'Data berhasil dihapus'];
         } catch(Exception $e){

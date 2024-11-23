@@ -312,11 +312,18 @@ class SekolahSDController extends Controller
     }
 
     function project_index(Request $request){
-        return view('sekolah_sd.project');
+        $kelas = Kelas::find($request->kelas_id);
+        $data['dimensi_list'] = [];
+        if(!empty($kelas) && $request->has('index_projek')){
+            $data['dimensi_list'] = $kelas->dimensi_list[$request->index_projek];
+        }
+        $data['kelas_siswa'] = KelasSiswa::where('kelas_id',$request->kelas_id)
+        ->get();
+        $data['index_projek'] = $request->index_projek ?? 0;
+        return view('sekolah_sd.project',$data);
     }
     function project_create(Request $request){
         return view('sekolah_sd.input.project.create');
-
     }
 
     // function raport_tengah_index(Request $request){
@@ -662,13 +669,15 @@ class SekolahSDController extends Controller
             $period_tahun['laki-laki'] = DB::table('siswas')
             ->select(DB::raw('COUNT(*) as total'))
             ->where('tahun_masuk', $value)
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin')) = ?", ['Laki-Laki'])
+            // ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin')) = ?", ['Laki-Laki'])
+            ->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin'))) LIKE '%laki-laki%'")
             ->first()
             ->total;
             $period_tahun['perempuan'] = DB::table('siswas')
             ->select(DB::raw('COUNT(*) as total'))
             ->where('tahun_masuk', $value)
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin')) = ?", ['Perempuan'])
+            // ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin')) = ?", ['Perempuan'])
+            ->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(detail, '$.jenis_kelamin'))) LIKE '%perempuan%'")
             ->first()
             ->total;
             $period_tahun['total'] = DB::table('siswas')
@@ -730,6 +739,7 @@ class SekolahSDController extends Controller
         if($request->kelas){
             $data['rapor_projek'] = RaporProjek::where('kelas',$request->kelas)->get();
         }
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
         return view('sekolah_sd.skenario_projek',$data);
     }
 
@@ -752,5 +762,4 @@ class SekolahSDController extends Controller
         }
         return count($tendik);
     }
-
 }

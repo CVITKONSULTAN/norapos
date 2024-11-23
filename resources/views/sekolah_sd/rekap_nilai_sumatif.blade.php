@@ -85,7 +85,7 @@
                 </div>
                 <div class="form-group">
                     <label>Nilai Akhir Sumatif</label>
-                    <input readonly name="nilai_akhir_sumatif" type="number" required class="form-control" />
+                    <input id="nilai_sumatif" readonly name="nilai_akhir_sumatif" type="number" required class="form-control" />
                 </div>
                 <div class="form-group">
                     <label>Nilai Rapor</label>
@@ -444,7 +444,9 @@
         // console.log("SLM",(nilai_SLM * 0.25))
         // console.log("SLA",(nilai_SLA * 0.5))
         // console.log("FORMATIF",(formatif * 0.25))
-        nilai_rapor = (nilai_SLM * 0.25) + (nilai_SLA * 0.5) + (formatif * 0.25);
+        const total_sumatif = (nilai_SLM * 0.25) + (nilai_SLA * 0.5);
+        nilai_rapor = total_sumatif + (formatif * 0.25);
+        $("#nilai_sumatif").val(total_sumatif);
         $("#nilai_rapor").val(nilai_rapor.toFixed(0));
     }
 

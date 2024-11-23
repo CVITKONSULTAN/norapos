@@ -23,8 +23,16 @@ class KelasSiswa extends Model
         'izin',
         'sakit',
         'tanpa_keterangan',
-        'project_id_list'
+        'project_id_list',
+        'nilai_projek'
     ];
+
+    protected $casts = [
+        'project_id_list'=>'array',
+        'nilai_projek'=>'array',
+    ];
+
+
     function siswa(){
         return $this->belongsTo(Siswa::class,'siswa_id','id');
     }

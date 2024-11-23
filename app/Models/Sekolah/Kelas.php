@@ -3,11 +3,11 @@
 namespace App\Models\Sekolah;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kelas extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $fillable = [
         'tahun_ajaran',
@@ -16,8 +16,11 @@ class Kelas extends Model
         'nama_wali_kelas',
         'nbm_wali_kelas',
         'wali_kelas_id',
-        'kelas'
+        'kelas',
+        'dimensi_list'
     ];
+
+    protected $casts = ['dimensi_list'=>'array'];
 
     public static function getGroupBy($column){
         return self::groupBy($column)->select($column)->get()->pluck($column);

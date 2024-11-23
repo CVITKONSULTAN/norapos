@@ -40,8 +40,11 @@ class KelasSiswaImport implements ToModel, WithHeadingRow
             ];
 
             $k = KelasSiswa::where($input)->firstOrCreate($input);
+
+            $kelas_data = Kelas::find($this->kelas_id);
+
             $kelas = new KelasController();
-            $kelas->storeKelasMapel($k);
+            $kelas->storeKelasMapel($k,$kelas_data->kelas);
             // dd($k);
             return $k;
         // } catch (\Throwable $th) {

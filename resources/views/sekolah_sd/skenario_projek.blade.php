@@ -102,14 +102,49 @@
     </div>
 </div>
 
+<div id="apply_projek" class="modal fade">
+    <div class="modal-dialog">
+        <form id="dimensi_local" enctype="multipart/form-data" method="POST" action="{{route('sekolah_sd.rapor_projek.apply')}}" class="modal-content">
+            @csrf
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Apply Projek
+                </h4>
+            </div>
+            <div class="modal-body">
+               <div class="form-group">
+                <label>Tahun Ajaran</label>
+                <select id="level_kelas" name="tahun_ajaran" class="form-control">
+                    <option value="">-- Pilih --</option>
+                    @foreach ($tahun_ajaran as $item)
+                        <option value="{{$item}}">{{$item}}</option>
+                    @endforeach
+                </select>
+               </div>
+               <div class="form-group">
+                <label>Level Kelas</label>
+                <select id="level_kelas" name="kelas" class="form-control">
+                    <option value="">-- Pilih --</option>
+                    @for ($i = 1; $i <= 6; $i++)
+                        <option value="{{$i}}">Kelas {{$i}}</option>
+                    @endfor
+                </select>
+               </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+              </div>
+        </form>
+    </div>
+</div>
+
 <form action="{{route('sekolah_sd.rapor_projek.store')}}" id="delete_data" method="POST">
     @csrf
     <input type="hidden" name="delete" value="1" />
     <input type="hidden" name="parent_id" value="0" />
     <input type="hidden" name="id" value="0" />
     <input type="hidden" name="type" value="projek" />
-    {{-- <input type="hidden" name="type" value="dimensi" /> --}}
-    {{-- <input type="hidden" name="type" value="subelemen" /> --}}
 </form>
 
 <!-- Content Header (Page header) -->
@@ -228,6 +263,7 @@
                 </div>
                 @if(Request::get('kelas') > 0)
                     <button onclick="tambahProjek()" style="margin-top: 10px;" class="btn btn-block btn-primary btn-lg"><i class="fa fa-plus"></i> Projek</button>
+                    <button onclick="applyProjek()" style="margin-top: 10px;" class="btn btn-block btn-success btn-lg"><i class="fa fa-plus"></i> Apply</button>
                 @endif
                 {{-- <button style="margin-top: 10px;" class="btn btn-block btn-success btn-lg"><i class="fa fa-save"></i> Simpan</button> --}}
             </div>
@@ -311,6 +347,10 @@
         if(parent_id)
         form.find('[name=parent_id]').val(parent_id);
         form.submit();
+    }
+
+    const applyProjek = () => {
+        $("#apply_projek").modal("show");
     }
 
  </script>

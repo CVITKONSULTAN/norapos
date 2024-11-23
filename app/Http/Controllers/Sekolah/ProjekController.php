@@ -10,6 +10,8 @@ use App\Models\Sekolah\RaporProjek;
 use App\Models\Sekolah\RaporDimensiProjek;
 use App\Models\Sekolah\DimensiProjek;
 use App\Models\Sekolah\DataDimensiID;
+use App\Models\Sekolah\Kelas;
+use App\Models\Sekolah\KelasSiswa;
 
 use \App\Imports\ProjekImport;
 use Excel;
@@ -115,5 +117,33 @@ class ProjekController extends Controller
             });
         }
         return $fase->get();
+    }
+
+    function applyProjek(Request $request){
+
+        $raporProjek = RaporProjek::where('kelas',$request->kelas)
+        ->with('dimensi')
+        ->get();
+
+
+        $kelasList = Kelas::where([
+            'tahun_ajaran' => $request->tahun_ajaran,
+            'kelas' => $request->kelas,
+        ])->get();
+        // dd($kelasList,$request->all());
+        foreach ($kelasList as $key => $value) {
+            // dd($raporProjek->toArray());
+            $value->dimensi_list = $raporProjek->toArray();
+            $value->save();
+        }
+        // return ['status'=>];
+        return redirect()->back()
+                ->with(['success'=>true,'Data berhasil dikaitkan']);
+    }
+
+    function data_rapor_projek(Request $request){
+        $kelas = Kelas::where('id',2)->first();
+        $query = KelasSiswa::where('kelas_id',$kelas->id);
+        return DataTables::of($query)->make(true);
     }
 }

@@ -119,7 +119,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                         <div class="form-group">
                             <label>File</label>
                             <input required class="form-control" type="file" name="import_file" />
-                            <p>Format file import data kelas & siswa : <a href="#">Download</a></p>
+                            <p>Format file import data kelas & siswa : <a href="/files/format_import_siswa.xlsx">Download format</a></p>
                         </div>
                     </div>
                     <div class="modal-footer">

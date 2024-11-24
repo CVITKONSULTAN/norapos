@@ -863,4 +863,9 @@ class SekolahSDController extends Controller
 
         return view('sekolah_sd.rapor_projek',$data);
     }
+
+    function buku_induk_print(Request $request){
+        return view('sekolah_sd.prints.buku_induk');
+    }
+    
 }

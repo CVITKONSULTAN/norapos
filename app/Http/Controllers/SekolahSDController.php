@@ -864,8 +864,42 @@ class SekolahSDController extends Controller
         return view('sekolah_sd.rapor_projek',$data);
     }
 
-    function buku_induk_print(Request $request){
-        return view('sekolah_sd.prints.buku_induk');
+    function buku_induk_print(Request $request,$id){
+
+        $user = $request->user();
+        if(empty($user)){
+            $token = $request->token ?? "-1";
+            $token  = hash('sha256', $token);
+            $user = \App\User::where('api_token',$token)->firstorfail();
+        }
+
+        $data['siswa'] = Siswa::findorfail($id);
+        
+        $data['kelas_siswa'] = KelasSiswa::where('siswa_id',$data['siswa']->id)->first();
+        
+        $data['business'] = $user->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+
+        if(empty($data['kelas_siswa'])){
+            return redirect()->route('sekolah_sd.kelas.index')
+            ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+        }
+
+        $where = [
+            'kelas_id'=> $data['kelas_siswa']->kelas_id,
+            'siswa_id'=> $data['kelas_siswa']->siswa_id,
+        ];
+
+        $data['nilai_list'] = NilaiSiswa::where($where)
+        ->with('mapel')
+        ->get();
+
+        $data['ekskul_siswa'] = EkskulSiswa::where($where)
+        ->with('ekskul')
+        ->get();
+
+        return view('sekolah_sd.prints.buku_induk',$data);
     }
     
 }

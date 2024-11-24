@@ -14,8 +14,6 @@
 include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
-use \App\Models\Sekolah\NilaiIntervalKeyword;
-
 
 $database_domain = ['beautyproclinic.com','koneksiedu.com'];
 
@@ -47,58 +45,6 @@ Route::get('/command', function () {
 //     // Artisan::call('migrate:rollback');
 //     // Artisan::call('make:model Blog -m');
     // Artisan::call('db:seed --class=NilaiIntervalSeeder');
-    $data = [
-        [
-            'nilai_minimum' => 0,
-            'nilai_maksimum' => 30.5,
-            'formatter_string' => "@nama@ Perlu bimbingan dalam @tp_nama@",
-            'tipe' => 'terendah'
-        ],
-        [
-            'nilai_minimum' => 30.5,
-            'nilai_maksimum' => 61,
-            'formatter_string' => "@nama@ Perlu bantuan dalam @tp_nama@",
-            'tipe' => 'terendah'
-        ],
-        [
-            'nilai_minimum' => 61,
-            'nilai_maksimum' => 68,
-            'formatter_string' => "@nama@ Perlu pembinaan dalam @tp_nama@",
-            'tipe' => 'terendah'
-        ],
-        [
-            'nilai_minimum' => 68,
-            'nilai_maksimum' => 74,
-            'formatter_string' => "@nama@ Perlu pendampingan dalam @tp_nama@",
-            'tipe' => 'terendah'
-        ],
-        [
-            'nilai_minimum' => 74,
-            'nilai_maksimum' => 81,
-            'formatter_string' => "@nama@ Menunjukan penguasaan dalam @tp_nama@",
-            'tipe' => 'tertinggi'
-        ],
-        [
-            'nilai_minimum' => 81,
-            'nilai_maksimum' => 87,
-            'formatter_string' => "@nama@ Menunjukan penguasaan yang sangat baik dalam @tp_nama@",
-            'tipe' => 'tertinggi'
-        ],
-        [
-            'nilai_minimum' => 87,
-            'nilai_maksimum' => 94,
-            'formatter_string' => "@nama@ Menunjukan pemahaman dalam @tp_nama@",
-            'tipe' => 'tertinggi'
-        ],
-        [
-            'nilai_minimum' => 94,
-            'nilai_maksimum' => 100,
-            'formatter_string' => "@nama@ Menunjukan pemahaman yang sangat baik dalam @tp_nama@",
-            'tipe' => 'tertinggi'
-        ]
-    ];
-
-    NilaiIntervalKeyword::insert($data);
     return "OK";
 });
 Route::get('seeding','itkonsultan\DataController@seed_norapos');

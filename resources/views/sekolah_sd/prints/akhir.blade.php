@@ -1,5 +1,55 @@
 @extends('sekolah_sd.prints.layout')
 
+@section('cover_page')
+<style>
+    div.cover_container {
+        padding: 70px;
+        position: relative;
+    }
+    .bg_bingkai{
+        height: 100%;
+        width: 80%;
+        position: absolute;
+    }
+    @media print {
+        .bg_bingkai{
+            width: 80%;
+            position: absolute;
+            height: 330mm;
+        }
+    }
+</style>
+<div class="page" style="position: relative;">
+    <img
+        src="{{url('/img/bingkai_buku_induk.png')}}"
+        class="bg_bingkai"
+    />
+    <div class="cover_container">
+        <div style="text-align: center;margin-top:80px;">
+            <img
+                width="150" 
+                src="{{url('/img/logo_dikbud.png')}}"
+            />
+        </div>
+        <div style="margin-top: 30px;">
+            <h1 style="text-align:center;font-size: 18pt;">RAPOR</h1>
+            <h3 style="text-align:center;font-size: 14pt;">PESERTA DIDIK SEKOLAH DASAR (SD)<br />KURIKULUM MERDEKA</h3>
+        </div>
+        <div style="text-align: center;margin-top:0px;">
+            <img 
+                width="300" 
+                src="{{url('/img/sd_muhamamdiyah_2.png')}}"
+            />
+        </div>
+        <div style="margin-top: 30px;">
+            <h3 style="text-align:center;font-size: 14pt;">NAMA PESERTA DIDIK :<br />{{ $kelas_siswa->siswa->nama }}</h3>
+            <h3 style="text-align:center;font-size: 14pt;">NISN/NIS:<br />{{ $kelas_siswa->siswa->nisn }}</h3>
+        </div>
+    </div>
+</div>
+    
+@endsection
+
 @section('main')
 
     <table width="100%">

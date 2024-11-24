@@ -117,8 +117,10 @@
     </style>
     <body>
         <div class="book">
+            @yield('cover_page')
+
             <div class="page">  
-                
+
                 <table class="table_kop">
                     <tr>
                         <td>

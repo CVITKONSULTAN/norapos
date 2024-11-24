@@ -130,7 +130,7 @@
                     <label>Mata Pelajaran</label>
                     <select id="filter_mapel" required class="form-control" name="mapel_id">
                         @foreach ($mapel as $item)
-                            <option {{ isset($filter['mapel_id']) && $filter['mapel_id'] == $item->id ? 'selected' : ''}} value="{{$item->id}}">{{ $item->nama }}</option>
+                            <option {{ isset($filter['mapel_id']) && $filter['mapel_id'] == $item->nama ? 'selected' : ''}} value="{{$item->nama}}">{{ $item->nama }}</option>
                         @endforeach
                     </select>
                 </div>

@@ -28,6 +28,31 @@
 </div>
 
 <div class="page" style="position: relative;">
+
+    <table class="table_kop">
+        <tr>
+            <td>
+                <img
+                    width="100" 
+                    src="{{url('/img/logo_dikbud.png')}}"
+                />
+            </td>
+            <td class="kop_detail">
+                <p>PEMERINTAH KOTA PONTIANAK</p>
+                <p>KOORDINATOR WILAYAH DIKPORA KECAMATAN PONTIANAK SELATAN</p>
+                <p>SD MUHAMMADIYAH 2 PONTIANAK</p>
+                <p>Jalan Jendral Ahmad Yani</p>
+                <p>Telp. (0561) 733539</p>
+            </td>
+            <td>
+                <img 
+                    width="130" 
+                    src="{{url('/img/sd_muhamamdiyah_2.png')}}"
+                />
+            </td>
+        </tr>
+    </table>
+
     <table width="100%">
         <tr>
             <td style="vertical-align:top;">

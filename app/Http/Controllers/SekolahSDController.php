@@ -527,23 +527,10 @@ class SekolahSDController extends Controller
         $data['location'] = $data['business']->locations[0];
         $data['alamat'] = $data['location']->getLocationAddressAttribute();
 
-        // if(empty($data['kelas_siswa'])){
-        //     return redirect()->route('sekolah_sd.kelas.index')
-        //     ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
-        // }
-
         $where = [
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ];
-
-        // $data['nilai_list'] = NilaiSiswa::where($where)
-        // ->with('mapel')
-        // ->get();
-
-        // $data['ekskul_siswa'] = EkskulSiswa::where($where)
-        // ->with('ekskul')
-        // ->get();
 
         $data['fase'] = null;
         if($request->has('kelas_id')){
@@ -918,7 +905,6 @@ class SekolahSDController extends Controller
         $data['location'] = $data['business']->locations[0];
         $data['alamat'] = $data['location']->getLocationAddressAttribute();
 
-        // $data['kelas_siswa'] = KelasSiswa::where('kelas_id',$kelas->id)->get();
         $kelas_siswa = KelasSiswa::where('kelas_id',$kelas->id)->get();
         $html = '';
         foreach($kelas_siswa as $k => $item){
@@ -938,12 +924,56 @@ class SekolahSDController extends Controller
 
             $data['kelas_siswa'] = $item;
     
-            // $html[] = view('sekolah_sd.prints.akhir',$data);
             $html .= view('sekolah_sd.prints.satuan_rapor_akhir_comp',$data)->render();
-            // dd($v);
         }
         $input['isi'] = $html;
         return view('sekolah_sd.prints.cetak_masal',$input);
+    }
+
+    function raport_project_print_perkelas(Request $request){
+        // dd($request->all());
+
+        $kelas = Kelas::where([
+            'tahun_ajaran'=>$request->tahun_ajaran,
+            'semester'=>$request->semester,
+            'nama_kelas'=>$request->kelas,
+        ])->firstorfail();
+
+        $user = $request->user();
+        if(empty($user)){
+            $token = $request->token ?? "-1";
+            $token  = hash('sha256', $token);
+            $user = \App\User::where('api_token',$token)->firstorfail();
+        }
+        $data['business'] = $user->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+
+        // $data['kelas_siswa'] = KelasSiswa::findorfail($id);
+        $kelas_siswa = KelasSiswa::where('kelas_id',$kelas->id)->get();
+        $html = '';
+        foreach($kelas_siswa as $item){
+            $where = [
+                'kelas_id'=> $item->kelas_id,
+                'siswa_id'=> $item->siswa_id,
+            ];
+    
+            $data['fase'] = null;
+            $data['kelas_siswa'] = KelasSiswa::where($where)->first();
+            $kelas = $data['kelas_siswa']->kelas;
+            if($kelas->kelas > 0 && $kelas->kelas <=2){
+                $data['fase'] = "A";
+            }
+            if($kelas->kelas > 2 && $kelas->kelas <=4){
+                $data['fase'] = "B";
+            }
+            if($kelas->kelas > 4 && $kelas->kelas <=6){
+                $data['fase'] = "C";
+            }
+            $html .= view('sekolah_sd.prints.satu_project_comp',$data)->render();
+        }
+        $input['isi'] = $html;
+        return view('sekolah_sd.prints.cetak_masal_project',$input);
     }
     
 }

@@ -88,13 +88,13 @@
                 <ul class="nav nav-tabs">
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> 
-                            Raport Akhir Semester (Individu)
+                            Raport Project (Individu)
                         </a>
                     </li>
                     @if(!empty($kelas_siswa))
                         <li class="">
                             <a href="#ekskul" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i>
-                                Cetak Raport Akhir Semester (Perkelas)
+                                Cetak Raport Project (Perkelas)
                             </a>
                         </li>
                     @endif
@@ -316,31 +316,37 @@
                         @endif
                     </div>
                     @if(!empty($kelas_siswa))
-                        <div class="tab-pane" id="ekskul">
-                            
-                            <div class="row">
-                                <div class="form-group col-md-4">
-                                    <label>Kelas</label>
-                                    <select class="form-control">
-                                        <option>4 A</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label>Tahun Pelajaran</label>
-                                    <select class="form-control">
-                                        <option>2024/2025</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label>Semester</label>
-                                    <select class="form-control">
-                                        <option>1</option>
-                                        <option>2</option>
-                                    </select>
-                                </div>
+                    <div class="tab-pane" id="ekskul">    
+                        <form action="{{route('sekolah_sd.raport_project.print.perkelas')}}" class="row">
+                            <div class="form-group col-md-2">
+                                <label>Tahun Ajaran</label>
+                                <select id="filter_tahun_ajaran" class="form-control" name="tahun_ajaran">
+                                    @foreach ($tahun_ajaran as $item)
+                                        <option>{{ $item }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <button type="button" class="btn btn-primary btn-block">Cetak</button>
-                        </div>
+                            <div class="form-group col-md-2">
+                                <label>Semester</label>
+                                <select id="filter_semester" class="form-control" name="semester">
+                                    @foreach ($semester as $item)
+                                        <option>{{ $item }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Kelas</label>
+                                <select id="filter_kelas" class="form-control" name="kelas">
+                                    @foreach ($nama_kelas as $item)
+                                        <option>{{ $item }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button style="margin-top:25px;" type="submit" class="btn btn-primary btn-block">Cetak</button>
+                            </div>
+                        </form>
+                    </div>
                     @endif
                 </div>
             </div>

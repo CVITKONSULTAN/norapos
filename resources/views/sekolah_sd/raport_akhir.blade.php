@@ -321,8 +321,7 @@
                         @endif
                     </div>
                     @if(!empty($kelas_siswa))
-                        <div class="tab-pane" id="ekskul">
-                            
+                        <div class="tab-pane" id="ekskul">    
                             <form action="{{route('sekolah_sd.raport_akhir.print.perkelas')}}" class="row">
                                 <div class="form-group col-md-2">
                                     <label>Tahun Ajaran</label>

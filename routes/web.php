@@ -253,6 +253,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('raport-akhir/{id}/print',"SekolahSDController@raport_akhir_print")
         ->name('sekolah_sd.raport_akhir.print');
 
+        Route::get('raport-project/{id}/print',"SekolahSDController@raport_project_print")
+        ->name('sekolah_sd.raport_project.print');
+
         Route::get('peserta-didik-baru',function(){
             return view('sekolah_sd.peserta_didik_baru');
         })

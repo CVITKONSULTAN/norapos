@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', "Raport Project Siswa")
+@section('title', "Raport Project")
 
 @section('css')
     <link
@@ -29,6 +29,44 @@
             text-align: center;
             padding: 5px 10px;
         }
+        div.container_deskripsi{
+            border: 1px solid black;
+            padding: 5px;
+        }
+        p.head_keterangan_nilai{
+            font-weight: bold;
+        }
+        p.sub_ket_nilai{
+            font-style: italic;
+        }
+        table.keterangan_table{
+            margin-top: 10px;
+        }
+        table.keterangan_table tr td{
+            vertical-align: middle;
+        }
+        table.tabel_projek {
+            width: 100%;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        table.tabel_projek tr th{
+            border: 1px solid black;
+            padding: 2.5px 5px;
+            text-align: center;
+        }
+        table.tabel_projek tr td{
+            border: 1px solid black;
+            padding: 2.5px 5px;
+        }
+        #printableArea{
+            color: #000;
+        }
+        .dimensi_head{
+            font-weight:bold;
+            background: rgb(103, 172, 225);
+            padding: 2.5px 10px;
+        }
     </style>
 @endsection
 
@@ -36,58 +74,12 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>Raport Project Siswa</h1>
+    <h1>Raport Project</h1>
 </section>
 
 <!-- Main content -->
 
 <section class="content">
-
-    @if(!empty($kelas_siswa))
-    <div id="ekskul_modal" class="modal fade">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form id="form_kelas_siswa_store" method="POST" action="{{route('sekolah_sd.ekskul-siswa.store')}}">
-                    @csrf
-                    <input value="1" type="hidden" name="insert" />
-                    <input value="0" type="hidden" name="update" />
-                    <input value="0" type="hidden" name="id" />
-                    <input type="hidden" name="kelas_id" value="{{$kelas_siswa->kelas_id ?? 0}}" />
-                    <input type="hidden" name="siswa_id" value="{{$kelas_siswa->siswa_id ?? 0}}" />
-
-                    <div class="modal-header">
-                        <h4 class="modal-title">
-                            Form Ekskul
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Ekstrakurikuler</label>
-                            <select required class="form-control" name="ekskul_id">
-                                <option value="">-- Pilih Ekskul --</option>
-                                @foreach ($ekskul as $key => $item)
-                                    <option value="{{$item->id}}">{{$item->nama}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Nilai</label>
-                            <input maxlength="1" class="form-control" name="nilai" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Keterangan</label>
-                            <textarea rows="5" required class="form-control" name="keterangan"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    @endif
 
     <div class="row">
         <div class="col-md-12">
@@ -96,13 +88,13 @@
                 <ul class="nav nav-tabs">
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> 
-                            Raport Project Siswa (Individu)
+                            Raport Akhir Semester (Individu)
                         </a>
                     </li>
                     @if(!empty($kelas_siswa))
                         <li class="">
                             <a href="#ekskul" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i>
-                                Cetak Raport Raport Project Siswa (Perkelas)
+                                Cetak Raport Akhir Semester (Perkelas)
                             </a>
                         </li>
                     @endif
@@ -137,7 +129,6 @@
                             </div>
                             <div class="form-group col-md-2">
                                 <label>Cari NISN/Nama Siswa</label>
-                                {{-- <input type="search" placeholder="Tulis disini..." class="form-control" name="cari" placeholder="" /> --}}
                                 <select name="kelas_id" class="siswa_selection"></select>
                             </div>
                             <div class="col-md-2">
@@ -146,13 +137,182 @@
                         </form>
                         <hr />
                         @if(!empty($kelas_siswa))
-                        <div id="printableArea" class="row">
-                            
-                        </div>
-                        <div class="text-center" style="margin-top:10px;">
-                            <button onclick="simpanRaport(this,'{{$kelas_siswa->id ?? 0}}')" type="button" class="btn btn-primary">Simpan</button>
-                            <a href="{{ route('sekolah_sd.raport_akhir.print', $kelas_siswa->id ?? 0 ) }}" type="button" class="btn btn-success">Cetak</a>
-                        </div>
+                            <div id="printableArea" class="row">
+                                <div class="col-sm-6">
+                                    <table class="head_table">
+                                        <tr>
+                                            <td>NISN</td>
+                                            <td>:</td>
+                                            <td>{{ $kelas_siswa->siswa->nisn ?? "" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nama Peserta Didik</td>
+                                            <td>:</td>
+                                            <td>{{ $kelas_siswa->siswa->nama ?? "" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nama Sekolah</td>
+                                            <td>:</td>
+                                            <td>{{ $business->name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="vertical-align: top">Alamat Sekolah</td>
+                                            <td style="vertical-align: top">:</td>
+                                            <td>{!! $alamat !!}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-sm-6">
+                                    <table class="head_table">
+                                        <tr>
+                                            <td>Kelas</td>
+                                            <td>:</td>
+                                            <td>{{ $kelas_siswa->kelas->nama_kelas ?? "" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Fase</td>
+                                            <td>:</td>
+                                            <td>{{$fase}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Semester</td>
+                                            <td>:</td>
+                                            <td>{{ $kelas_siswa->kelas->semester ?? "" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tahun Pelajaran</td>
+                                            <td>:</td>
+                                            <td>{{ $kelas_siswa->kelas->tahun_ajaran ?? "" }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-12">
+                                    @php
+                                        $list_dimensi = [];
+                                    @endphp
+                                    @foreach ($kelas_siswa->nilai_projek ?? [] as $i => $item)
+                                        @php
+                                            $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
+                                            // dd($item);
+                                            foreach ($item['dimensi'] ?? [] as $key => $value) {
+                                                $list_dimensi[$value['id']] = $value['nama'];
+                                            }
+                                        @endphp
+                                        <h4>Projek {{$i+1}} | {{ $item['projek_nama'] }}</h4>
+                                        <div class="container_deskripsi">
+                                            {{$project->deskripsi}}
+                                        </div>
+                                    @endforeach
+                                    <table class="keterangan_table" width="100%">
+                                        <tr>
+                                            <td>
+                                                <p class="head_keterangan_nilai">BB. Belum Berkembang</p>
+                                            </td>
+                                            <td>
+                                                <p class="head_keterangan_nilai">MB. Mulai Berkembang</p>
+                                            </td>
+                                            <td>
+                                                <p class="head_keterangan_nilai">BSH. Berkembang Sesuai Harapan</p>
+                                            </td>
+                                            <td>
+                                                <p class="head_keterangan_nilai">SB. Sangat Berkembang</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <p class="sub_ket_nilai">Siswa masih membutuhkan
+                                                    bimbingan dalam
+                                                    mengembangkan kemampuan</p>
+                                            </td>
+                                            <td>
+                                                <p class="sub_ket_nilai">Siswa mulai
+                                                    mengembangkan
+                                                    kemampuan namun masih
+                                                    belum ajek</p>
+                                            </td>
+                                            <td>
+                                                <p class="sub_ket_nilai">Siswa telah mengembangkan
+                                                    kemampuan hingga berada
+                                                    dalam tahap ajek</p>
+                                            </td>
+                                            <td>
+                                                <p class="sub_ket_nilai">Siswa mengembangkan
+                                                    kemampuannya melampaui
+                                                    harapan</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table class="tabel_projek">
+                                        <thead>
+                                            <tr>
+                                                <th>Projek Kelas {{ $kelas_siswa->kelas->nama_kelas ?? "" }}</th>
+                                                @foreach ($list_dimensi as $v)
+                                                    <th>{{ $v }}</th>
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($kelas_siswa->nilai_projek ?? [] as $i => $item)
+                                                <tr>
+                                                    <td>{{ $item['projek_nama'] }}</td>
+                                                    @foreach ($list_dimensi as $k => $v)
+                                                        @foreach ($item['dimensi'] as $value)
+                                                            @if($value['id'] == $k)
+                                                                <td class="text-center">{{$value['nilai']}}</td>
+                                                            @endif
+                                                        @endforeach
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                    @php
+                                        $dimensi_list = $kelas_siswa->kelas->dimensi_list ?? [];
+                                        $nilai_projek = $kelas_siswa->nilai_projek ?? []
+                                    @endphp
+                                    @foreach ($nilai_projek ?? [] as $i => $item)
+                                        <table style="margin-top: 20px;" class="tabel_projek">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{ $item['projek_nama'] ?? "" }}</th>
+                                                    <th>BB</th>
+                                                    <th>MB</th>
+                                                    <th>BSH</th>
+                                                    <th>SB</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($item['dimensi'] ?? [] as $j => $value)
+                                                @php
+                                                    // dd($dimensi_list[$i]['dimensi'][$j]);
+                                                    $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
+                                                @endphp
+                                                <tr>
+                                                    <td class="dimensi_head" colspan="5">{{ $value['nama'] }}</td>
+                                                </tr>
+                                                @foreach ($value['subelemen'] ?? [] as $k => $val)
+                                                    {{-- {{dd($val['nilai'])}} --}}
+                                                    <tr>
+                                                        <td>
+                                                            <p style="font-weight: bold;">{{$subelemen_fase[$k]['text'] ?? ""}}</p>
+                                                            <p>{{$subelemen_fase[$k]['target'] ?? ""}}</p>
+                                                        </td>
+                                                        <td class="text-center">{{ $val['nilai'] == 'BB' ? 'V' : '' }}</td>
+                                                        <td class="text-center">{{ $val['nilai'] == 'MB' ? 'V' : '' }}</td>
+                                                        <td class="text-center">{{ $val['nilai'] == 'BSH' ? 'V' : '' }}</td>
+                                                        <td class="text-center">{{ $val['nilai'] == 'SB' ? 'V' : '' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                                {{-- {{dd($value,$dimensi_list)}} --}}
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="text-center" style="margin-top:10px;">
+                                <a href="{{ route('sekolah_sd.raport_project.print', $kelas_siswa->id ?? 0 ) }}" type="button" class="btn btn-success">Cetak</a>
+                            </div>
                         @endif
                     </div>
                     @if(!empty($kelas_siswa))
@@ -197,7 +357,6 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
     ></script>
     <script type="text/javascript">
-    
         function printDiv(divId) {
             var printContents = document.getElementById(divId).innerHTML;
             var originalContents = document.body.innerHTML;
@@ -208,6 +367,60 @@
 
             document.body.innerHTML = originalContents;
         }
+
+        let selectizeInstanceSiswa;
+
+        $(function () {
+            selectizeInstanceSiswa = $(".siswa_selection").selectize({
+                placeholder: 'Cari disini...',
+                maxItems: 1,
+                create: false,
+                valueField: 'id',         // Field to use as the value
+                labelField: 'name',       // Field to use as the label
+                searchField: 'name',      // Field to use for searching
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+                    const tahun_ajaran = $("#filter_tahun_ajaran").val();
+                    const semester = $("#filter_semester").val();
+                    const kelas = $("#filter_kelas").val();
+                    const url = '/sekolah_sd/kelas-siswa/data?draw=30&columns%5B0%5D%5Bdata%5D=id&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=siswa.nisn&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=siswa.nama&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=kelas.nama_kelas&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=kelas.tahun_ajaran&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=id&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc&start=0&length=25&search%5Bvalue%5D='+query+
+                        '&filter_tahun_ajaran='+tahun_ajaran+
+                        '&filter_semester='+semester+
+                        '&filter_kelas='+kelas;
+                    // console.log("url",url)
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            selectizeInstanceSiswa[0].selectize.clearOptions();
+                        },
+                        error: function(error) {
+                            console.log(error)
+                            callback();
+                        },
+                        success: function(res) {
+                            const results = res.data.map(item => ({
+                                id: item.id,
+                                name: `${item.siswa.nama} (${item.siswa.nisn})`
+                            }));
+                            // console.log(results)
+                            callback(results);
+                        }
+                    });
+                }
+            })
+
+            const clearSelectize = () => {
+                selectizeInstanceSiswa[0].selectize.setValue(null);
+                selectizeInstanceSiswa[0].selectize.clearOptions();
+            }
+
+            $("#filter_tahun_ajaran").change(clearSelectize);
+            $("#filter_semester").change(clearSelectize);
+            $("#filter_kelas").change(clearSelectize);
+
+        })
 
         const simpanRaport = (elm,id) => {
             const btn = $(elm)
@@ -241,6 +454,58 @@
             })
         }
 
+        const loadEkskul = () => {
+            $.ajax({
+                type:"GET",
+                url:`{{ route('sekolah_sd.ekskul-siswa.show') }}`,
+                data:{
+                    kelas_id:"{{$kelas_siswa->kelas_id ?? 0}}",
+                    siswa_id:"{{$kelas_siswa->siswa_id ?? 0}}",
+                },
+                beforeSend:function(){
+                    $("#ekskul_list").empty();
+                },
+                complete:function(){
+
+                },
+                success:function(result){
+                    // console.log("result",result);
+                    if(!result.success) return;
+                    for(const k in result.data){
+                        const val = result.data[k]
+                        const template = `
+                        <tr>
+                            <td class="text-center">${parseInt(k)+1}</td>
+                            <td>${val.ekskul.nama}</td>
+                            <td>${val.keterangan}</td>
+                            <td class="text-center">
+                                <button onclick="editEkskul(this,${val.id})" class="btn btn-primary btn-xs"><i class="fa fa-pencil-alt"></i></button>
+                                <button onclick="deleteEkskul(this,${val.id})" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        `;
+                        $("#ekskul_list").append(template);
+                    }
+                },
+                error:function(error){
+
+                },
+            })
+        }
+
+        const tambahEkskul = () => {
+            const modals = $("#ekskul_modal");
+            modals.find('input[name=insert]').val(1);
+            modals.find('input[name=update]').val(0);
+            modals.find('input[name=id]').val(0);
+            $("#form_kelas_siswa_store").trigger("reset");
+            modals.modal("show");
+        }
+
+        $(document).ready(function(){
+            loadEkskul();
+        })
+
         $("#form_kelas_siswa_store").on('submit', (function(e) {
             e.preventDefault();
             $.ajax({
@@ -269,6 +534,72 @@
                 }
             });
         }));
+
+        const deleteEkskul = (elm,id) => {
+            const btn = $(elm)
+            $.ajax({
+                url: "{{route('sekolah_sd.ekskul-siswa.store')}}",
+                type: "POST",
+                data: {delete:1,id:id},
+                beforeSend:function(){
+                    btn.attr('disabled')
+                },
+                complete:function(){
+                    btn.removeAttr('disabled')
+                },
+                success: function(result) {
+                    console.log("result",result);
+                    if(result.success == true){
+                        loadEkskul();
+                        toastr.success(result.msg);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        const editEkskul = (elm,id) => {
+            const btn = $(elm)
+            const form = $("#form_kelas_siswa_store")
+            $.ajax({
+                url: "{{route('sekolah_sd.ekskul-siswa.store')}}",
+                type: "POST",
+                data: {show:1,id:id},
+                beforeSend:function(){
+                    btn.attr('disabled')
+                },
+                complete:function(){
+                    btn.removeAttr('disabled')
+                },
+                success: function(result) {
+
+                    console.log("result",result);
+
+                    if(!result.success)
+                    return toastr.error(result.msg);
+
+                    const {data} = result
+
+                    form.find('input[name=insert]').val(0);
+                    form.find('input[name=update]').val(1);
+                    form.find('input[name=id]').val(data.id);
+
+                    form.find('select[name=ekskul_id]').val(data.ekskul_id);
+                    form.find('input[name=nilai]').val(data.nilai);
+                    form.find('textarea[name=keterangan]').val(data.keterangan);
+                    $("#ekskul_modal").modal("show");
+                    
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
 
     </script>
 @endsection

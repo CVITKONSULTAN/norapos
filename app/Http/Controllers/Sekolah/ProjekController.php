@@ -155,7 +155,7 @@ class ProjekController extends Controller
         $dimensi = $request->dimensi ?? [];
         $projek = [
             'projek_id'=>$request->projek_id,
-            'projek_nama'=>$request->projek_id,
+            'projek_nama'=>$request->projek_nama,
             'dimensi'=>$dimensi
         ];
         $k = KelasSiswa::findorfail($request->kelas_siswa_id);
@@ -170,7 +170,6 @@ class ProjekController extends Controller
         } else {
             $nilai_project[] = $projek;
         }
-        // dd($nilai_project);
         $k->nilai_projek = $nilai_project;
         $k->save();
         return redirect()->back()

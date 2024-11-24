@@ -472,8 +472,6 @@ class SekolahSDController extends Controller
     }
 
     function raport_project_print(Request $request, Int $id){
-        
-        // dd($id);
 
         $data['kelas_siswa'] = KelasSiswa::findorfail($id);
         $user = $request->user();
@@ -486,25 +484,40 @@ class SekolahSDController extends Controller
         $data['location'] = $data['business']->locations[0];
         $data['alamat'] = $data['location']->getLocationAddressAttribute();
 
-        if(empty($data['kelas_siswa'])){
-            return redirect()->route('sekolah_sd.kelas.index')
-            ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
-        }
+        // if(empty($data['kelas_siswa'])){
+        //     return redirect()->route('sekolah_sd.kelas.index')
+        //     ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+        // }
 
         $where = [
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ];
 
-        $data['nilai_list'] = NilaiSiswa::where($where)
-        ->with('mapel')
-        ->get();
+        // $data['nilai_list'] = NilaiSiswa::where($where)
+        // ->with('mapel')
+        // ->get();
 
-        $data['ekskul_siswa'] = EkskulSiswa::where($where)
-        ->with('ekskul')
-        ->get();
+        // $data['ekskul_siswa'] = EkskulSiswa::where($where)
+        // ->with('ekskul')
+        // ->get();
 
-        return view('sekolah_sd.prints.akhir',$data);
+        $data['fase'] = null;
+        if($request->has('kelas_id')){
+            $data['kelas_siswa'] = KelasSiswa::find($request->kelas_id);
+            $kelas = $data['kelas_siswa']->kelas;
+            if($kelas->kelas > 0 && $kelas->kelas <=2){
+                $data['fase'] = "A";
+            }
+            if($kelas->kelas > 2 && $kelas->kelas <=4){
+                $data['fase'] = "B";
+            }
+            if($kelas->kelas > 4 && $kelas->kelas <=6){
+                $data['fase'] = "C";
+            }
+        }
+
+        return view('sekolah_sd.prints.project',$data);
     }
 
     function raport_tengah_print(Request $request, Int $id){
@@ -786,40 +799,23 @@ class SekolahSDController extends Controller
             $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
         }
 
-
-        // $kelas = Kelas::first();
-        // $siswa = Siswa::first();
-
-        // $data['kelas_siswa'] = KelasSiswa::first();
         $data['kelas_siswa'] = null;
         $data['nilai_list'] = [];
+        $data['fase'] = null;
         if($request->has('kelas_id')){
             $data['kelas_siswa'] = KelasSiswa::find($request->kelas_id);
+            $kelas = $data['kelas_siswa']->kelas;
+            if($kelas->kelas > 0 && $kelas->kelas <=2){
+                $data['fase'] = "A";
+            }
+            if($kelas->kelas > 2 && $kelas->kelas <=4){
+                $data['fase'] = "B";
+            }
+            if($kelas->kelas > 4 && $kelas->kelas <=6){
+                $data['fase'] = "C";
+            }
         }
 
-        // $data['kelas_siswa'] = KelasSiswa::where([
-        //     'kelas_id'=> $kelas->id,
-        //     'siswa_id'=> $siswa->id,
-        // ])
-        // ->with('kelas','siswa')
-        // ->first();
-
-        // if(empty($data['kelas_siswa'])){
-            // return redirect()->route('sekolah_sd.kelas.index')
-            // ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
-        //     return view('sekolah_sd.raport_akhir',$data)
-        //     ->with(['success'=>false,'message'=>"Data kelas anda kosong"]);
-        // }
-
-        // dd($data['kelas_siswa']);
-
-        $data['nilai_list'] = NilaiSiswa::where([
-            'kelas_id'=> $data['kelas_siswa']->kelas_id ?? 0,
-            'siswa_id'=> $data['kelas_siswa']->siswa_id ?? 0,
-        ])
-        ->with('mapel')
-        ->get();
-        
         return view('sekolah_sd.rapor_projek',$data);
     }
 }

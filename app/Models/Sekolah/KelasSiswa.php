@@ -24,12 +24,14 @@ class KelasSiswa extends Model
         'sakit',
         'tanpa_keterangan',
         'project_id_list',
-        'nilai_projek'
+        'nilai_projek',
+        'hitungan_sistem'
     ];
 
     protected $casts = [
         'project_id_list'=>'array',
         'nilai_projek'=>'array',
+        'hitungan_sistem'=>'array',
     ];
 
 

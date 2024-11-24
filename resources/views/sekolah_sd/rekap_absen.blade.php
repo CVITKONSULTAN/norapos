@@ -120,6 +120,9 @@
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="product_list_tab">
+                        <div class="text-right" style="margin-bottom:10px;">
+                            <button onclick="hitungAbsen(this)" class="btn btn-primary">Hitung dari jurnal kelas</button>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
@@ -279,6 +282,26 @@
             }
         });
     }));
+
+    const hitungAbsen = (elm) => {
+        const kelas_id = $("#kelas_id").val();
+        const btn = $(elm)
+        $.ajax({
+            url:"/sekolah_sd/hitung-absen?kelas_id="+kelas_id,
+            beforeSend:()=>{
+                btn.attr("disabled")
+            },
+            complete:()=>{
+                btn.removeAttr("disabled")
+            },
+            success:(res)=>{
+                if(res.status){
+                    toastr.success(res.message);
+                    product_table.ajax.reload();
+                }
+            }
+        })
+    }
 
 </script>
 @endsection

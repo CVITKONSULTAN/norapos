@@ -11,10 +11,13 @@ use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\JurnalKelas;
 use \App\Models\Sekolah\TenagaPendidik;
-use DataTables;
 
-use Excel;
 use \App\Imports\KelasSiswaImport;
+
+use Illuminate\Support\Facades\DB;
+
+use DataTables;
+use Excel;
 
 class KelasController extends Controller
 {
@@ -298,7 +301,7 @@ class KelasController extends Controller
         $user_id = $request->user()->id;
         $check = JurnalKelas::where([
             "kelas_id" => $request->kelas_id,
-            "mapel_id" => $request->mapel_id,
+            "nama_mapel" => $request->nama_mapel,
             "tanggal" => $request->tanggal
         ])->first();
         if(!empty($check)){
@@ -309,6 +312,7 @@ class KelasController extends Controller
             "kelas_id" => $request->kelas_id,
             "mapel_id" => $request->mapel_id,
             "tanggal" => $request->tanggal,
+            "nama_mapel" => $request->nama_mapel,
             "jurnal" => json_encode($request->jurnal ?? [])
         ];
         JurnalKelas::create($input);
@@ -336,6 +340,29 @@ class KelasController extends Controller
     function detail(Request $request,$id){
         $kelas = KelasSiswa::find($id);
         return ['status'=>true,'data'=>$kelas];
+    }
+
+    function hitungJurnalAbsen(Request $request){
+        $kelas_id = $request->kelas_id;
+        $kelasList = KelasSiswa::where('kelas_id',$kelas_id)->get();
+        foreach($kelasList as $i => $item){
+            $result = DB::select("
+                SELECT
+                COUNT(CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(jurnal, '$.".$item->siswa_id."')) = 'hadir' THEN 1 END) AS jumlah_hadir,
+                COUNT(CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(jurnal, '$.".$item->siswa_id."')) = 'izin' THEN 1 END) AS jumlah_izin,
+                COUNT(CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(jurnal, '$.".$item->siswa_id."')) = 'sakit' THEN 1 END) AS jumlah_sakit,
+                COUNT(CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(jurnal, '$.".$item->siswa_id."')) = 'tanpa keterangan' THEN 1 END) AS jumlah_absen
+                FROM jurnal_kelas where mapel_id is null
+            ");
+            $result = $result[0];
+            $item->hadir = $result->jumlah_hadir;
+            $item->izin = $result->jumlah_izin;
+            $item->sakit = $result->jumlah_sakit;
+            $item->tanpa_keterangan = $result->jumlah_absen;
+            $item->hitungan_sistem = $result;
+            $item->save();
+        }
+        return ['status'=>true,'message'=>"Data berhasil dikalkulasi"];
     }
 
 }

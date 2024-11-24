@@ -232,6 +232,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('data-rekap-absen',"SekolahSDController@data_rekap_absen_index")
         ->name('sekolah_sd.rekap_absen.index');
 
+        Route::get('hitung-absen',"Sekolah\KelasController@hitungJurnalAbsen")
+        ->name('sekolah_sd.rekap_absen.hitung');
+
         Route::get('buku-induk',"SekolahSDController@buku_induk_index")
         ->name('sekolah_sd.buku_induk.index');
         Route::get('buku-induk/create',"SekolahSDController@buku_induk_create")

@@ -41,10 +41,11 @@
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label>Mata Pelajaran</label>
-                                <select id="mapel_id" class="form-control" name="mapel_id" required>
+                                <select id="mapel_id" class="form-control" name="mapel_id">
                                     @foreach ($mapel as $item)
                                         <option value="{{$item->id}}">{{ $item->nama }}</option>
                                     @endforeach
+                                    <option value="">PEMBIASAAN</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
@@ -164,6 +165,7 @@
         });
         json.kelas_id = $('select[name=kelas_id]').val();
         json.mapel_id = $('select[name=mapel_id]').val();
+        json.nama_mapel = $('select[name=mapel_id] option:selected').text();
         json.tanggal = $('input[name=tanggal]').val();
         json.jurnal = list_hadir;
         console.log("json",json)

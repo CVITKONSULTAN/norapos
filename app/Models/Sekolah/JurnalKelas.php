@@ -14,7 +14,8 @@ class JurnalKelas extends Model
         'mapel_id',
         'user_id',
         'jurnal',
-        'tanggal'
+        'tanggal',
+        'nama_mapel',
     ];
 
     protected $cast = [

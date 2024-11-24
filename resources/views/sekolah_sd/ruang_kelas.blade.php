@@ -565,8 +565,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     { data: 'tahun_ajaran'  },
                     { data: 'semester'  },
                     { data: 'nama_kelas'  },
-                    { data: 'nama_wali_kelas'  },
                     { data: 'kelas'  },
+                    { data: 'nama_wali_kelas'  },
                     { 
                         data: 'id',
                         className:"text-center",

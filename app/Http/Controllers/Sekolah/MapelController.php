@@ -10,6 +10,9 @@ use Excel;
 
 use \App\Imports\MapelImport;
 use \App\Models\Sekolah\Mapel;
+use \App\Models\Sekolah\KelasSiswa;
+use \App\Models\Sekolah\NilaiSiswa;
+use \App\Http\Controllers\Sekolah\KelasController;
 
 class MapelController extends Controller
 {
@@ -161,7 +164,30 @@ class MapelController extends Controller
     }
 
     function applyKelas(Request $request){
-        $input = $request->all();
-        dd($input);
+        $kelas = $request->kelas;
+        $kelasSiswa = KelasSiswa::whereHas('kelas',function($q) use($request,$kelas){
+            $q->where([
+                'tahun_ajaran'=>$request->tahun_ajaran,
+                'semester'=>$request->semester,
+                'kelas'=>$kelas,
+            ]);
+        })->get();
+        $n = NilaiSiswa::whereHas('kelas',function($q) use($request){
+            $q->where([
+                'tahun_ajaran'=>$request->tahun_ajaran,
+                'semester'=>$request->semester,
+                'kelas'=>$request->kelas,
+            ]);
+        })->delete();
+        // })->count();
+        // dd($n,$kelasSiswa->count());
+        foreach($kelasSiswa as $k => $item){
+            // dd($item);
+            $kelas = new KelasController();
+            $kelas->storeKelasMapel($item,$item->kelas->kelas);
+        }
+        return redirect()
+        ->route('sekolah_sd.mapel.index',['kelas'=>$kelas])
+        ->with('success', 'All good!');
     }
 }

@@ -246,14 +246,16 @@ class KelasController extends Controller
     }
 
     function storeKelasMapel($k,$kelas){
-        try{
+        // try{
             $mapel = Mapel::where('kelas',$kelas)->get();
+            // dd($mapel->count());
             foreach($mapel as $item){
                 $n = NilaiSiswa::where([
                     'siswa_id'=> $k->siswa_id,
                     'kelas_id'=> $k->kelas_id,
                     'mapel_id'=> $item->id,
                 ])->first();
+                // dd($n,$kelas);
                 if(empty($n)){
                     $n = NilaiSiswa::create([
                         'siswa_id'=> $k->siswa_id,
@@ -265,15 +267,31 @@ class KelasController extends Controller
                 } else {
                     $n->update([
                         'tp_mapel' => json_encode($item->tujuan_pembelajaran),
-                        'lm_mapel' => json_encode($item->lingkup_materi)
+                        'lm_mapel' => json_encode($item->lingkup_materi),
+                        'nilai_tp' => null,
+                        'nilai_akhir_tp' => null,
+                        'nilai_sumatif' => null,
+                        'nilai_akhir_sumatif' => null,
+                        'nilai_rapor' => null,
+
+                        'kolom_max_tp' => null,
+                        'nilai_max_tp' => null,
+                        'catatan_max_tp' => null,
+                        'kolom_min_tp' => null,
+                        'nilai_min_tp' => null,
+                        'catatan_min_tp' => null,
+
+                        'sumatif_tes' => null,
+                        'sumatif_non_tes' => null,
+
                     ]);
                 }
             }
             return ['success'=>true,'msg'=>'Data berhasil dihapus'];
-        } catch(Exception $e){
-            $msg = $e->getMessage();
-            return ['success'=>false,'msg'=>$msg];
-        }
+        // } catch(Exception $e){
+        //     $msg = $e->getMessage();
+        //     return ['success'=>false,'msg'=>$msg];
+        // }
     }
 
     function storeJurnalKelas(Request $request){

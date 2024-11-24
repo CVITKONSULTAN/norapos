@@ -83,7 +83,7 @@ class SekolahSDController extends Controller
         // $data['semester'] = $kelas->groupBy('semester')->keys();
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
         $data['semester'] = Kelas::getGroupBy('semester');
-        
+
         return view('sekolah_sd.mapel',$data);
     }
     function data_mapel_create(Request $request){
@@ -96,6 +96,22 @@ class SekolahSDController extends Controller
 
         $data['filter'] = $filter;
 
+        $kelas = null;
+
+        if($filter){
+            if(
+                isset($filter['tahun_ajaran']) &&
+                isset($filter['semester']) &&
+                isset($filter['nama_kelas'])
+            ){
+                $kelas = Kelas::where([
+                    'tahun_ajaran' => $filter['tahun_ajaran'],
+                    'semester' => $filter['semester'],
+                    'nama_kelas' => $filter['nama_kelas'],
+                ])->first();
+            }
+        }
+
         $user = $request->user();
         if($user->checkGuru()){
 
@@ -106,15 +122,16 @@ class SekolahSDController extends Controller
             ->get();
             $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
 
-            $kelas = Kelas::whereIn('kelas',$data['list_kelas'])->get();
+            $kelasFilter = Kelas::whereIn('kelas',$data['list_kelas'])->get();
 
-            $data['tahun_ajaran'] = $kelas->groupBy('tahun_ajaran')->keys();
-            $data['semester'] = $kelas->groupBy('semester')->keys();
-            $data['nama_kelas'] = $kelas->groupBy('nama_kelas')->keys();
+            $data['tahun_ajaran'] = $kelasFilter->groupBy('tahun_ajaran')->keys();
+            $data['semester'] = $kelasFilter->groupBy('semester')->keys();
+            $data['nama_kelas'] = $kelasFilter->groupBy('nama_kelas')->keys();
 
         }else {
 
             $data['mapel'] = Mapel::groupBy('nama')->get();
+            // dd($data);
 
             $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
             $data['semester'] = Kelas::getGroupBy('semester');
@@ -136,9 +153,14 @@ class SekolahSDController extends Controller
         $filter['semester'] = $filter['semester'] ?? $data['semester']->first();
         $filter['nama_kelas'] = $filter['nama_kelas'] ?? $data['nama_kelas']->first();
 
-        $data['mapel_choices'] = $data['mapel']->first();
+        $data['mapel_choices'] = Mapel::first();
         if(isset($filter['mapel_id'])){
-            $data['mapel_choices'] = $data['mapel']->where('id',$filter['mapel_id'])->first();
+            $data['mapel_choices'] = Mapel::where('nama','like',"%".$filter['mapel_id']."%");
+            if(!empty($kelas)){
+                $data['mapel_choices'] = $data['mapel_choices']->where('kelas',$kelas->kelas);
+            }
+            $data['mapel_choices'] = $data['mapel_choices']->first();
+            // dd($data['mapel_choices']);
         }
 
         $data['list_data'] = NilaiSiswa::with([
@@ -147,22 +169,30 @@ class SekolahSDController extends Controller
             },
         ])
         ->where([
-            'mapel_id'=> $data['mapel_choices']->id
+            'mapel_id'=> $data['mapel_choices']->id,
         ]);
 
-        $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
-            if(isset($filter['tahun_ajaran'])){
-                $q->where('tahun_ajaran',$filter['tahun_ajaran']);
-            }
-            if(isset($filter['semester'])){
-                $q->where('semester',$filter['semester']);
-            }
-            if(isset($filter['nama_kelas'])){
-                $q->where('nama_kelas',$filter['nama_kelas']);
-            }
-            return $q;
-        });
+        if(!empty($kelas)){
+            $data['list_data'] = $data['list_data']->where('kelas_id',$kelas->id);
+        }
 
+        // dd($data['list_data']->count());
+
+        // $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
+            // if(isset($filter['tahun_ajaran'])){
+            //     $q->where('tahun_ajaran',$filter['tahun_ajaran']);
+            // }
+            // if(isset($filter['semester'])){
+            //     $q->where('semester',$filter['semester']);
+            // }
+            // if(isset($filter['nama_kelas'])){
+            //     $q->where('nama_kelas',$filter['nama_kelas']);
+            // }
+            // return $q;
+        // });
+        
+        // dd($data['list_data']->count());
+        
         $data['list_data'] = $data['list_data']->first();
 
         // if(empty($data['list_data']->first()))

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sekolah;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\NilaiSiswa;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\NilaiIntervalKeyword;
@@ -140,9 +141,30 @@ class NilaiSiswaController extends Controller
 
         $filter = $request->all();
 
+        $kelas = null;
+
+        if($filter){
+            if(
+                isset($filter['tahun_ajaran']) &&
+                isset($filter['semester']) &&
+                isset($filter['nama_kelas'])
+            ){
+                $kelas = Kelas::where([
+                    'tahun_ajaran' => $filter['tahun_ajaran'],
+                    'semester' => $filter['semester'],
+                    'nama_kelas' => $filter['nama_kelas'],
+                ])->first();
+            }
+        }
+
+
         $mapel = null;
         if(isset($filter['mapel_id'])){
-            $mapel = Mapel::find($filter['mapel_id']);
+            $mapel_query = Mapel::where('nama','like',"%".$filter['mapel_id']."%");
+            if(!empty($kelas)){
+                $mapel_query = $mapel_query->where('kelas',$kelas->kelas);
+            }
+            $mapel = $mapel_query->first();
         }
 
         if(empty($mapel))
@@ -157,18 +179,22 @@ class NilaiSiswaController extends Controller
             'mapel_id'=> $mapel->id
         ]);
 
-        $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
-            if(isset($filter['tahun_ajaran'])){
-                $q->where('tahun_ajaran',$filter['tahun_ajaran']);
-            }
-            if(isset($filter['semester'])){
-                $q->where('semester',$filter['semester']);
-            }
-            if(isset($filter['nama_kelas'])){
-                $q->where('nama_kelas',$filter['nama_kelas']);
-            }
-            return $q;
-        });
+        if(!empty($kelas)){
+            $data['list_data'] = $data['list_data']->where('kelas_id',$kelas->id);
+        }
+
+        // $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
+        //     if(isset($filter['tahun_ajaran'])){
+        //         $q->where('tahun_ajaran',$filter['tahun_ajaran']);
+        //     }
+        //     if(isset($filter['semester'])){
+        //         $q->where('semester',$filter['semester']);
+        //     }
+        //     if(isset($filter['nama_kelas'])){
+        //         $q->where('nama_kelas',$filter['nama_kelas']);
+        //     }
+        //     return $q;
+        // });
 
         return DataTables::of($data['list_data'])
         ->editColumn('nilai_tp',function($data){

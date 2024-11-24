@@ -199,6 +199,37 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+@endsection
+
+@section('page')
+    <div class="page">
+        
+        <table class="table_kop">
+            <tr>
+                <td>
+                    <img
+                        width="100" 
+                        src="{{url('/img/logo_dikbud.png')}}"
+                    />
+                </td>
+                <td class="kop_detail">
+                    <p>PEMERINTAH KOTA PONTIANAK</p>
+                    <p>KOORDINATOR WILAYAH DIKPORA KECAMATAN PONTIANAK SELATAN</p>
+                    <p>SD MUHAMMADIYAH 2 PONTIANAK</p>
+                    <p>Jalan Jendral Ahmad Yani</p>
+                    <p>Telp. (0561) 733539</p>
+                </td>
+                <td>
+                    <img 
+                        width="130" 
+                        src="{{url('/img/sd_muhamamdiyah_2.png')}}"
+                    />
+                </td>
+            </tr>
+        </table>
+        
         @php
             $dimensi_list = $kelas_siswa->kelas->dimensi_list ?? [];
             $nilai_projek = $kelas_siswa->nilai_projek ?? []
@@ -241,36 +272,39 @@
                 </tbody>
             </table>
         @endforeach
-    </div>
 
-    <table class="table_ttd">
-        <tr>
-            <td>
-                <p>
-                    Mengetahui,<br />
-                    Orangtua/Wali
-                </p>
-                <br />
-                <p class="ttd">Nama Orang tua</p>
-            </td>
-            <td>
-                <p>
+        <table class="table_ttd">
+            <tr>
+                <td style="text-align: center;">
+                    {{-- {{dd()}} --}}
+                    <p>
+                        Mengetahui,<br />
+                        Wali Kelas
+                    </p>
                     <br />
-                    Kepala Sekolah
-                </p>
-                <br />
-                <p class="ttd">Nama Kepala Sekolah</p>
-                <p style="margin:0px;">NBM. 123</p>
-            </td>
-            <td>
-                <p>
-                    Mengetahui,<br />
-                    Orangtua/Wali
-                </p>
-                <br />
-                <p class="ttd">Nama Orang tua</p>
-            </td>
-        </tr>
-    </table>
-
+                    <p class="ttd">{{$kelas_siswa->kelas->nama_wali_kelas}}</p>
+                    <p style="margin:0px;">{{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
+                </td>
+                <td style="text-align: center;">
+                    <p>
+                        Mengetahui,<br />
+                        Orangtua/Wali
+                    </p>
+                    <br />
+                    <p class="ttd">{{$kelas_siswa->siswa->detail['nama_ayah'] ?? ''}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <p>
+                        <br />
+                        Kepala Sekolah
+                    </p>
+                    <br />
+                    <p class="ttd">Hj. Yumi Pariyanti, S.Pd</p>
+                    <p style="margin:0px;">NBM. 833 488</p>
+                </td>
+            </tr>
+        </table>
+    </div>
 @endsection

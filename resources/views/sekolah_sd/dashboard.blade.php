@@ -205,13 +205,13 @@
                         <tr>
                             <td>Kepala Sekolah / Penanggung Jawab</td>
                             <td>:</td>
-                            <td>Ariansyah, S.Pd.I.</td>
+                            <td>Hj. Yumi Pariyanti, S.Pd</td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <td>Tanggal terakhir Update</td>
                             <td>:</td>
                             <td>15 Desember 2023</td>
-                        </tr>
+                        </tr> --}}
                     </table>
                 </div>
                 <!-- /.box-body -->

@@ -176,30 +176,34 @@
 
     <table class="table_ttd">
         <tr>
-            <td>
+            <td style="text-align: center;">
+                {{-- {{dd()}} --}}
+                <p>
+                    Mengetahui,<br />
+                    Wali Kelas
+                </p>
+                <br />
+                <p class="ttd">{{$kelas_siswa->kelas->nama_wali_kelas}}</p>
+                <p style="margin:0px;">NBM. {{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
+            </td>
+            <td style="text-align: center;">
                 <p>
                     Mengetahui,<br />
                     Orangtua/Wali
                 </p>
                 <br />
-                <p class="ttd">Nama Orang tua</p>
+                <p class="ttd">{{$kelas_siswa->siswa->detail['nama_ayah'] ?? ''}}</p>
             </td>
-            <td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
                 <p>
                     <br />
                     Kepala Sekolah
                 </p>
                 <br />
-                <p class="ttd">Nama Kepala Sekolah</p>
-                <p style="margin:0px;">NBM. 123</p>
-            </td>
-            <td>
-                <p>
-                    Mengetahui,<br />
-                    Orangtua/Wali
-                </p>
-                <br />
-                <p class="ttd">Nama Orang tua</p>
+                <p class="ttd">Hj. Yumi Pariyanti, S.Pd</p>
+                <p style="margin:0px;">NBM. 833 488</p>
             </td>
         </tr>
     </table>

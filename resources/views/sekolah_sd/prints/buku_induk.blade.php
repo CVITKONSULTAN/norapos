@@ -178,6 +178,7 @@
     </style>
     <style>
         .header {
+            margin-top: 20px;
             text-align: center;
             margin-bottom: 20px;
         }
@@ -195,12 +196,16 @@
             justify-content: space-between;
         }
         .content {
-            width: 70%;
+            width: 100%;
         }
         .photo {
-            width: 25%;
+            /* width: 25%; */
+            position: absolute;
+            right: 50;
+            top: 100;
+            width: 3cm;
             border: 1px solid #333;
-            height: 150px;
+            height: 4cm;
             text-align: center;
             line-height: 150px;
             margin-left: auto;
@@ -208,20 +213,21 @@
         div.identitas table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            font-size: 8pt;
         }
         div.identitas td {
             vertical-align: top;
-            padding: 5px;
+            padding: 2.5px 5px;
         }
         div.identitas td:first-child {
             width: 3%;
         }
         div.identitas td:nth-child(2) {
-            width: 30%;
+            width: 40%;
         }
         div.identitas td:nth-child(3) {
-            width: 2%;
+            width: 10px;
             text-align: center;
         }
         div.identitas td:nth-child(4) {
@@ -229,7 +235,11 @@
         }
         div.identitas .section-title {
             font-weight: bold;
-            margin-top: 20px;
+            margin: 0px;
+            font-size: 9pt;
+        }
+        .filled_left{
+            padding-left: 20px;
         }
     </style>
     <body>
@@ -311,7 +321,7 @@
                 </div>
             </div>
             <div class="page">  
-                <h1 style="text-align: center;">PETUNJUK PENGISIAN BUKU INDUK PESERTA DIDIK SEKOLAH DASAR</h1>
+                <h1 style="text-align: center;margin-top:30px;">PETUNJUK PENGISIAN BUKU INDUK PESERTA DIDIK SEKOLAH DASAR</h1>
                 <h2 style="margin-bottom: 0px;">UMUM</h2>
                 <ol>
                     <li>Buku Induk peserta didik ini adalah buku yang berisi data tentang diri peserta didik selama mengikuti pendidikan di suatu sekolah dan berlaku sejak yang bersangkutan diterima di kelas I (satu) atau sejak dia diterima di sekolah yang bersangkutan.</li>
@@ -402,13 +412,20 @@
                 </div>
             </div>
             <div class="page">
-                <div class="header">
-                    <h1>IDENTITAS PESERTA DIDIK</h1>
-                    <div class="info">
-                        <p>NIS : 7418</p>
-                        <p>NISN : 0135452195</p>
-                    </div>
-                </div>
+
+                <h1 style="text-align: center;margin-top:30px;">IDENTITAS PESERTA DIDIK</h1>
+                <table style="font-weight: bold;margin-bottom:10px;">
+                    <tr>
+                        <td>NIS</td>
+                        <td>:</td>
+                        <td>{{ $siswa->detail['nis'] ?? "" }}</td>
+                    </tr>
+                    <tr>
+                        <td>NISN</td>
+                        <td>:</td>
+                        <td>{{ $siswa->nisn }}</td>
+                    </tr>
+                </table>
             
                 <div class="container identitas">
                     <div class="content">
@@ -418,49 +435,48 @@
                                 <td>1</td>
                                 <td>Nama Lengkap Peserta Didik</td>
                                 <td>:</td>
-                                <td>ACHMAD GARDAN ALARIC PRIAWAN</td>
+                                <td>{{$siswa->nama}}</td>
                             </tr>
                             <tr>
                                 <td>2</td>
                                 <td>Jenis Kelamin</td>
                                 <td>:</td>
-                                <td>Laki-Laki</td>
+                                <td>{{$siswa->detail['jenis_kelamin'] ?? ''}}</td>
                             </tr>
                             <tr>
                                 <td>3</td>
                                 <td>Tempat dan Tanggal Lahir</td>
                                 <td>:</td>
-                                <td>Pontianak, 11/10/2013</td>
-                            </tr>
+                                <td>{{$siswa->detail['tempat_lahir'] ?? ''}}, {{$siswa->detail['tanggal_lahir'] ?? ''}}</td>
                             <tr>
                                 <td>4</td>
                                 <td>Agama</td>
                                 <td>:</td>
-                                <td>Islam</td>
+                                <td>{{$siswa->detail['agama'] ?? ''}}</td>
                             </tr>
                             <tr>
                                 <td>5</td>
                                 <td>Kewarganegaraan</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['warganegara'] ?? ''}}</td>
                             </tr>
                             <tr>
                                 <td>6</td>
                                 <td>Anak Keberapa</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['anakke'] ?? ''}}</td>
                             </tr>
                             <tr>
                                 <td>7</td>
                                 <td>Jumlah Saudara Kandung</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['jumlah_saudara'] ?? ''}}</td>
                             </tr>
                             <tr>
                                 <td>10</td>
                                 <td>Bahasa Sehari-hari di Keluarga</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['bahasa_sehari_hari'] ?? ''}}</td>
                             </tr>
                         </table>
             
@@ -470,13 +486,25 @@
                                 <td>11</td>
                                 <td>Alamat</td>
                                 <td>:</td>
-                                <td>Jl. Danau Sentarum Gg. Persatuan No. 14</td>
+                                <td>{{$siswa->detail['alamat'] ?? ''}}</td>
                             </tr>
                             <tr>
                                 <td>12</td>
                                 <td>Nomor Telepon / HP</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['kontak_orang_tua'] ?? ''}}</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>Bertempat tinggal pada/bersama</td>
+                                <td>:</td>
+                                <td>{{$siswa->detail['tinggal_bersama'] ?? ''}}</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>Jarak tempat tinggal pada/bersama</td>
+                                <td>:</td>
+                                <td>{{$siswa->detail['jarak_tinggal'] ?? ''}} <span class="filled_left">km</span></td>
                             </tr>
                         </table>
             
@@ -486,13 +514,60 @@
                                 <td>15</td>
                                 <td>Golongan Darah</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['golongan_darah'] ?? ''}}</td>
+                            </tr>
+                            <tr>
+                                <td>16</td>
+                                <td>Penyakit yang pernah diderita</td>
+                                <td>:</td>
+                                <td>{{$siswa->detail['penyakit'] ?? ''}}</td>
+                            </tr>
+                            <tr>
+                                <td>17</td>
+                                <td>Kelainan jasmani</td>
+                                <td>:</td>
+                                <td>{{$siswa->detail['kelainan_jasmani'] ?? ''}}</td>
+                            </tr>
+                            <tr>
+                                <td>18</td>
+                                <td>Tinggi dan berat badan saat diterima</td>
+                                <td>:</td>
+                                <td>
+                                    <p>
+                                        Tinggi Badan : <span class="filled_left">cm</span>
+                                        Berat Badan : <span class="filled_left">kg</span>    
+                                    </p>
+                                </td>
                             </tr>
                             <tr>
                                 <td>19</td>
-                                <td>Tinggi Badan</td>
+                                <td>Keadaan Jasmani</td>
                                 <td>:</td>
                                 <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Tahun Pelajaran</td>
+                                <td>:</td>
+                                <td>{{ $kelas_siswa->kelas->tahun_ajaran }}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Semester</td>
+                                <td>:</td>
+                                <td>{{ $kelas_siswa->kelas->semester }}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Berat Badan</td>
+                                <td>:</td>
+                                <td><span class="filled_left">kg</span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Tinggi Badan</td>
+                                <td>:</td>
+                                <td><span class="filled_left">cm</span></td>
                             </tr>
                         </table>
             
@@ -504,6 +579,54 @@
                                 <td>:</td>
                                 <td></td>
                             </tr>
+                            <tr>
+                                <td>21</td>
+                                <td>Pindahan dari sekolah lain</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>a. Nama Sekolah asal</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>b. Dari Tingkat / kelas</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>c. NIS</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>d. Alasan pindah</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>22</td>
+                                <td>Diterima di sekolah ini</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>a. Diterima tanggal</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>b. Dikelas / tingkat</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
                         </table>
             
                         <p class="section-title">E. KETERANGAN TENTANG AYAH KANDUNG</p>
@@ -512,10 +635,28 @@
                                 <td>23</td>
                                 <td>Nama</td>
                                 <td>:</td>
-                                <td>Destu Wendi Priawan, SH.</td>
+                                <td>{{$siswa->detail['nama_ayah'] ?? ''}}</td>
+                            </tr>
+                            <tr>
+                                <td>24</td>
+                                <td>Tahun Lahir</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>25</td>
+                                <td>Agama</td>
+                                <td>:</td>
+                                <td></td>
                             </tr>
                             <tr>
                                 <td>26</td>
+                                <td>Pendidikan</td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>27</td>
                                 <td>Pekerjaan</td>
                                 <td>:</td>
                                 <td></td>
@@ -528,84 +669,84 @@
                                 <td>29</td>
                                 <td>Nama</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['nama_ibu'] ?? '-'}}</td>
                             </tr>
                             <tr>
                                 <td>30</td>
                                 <td>Tahun Lahir</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['ttl_ibu'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>34</td>
+                                <td>31</td>
                                 <td>Agama</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['agama_ibu'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>36</td>
+                                <td>32</td>
                                 <td>Pendidikan</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['pendidikan_ibu'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>37</td>
+                                <td>33</td>
                                 <td>Pekerjaan</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['pekerjaan_ibu'] ?? '-'}}</td>
                             </tr>
                         </table>
 
                         <p class="section-title">G. KETERANGAN TENTANG WALI</p>
                         <table>
                             <tr>
-                                <td>41</td>
+                                <td>34</td>
                                 <td>Nama</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['nama_wali'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>42</td>
+                                <td>35</td>
                                 <td>Tahun Lahir</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['ttl_wali'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>43</td>
+                                <td>36</td>
                                 <td>Agama</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['agama_wali'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>45</td>
+                                <td>37</td>
                                 <td>Pendidikan</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['pendidikan_wali'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>46</td>
+                                <td>38</td>
                                 <td>Pekerjaan</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['pekerjaan_wali'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>48</td>
+                                <td>39</td>
                                 <td>Alamat Rumah</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['alamat_wali'] ?? '-'}}</td>
                             </tr>
                             <tr>
-                                <td>49</td>
+                                <td>40</td>
                                 <td>Hubungan Keluarga</td>
                                 <td>:</td>
-                                <td></td>
+                                <td>{{$siswa->detail['hubungan_wali'] ?? '-'}}</td>
                             </tr>
                         </table>
 
                         <p class="section-title">H. KETERANGAN PERKEMBANGAN PESERTA DIDIK</p>
                         <table>
                             <tr>
-                                <td>50</td>
+                                <td>41</td>
                                 <td>Menerima Beasiswa</td>
                                 <td>:</td>
                                 <td></td>
@@ -617,7 +758,7 @@
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>51</td>
+                                <td>42</td>
                                 <td>Meninggalkan Sekolah</td>
                                 <td></td>
                                 <td></td>
@@ -665,7 +806,7 @@
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>52</td>
+                                <td>43</td>
                                 <td>Akhir Pendidikan</td>
                                 <td></td>
                                 <td></td>
@@ -897,30 +1038,34 @@
             
                 <table class="table_ttd">
                     <tr>
-                        <td>
+                        <td style="text-align: center;">
+                            {{-- {{dd()}} --}}
+                            <p>
+                                Mengetahui,<br />
+                                Wali Kelas
+                            </p>
+                            <br />
+                            <p class="ttd">{{$kelas_siswa->kelas->nama_wali_kelas}}</p>
+                            <p style="margin:0px;">NBM. {{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
+                        </td>
+                        <td style="text-align: center;">
                             <p>
                                 Mengetahui,<br />
                                 Orangtua/Wali
                             </p>
                             <br />
-                            <p class="ttd">Nama Orang tua</p>
+                            <p class="ttd">{{$siswa->detail['nama_ayah'] ?? ''}}</p>
                         </td>
-                        <td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: center;">
                             <p>
                                 <br />
                                 Kepala Sekolah
                             </p>
                             <br />
-                            <p class="ttd">Nama Kepala Sekolah</p>
-                            <p style="margin:0px;">NBM. 123</p>
-                        </td>
-                        <td>
-                            <p>
-                                Mengetahui,<br />
-                                Orangtua/Wali
-                            </p>
-                            <br />
-                            <p class="ttd">Nama Orang tua</p>
+                            <p class="ttd">Hj. Yumi Pariyanti, S.Pd</p>
+                            <p style="margin:0px;">NBM. 833 488</p>
                         </td>
                     </tr>
                 </table>
@@ -928,7 +1073,7 @@
             </div>
         </div>
         <script>
-            window.onload = function() { window.print(); }
+            // window.onload = function() { window.print(); }
         </script>
     </body>
 </html>

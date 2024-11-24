@@ -118,6 +118,7 @@
     <body>
         <div class="book">
             <div class="page">  
+                
                 <table class="table_kop">
                     <tr>
                         <td>
@@ -145,6 +146,8 @@
                 @yield('main')
                
             </div>
+
+            @yield('page')
         </div>
         <script>
             window.onload = function() { window.print(); }

@@ -12,6 +12,49 @@
 
 <section class="content">
 
+    <div id="apply_modal" class="modal fade">
+        <div class="modal-dialog">
+            <form class="modal-content" id="apply_kelas" method="POST" action="{{route('sekolah_sd.mapel.apply')}}">
+                @csrf
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Apply Mapel ke Kelas
+                    </h4>
+                </div>
+                <div class="modal-body row">
+                    <div class="form-group col-md-4">
+                        <label>Kelas</label>
+                        <select name="kelas" class="form-control">
+                            @for ($i = 1; $i <= 6; $i++)
+                                <option value="{{$i}}">Kelas {{$i}}</option>
+                            @endfor
+                        </select>
+                   </div>
+                    <div class="form-group col-md-4">
+                        <label>Tahun Ajaran</label>
+                        <select name="tahun_ajaran" class="form-control">
+                            @foreach ($tahun_ajaran as $item)
+                                <option>{{ $item }}</option>
+                            @endforeach
+                        </select>
+                   </div>
+                    <div class="form-group col-md-4">
+                        <label>Semester</label>
+                        <select name="semester" class="form-control">
+                            @foreach ($semester as $item)
+                                <option>{{ $item }}</option>
+                            @endforeach
+                        </select>
+                   </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                  </div>
+            </form>
+        </div>
+    </div>
+
     <div id="import_modal" class="modal fade">
         <div class="modal-dialog">
             <form enctype="multipart/form-data" method="POST" action="{{route('sekolah_sd.mapel.import')}}" class="modal-content">
@@ -24,7 +67,7 @@
                 <div class="modal-body">
                    <div class="form-group">
                         <label>Kelas</label>
-                        <select class="form-control">
+                        <select name="kelas" class="form-control">
                             @for ($i = 1; $i <= 6; $i++)
                                 <option value="{{$i}}">{{$i}}</option>
                             @endfor
@@ -33,7 +76,7 @@
                    <div class="form-group">
                         <label>File</label>
                         <input required class="form-control" type="file" name="import_file" />
-                        <p>Format file import data mapel : <a href="#">Download</a></p>
+                        <p>Format file import data mapel : <a href="/files/format_import_mapel.xlsx">Download</a></p>
                    </div>
                 </div>
                 <div class="modal-footer">
@@ -75,10 +118,14 @@
                                     @endfor
                                 </select>
                            </div>
+                           {{-- <div class="col-md-4">
+                            <button>Apply</button>
+                           </div> --}}
                         </div>
                         @if(!Auth::user()->checkGuru())
                         <div class="text-right" style="margin-bottom:20px;">
                             <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
+                            <button onclick="applykelas(this)" class="btn btn-success">Apply ke Kelas</button>
                         </div>
                         @endif
                         <div class="table-responsive">
@@ -204,11 +251,23 @@
                 });
             });
 
+            @if(Request::get('kelas'))
+                $("#filter_kelas").val({{Request::get('kelas')}});
+            @endif
+
         });
 
         $("#filter_kelas").change(function(){
             product_table.ajax.reload();
         })
+        const applykelas = (elm) => {
+            const dom = $(elm)
+            const kelas_form = $("#apply_kelas")
+            const kelas = $('#filter_kelas').val();
+            kelas_form.find('[name=kelas]').val(kelas);
+            $("#apply_modal").modal("show")
+            // kelas_form.submit();
+        } 
 
     </script>
 @endsection

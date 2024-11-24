@@ -146,16 +146,22 @@ class MapelController extends Controller
     public function import(Request $request) 
     {
         $business = $request->user()->business;
+        $kelas = $request->kelas;
         Excel::import(
             new MapelImport([
                 'business_id'=>$business->id,
-                'kategori'=>'wajib'
+                'kategori'=>'wajib',
+                'kelas'=>$kelas
             ]), 
             request()->file('import_file')
         );
-        
         return redirect()
-        ->back()
+        ->route('sekolah_sd.mapel.index',['kelas'=>$kelas])
         ->with('success', 'All good!');
+    }
+
+    function applyKelas(Request $request){
+        $input = $request->all();
+        dd($input);
     }
 }

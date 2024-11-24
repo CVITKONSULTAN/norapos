@@ -79,6 +79,11 @@ class SekolahSDController extends Controller
                 $data['mapel_id_list'] = [];
             }
         }
+        // $data['tahun_ajaran'] = $kelas->groupBy('tahun_ajaran')->keys();
+        // $data['semester'] = $kelas->groupBy('semester')->keys();
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
+        
         return view('sekolah_sd.mapel',$data);
     }
     function data_mapel_create(Request $request){

@@ -481,8 +481,6 @@ class SekolahSDController extends Controller
     }
 
     function raport_akhir_print(Request $request, Int $id){
-        
-        // dd($id);
 
         $data['kelas_siswa'] = KelasSiswa::findorfail($id);
         $user = $request->user();
@@ -900,6 +898,52 @@ class SekolahSDController extends Controller
         ->get();
 
         return view('sekolah_sd.prints.buku_induk',$data);
+    }
+
+    function cetak_rapor_akhir_perkelas(Request $request){
+
+        $kelas = Kelas::where([
+            'tahun_ajaran'=>$request->tahun_ajaran,
+            'semester'=>$request->semester,
+            'nama_kelas'=>$request->kelas,
+        ])->firstorfail();
+
+        $user = $request->user();
+        if(empty($user)){
+            $token = $request->token ?? "-1";
+            $token  = hash('sha256', $token);
+            $user = \App\User::where('api_token',$token)->firstorfail();
+        }
+        $data['business'] = $user->business;
+        $data['location'] = $data['business']->locations[0];
+        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+
+        // $data['kelas_siswa'] = KelasSiswa::where('kelas_id',$kelas->id)->get();
+        $kelas_siswa = KelasSiswa::where('kelas_id',$kelas->id)->get();
+        $html = '';
+        foreach($kelas_siswa as $k => $item){
+
+            $where = [
+                'kelas_id'=> $item->kelas_id,
+                'siswa_id'=> $item->siswa_id,
+            ];
+    
+            $data['nilai_list'] = NilaiSiswa::where($where)
+            ->with('mapel')
+            ->get();
+    
+            $data['ekskul_siswa'] = EkskulSiswa::where($where)
+            ->with('ekskul')
+            ->get();
+
+            $data['kelas_siswa'] = $item;
+    
+            // $html[] = view('sekolah_sd.prints.akhir',$data);
+            $html .= view('sekolah_sd.prints.satuan_rapor_akhir_comp',$data)->render();
+            // dd($v);
+        }
+        $input['isi'] = $html;
+        return view('sekolah_sd.prints.cetak_masal',$input);
     }
     
 }

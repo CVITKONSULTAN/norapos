@@ -1287,7 +1287,7 @@ class AdminSidebarMenu
                     //     ]
                     // );
                 },
-                ['icon' => 'fa fas fa-address-book']
+                ['icon' => 'fa fas fa-archive']
             )->order(1);
 
             $menu->url(

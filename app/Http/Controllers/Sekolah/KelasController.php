@@ -33,6 +33,8 @@ class KelasController extends Controller
 
     public function data(Request $request)
     {
+        $user = $request->user();
+        
         $query = KelasSiswa::select(
             'id',
             'siswa_id',
@@ -77,6 +79,10 @@ class KelasController extends Controller
                 return $q;
             });
         // }
+
+        if(!$user->checkAdmin() && empty($request->kelas_id)){
+            return DataTables::of([])->make(true);
+        }
 
         return DataTables::of($query)->make(true);
     }
@@ -241,6 +247,14 @@ class KelasController extends Controller
 
     function KelasData(Request $request){
         $query = Kelas::query();
+        if($request->filter_list_id){
+            try{
+                $filter_list_id = json_decode($request->filter_list_id,true);
+            } catch(Exception $e){
+                $filter_list_id = [];
+            }
+            $query = $query->whereIn('id',$filter_list_id);
+        }
         if($request->kelas){
             $query = $query->where('kelas',$request->kelas);
         }

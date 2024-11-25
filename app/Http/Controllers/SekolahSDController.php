@@ -31,7 +31,14 @@ class SekolahSDController extends Controller
     }
     
     function kelas_index(Request $request){
-        return view('sekolah_sd.ruang_kelas');
+        $user = $request->user();
+        $data['kelas_perwalian'] = [];
+        $data['selected'] = null;
+        if($user->checkGuruWalikelas()){
+            $data['kelas_perwalian'] = Kelas::where('wali_kelas_id',$user->id)->get()->pluck('id')->toArray();
+            $data['selected'] = Kelas::where('wali_kelas_id',$user->id)->first();
+        }
+        return view('sekolah_sd.ruang_kelas',$data);
     }
     function jurnal_kelas(Request $request){
         $user = $request->user();
@@ -57,17 +64,6 @@ class SekolahSDController extends Controller
             ->orderBy('id','desc')
             ->get();
 
-        } else if($user->checkGuru()){
-            $list = $user->tendik->mapel_list();
-            $mapel = Mapel::whereIn('id',$list)->get();
-            $data['mapel'] = Mapel::whereIn('id',$list)
-            ->groupBy('nama')
-            ->get();
-            $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
-            $data['kelas'] = Kelas::whereIn('kelas',$data['list_kelas'])
-            ->orderBy('id','desc')
-            ->get();
-            
         } else {
             $mapel = Mapel::all();
             $data['mapel'] = Mapel::groupBy('nama')->get();

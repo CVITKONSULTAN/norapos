@@ -344,6 +344,16 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             },
             ['icon' => 'fa fas fa-archive']
         )->order(1);
+        $menu->url(
+            action('SekolahSDController@kelas_index'),
+            "Data Kelas",
+            [
+                'icon' => 'fa fas fa-cube', 
+                'active' => 
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'kelas-siswa' 
+            ]
+        );
     }
 
     $menu->url(

@@ -244,6 +244,9 @@ class KelasController extends Controller
         if($request->kelas){
             $query = $query->where('kelas',$request->kelas);
         }
+        if($request->kelas_list){
+            $query = $query->whereIn('kelas',$request->kelas_list);
+        }
         return DataTables::of($query)
         ->make(true);
     }

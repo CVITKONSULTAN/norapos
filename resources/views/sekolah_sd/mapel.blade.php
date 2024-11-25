@@ -25,9 +25,9 @@
                     <div class="form-group col-md-4">
                         <label>Kelas</label>
                         <select name="kelas" class="form-control">
-                            @for ($i = 1; $i <= 6; $i++)
-                                <option value="{{$i}}">Kelas {{$i}}</option>
-                            @endfor
+                            @foreach ($kelas as $item)    
+                                <option value="{{$item}}">Kelas {{$item}}</option>
+                            @endforeach
                         </select>
                    </div>
                     <div class="form-group col-md-4">
@@ -68,9 +68,9 @@
                    <div class="form-group">
                         <label>Kelas</label>
                         <select name="kelas" class="form-control">
-                            @for ($i = 1; $i <= 6; $i++)
-                                <option value="{{$i}}">{{$i}}</option>
-                            @endfor
+                            @foreach ($kelas as $item)    
+                                <option value="{{$item}}">Kelas {{$item}}</option>
+                            @endforeach
                         </select>
                    </div>
                    <div class="form-group">
@@ -95,7 +95,11 @@
                     <li class="active">
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
                     </li>
-                    @if(!auth()->user()->checkGuru())
+                    @if(
+                        auth()->user()->checkGuruWalikelas() ||
+                        auth()->user()->checkGurukelas() ||
+                        auth()->user()->checkAdmin()
+                    )
                     <li>
                         <a 
                             target="_blank" 
@@ -113,21 +117,22 @@
                             <div class="form-group col-md-4">
                                 <label>Filter Kelas</label>
                                 <select id="filter_kelas" class="form-control">
-                                    @for ($i = 1; $i <= 6; $i++)
-                                        <option value="{{$i}}">Kelas {{$i}}</option>
-                                    @endfor
+                                    @foreach ($kelas as $item)    
+                                        <option value="{{$item}}">Kelas {{$item}}</option>
+                                    @endforeach
                                 </select>
                            </div>
-                           {{-- <div class="col-md-4">
-                            <button>Apply</button>
-                           </div> --}}
                         </div>
-                        @if(!Auth::user()->checkGuru())
                         <div class="text-right" style="margin-bottom:20px;">
-                            <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
+                            @if(
+                                auth()->user()->checkGuruWalikelas() ||
+                                auth()->user()->checkGurukelas() ||
+                                auth()->user()->checkAdmin()
+                            )
+                                <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
+                            @endif
                             <button onclick="applykelas(this)" class="btn btn-success">Apply ke Kelas</button>
                         </div>
-                        @endif
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>

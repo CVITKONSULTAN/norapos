@@ -35,7 +35,29 @@ class SekolahSDController extends Controller
     }
     function jurnal_kelas(Request $request){
         $user = $request->user();
-        if($user->checkGuru()){
+        if($user->checkGuruMapel()){
+            $list = $user->tendik->mapel_list();
+            $mapel = Mapel::whereIn('id',$list)->get();
+            $data['mapel'] = Mapel::whereIn('id',$list)
+            ->groupBy('nama')
+            ->get();
+            // dd($data['mapel']);
+            // $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
+            $kelas_khusus = $user->tendik->kelas_khusus ?? [];
+            $data['list_kelas'] = [];
+            foreach($kelas_khusus as $item){
+                foreach($item as $val){
+                    if(!in_array($val,$data['list_kelas'])){
+                        $data['list_kelas'][] = $val;
+                    }
+                }
+            }
+            // dd($data['list_kelas']);
+            $data['kelas'] = Kelas::whereIn('id',$data['list_kelas'])
+            ->orderBy('id','desc')
+            ->get();
+
+        } else if($user->checkGuru()){
             $list = $user->tendik->mapel_list();
             $mapel = Mapel::whereIn('id',$list)->get();
             $data['mapel'] = Mapel::whereIn('id',$list)
@@ -67,20 +89,25 @@ class SekolahSDController extends Controller
     }
     
     function data_mapel_index(Request $request){
+
+        $user = $request->user();
         
         $data['mapel_id_list'] = [];
-        
-        if($request->user()->checkGuru()){
-            try {
-                $data['mapel_id_list'] = json_decode($request->user()->tendik->mapel_id_list,true);
-                if(empty($data['mapel_id_list']))
-                $data['mapel_id_list'] = [];
-            } catch (\Throwable $th) {
-                $data['mapel_id_list'] = [];
+        $data['kelas'] = [1,2,3,4,5,6];
+
+        if($user->checkGuruMapel()){
+            $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
+            if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
+            $mapel = Mapel::whereIn('id',$data['mapel_id_list'])
+            ->groupBy('kelas')
+            ->get();
+            $kelas = [];
+            foreach($mapel as $item){
+                $kelas[] = $item->kelas;
             }
+            $data['kelas'] = $kelas;
         }
-        // $data['tahun_ajaran'] = $kelas->groupBy('tahun_ajaran')->keys();
-        // $data['semester'] = $kelas->groupBy('semester')->keys();
+
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
         $data['semester'] = Kelas::getGroupBy('semester');
 
@@ -113,26 +140,21 @@ class SekolahSDController extends Controller
         }
 
         $user = $request->user();
-        if($user->checkGuru()){
+        if($user->checkGuruMapel()){
 
-            $list = $user->tendik->mapel_list();
-            $mapel = Mapel::whereIn('id',$list)->get();
-            $data['mapel'] = Mapel::whereIn('id',$list)
-            ->groupBy('nama')
+            $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
+            if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
+            $data['mapel'] = Mapel::whereIn('id',$data['mapel_id_list'])
+            ->groupBy('kelas')
             ->get();
-            $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
+            $kelasQuery = Kelas::whereIn('id',$user->tendik->getUniqKelasKhusus())->get();
+            $data['tahun_ajaran'] = $kelasQuery->groupBy('tahun_ajaran')->keys();
+            $data['nama_kelas'] = $kelasQuery->groupBy('nama_kelas')->keys();
+            $data['semester'] = $kelasQuery->groupBy('semester')->keys();
 
-            $kelasFilter = Kelas::whereIn('kelas',$data['list_kelas'])->get();
-
-            $data['tahun_ajaran'] = $kelasFilter->groupBy('tahun_ajaran')->keys();
-            $data['semester'] = $kelasFilter->groupBy('semester')->keys();
-            $data['nama_kelas'] = $kelasFilter->groupBy('nama_kelas')->keys();
-
-        }else {
+        } else {
 
             $data['mapel'] = Mapel::groupBy('nama')->get();
-            // dd($data);
-
             $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
             $data['semester'] = Kelas::getGroupBy('semester');
             $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
@@ -236,22 +258,19 @@ class SekolahSDController extends Controller
         }
         
         $user = $request->user();
-        if($user->checkGuru()){
+        if($user->checkGuruMapel()){
 
-            $list = $user->tendik->mapel_list();
-            $mapel = Mapel::whereIn('id',$list)->get();
-            $data['mapel'] = Mapel::whereIn('id',$list)
-            ->groupBy('nama')
+            $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
+            if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
+            $data['mapel'] = Mapel::whereIn('id',$data['mapel_id_list'])
+            ->groupBy('kelas')
             ->get();
-            $data['list_kelas'] = $mapel->groupBy('kelas')->keys();
+            $kelasQuery = Kelas::whereIn('id',$user->tendik->getUniqKelasKhusus())->get();
+            $data['tahun_ajaran'] = $kelasQuery->groupBy('tahun_ajaran')->keys();
+            $data['nama_kelas'] = $kelasQuery->groupBy('nama_kelas')->keys();
+            $data['semester'] = $kelasQuery->groupBy('semester')->keys();
 
-            $kelasFilter = Kelas::whereIn('kelas',$data['list_kelas'])->get();
-
-            $data['tahun_ajaran'] = $kelasFilter->groupBy('tahun_ajaran')->keys();
-            $data['semester'] = $kelasFilter->groupBy('semester')->keys();
-            $data['nama_kelas'] = $kelasFilter->groupBy('nama_kelas')->keys();
-
-        }else {
+        } else {
 
             $data['mapel'] = Mapel::groupBy('nama')->get();
 

@@ -33,11 +33,18 @@ class MapelController extends Controller
      */
     public function data(Request $request)
     {
-        $business_id = $request->user()->business->id;
+        $user = $request->user();
+        if($user->checkGuruMapel()){
+            $request->mapel_list = json_decode($user->tendik->mapel_id_list ?? "[]",true);
+            if(empty($request->mapel_list)) $request->mapel_list = [];
+        }
+
+        $business_id = $user->business->id;
         $query = Mapel::select('id','nama','kategori','kelas')
         ->where('business_id',$business_id);
 
-        if($request->has('mapel_list'))
+        
+        if($request->mapel_list)
         $query = $query->whereIn('id',$request->mapel_list);
 
         if($request->has('kelas'))

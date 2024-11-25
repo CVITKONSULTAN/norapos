@@ -31,10 +31,12 @@ class TenagaPendidik extends Model
         'status_perkawinan',
         'status_kepegawaian',
         'mapel_id_list',
+        'kelas_khusus',
     ];
 
     protected $casts = [
-        'mapel_id_list' => 'array'
+        'mapel_id_list' => 'array',
+        'kelas_khusus' => 'array'
     ];
 
     function user(){
@@ -51,5 +53,17 @@ class TenagaPendidik extends Model
         }
         // dd($list);
         return $list;
+    }
+
+    function getUniqKelasKhusus(){
+        $list_kelas = [];
+        foreach($this->kelas_khusus as $item){
+            foreach($item as $val){
+                if(!in_array($val,$list_kelas)){
+                    $list_kelas[] = $val;
+                }
+            }
+        }
+        return $list_kelas;
     }
 }

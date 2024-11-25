@@ -329,7 +329,31 @@ class User extends Authenticatable
 
     function checkGuru(){
         $business_id = $this->business->id;
-        return $this->hasRole('guru#'.$business_id) || $this->hasRole('Guru#'.$business_id);;
+        return $this->hasRole('guru#'.$business_id) || $this->hasRole('Guru#'.$business_id);
+    }
+    function checkGuruMapel(){
+        $role_name = "guru mata pelajaran";
+        $check = $this->roles()->where('name','like','%'.$role_name.'%')
+        ->first();
+        return !empty($check);
+    }
+    function checkGuruWalikelas(){
+        $role_name = "guru wali kelas";
+        $check = $this->roles()->where('name','like','%'.$role_name.'%')
+        ->first();
+        return !empty($check);
+    }
+    function checkGurukelas(){
+        $role_name = "guru kelas";
+        $check = $this->roles()->where('name','like','%'.$role_name.'%')
+        ->first();
+        return !empty($check);
+    }
+    function checkAdmin(){
+        $role_name = "admin";
+        $check = $this->roles()->where('name','like','%'.$role_name.'%')
+        ->first();
+        return !empty($check);
     }
 
     function tendik(){

@@ -2,6 +2,22 @@
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
     />
+    <style>
+        #kelas_mapel_container{
+            margin-top: 20px;
+        }
+        #kelas_mapel_container label{
+            margin: 0px;
+        }
+        .tabel_kelas_mapel_wrapper{
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        .tabel_kelas_mapel_wrapper tr td{
+            border: 1px solid black;
+            padding: 5px 7px;
+        }
+    </style>
     @csrf
     <input type="hidden" name="mapel_id_list" value="" />
     <div class="form-group col-sm-6">
@@ -62,13 +78,12 @@
     </div>
     <div class="form-group col-sm-12">
         <label>Mata Pelajaran</label>
-        <select required name="mapel_id" class="mapel_selection">
-            {{-- @if(isset($data) && count($data->mapel_id_list_array) > 0)
-                @foreach($data->mapel_id_list_array ?? [] as $key => $item)
-                <option selected value="{{$item}}">{{$item}}</option>
-                @endforeach
-            @endif --}}
-        </select>
+        <select required name="mapel_id" class="mapel_selection"></select>
+
+        <div id="kelas_mapel_container">
+            <label>List Kelas Mapel</label>
+            <table class="tabel_kelas_mapel_wrapper"></table>
+        </div>
     </div>
     <div class="col-sm-12">
         @if(isset($data['foto']))
@@ -92,10 +107,72 @@
         ></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script type="text/javascript">
+
+            let user_kelas_khusus = {};
+            @if($data['kelas_khusus'])
+                try {
+                    user_kelas_khusus = JSON.parse('{!! json_encode($data['kelas_khusus']) !!}')
+                } catch (error) {
+                    user_kelas_khusus = {};
+                }
+            @endif
+
+            let mapel_list = [];
+            const onChangeData = (value) => {
+                $.ajax({
+                    url:"/sekolah_sd/data-mapel/data",
+                    data:{"mapel_list":value},
+                    success:res => {
+                        mapel_list = res.data
+                        const kelas_list = res.data.map(item => item.kelas);
+                        getListKelas(kelas_list)
+                    }
+                })
+            }
+
+            let listKelas = [];
+            const getListKelas = (list) => {
+                $.ajax({
+                    url:"/sekolah_sd/kelas-data",
+                    data:{"kelas_list":list},
+                    success:res => {
+                        listKelas = res.data
+                        renderListKelas()
+                    }
+                })
+            }
+
+            const renderListKelas = () => {
+                const table = $(".tabel_kelas_mapel_wrapper")
+                table.empty()
+                mapel_list.map(val => {
+                    const choices_before = user_kelas_khusus[val.id]
+                    // console.log("choices_before",choices_before)
+                    let template = `<tr>
+                        <td>${val.nama}</td>
+                        <td>`;
+                    const kelasPerMapel = listKelas.filter(elm => elm.kelas == val.kelas);
+                    kelasPerMapel.map(item => {
+                        let checked = true;
+                        if(choices_before){
+                            checked = choices_before.includes(item.id+'');
+                        }
+                        const checked_str = checked ? 'checked' : ''
+                        template += ` <label>
+                                <input name="kelas_khusus[${val.id}][]" type="checkbox" value="${item.id}" ${checked_str} />
+                                ${item.nama_kelas} (Semester ${item.semester} ${item.tahun_ajaran})
+                            </label>`;
+                    })
+                    template += `</td></tr>`;
+                    table.append(template);
+                })
+            }
+
             let selectizeInstanceKelas;
             $(function () {
 
                 selectizeInstanceKelas = $(".mapel_selection").selectize({
+                    onChange: onChangeData,
                     placeholder: 'Cari disini...',
                     maxItems: null,
                     create: false,
@@ -148,11 +225,7 @@
                     return true;
                 }
             })
-            
-            // $("form").on('submit', (function(e) {
-            //     e.preventDefault();
-            //     return false;
-            // }));
+
         </script>
     @endsection
 

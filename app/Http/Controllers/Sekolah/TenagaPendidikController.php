@@ -206,7 +206,8 @@ class TenagaPendidikController extends Controller
             // dd($input);
             $tendik->user()->update([
                 'first_name'=>$input['nama'],
-                'username'=>$input['nik']
+                'username'=>$input['nik'],
+                'password'=>bcrypt($input['nik']),
             ]);
 
             $tendik->update($input);

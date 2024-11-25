@@ -1180,7 +1180,7 @@ class AdminSidebarMenu
             );
 
             //Absensi dropdown
-            if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
+            // if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
                 $menu->dropdown(
                     "Absensi",
                     function ($sub) {
@@ -1201,7 +1201,7 @@ class AdminSidebarMenu
                     },
                     ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
                 )->order(12);
-            }
+            // }
 
             $menu->dropdown(
                 "E-Raport",

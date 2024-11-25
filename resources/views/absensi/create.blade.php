@@ -151,11 +151,19 @@
     })
 
     const dataStore = (data,btn) => {
+        console.log("datastore",data,btn)
+        const {coordinates} = data;
+        data.coordinates = {
+            "latitude":coordinates.latitude,
+            "longitude":coordinates.longitude,
+            "accuracy":coordinates.accuracy,
+        }
         $.ajax({
             method: 'POST',
             url: '{{ route("absensi.store") }}',
             data: data,
             success:result => {
+                console.log(result)
                 if(result.status){
                     swal("Berhasil", "Data absensi berhasil di simpan. Terimakasih", "success");
                     btn.removeAttr("disabled");
@@ -184,16 +192,17 @@
             url: '{{ route("upload") }}',
             data: {file_data: photo,absensi:1},
             success:result => {
-                console.log(result)
+                // console.log(result.status)
                 if(result.status){
                     dataStore({
                         picture:result.data,
                         coordinates:coordinates
                     },btn)
-                } else {
+                }
+                // } else {
                     btn.removeAttr("disabled");
                     btn.text("Upload");
-                }
+                // }
             },
             error: e => {
                 console.log(e)

@@ -17,7 +17,7 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary', 'title' => "Semua absensi"])
-        @can('absensi.create')
+        {{-- @can('absensi.create') --}}
             @slot('tool')
                 <div class="box-tools">
                     <a type="button" class="btn btn-block btn-primary" 
@@ -25,8 +25,8 @@
                         <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
                 </div>
             @endslot
-        @endcan
-        @can('absensi.view')
+        {{-- @endcan --}}
+        {{-- @can('absensi.view') --}}
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="data_table">
                     <thead>
@@ -42,7 +42,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+        {{-- @endcan --}}
     @endcomponent
 
     <div class="modal fade unit_modal" tabindex="-1" role="dialog" 

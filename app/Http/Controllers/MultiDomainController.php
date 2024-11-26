@@ -8,6 +8,9 @@ class MultiDomainController extends Controller
 {
     public function login($domain, $tld, Request $request)
     {
+        if ($request->user()) {
+            return redirect()->to('home');
+        }
         $data['domain'] = $domain;
         $data['tld'] = $tld;
         return view("compro.$domain.login",$data);

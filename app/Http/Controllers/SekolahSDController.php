@@ -27,7 +27,7 @@ use DB;
 class SekolahSDController extends Controller
 {
 
-    private $level_kelas = [
+    public $level_kelas = [
         "1",
         "2",
         "3",

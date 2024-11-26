@@ -35,19 +35,21 @@ class KelasController extends Controller
     {
         $user = $request->user();
         
-        $query = KelasSiswa::select(
-            'id',
-            'siswa_id',
-            'kelas_id',
-            'hadir',
-            'izin',
-            'sakit',
-            'tanpa_keterangan',
-        )
+        // $query = KelasSiswa::select(
+        //     'id',
+        //     'siswa_id',
+        //     'kelas_id',
+        //     'hadir',
+        //     'izin',
+        //     'sakit',
+        //     'tanpa_keterangan',
+        // )
+        $query = KelasSiswa::select('kelas_siswas.*', 'siswas.nama')
+        ->join('siswas', 'kelas_siswas.siswa_id', '=', 'siswas.id') // Join ke tabel siswas
+        ->orderBy('siswas.nama', 'asc')
         ->with([
             'siswa' => function($q){
                 $q->select('id','nama','nisn');
-                // ->orderBy('nama');
             },
             'kelas' => function($q){
                 $q->select(

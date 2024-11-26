@@ -238,7 +238,7 @@
         @endcomponent
     </form>
 
-
+    @if(Request::has('mapel_id'))
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive">
@@ -264,53 +264,12 @@
                         </tr>
                     </thead>
                     <tbody>
-{{-- 
-                        @foreach ($list_data as $k => $item)
-                            @php
-                                $nilai_tp = [];
-                                try {
-                                    $nilai_tp = json_decode($item->nilai_tp,true);
-                                } catch (\Throwable $th) {
-                                    $nilai_tp = [];
-                                }
-                            @endphp
-                            <tr>
-                                <td>{{$item->siswa->nama}}</td> 
-                                @foreach ($tp as $j => $item_tp)
-                                    <td class="text-center">{{ isset($nilai_tp[$j]) ? $nilai_tp[$j] : 0 }}</td> 
-                                @endforeach
-                                <td class="text-center">{{ $item['nilai_akhir_tp'] }}</td> 
-                                <td class="text-center">
-                                    @if (!empty($item->catatan_max_tp) || !empty($item->catatan_min_tp))
-                                        <i class="fa fa-check checked"></i>
-                                    @else
-                                        <i class="fa fa-times unchecked"></i>
-                                    @endif
-                                </td> 
-                                <td>
-                                    <a 
-                                        class="btn btn-primary btn-xs" 
-                                        href="#"
-                                        onclick='editNilaiFormatif("{{$item->id}}")'
-                                    >
-                                        Edit
-                                    </a>
-                                    <a 
-                                        class="btn btn-primary btn-xs" 
-                                        href="#"
-                                        onclick='editCatatanPenilaian("{{$item->id}}")'
-                                    >
-                                        Catatan Penilaian
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-  --}}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    @endif
 
 
 </section>
@@ -449,80 +408,81 @@
             }
             });
     }));
-
-    $(document).ready( function(){
-        product_table = $('#product_table').DataTable({
-            processing: true,
-            serverSide: true,
-            ordering:false,
-            "paging": false,      // Disable pagination
-            "pageLength": -1,     // Show all rows
-            "lengthChange": false, // Disable the page length dropdown
-            "ajax": {
-                "url": "{{ route('sekolah_sd.rekap_nilai.data') }}",
-                "data": function(d){
-                    d.tahun_ajaran = $('#filter_tahun_ajaran').val();
-                    d.semester = $('#filter_semester').val();
-                    d.nama_kelas = $('#filter_nama_kelas').val();
-                    d.mapel_id = $('#filter_mapel').val();
-                    d = __datatable_ajax_callback(d);
-                }
-            },
-            columns: [
-                { searchable: true, data: 'siswa.nama'  },
-                @foreach ($tp as $i => $item)
+    @if(Request::has('mapel_id'))
+        $(document).ready( function(){
+            product_table = $('#product_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ordering:false,
+                "paging": false,      // Disable pagination
+                "pageLength": -1,     // Show all rows
+                "lengthChange": false, // Disable the page length dropdown
+                "ajax": {
+                    "url": "{{ route('sekolah_sd.rekap_nilai.data') }}",
+                    "data": function(d){
+                        d.tahun_ajaran = $('#filter_tahun_ajaran').val();
+                        d.semester = $('#filter_semester').val();
+                        d.nama_kelas = $('#filter_nama_kelas').val();
+                        d.mapel_id = $('#filter_mapel').val();
+                        d = __datatable_ajax_callback(d);
+                    }
+                },
+                columns: [
+                    { searchable: true, data: 'siswa.nama'  },
+                    @foreach ($tp as $i => $item)
+                        { 
+                            searchable: false, 
+                            data: 'id',
+                            className:"text-center",
+                            render:(data,type,row)=> {
+                                let val = 0;
+                                if(row.nilai_tp){
+                                    val = row.nilai_tp[{{$i}}] ?? 0;
+                                }
+                                return val;
+                            }
+                        },
+                    @endforeach
                     { 
                         searchable: false, 
-                        data: 'id',
+                        data: 'nilai_akhir_tp',
                         className:"text-center",
+                    },
+                    { 
+                        searchable: false, 
+                        data: 'catatan_max_tp',
                         render:(data,type,row)=> {
-                            let val = 0;
-                            if(row.nilai_tp){
-                                val = row.nilai_tp[{{$i}}] ?? 0;
-                            }
-                            return val;
+                            return `<b>TP Maks</b> : <br /> ${data ?? '-'}<br /><b>TP Min</b> : <br />${row.catatan_min_tp ?? '-'}`
                         }
                     },
-                @endforeach
-                { 
-                    searchable: false, 
-                    data: 'nilai_akhir_tp',
-                    className:"text-center",
-                },
-                { 
-                    searchable: false, 
-                    data: 'catatan_max_tp',
-                    render:(data,type,row)=> {
-                        return `<b>TP Maks</b> : <br /> ${data ?? '-'}<br /><b>TP Min</b> : <br />${row.catatan_min_tp ?? '-'}`
-                    }
-                },
-                { 
-                    searchable: false,
-                    data: 'id',
-                    className:"text-center",
-                    render:(data)=> {
-                        const template = `
-                            <a 
-                                class="btn btn-primary btn-xs" 
-                                href="#"
-                                onclick='editNilaiFormatif("${data}")'
-                            >
-                                Edit
-                            </a>
-                            <a 
-                                class="btn btn-primary btn-xs" 
-                                href="#"
-                                onclick='editCatatanPenilaian("${data}")'
-                            >
-                                Catatan Penilaian
-                            </a>
-                        `
-                        return template;
-                    }
-                },
-            ]
+                    { 
+                        searchable: false,
+                        data: 'id',
+                        className:"text-center",
+                        render:(data)=> {
+                            const template = `
+                                <a 
+                                    class="btn btn-primary btn-xs" 
+                                    href="#"
+                                    onclick='editNilaiFormatif("${data}")'
+                                >
+                                    Edit
+                                </a>
+                                <a 
+                                    class="btn btn-primary btn-xs" 
+                                    href="#"
+                                    onclick='editCatatanPenilaian("${data}")'
+                                >
+                                    Catatan Penilaian
+                                </a>
+                            `
+                            return template;
+                        }
+                    },
+                ]
+            })
         })
-    })
+    @endif
 
     const reloadTable = () => {
         product_table.ajax.reload();

@@ -153,6 +153,7 @@
         @endcomponent
     </form>
 
+    @if(Request::has('mapel_id'))
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive">
@@ -191,6 +192,7 @@
             </div>
         </div>
     </div>
+    @endif
 
 
 </section>
@@ -304,7 +306,7 @@
         // $("#filter_mapel").change(function(){
         //     $("#form_filter").submit();
         // });
-
+        @if(Request::has('mapel_id'))
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
                 processing: true,
@@ -385,6 +387,7 @@
                 ]
             })
         })
+        @endif
 
     function calculateRaport() {
         let total = 0;

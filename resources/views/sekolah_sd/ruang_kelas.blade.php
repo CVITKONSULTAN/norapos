@@ -443,7 +443,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                 columns: [
                     { data: 'id'  },
                     { data: 'siswa.nisn'  },
-                    { data: 'siswa.nama'  },
+                    { data: 'nama_siswa'  },
                     { data: 'kelas.nama_kelas'  },
                     { data: 'kelas.tahun_ajaran'  },
                     { data: 'kelas.semester'  },

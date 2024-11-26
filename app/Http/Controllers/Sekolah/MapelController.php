@@ -160,6 +160,7 @@ class MapelController extends Controller
             "5 CI",
             "6 CI"
         ];
+        dd($data['level_kelas']);
         return view('sekolah_sd.input.mapel.edit',$data);
     }
 

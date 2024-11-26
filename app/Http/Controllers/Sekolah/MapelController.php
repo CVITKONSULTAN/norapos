@@ -144,23 +144,23 @@ class MapelController extends Controller
     public function edit($id)
     {
         $data['data'] = Mapel::findorfail($id);
-        // $s = new SekolahSDController();
-        // $data['level_kelas'] = $s->level_kelas;
-        $data['level_kelas'] = [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "1 CI",
-            "2 CI",
-            "3 CI",
-            "4 CI",
-            "5 CI",
-            "6 CI"
-        ];
-        dd($data['level_kelas']);
+        $s = new SekolahSDController();
+        $data['level_kelas'] = $s->level_kelas;
+        // $data['level_kelas'] = [
+        //     "1",
+        //     "2",
+        //     "3",
+        //     "4",
+        //     "5",
+        //     "6",
+        //     "1 CI",
+        //     "2 CI",
+        //     "3 CI",
+        //     "4 CI",
+        //     "5 CI",
+        //     "6 CI"
+        // ];
+        // dd($data['level_kelas']);
         return view('sekolah_sd.input.mapel.edit',$data);
     }
 

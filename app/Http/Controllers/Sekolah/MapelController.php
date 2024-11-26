@@ -143,6 +143,8 @@ class MapelController extends Controller
     public function edit($id)
     {
         $data['data'] = Mapel::findorfail($id);
+        $s = new SekolahSDController();
+        $data['level_kelas'] = $s->level_kelas;
         return view('sekolah_sd.input.mapel.edit',$data);
     }
 

@@ -331,10 +331,6 @@ class SekolahSDController extends Controller
 
         $data['list_data'] = $data['list_data']->first();
 
-        if($user->username == "6171055010800001"){
-            dd($data['list_data']);
-        }
-
 
         $tp_mapel = "[]";
         if( !empty($data['list_data']) && !empty($data['list_data']->first())){
@@ -345,6 +341,10 @@ class SekolahSDController extends Controller
             if(empty($data['lm'])) $data['lm'] = [];
         }catch(Exception $e){
             $data['lm'] = [];
+        }
+
+        if($user->username == "6171055010800001"){
+            dd($data['lm']);
         }
 
         return view('sekolah_sd.rekap_nilai_sumatif',$data);

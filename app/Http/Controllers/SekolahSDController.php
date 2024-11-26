@@ -314,9 +314,6 @@ class SekolahSDController extends Controller
                 $data['mapel_choices'] = $data['mapel_choices']->where('kelas',$kelas->kelas);
             }
             $data['mapel_choices'] = $data['mapel_choices']->first();
-            if($user->username == "6171055010800001"){
-                dd($data['mapel_choices']);
-            }
         }
 
         $data['list_data'] = NilaiSiswa::with([
@@ -333,6 +330,10 @@ class SekolahSDController extends Controller
         }
 
         $data['list_data'] = $data['list_data']->first();
+
+        if($user->username == "6171055010800001"){
+            dd($data['list_data']);
+        }
 
 
         $tp_mapel = "[]";

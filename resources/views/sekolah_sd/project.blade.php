@@ -157,9 +157,9 @@
                                 <label>Kelas</label>
                                 <select id="kelas_select" class="form-control" name="kelas" required>
                                     <option value="">-- Pilih --</option>
-                                    @for ($i = 1; $i <= 6; $i++)
-                                    <option value="{{$i}}">Kelas {{$i}}</option>
-                                    @endfor
+                                    @foreach ($level_kelas as $i)
+                                        <option value="{{$i}}">Kelas {{$i}}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-group col-md-3">

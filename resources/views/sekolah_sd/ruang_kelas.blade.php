@@ -47,9 +47,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                         <div class="form-group">
                             <label>Level Kelas</label>
                             <select name="kelas" class="form-control">
-                                @for ($i = 1; $i <= 6; $i++)
+                                @foreach ($level_kelas as $i)
                                     <option value="{{$i}}">Kelas {{$i}}</option>
-                                @endfor
+                                @endforeach
                             </select>
                         </div>
                         <div class="form-group">

@@ -16,12 +16,11 @@
         <th colspan="2">Kelas</th>
         <td>
             <select required name="kelas" class="form-control">
-                @for ($i = 1; $i <= 6; $i++)
+                @foreach ($level_kelas as $i)
                     <option 
-                        {{ isset($data) && $data['kelas'] == $i ? 'selected' : '' }} 
-                        value="{{$i}}"
-                    >{{$i}}</option>
-                @endfor
+                    {{ isset($data) && $data['kelas'] == $i ? 'selected' : '' }} 
+                    value="{{$i}}">Kelas {{$i}}</option>
+                @endforeach
             </select>
         </td>
     </tr>

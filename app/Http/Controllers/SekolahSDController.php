@@ -26,12 +26,29 @@ use DB;
 
 class SekolahSDController extends Controller
 {
+
+    private $level_kelas = [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "1 CI",
+        "2 CI",
+        "3 CI",
+        "4 CI",
+        "5 CI",
+        "6 CI"
+    ];
+
     function dashboard(Request $request){
         return view('sekolah_sd.dashboard');
     }
     
     function kelas_index(Request $request){
         $user = $request->user();
+        $data['level_kelas'] = $this->level_kelas;
         $data['kelas_perwalian'] = [];
         $data['selected'] = null;
         if($user->checkGuruWalikelas()){
@@ -66,7 +83,8 @@ class SekolahSDController extends Controller
         } else {
             $mapel = Mapel::all();
             $data['mapel'] = Mapel::groupBy('nama')->get();
-            $data['list_kelas'] = [1,2,3,4,5,6];
+            // $data['list_kelas'] = [1,2,3,4,5,6];
+            $data['list_kelas'] = $this->level_kelas;
             $data['kelas'] = Kelas::whereIn('kelas',$data['list_kelas'])
             ->orderBy('id','desc')
             ->get();
@@ -88,7 +106,8 @@ class SekolahSDController extends Controller
         $user = $request->user();
         
         $data['mapel_id_list'] = [];
-        $data['kelas'] = [1,2,3,4,5,6];
+        // $data['kelas'] = [1,2,3,4,5,6];
+        $data['kelas'] = $this->level_kelas;
 
         if($user->checkGuruMapel() || $user->checkGuruWalikelas()){
             $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
@@ -111,6 +130,9 @@ class SekolahSDController extends Controller
 
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
         $data['semester'] = Kelas::getGroupBy('semester');
+        
+        // $data['level_kelas'] = $this->level_kelas;
+        // dd($data['level_kelas']);
 
         return view('sekolah_sd.mapel',$data);
     }
@@ -358,6 +380,7 @@ class SekolahSDController extends Controller
 
     function project_index(Request $request){
         $kelas = Kelas::find($request->kelas_id);
+        $data['level_kelas'] = $this->level_kelas;
         $data['kelas'] = $kelas;
         $data['dimensi_list'] = [];
         if(!empty($kelas) && $request->has('index_projek')){
@@ -738,7 +761,8 @@ class SekolahSDController extends Controller
     private function getKelasSiswaTahunan($tahun_ajaran) {
         // $tahun_ajaran = Kelas::groupBy('tahun_ajaran')->get()->pluck('tahun_ajaran');
         // $tahun_ajaran = "2023/2024";
-        $kelas = [1,2,3,4,5,6];
+        // $kelas = [1,2,3,4,5,6];
+        $kelas = $this->level_kelas;
         $agregate = [];
         foreach ($kelas as $key => $value) {
             $counter = KelasSiswa::whereHas('kelas',function($q) use($tahun_ajaran,$value){
@@ -779,6 +803,7 @@ class SekolahSDController extends Controller
     }
 
     function skenario_projek(Request $request){
+        $data['level_kelas'] = $this->level_kelas;
         $data['rapor_projek'] = [];
         $data['dimensi'] = DataDimensiID::all();
         if($request->kelas){

@@ -114,7 +114,7 @@
             <div class="modal-body">
                <div class="form-group">
                 <label>Tahun Ajaran</label>
-                <select id="level_kelas" name="tahun_ajaran" class="form-control">
+                <select name="tahun_ajaran" class="form-control">
                     <option value="">-- Pilih --</option>
                     @foreach ($tahun_ajaran as $item)
                         <option value="{{$item}}">{{$item}}</option>
@@ -125,9 +125,9 @@
                 <label>Level Kelas</label>
                 <select id="level_kelas" name="kelas" class="form-control">
                     <option value="">-- Pilih --</option>
-                    @for ($i = 1; $i <= 6; $i++)
+                    @foreach ($level_kelas as $i)
                         <option value="{{$i}}">Kelas {{$i}}</option>
-                    @endfor
+                    @endforeach
                 </select>
                </div>
             </div>
@@ -169,7 +169,7 @@
                         <label>Kelas</label>
                         <select class="form-control" name="kelas" id="select_kelas">
                             <option value="-1">--Pilih Kelas--</option>
-                            @foreach ([1,2,3,4,5,6] as $item)
+                            @foreach ($level_kelas as $item)
                                 <option {{Request::get('kelas') == $item ? 'selected' : ''}} value="{{$item}}">Kelas {{$item}}</option>
                             @endforeach
                         </select>

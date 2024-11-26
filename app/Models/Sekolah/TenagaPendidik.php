@@ -57,7 +57,7 @@ class TenagaPendidik extends Model
 
     function getUniqKelasKhusus(){
         $list_kelas = [];
-        foreach($this->kelas_khusus as $item){
+        foreach($this->kelas_khusus ?? [] as $item){
             foreach($item as $val){
                 if(!in_array($val,$list_kelas)){
                     $list_kelas[] = $val;

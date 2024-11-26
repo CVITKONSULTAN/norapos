@@ -313,10 +313,10 @@ class SekolahSDController extends Controller
             if(!empty($kelas)){
                 $data['mapel_choices'] = $data['mapel_choices']->where('kelas',$kelas->kelas);
             }
+            $data['mapel_choices'] = $data['mapel_choices']->first();
             if($user->username == "6171055010800001"){
                 dd($data['mapel_choices']);
             }
-            $data['mapel_choices'] = $data['mapel_choices']->first();
         }
 
         $data['list_data'] = NilaiSiswa::with([

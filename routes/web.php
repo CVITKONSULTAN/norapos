@@ -91,7 +91,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
-        Route::get('test','SekolahSDController@test');
+        // Route::get('test','SekolahSDController@test');
+        Route::get('formatif-walikelas','SekolahSDController@formatif_walikelas_index')
+        ->name('sekolah_sd.walikelas.formatif');
+        Route::get('sumatif-walikelas','SekolahSDController@sumatif_walikelas_index')
+        ->name('sekolah_sd.walikelas.sumatif');
 
         Route::post('dimensi-projek/import',"Sekolah\ProjekController@import_dimensi_projek")
         ->name('sekolah_sd.dimensi_projek.import');

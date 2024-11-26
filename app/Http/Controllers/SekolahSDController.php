@@ -149,9 +149,6 @@ class SekolahSDController extends Controller
             $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
             if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
             
-            // $data['mapel'] = Mapel::whereIn('id',$data['mapel_id_list'])
-            // ->groupBy('kelas')
-            // ->get();
             $data['mapel'] = Mapel::whereIn('id',$data['mapel_id_list'])
             ->groupBy('nama')
             ->get();
@@ -199,38 +196,17 @@ class SekolahSDController extends Controller
             },
         ])
         ->where([
-            'mapel_id'=> $data['mapel_choices']->id,
+            'mapel_id'=> $data['mapel_choices']->id ?? 0,
         ]);
 
         if(!empty($kelas)){
             $data['list_data'] = $data['list_data']->where('kelas_id',$kelas->id);
         }
-
-        // dd($data['list_data']->count());
-
-        // $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
-            // if(isset($filter['tahun_ajaran'])){
-            //     $q->where('tahun_ajaran',$filter['tahun_ajaran']);
-            // }
-            // if(isset($filter['semester'])){
-            //     $q->where('semester',$filter['semester']);
-            // }
-            // if(isset($filter['nama_kelas'])){
-            //     $q->where('nama_kelas',$filter['nama_kelas']);
-            // }
-            // return $q;
-        // });
-        
-        // dd($data['list_data']->count());
         
         $data['list_data'] = $data['list_data']->first();
 
-        // if(empty($data['list_data']->first()))
-        // return redirect()->route('sekolah_sd.kelas.index')
-        // ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
-
         $tp_mapel = "[]";
-        // if( !empty($data['list_data']) && !empty($data['list_data']->first())){
+
         if( !empty($data['list_data'])){
             $tp_mapel = $data['list_data']->tp_mapel;
         }
@@ -326,7 +302,7 @@ class SekolahSDController extends Controller
             },
         ])
         ->where([
-            'mapel_id'=> $data['mapel_choices']->id
+            'mapel_id'=> $data['mapel_choices']->id ?? 0
         ]);
 
         if(!empty($kelas)){
@@ -335,18 +311,6 @@ class SekolahSDController extends Controller
 
         $data['list_data'] = $data['list_data']->first();
 
-
-        // if(empty($data['list_data']->first()))
-        // return redirect()->route('sekolah_sd.kelas.index')
-        // ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
-
-        // // $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
-        // try{
-        //     $data['lm'] = json_decode($data['list_data']->first()->lm_mapel,true);
-        //     if(empty($data['lm'])) $data['lm'] = [];
-        // }catch(Exception $e){
-        //     $data['lm'] = [];
-        // }
 
         $tp_mapel = "[]";
         if( !empty($data['list_data']) && !empty($data['list_data']->first())){
@@ -1021,6 +985,215 @@ class SekolahSDController extends Controller
             $data['selected'] = Kelas::where('wali_kelas_id',$user->id)->first();
         }
         return view('sekolah_sd.tabel_raport',$data);
+    }
+
+    function formatif_walikelas_index(Request $request){
+        
+        $filter = $request->all();
+
+        $data['filter'] = $filter;
+
+        $kelas = null;
+
+        if($filter){
+            if(
+                isset($filter['tahun_ajaran']) &&
+                isset($filter['semester']) &&
+                isset($filter['nama_kelas'])
+            ){
+                $kelas = Kelas::where([
+                    'tahun_ajaran' => $filter['tahun_ajaran'],
+                    'semester' => $filter['semester'],
+                    'nama_kelas' => $filter['nama_kelas'],
+                ])->first();
+            }
+        }
+
+        $user = $request->user();
+        if(
+            $user->checkGuruMapel() ||
+            $user->checkGuruWaliKelas()
+        ){
+
+            $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
+            if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
+
+            $kelasQuery = Kelas::where('wali_kelas_id',$user->id)->get();
+
+            $kelasList = $kelasQuery->groupBy('kelas')->keys();
+            // dd($kelasList);
+            $data['mapel'] = Mapel::whereIn('kelas',$kelasList)
+            ->groupBy('nama')
+            ->get();
+
+            $data['tahun_ajaran'] = $kelasQuery->groupBy('tahun_ajaran')->keys();
+            $data['nama_kelas'] = $kelasQuery->groupBy('nama_kelas')->keys();
+            $data['semester'] = $kelasQuery->groupBy('semester')->keys();
+
+        }  else {
+
+            $data['mapel'] = Mapel::groupBy('nama')->get();
+            $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+            $data['semester'] = Kelas::getGroupBy('semester');
+            $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+        }
+
+        if(
+            empty($data['tahun_ajaran']) ||
+            empty($data['semester']) ||
+            empty($data['nama_kelas']) ||
+            empty($data['mapel'])
+        ){
+            return redirect()
+            ->route('sekolah_sd.dashboard')
+            ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
+        }
+
+        $filter['tahun_ajaran'] = $filter['tahun_ajaran'] ?? $data['tahun_ajaran']->first();
+        $filter['semester'] = $filter['semester'] ?? $data['semester']->first();
+        $filter['nama_kelas'] = $filter['nama_kelas'] ?? $data['nama_kelas']->first();
+
+        $data['mapel_choices'] = Mapel::first();
+        if(isset($filter['mapel_id'])){
+            $data['mapel_choices'] = Mapel::where('nama','like',"%".$filter['mapel_id']."%");
+            if(!empty($kelas)){
+                $data['mapel_choices'] = $data['mapel_choices']->where('kelas',$kelas->kelas);
+            }
+            $data['mapel_choices'] = $data['mapel_choices']->first();
+        }
+
+        $data['list_data'] = NilaiSiswa::with([
+            'siswa'=>function($q){
+                return $q->select('id','nama');
+            },
+        ])
+        ->where([
+            'mapel_id'=> $data['mapel_choices']->id ?? 0,
+        ]);
+
+        if(!empty($kelas)){
+            $data['list_data'] = $data['list_data']->where('kelas_id',$kelas->id);
+        }
+        
+        $data['list_data'] = $data['list_data']->first();
+
+        $tp_mapel = "[]";
+
+        if( !empty($data['list_data'])){
+            $tp_mapel = $data['list_data']->tp_mapel;
+        }
+        try{
+            $data['tp'] = json_decode($tp_mapel,true);
+            if(empty($data['tp'])) $data['tp'] = [];
+        }catch(Exception $e){
+            $data['tp'] = [];
+        }
+
+        return view('sekolah_sd.rekap_formatif_walikelas',$data);
+    }
+    
+    function sumatif_walikelas_index(Request $request){
+        
+        $filter = $request->all();
+
+        $data['filter'] = $filter;
+
+        $kelas = null;
+
+        if($filter){
+            if(
+                isset($filter['tahun_ajaran']) &&
+                isset($filter['semester']) &&
+                isset($filter['nama_kelas'])
+            ){
+                $kelas = Kelas::where([
+                    'tahun_ajaran' => $filter['tahun_ajaran'],
+                    'semester' => $filter['semester'],
+                    'nama_kelas' => $filter['nama_kelas'],
+                ])->first();
+            }
+        }
+
+        $user = $request->user();
+        if(
+            $user->checkGuruMapel() ||
+            $user->checkGuruWaliKelas()
+        ){
+
+            $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
+            if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
+
+            $kelasQuery = Kelas::where('wali_kelas_id',$user->id)->get();
+
+            $kelasList = $kelasQuery->groupBy('kelas')->keys();
+            // dd($kelasList);
+            $data['mapel'] = Mapel::whereIn('kelas',$kelasList)
+            ->groupBy('nama')
+            ->get();
+
+            $data['tahun_ajaran'] = $kelasQuery->groupBy('tahun_ajaran')->keys();
+            $data['nama_kelas'] = $kelasQuery->groupBy('nama_kelas')->keys();
+            $data['semester'] = $kelasQuery->groupBy('semester')->keys();
+
+        }  else {
+
+            $data['mapel'] = Mapel::groupBy('nama')->get();
+            $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+            $data['semester'] = Kelas::getGroupBy('semester');
+            $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
+        }
+
+        if(
+            empty($data['tahun_ajaran']) ||
+            empty($data['semester']) ||
+            empty($data['nama_kelas']) ||
+            empty($data['mapel'])
+        ){
+            return redirect()
+            ->route('sekolah_sd.dashboard')
+            ->with(['success'=>false,'Silahkan lengkapi data kelas & mapel terlebih dahulu']);
+        }
+
+        $filter['tahun_ajaran'] = $filter['tahun_ajaran'] ?? $data['tahun_ajaran']->first();
+        $filter['semester'] = $filter['semester'] ?? $data['semester']->first();
+        $filter['nama_kelas'] = $filter['nama_kelas'] ?? $data['nama_kelas']->first();
+
+        $data['mapel_choices'] = Mapel::first();
+        if(isset($filter['mapel_id'])){
+            $data['mapel_choices'] = Mapel::where('nama','like',"%".$filter['mapel_id']."%");
+            if(!empty($kelas)){
+                $data['mapel_choices'] = $data['mapel_choices']->where('kelas',$kelas->kelas);
+            }
+            $data['mapel_choices'] = $data['mapel_choices']->first();
+        }
+
+        $data['list_data'] = NilaiSiswa::with([
+            'siswa'=>function($q){
+                return $q->select('id','nama');
+            },
+        ])
+        ->where([
+            'mapel_id'=> $data['mapel_choices']->id ?? 0,
+        ]);
+
+        if(!empty($kelas)){
+            $data['list_data'] = $data['list_data']->where('kelas_id',$kelas->id);
+        }
+        
+        $data['list_data'] = $data['list_data']->first();
+
+        $tp_mapel = "[]";
+        if( !empty($data['list_data']) && !empty($data['list_data']->first())){
+            $tp_mapel = $data['list_data']->first()->lm_mapel;
+        }
+        try{
+            $data['lm'] = json_decode($tp_mapel,true);
+            if(empty($data['lm'])) $data['lm'] = [];
+        }catch(Exception $e){
+            $data['lm'] = [];
+        }
+
+        return view('sekolah_sd.rekap_sumatif_walikelas',$data);
     }
     
 }

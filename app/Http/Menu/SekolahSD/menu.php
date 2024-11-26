@@ -16,6 +16,32 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
 
     if($user->checkAdmin()){
         $menu->dropdown(
+            "Rekap Nilai Siswa",
+            function ($sub) {
+                $sub->url(
+                        action('SekolahSDController@data_rekap_nilai_index'),
+                    "Nilai Formatif",
+                    [
+                        'icon' => 'fa fas fa-user', 
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'data-rekap-nilai' 
+                        ]
+                    );
+                    $sub->url(
+                        action('SekolahSDController@data_rekap_nilai_sumatif_index'),
+                        "Nilai Sumatif",
+                        [
+                            'icon' => 'fa fas fa-briefcase', 
+                            'active' => 
+                            request()->segment(1) == 'sekolah_sd' &&
+                            request()->segment(2) == 'data-rekap-nilai-sumatif' 
+                        ]
+                );
+            },
+            ['icon' => 'fa fas fa-server']
+        )->order(1);
+        $menu->dropdown(
             "Kontrol Pengguna",
             function ($sub) {
                 $sub->url(
@@ -301,6 +327,24 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     'active' =>
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'raport-table' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.walikelas.formatif'),
+                    "Rekap Formatif Walikelas",
+                    ['icon' => 'fa fas fa-user', 
+                    'active' =>
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'formatif-walikelas' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.walikelas.sumatif'),
+                    "Rekap Sumatif Walikelas",
+                    ['icon' => 'fa fas fa-user', 
+                    'active' =>
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'sumatif-walikelas' 
                     ]
                 );
             },

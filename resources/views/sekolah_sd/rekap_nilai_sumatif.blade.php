@@ -148,7 +148,6 @@
             <div class="col-md-2">
                 <div style="margin-top: 2.5rem;">
                     <button type="submit" class="btn btn-primary" id="cari"><i class="fa fa-search"></i> CARI</button>
-                    {{-- <button class="btn btn-primary" id="reset">RESET</button> --}}
                 </div>
             </div>
         @endcomponent
@@ -160,7 +159,6 @@
                 <table id="product_table" class="table table-bordered table-striped ajax_view hide-footer">
                     <thead>
                         <tr>
-                            {{-- <th rowspan="2">No.</th> --}}
                             <th rowspan="2">Nama Siswa</th>
                             @if(count($lm) > 0)
                                 <th colspan="{{count($lm)}}">Sumatif Lingkup Materi (25%)</th>
@@ -187,36 +185,7 @@
                         </tr>
                     </thead>
                     <tbody>
-{{--  
-                        @foreach ($list_data as $item)   
-                            @php
-                                $nilai_sumatif = [];
-                                try {
-                                    $nilai_sumatif = json_decode($item->nilai_sumatif,true);
-                                } catch (\Throwable $th) {
-                                    $nilai_sumatif = [];
-                                }
-                            @endphp 
-                            <tr>
-                                <td>{{$item->siswa->nama}}</td> 
-                                @foreach ($lm as $j => $item_data)
-                                    <td class="text-center">{{ isset($nilai_sumatif[$j]) ? $nilai_sumatif[$j] : 0 }}</td> 
-                                @endforeach
-                                <td class="text-center">{{ $item->sumatif_tes }}</td> 
-                                <td class="text-center">{{ $item->sumatif_non_tes }}</td> 
-                                <td class="text-center">{{ $item->nilai_rapor }}</td> 
-                                <td>
-                                    <a 
-                                        class="btn btn-primary btn-xs" 
-                                        href="#"
-                                        onclick='editNilaiSumatif("{{$item->id}}")'
-                                    >
-                                        Edit
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
- --}}
+
                     </tbody>
                 </table>
             </div>
@@ -337,85 +306,85 @@
         // });
 
         $(document).ready( function(){
-        product_table = $('#product_table').DataTable({
-            processing: true,
-            serverSide: true,
-            ordering:false,
-            "paging": false,      // Disable pagination
-            "pageLength": -1,     // Show all rows
-            "lengthChange": false, // Disable the page length dropdown
-            "ajax": {
-                "url": "{{ route('sekolah_sd.rekap_nilai.data') }}",
-                "data": function(d){
-                    d.tahun_ajaran = $('#filter_tahun_ajaran').val();
-                    d.semester = $('#filter_semester').val();
-                    d.nama_kelas = $('#filter_nama_kelas').val();
-                    d.mapel_id = $('#filter_mapel').val();
-                    d = __datatable_ajax_callback(d);
-                }
-            },
-            columns: [
-                { 
-                    searchable: true, 
-                    data: 'siswa.nama',
-                    render: function(data, type, row) {
-                        return data ? data : '';
+            product_table = $('#product_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ordering:false,
+                "paging": false,      // Disable pagination
+                "pageLength": -1,     // Show all rows
+                "lengthChange": false, // Disable the page length dropdown
+                "ajax": {
+                    "url": "{{ route('sekolah_sd.rekap_nilai.data') }}",
+                    "data": function(d){
+                        d.tahun_ajaran = $('#filter_tahun_ajaran').val();
+                        d.semester = $('#filter_semester').val();
+                        d.nama_kelas = $('#filter_nama_kelas').val();
+                        d.mapel_id = $('#filter_mapel').val();
+                        d = __datatable_ajax_callback(d);
                     }
                 },
-                @foreach ($lm as $i => $item)
+                columns: [
                     { 
-                        searchable: false, 
-                        data: 'id',
-                        className:"text-center",
-                        render:(data,type,row)=> {
-                            let val = 0;
-                            if(row.nilai_sumatif){
-                                val = row.nilai_sumatif[{{$i}}] ?? 0;
-                            }
-                            return val;
+                        searchable: true, 
+                        data: 'siswa.nama',
+                        render: function(data, type, row) {
+                            return data ? data : '';
                         }
                     },
-                @endforeach
-                { 
-                    searchable: false, 
-                    data: 'sumatif_non_tes',
-                    className:"text-center",
-                },
-                { 
-                    searchable: false, 
-                    data: 'sumatif_tes',
-                    className:"text-center"
-                },
-                { 
-                    searchable: false, 
-                    data: 'nilai_akhir_tp',
-                    className:"text-center"
-                },
-                { 
-                    searchable: false, 
-                    data: 'nilai_rapor',
-                    className:"text-center"
-                },
-                { 
-                    searchable: false,
-                    data: 'id',
-                    className:"text-center",
-                    render:(data)=> {
-                        const template = `
-                            <a 
-                                class="btn btn-primary btn-xs" 
-                                href="#"
-                                onclick='editNilaiSumatif("${data}")'
-                            >
-                                Edit
-                            </a>
-                        `
-                        return template;
+                    @foreach ($lm as $i => $item)
+                        { 
+                            searchable: false, 
+                            data: 'id',
+                            className:"text-center",
+                            render:(data,type,row)=> {
+                                let val = 0;
+                                if(row.nilai_sumatif){
+                                    val = row.nilai_sumatif[{{$i}}] ?? 0;
+                                }
+                                return val;
+                            }
+                        },
+                    @endforeach
+                    { 
+                        searchable: false, 
+                        data: 'sumatif_non_tes',
+                        className:"text-center",
+                    },
+                    { 
+                        searchable: false, 
+                        data: 'sumatif_tes',
+                        className:"text-center"
+                    },
+                    { 
+                        searchable: false, 
+                        data: 'nilai_akhir_tp',
+                        className:"text-center"
+                    },
+                    { 
+                        searchable: false, 
+                        data: 'nilai_rapor',
+                        className:"text-center"
+                    },
+                    { 
+                        searchable: false,
+                        data: 'id',
+                        className:"text-center",
+                        render:(data)=> {
+                            const template = `
+                                <a 
+                                    class="btn btn-primary btn-xs" 
+                                    href="#"
+                                    onclick='editNilaiSumatif("${data}")'
+                                >
+                                    Edit
+                                </a>
+                            `
+                            return template;
+                        }
                     }
-                }
-            ]
+                ]
+            })
         })
-    })
 
     function calculateRaport() {
         let total = 0;

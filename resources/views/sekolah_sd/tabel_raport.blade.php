@@ -146,7 +146,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     { 
                         data: 'id',
                         render:(data)=>{
-                            return`<a href="/sekolah_sd/raport-akhir/${data}/print" type="button" class="btn btn-success">Cetak</a>`
+                            // return`<a href="/sekolah_sd/raport-akhir/${data}/print" type="button" class="btn btn-success">Cetak</a>`
+                            return`<a target="_blank" href="/sekolah_sd/raport-akhir?kelas_id=${data}" type="button" class="btn btn-success">Lihat</a>`
                         }
                     }
 

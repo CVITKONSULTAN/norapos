@@ -160,6 +160,36 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             },
             ['icon' => 'fa fas fa-address-book']
         )->order(1);
+        $menu->dropdown(
+            "Projek Siswa",
+            function ($sub) {
+                $sub->url(
+                    action('SekolahSDController@dimensi_projek'),
+                    "Dimensi",
+                    ['icon' => 'fa fas fa-user', 'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'dimensi-projek' 
+                    ]
+                );
+                $sub->url(
+                    action('SekolahSDController@skenario_projek'),
+                    "Skenario Projek",
+                    ['icon' => 'fa fas fa-user', 'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'skenario-projek' 
+                    ]
+                );
+                $sub->url(
+                    action('SekolahSDController@project_index'),
+                    "Penilaian Projek",
+                    ['icon' => 'fa fas fa-user', 'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'project' 
+                    ]
+                );
+            },
+            ['icon' => 'fa fas fa-archive']
+        )->order(1);
     }
 
     if($user->checkGuruMapel()){

@@ -46,8 +46,8 @@ class KelasController extends Controller
         )
         ->with([
             'siswa' => function($q){
-                $q->select('id','nama','nisn')
-                ->orderBy('nama');
+                $q->select('id','nama','nisn');
+                // ->orderBy('nama');
             },
             'kelas' => function($q){
                 $q->select(
@@ -82,7 +82,11 @@ class KelasController extends Controller
             return DataTables::of([])->make(true);
         }
 
-        return DataTables::of($query)->make(true);
+        return DataTables::of($query)
+        ->addColumn('nama_siswa',function($q){
+            return $q->siswa->nama;
+        })
+        ->make(true);
     }
 
     /**

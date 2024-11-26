@@ -130,13 +130,11 @@ class SekolahSDController extends Controller
 
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
         $data['semester'] = Kelas::getGroupBy('semester');
-        
-        // $data['level_kelas'] = $this->level_kelas;
-        // dd($data['level_kelas']);
 
         return view('sekolah_sd.mapel',$data);
     }
     function data_mapel_create(Request $request){
+        $data['level_kelas'] = $this->level_kelas;
         return view('sekolah_sd.input.mapel.create');
     }
     

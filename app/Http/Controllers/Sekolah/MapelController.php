@@ -14,7 +14,7 @@ use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\NilaiSiswa;
 use \App\Http\Controllers\Sekolah\KelasController;
-use \App\Http\Controllers\Sekolah\SekolahSDController;
+use \App\Http\Controllers\SekolahSDController;
 
 class MapelController extends Controller
 {

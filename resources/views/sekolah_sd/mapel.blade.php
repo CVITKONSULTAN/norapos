@@ -139,8 +139,8 @@
                                 auth()->user()->checkAdmin()
                             )
                                 <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
+                                <button onclick="applykelas(this)" class="btn btn-success">Apply ke Kelas</button>
                             @endif
-                            <button onclick="applykelas(this)" class="btn btn-success">Apply ke Kelas</button>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">

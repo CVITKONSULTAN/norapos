@@ -333,7 +333,7 @@ class SekolahSDController extends Controller
 
 
         $tp_mapel = "[]";
-        if( !empty($data['list_data']) && !empty($data['list_data']->first())){
+        if( !empty($data['list_data'])){
             $tp_mapel = $data['list_data']->first()->lm_mapel;
         }
         try{

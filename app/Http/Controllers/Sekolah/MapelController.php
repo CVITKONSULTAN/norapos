@@ -10,6 +10,7 @@ use Excel;
 
 use \App\Imports\MapelImport;
 use \App\Models\Sekolah\Mapel;
+use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\NilaiSiswa;
 use \App\Http\Controllers\Sekolah\KelasController;
@@ -34,7 +35,10 @@ class MapelController extends Controller
     public function data(Request $request)
     {
         $user = $request->user();
-        if($user->checkGuruMapel()){
+        if(
+            $user->checkGuruMapel() ||
+            $user->checkGuruWalikelas()
+        ){
             $request->mapel_list = json_decode($user->tendik->mapel_id_list ?? "[]",true);
             if(empty($request->mapel_list)) $request->mapel_list = [];
         }
@@ -52,6 +56,37 @@ class MapelController extends Controller
 
 
         return DataTables::of($query)
+        ->make(true);
+    }
+
+    function data_perkelas(Request $request) {
+        $user = $request->user();
+        $nilaiList = NilaiSiswa::where('kelas_id',$request->kelas_id)
+        ->groupBy('mapel_id');
+        return DataTables::of($nilaiList)
+        ->addColumn('tp',function($q){
+            try {
+                return json_decode($q->tp_mapel,true);
+            } catch (\Throwable $th) {
+                return null;
+            }
+        })
+        ->addColumn('lm',function($q){
+            try {
+                return json_decode($q->lm_mapel,true);
+            } catch (\Throwable $th) {
+                return null;
+            }
+        })
+        ->addColumn('nama_kelas',function($q){
+            return $q->kelas->nama_kelas;
+        })
+        ->addColumn('nama_mapel',function($q){
+            return $q->mapel->nama;
+        })
+        ->addColumn('kategori_mapel',function($q){
+            return $q->mapel->kategori;
+        })
         ->make(true);
     }
 

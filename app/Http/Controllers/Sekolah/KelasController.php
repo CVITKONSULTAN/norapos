@@ -44,10 +44,10 @@ class KelasController extends Controller
             'sakit',
             'tanpa_keterangan',
         )
-        // ->with('siswa','kelas');
         ->with([
             'siswa' => function($q){
-                $q->select('id','nama','nisn');
+                $q->select('id','nama','nisn')
+                ->orderBy('nama');
             },
             'kelas' => function($q){
                 $q->select(
@@ -59,26 +59,24 @@ class KelasController extends Controller
             },
         ]);
 
-        if($request->has('kelas_id')){
-            $query = $query->where('kelas_id',$request->kelas_id);
+        if(
+            $request->has('filter_tahun_ajaran')&&
+            $request->has('filter_semester') &&
+            $request->has('filter_kelas')
+        ){  
+            $kelas = Kelas::where([
+                'tahun_ajaran'=>$request->filter_tahun_ajaran,
+                'semester'=>$request->filter_semester,
+                'nama_kelas'=>$request->filter_kelas,
+            ])->first();
+            if(!empty($kelas)){
+                $request->kelas_id = $kelas->id;
+            }
         }
 
-        // if(
-        //     $request->has('filter_tahun_ajaran') || 
-        // ){
-            $query = $query->whereHas('kelas',function($q) use ($request){
-                if($request->has('filter_tahun_ajaran')){
-                    $q->where('tahun_ajaran',$request->filter_tahun_ajaran);
-                }
-                if($request->has('filter_semester')){
-                    $q->where('semester',$request->filter_semester);
-                }
-                if($request->has('filter_kelas')){
-                    $q->where('nama_kelas',$request->filter_kelas);
-                }
-                return $q;
-            });
-        // }
+        if($request->kelas_id){
+            $query = $query->where('kelas_id',$request->kelas_id);
+        }
 
         if(!$user->checkAdmin() && empty($request->kelas_id)){
             return DataTables::of([])->make(true);

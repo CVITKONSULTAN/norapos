@@ -452,12 +452,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                         className:"text-center",
                         render:(data)=> {
                             const template = `
-                                <button 
-                                    class="btn btn-primary btn-xs" 
-                                    onclick="editKelasSiswa(${data})"
-                                >
-                                    Edit
-                                </button>
+                                @if(Auth::user()->checkAdmin())
+                                    <button 
+                                        class="btn btn-primary btn-xs" 
+                                        onclick="editKelasSiswa(${data})"
+                                    >
+                                        Edit
+                                    </button>
+                                @endif
                                 <a 
                                     class="btn btn-danger btn-xs delete-product" 
                                     href="{{ route('sekolah_sd.kelas.store') }}"
@@ -651,7 +653,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                             `
                             return template;
                         }
-                    },
+                    }
                 ]
             });
 

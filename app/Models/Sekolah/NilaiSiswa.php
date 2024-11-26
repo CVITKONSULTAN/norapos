@@ -7,11 +7,11 @@ use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\Mapel;
 
 use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class NilaiSiswa extends Model
 {
-    // use SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'siswa_id',

@@ -245,6 +245,16 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
 
     if($user->checkGuruWalikelas()){
         $menu->url(
+            action('SekolahSDController@data_mapel_index'),
+            "Mata Pelajaran",
+            [
+                'icon' => 'fa fas fa-cubes', 
+                'active' =>
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'data-mapel' 
+            ]
+        );
+        $menu->url(
             action('SekolahSDController@data_rekap_absen_index'),
             "Rekap Absen Siswa",
             [
@@ -282,6 +292,15 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     'active' =>
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'raport-akhir' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.raport_table.index'),
+                    "Tabel Siswa",
+                    ['icon' => 'fa fas fa-user', 
+                    'active' =>
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'raport-table' 
                     ]
                 );
             },

@@ -93,11 +93,22 @@
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active">
-                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
+                        <a href="#product_list_tab" data-toggle="tab" aria-expanded="true">
+                            @if(auth()->user()->checkAdmin())
+                            <i class="fa fa-cubes" aria-hidden="true"></i>Semua Data
+                            @else
+                            <i class="fa fa-cubes" aria-hidden="true"></i>Mapel Saya
+                            @endif
+                        </a>
                     </li>
+                    @if(auth()->user()->checkGuruWalikelas())
+                        <li>
+                            <a href="#mapel_wali" data-toggle="tab" aria-expanded="true">
+                                <i class="fa fa-cubes" aria-hidden="true"></i>Mapel Walikelas
+                            </a>
+                        </li>
+                    @endif
                     @if(
-                        auth()->user()->checkGuruWalikelas() ||
-                        auth()->user()->checkGurukelas() ||
                         auth()->user()->checkAdmin()
                     )
                     <li>
@@ -125,8 +136,6 @@
                         </div>
                         <div class="text-right" style="margin-bottom:20px;">
                             @if(
-                                auth()->user()->checkGuruWalikelas() ||
-                                auth()->user()->checkGurukelas() ||
                                 auth()->user()->checkAdmin()
                             )
                                 <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
@@ -141,7 +150,11 @@
                                         <th>Mapel</th>
                                         <th>Kelas</th>
                                         <th>Kategori</th>
-                                        @if(!Auth::user()->checkGuru())
+                                        @if(
+                                            auth()->user()->checkAdmin() ||
+                                            auth()->user()->checkGuruMapel() ||
+                                            auth()->user()->checkGuruWalikelas()
+                                        )
                                         <th>Tindakan</th>
                                         @endif
                                     </tr>
@@ -151,6 +164,34 @@
                             </table>
                         </div>
                     </div>
+                    @if(auth()->user()->checkGuruWalikelas())
+                        <div class="tab-pane" id="mapel_wali">
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label>Filter Kelas</label>
+                                    <select id="filter_kelas_wali" class="form-control">
+                                        @foreach ($kelas_wali as $item)    
+                                            <option value="{{$item->id}}">{{$item->nama_kelas}} (Semester {{$item->semester}} - {{$item->tahun_ajaran}})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <table width="100%" class="table table-bordered table-striped ajax_view hide-footer" id="mapel_wali_table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Mapel</th>
+                                        <th>Kategori</th>
+                                        <th>Kelas</th>
+                                        <th>TP</th>
+                                        <th>LM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -201,7 +242,11 @@
                     { data: 'nama'  },
                     { data: 'kelas'  },
                     { data: 'kategori'  },
-                    @if(!Auth::user()->checkGuru())
+                    @if(
+                        auth()->user()->checkAdmin() ||
+                        auth()->user()->checkGuruMapel() ||
+                        auth()->user()->checkGuruWalikelas()
+                    )
                     { 
                         data: 'id',
                         className:"text-center",
@@ -214,6 +259,7 @@
                                 >
                                     Edit
                                 </a>
+                                @if(auth()->user()->checkAdmin())
                                 <a 
                                     class="btn btn-danger btn-xs delete-product" 
                                     href="{{ route('sekolah_sd.mapel.index') }}/${data}"
@@ -221,6 +267,7 @@
                                 >
                                     Hapus
                                 </a>
+                                @endif
                             `
                             return template;
                         }
@@ -258,6 +305,7 @@
 
             @if(Request::get('kelas'))
                 $("#filter_kelas").val({{Request::get('kelas')}});
+                $("#filter_kelas").trigger('change')
             @endif
 
         });
@@ -271,8 +319,60 @@
             const kelas = $('#filter_kelas').val();
             kelas_form.find('[name=kelas]').val(kelas);
             $("#apply_modal").modal("show")
-            // kelas_form.submit();
         } 
+
+        let mapel_wali;
+        $(document).ready( function(){
+            mapel_wali = $('#mapel_wali_table').DataTable({
+                processing: true,
+                serverSide: true,
+                "ajax": {
+                    "url": "{{ route('sekolah_sd.mapel.data.perkelas') }}",
+                    "data":function(d){
+                        const kelas = $("#filter_kelas_wali").val();
+                        d.kelas_id = kelas;
+                        d = __datatable_ajax_callback(d);
+                    }
+                },
+                columns: [
+                    { 
+                        data: 'id',
+                        "orderable": false,
+                        "searchable": false,
+                    },
+                    { data: 'nama_mapel'  },
+                    { data: 'kategori_mapel'  },
+                    { data: 'nama_kelas'  },
+                    { 
+                        data: 'tp',
+                        "orderable": false,
+                        "searchable": false,
+                        render:(data)=> {
+                            const list = data?.map((item) => {
+                                return `<li>${item}</li>`
+                            })
+                            return `<ul>${list}</ul>`;
+                        }
+                    },
+                    { 
+                        data: 'lm',
+                        "orderable": false,
+                        "searchable": false,
+                        render:(data)=> {
+                            const list = data?.map((item) => {
+                                return `<li>${item}</li>`
+                            })
+                            return `<ul>${list}</ul>`;
+                        }
+                    },
+                ]
+            });
+        });
+
+        $("#filter_kelas_wali").change(function(){
+            console.log($(this).val());
+            mapel_wali.ajax.reload();
+        })
 
     </script>
 @endsection

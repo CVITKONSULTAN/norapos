@@ -160,6 +160,7 @@
                 <table id="product_table" class="table table-bordered table-striped ajax_view hide-footer">
                     <thead>
                         <tr>
+                            <th rowspan="2">NIS</th>
                             <th rowspan="2">Nama Siswa</th>
                             @if(count($lm) > 0)
                                 <th colspan="{{count($lm)}}">Sumatif Lingkup Materi (25%)</th>
@@ -311,7 +312,6 @@
             product_table = $('#product_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ordering:false,
                 "paging": false,      // Disable pagination
                 "pageLength": -1,     // Show all rows
                 "lengthChange": false, // Disable the page length dropdown
@@ -328,7 +328,13 @@
                 columns: [
                     { 
                         searchable: true, 
-                        data: 'siswa.nama',
+                        orderable: true, 
+                        data: 'nis',
+                    },
+                    { 
+                        searchable: true, 
+                        orderable: true, 
+                        data: 'nama',
                         render: function(data, type, row) {
                             return data ? data : '';
                         }
@@ -336,6 +342,7 @@
                     @foreach ($lm as $i => $item)
                         { 
                             searchable: false, 
+                            orderable: false, 
                             data: 'id',
                             className:"text-center",
                             render:(data,type,row)=> {
@@ -349,26 +356,31 @@
                     @endforeach
                     { 
                         searchable: false, 
+                        orderable: false, 
                         data: 'sumatif_non_tes',
                         className:"text-center",
                     },
                     { 
-                        searchable: false, 
+                        searchable: false,
+                        orderable: false,  
                         data: 'sumatif_tes',
                         className:"text-center"
                     },
                     { 
-                        searchable: false, 
+                        searchable: false,
+                        orderable: false,  
                         data: 'nilai_akhir_tp',
                         className:"text-center"
                     },
                     { 
-                        searchable: false, 
+                        searchable: false,
+                        orderable: false,  
                         data: 'nilai_rapor',
                         className:"text-center"
                     },
                     { 
                         searchable: false,
+                        orderable: false, 
                         data: 'id',
                         className:"text-center",
                         render:(data)=> {

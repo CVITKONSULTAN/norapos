@@ -154,7 +154,7 @@
                                         <th>Kelas</th>
                                         <th>Kategori</th>
                                         @if(
-                                            auth()->user()->checkAdmin()
+                                            auth()->user()->checkAdmin() ||
                                             auth()->user()->checkGuruMapel() ||
                                             auth()->user()->checkGuruWalikelas()
                                         )
@@ -249,7 +249,7 @@
                     { data: 'kelas'  },
                     { data: 'kategori'  },
                     @if(
-                        auth()->user()->checkAdmin()
+                        auth()->user()->checkAdmin() ||
                         auth()->user()->checkGuruMapel() ||
                         auth()->user()->checkGuruWalikelas()
                     )

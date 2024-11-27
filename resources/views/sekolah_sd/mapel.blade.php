@@ -155,8 +155,8 @@
                                         <th>Kategori</th>
                                         @if(
                                             auth()->user()->checkAdmin()
-                                            // auth()->user()->checkGuruMapel() ||
-                                            // auth()->user()->checkGuruWalikelas()
+                                            auth()->user()->checkGuruMapel() ||
+                                            auth()->user()->checkGuruWalikelas()
                                         )
                                         <th>Tindakan</th>
                                         @endif
@@ -250,8 +250,8 @@
                     { data: 'kategori'  },
                     @if(
                         auth()->user()->checkAdmin()
-                        // auth()->user()->checkGuruMapel() ||
-                        // auth()->user()->checkGuruWalikelas()
+                        auth()->user()->checkGuruMapel() ||
+                        auth()->user()->checkGuruWalikelas()
                     )
                     { 
                         data: 'id',

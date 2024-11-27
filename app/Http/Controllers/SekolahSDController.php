@@ -126,6 +126,9 @@ class SekolahSDController extends Controller
         if($user->checkGuruWalikelas()){
             $data['kelas_wali'] = Kelas::where('wali_kelas_id',$user->id)->get();
         }
+        if($user->checkAdmin()){
+            $data['kelas_wali'] = Kelas::all();
+        }
 
 
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');

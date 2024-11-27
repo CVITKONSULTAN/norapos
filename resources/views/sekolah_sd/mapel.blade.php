@@ -101,7 +101,10 @@
                             @endif
                         </a>
                     </li>
-                    @if(auth()->user()->checkGuruWalikelas())
+                    @if(
+                        auth()->user()->checkGuruWalikelas() ||
+                        auth()->user()->checkAdmin()
+                    )
                         <li>
                             <a href="#mapel_wali" data-toggle="tab" aria-expanded="true">
                                 <i class="fa fa-cubes" aria-hidden="true"></i>Mapel Walikelas
@@ -164,7 +167,10 @@
                             </table>
                         </div>
                     </div>
-                    @if(auth()->user()->checkGuruWalikelas())
+                    @if(
+                        auth()->user()->checkGuruWalikelas() || 
+                        auth()->user()->checkAdmin()
+                    )
                         <div class="tab-pane" id="mapel_wali">
                             <div class="row">
                                 <div class="form-group col-md-4">

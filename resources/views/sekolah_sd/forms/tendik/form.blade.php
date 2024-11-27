@@ -109,7 +109,7 @@
         <script type="text/javascript">
 
             let user_kelas_khusus = {};
-            @if($data['kelas_khusus'])
+            @if(isset($data) && $data['kelas_khusus'])
                 try {
                     user_kelas_khusus = JSON.parse('{!! json_encode($data['kelas_khusus']) !!}')
                 } catch (error) {

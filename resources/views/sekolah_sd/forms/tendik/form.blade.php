@@ -96,7 +96,7 @@
             type="file" class="form-control" name="foto" />
         </div>
     </div>
-    <div class="col-sm-12 text-right">
+    <div class="col-sm-12 text-center">
         <a href="{{route('sekolah_sd.tendik.index')}}" type="button" class="btn btn-danger">Kembali</a>
         <button class="btn btn-primary">Simpan</button>
     </div>

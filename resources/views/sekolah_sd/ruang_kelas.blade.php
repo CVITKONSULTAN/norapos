@@ -447,7 +447,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     // { data: 'nama_siswa'  },
                     { data: 'nisn'  },
                     { data: 'nama'  },
-                    { data: 'nis'  },
+                    { data: 'nis',
+                        render:(data)=> {
+                            return data ?? '';
+                        }
+                    },
                     { data: 'kelas.nama_kelas'  },
                     { data: 'kelas.tahun_ajaran'  },
                     { data: 'kelas.semester'  },

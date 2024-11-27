@@ -170,31 +170,25 @@ class NilaiSiswaController extends Controller
         if(empty($mapel))
         $mapel = Mapel::first();
 
-        $data['list_data'] = NilaiSiswa::with([
-            'siswa'=>function($q){
-                return $q->select('id','nama');
-            },
-        ])
+        // $data['list_data'] = NilaiSiswa::with([
+        //     'siswa'=>function($q){
+        //         return $q->select('id','nama');
+        //     },
+        // ])
+        $data['list_data'] = NilaiSiswa::selectRaw(
+            "nilai_siswas.*, siswas.nama, JSON_UNQUOTE(JSON_EXTRACT(siswas.detail, '$.nis')) AS nis"
+        )
+        ->join('siswas', 'nilai_siswas.siswa_id', '=', 'siswas.id')
         ->where([
             'mapel_id'=> $mapel->id
         ]);
 
+        // order by nis
+        // ->orderByRaw("CAST(JSON_UNQUOTE(JSON_EXTRACT(siswas.detail, '$.nis')) AS UNSIGNED)")
+
         if(!empty($kelas)){
             $data['list_data'] = $data['list_data']->where('kelas_id',$kelas->id);
         }
-
-        // $data['list_data'] = $data['list_data']->whereHas('kelas',function($q) use ($filter){
-        //     if(isset($filter['tahun_ajaran'])){
-        //         $q->where('tahun_ajaran',$filter['tahun_ajaran']);
-        //     }
-        //     if(isset($filter['semester'])){
-        //         $q->where('semester',$filter['semester']);
-        //     }
-        //     if(isset($filter['nama_kelas'])){
-        //         $q->where('nama_kelas',$filter['nama_kelas']);
-        //     }
-        //     return $q;
-        // });
 
         return DataTables::of($data['list_data'])
         ->editColumn('nilai_tp',function($data){

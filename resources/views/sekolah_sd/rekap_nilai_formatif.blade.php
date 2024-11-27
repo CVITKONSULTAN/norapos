@@ -246,7 +246,7 @@
                     <thead>
                         <tr>
                             <td>Nama Siswa</td> 
-                            
+                            <td>NIS</td> 
                             @foreach ($tp as $i => $item)
                                 <td>
                                     TP {{$i+1}}
@@ -413,7 +413,7 @@
             product_table = $('#product_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ordering:false,
+                // ordering:false,
                 "paging": false,      // Disable pagination
                 "pageLength": -1,     // Show all rows
                 "lengthChange": false, // Disable the page length dropdown
@@ -428,10 +428,12 @@
                     }
                 },
                 columns: [
-                    { searchable: true, data: 'siswa.nama'  },
+                    { searchable: true, data: 'nama', orderable:true  },
+                    { searchable: true, data: 'nis', orderable:true  },
                     @foreach ($tp as $i => $item)
                         { 
                             searchable: false, 
+                            orderable:false,
                             data: 'id',
                             className:"text-center",
                             render:(data,type,row)=> {
@@ -445,11 +447,13 @@
                     @endforeach
                     { 
                         searchable: false, 
+                        orderable:false,
                         data: 'nilai_akhir_tp',
                         className:"text-center",
                     },
                     { 
                         searchable: false, 
+                        orderable:false,
                         data: 'catatan_max_tp',
                         render:(data,type,row)=> {
                             return `<b>TP Maks</b> : <br /> ${data ?? '-'}<br /><b>TP Min</b> : <br />${row.catatan_min_tp ?? '-'}`
@@ -457,6 +461,7 @@
                     },
                     { 
                         searchable: false,
+                        orderable:false,
                         data: 'id',
                         className:"text-center",
                         render:(data)=> {

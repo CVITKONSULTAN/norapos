@@ -195,6 +195,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                                             <td>ID</td>
                                             <td>NISN</td>
                                             <td>NAMA LENGKAP</td>
+                                            <td>NIS</td>
                                             <td>KELAS</td>
                                             <td>TAHUN AJARAN</td>
                                             <td>SEMESTER</td>
@@ -442,8 +443,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                 },
                 columns: [
                     { data: 'id'  },
-                    { data: 'siswa.nisn'  },
-                    { data: 'nama_siswa'  },
+                    // { data: 'siswa.nisn'  },
+                    // { data: 'nama_siswa'  },
+                    { data: 'nisn'  },
+                    { data: 'nama'  },
+                    { data: 'nis'  },
                     { data: 'kelas.nama_kelas'  },
                     { data: 'kelas.tahun_ajaran'  },
                     { data: 'kelas.semester'  },

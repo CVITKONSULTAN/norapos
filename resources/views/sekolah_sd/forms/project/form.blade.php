@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="text-right">
+    <div class="text-center">
         <a href="{{route('sekolah_sd.project.index')}}" type="button" class="btn btn-danger">Kembali</a>
         <button class="btn btn-primary">Simpan</button>
     </div>

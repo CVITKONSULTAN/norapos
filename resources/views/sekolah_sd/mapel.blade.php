@@ -151,9 +151,9 @@
                                         <th>Kelas</th>
                                         <th>Kategori</th>
                                         @if(
-                                            auth()->user()->checkAdmin() ||
-                                            auth()->user()->checkGuruMapel() ||
-                                            auth()->user()->checkGuruWalikelas()
+                                            auth()->user()->checkAdmin()
+                                            // auth()->user()->checkGuruMapel() ||
+                                            // auth()->user()->checkGuruWalikelas()
                                         )
                                         <th>Tindakan</th>
                                         @endif
@@ -243,9 +243,9 @@
                     { data: 'kelas'  },
                     { data: 'kategori'  },
                     @if(
-                        auth()->user()->checkAdmin() ||
-                        auth()->user()->checkGuruMapel() ||
-                        auth()->user()->checkGuruWalikelas()
+                        auth()->user()->checkAdmin()
+                        // auth()->user()->checkGuruMapel() ||
+                        // auth()->user()->checkGuruWalikelas()
                     )
                     { 
                         data: 'id',

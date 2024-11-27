@@ -449,7 +449,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     { data: 'nama'  },
                     { data: 'nis',
                         render:(data)=> {
-                            return data ?? '';
+                            return data == "null" ? '' : data;
                         }
                     },
                     { data: 'kelas.nama_kelas'  },

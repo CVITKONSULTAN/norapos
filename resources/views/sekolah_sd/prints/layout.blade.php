@@ -120,7 +120,7 @@
             @yield('cover_page')
 
             <div class="page">  
-
+{{-- 
                 <table class="table_kop">
                     <tr>
                         <td>
@@ -144,7 +144,7 @@
                         </td>
                     </tr>
                 </table>
-                
+                 --}}
                 @yield('main')
                
             </div>

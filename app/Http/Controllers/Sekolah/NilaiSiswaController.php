@@ -181,7 +181,12 @@ class NilaiSiswaController extends Controller
         ->join('siswas', 'nilai_siswas.siswa_id', '=', 'siswas.id')
         ->where([
             'mapel_id'=> $mapel->id
+        ])
+        ->with([ 'siswa'=>function($q){
+                    return $q->select('id','nama');
+                },
         ]);
+            
 
         // order by nis
         // ->orderByRaw("CAST(JSON_UNQUOTE(JSON_EXTRACT(siswas.detail, '$.nis')) AS UNSIGNED)")

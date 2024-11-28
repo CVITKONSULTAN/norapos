@@ -445,9 +445,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     { data: 'id'  },
                     // { data: 'siswa.nisn'  },
                     // { data: 'nama_siswa'  },
-                    { data: 'nisn'  },
-                    { data: 'nama'  },
+                    { data: 'siswa.nisn'  },
+                    { data: 'siswa.nama'  },
                     { data: 'nis',
+                        searchable:false,
                         render:(data)=> {
                             return data == "null" ? '' : data;
                         }

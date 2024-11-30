@@ -175,7 +175,7 @@ class ProjekController extends Controller
         } else {
             $nilai_project[] = $projek;
         }
-        dd($nilai_project);
+        dd($kelas,$nilai_project);
         $kelas->nilai_projek = $nilai_project;
         $kelas->save();
         return redirect()->back()

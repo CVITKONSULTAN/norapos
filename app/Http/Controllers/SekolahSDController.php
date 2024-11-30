@@ -495,15 +495,24 @@ class SekolahSDController extends Controller
             ->with(['success'=>false,'message'=>"Data kelas anda kosong"]);
         }
 
-        // dd($data['kelas_siswa']);
-
         $data['nilai_list'] = NilaiSiswa::where([
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
         ->with('mapel')
         ->get();
-        // dd($data['nilai_list']);
+        
+        $data['fase'] = null;
+        $kelas = $data['kelas_siswa']->kelas;
+        if($kelas->kelas > 0 && $kelas->kelas <=2){
+            $data['fase'] = "A";
+        }
+        if($kelas->kelas > 2 && $kelas->kelas <=4){
+            $data['fase'] = "B";
+        }
+        if($kelas->kelas > 4 && $kelas->kelas <=6){
+            $data['fase'] = "C";
+        }
 
         return view('sekolah_sd.raport_akhir',$data);
     }
@@ -524,6 +533,18 @@ class SekolahSDController extends Controller
         if(empty($data['kelas_siswa'])){
             return redirect()->route('sekolah_sd.kelas.index')
             ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
+        }
+
+        $data['fase'] = null;
+        $kelas = $data['kelas_siswa']->kelas;
+        if($kelas->kelas > 0 && $kelas->kelas <= 2){
+            $data['fase'] = "A";
+        }
+        if($kelas->kelas > 2 && $kelas->kelas <= 4){
+            $data['fase'] = "B";
+        }
+        if($kelas->kelas > 4 && $kelas->kelas <= 6){
+            $data['fase'] = "C";
         }
 
         $where = [

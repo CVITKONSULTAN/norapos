@@ -52,6 +52,8 @@
 
 @section('main')
 
+    <h3 style="text-align: center;">LAPORAN HASIL BELAJAR</h3>
+
     <table width="100%">
         <tr>
             <td style="vertical-align:top;">
@@ -88,7 +90,7 @@
                     <tr>
                         <td>Fase</td>
                         <td>:</td>
-                        <td>-</td>
+                        <td>{{ $fase }}</td>
                     </tr>
                     <tr>
                         <td>Semester</td>

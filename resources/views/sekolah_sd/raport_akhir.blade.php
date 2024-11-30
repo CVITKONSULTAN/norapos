@@ -181,7 +181,7 @@
                                     <tr>
                                         <td>Fase</td>
                                         <td>:</td>
-                                        <td>-</td>
+                                        <td>{{$fase}}</td>
                                     </tr>
                                     <tr>
                                         <td>Semester</td>

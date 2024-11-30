@@ -170,11 +170,12 @@ class ProjekController extends Controller
                 }
             }
             if(empty($found)){
-                $nilai_project[] = $projek;    
+                $nilai_project[] = $projek;
             }
         } else {
             $nilai_project[] = $projek;
         }
+        dd($nilai_project);
         $kelas->nilai_projek = $nilai_project;
         $kelas->save();
         return redirect()->back()

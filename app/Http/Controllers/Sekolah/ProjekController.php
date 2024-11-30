@@ -158,10 +158,9 @@ class ProjekController extends Controller
             'projek_nama'=>$request->projek_nama,
             'dimensi'=>$dimensi
         ];
-        dd($projek);
         $kelas = KelasSiswa::findorfail($request->kelas_siswa_id);
         $nilai_project = $kelas->nilai_projek ?? [];
-        // dd($nilai_project);
+        dd($nilai_project,$projek);
         if(count($nilai_project) > 0){
             $found = null;
             foreach($nilai_project as $k => $item){

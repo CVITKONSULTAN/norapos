@@ -575,6 +575,10 @@ class SekolahSDController extends Controller
             }
         }
 
+        $data['kelas_siswa']->nilai_projek = !empty($data['kelas_siswa']->nilai_projek) ? 
+        collect($data['kelas_siswa']->nilai_projek)->sortBy('projek_id') : 
+        $data['kelas_siswa']->nilai_projek;
+
         return view('sekolah_sd.prints.project',$data);
     }
 
@@ -874,7 +878,12 @@ class SekolahSDController extends Controller
             if($kelas->kelas > 4 && $kelas->kelas <=6){
                 $data['fase'] = "C";
             }
+            // dd(collect($data['kelas_siswa']->nilai_projek));
+            $data['kelas_siswa']->nilai_projek = !empty($data['kelas_siswa']->nilai_projek) ? 
+            collect($data['kelas_siswa']->nilai_projek)->sortBy('projek_id') : 
+            $data['kelas_siswa']->nilai_projek;
         }
+
 
         return view('sekolah_sd.rapor_projek',$data);
     }
@@ -961,7 +970,6 @@ class SekolahSDController extends Controller
     }
 
     function raport_project_print_perkelas(Request $request){
-        // dd($request->all());
 
         $kelas = Kelas::where([
             'tahun_ajaran'=>$request->tahun_ajaran,
@@ -979,7 +987,6 @@ class SekolahSDController extends Controller
         $data['location'] = $data['business']->locations[0];
         $data['alamat'] = $data['location']->getLocationAddressAttribute();
 
-        // $data['kelas_siswa'] = KelasSiswa::findorfail($id);
         $kelas_siswa = KelasSiswa::where('kelas_id',$kelas->id)->get();
         $html = '';
         foreach($kelas_siswa as $item){
@@ -1001,8 +1008,14 @@ class SekolahSDController extends Controller
                 $data['fase'] = "C";
             }
             $html .= view('sekolah_sd.prints.satu_project_comp',$data)->render();
+
+            $item->nilai_projek = !empty($item->nilai_projek) ? 
+            collect($item->nilai_projek)->sortBy('projek_id') : 
+            $item->nilai_projek;
+
         }
         $input['isi'] = $html;
+        
         return view('sekolah_sd.prints.cetak_masal_project',$input);
     }
 

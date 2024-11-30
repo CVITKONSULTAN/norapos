@@ -190,7 +190,7 @@
                                     @php
                                         $list_dimensi = [];
                                     @endphp
-                                    @foreach ($kelas_siswa->nilai_projek->sortKeys() ?? [] as $i => $item)
+                                    @foreach ($kelas_siswa->nilai_projek ?? [] as $i => $item)
                                         @php
                                             $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
                                             // dd($item);
@@ -252,7 +252,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($kelas_siswa->nilai_projek->sortKeys() ?? [] as $i => $item)
+                                            @foreach ($kelas_siswa->nilai_projek ?? [] as $i => $item)
                                                 <tr>
                                                     <td>{{ $item['projek_nama'] }}</td>
                                                     @foreach ($list_dimensi as $k => $v)
@@ -268,7 +268,7 @@
                                     </table>
                                     @php
                                         $dimensi_list = $kelas_siswa->kelas->dimensi_list ?? [];
-                                        $nilai_projek = $kelas_siswa->nilai_projek->sortKeys() ?? []
+                                        $nilai_projek = $kelas_siswa->nilai_projek ?? []
                                     @endphp
                                     @foreach ($nilai_projek ?? [] as $i => $item)
                                         <table style="margin-top: 20px;" class="tabel_projek">

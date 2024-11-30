@@ -470,27 +470,13 @@ class SekolahSDController extends Controller
             $data['nama_kelas'] = Kelas::getGroupBy('nama_kelas');
         }
 
-
-        // $kelas = Kelas::first();
-        // $siswa = Siswa::first();
-
-        // $data['kelas_siswa'] = KelasSiswa::first();
         $data['kelas_siswa'] = null;
         $data['nilai_list'] = [];
         if($request->has('kelas_id')){
             $data['kelas_siswa'] = KelasSiswa::find($request->kelas_id);
         }
 
-        // $data['kelas_siswa'] = KelasSiswa::where([
-        //     'kelas_id'=> $kelas->id,
-        //     'siswa_id'=> $siswa->id,
-        // ])
-        // ->with('kelas','siswa')
-        // ->first();
-
         if(empty($data['kelas_siswa'])){
-            // return redirect()->route('sekolah_sd.kelas.index')
-            // ->with(['success'=>false,'message'=>"Silahkan tambah kelas siswa terlebih dahulu"]);
             return view('sekolah_sd.raport_akhir',$data)
             ->with(['success'=>false,'message'=>"Data kelas anda kosong"]);
         }
@@ -582,22 +568,19 @@ class SekolahSDController extends Controller
         ];
 
         $data['fase'] = null;
-        if($request->has('kelas_id')){
-            $data['kelas_siswa'] = KelasSiswa::find($request->kelas_id);
-            $kelas = $data['kelas_siswa']->kelas;
-            if($kelas->kelas > 0 && $kelas->kelas <=2){
-                $data['fase'] = "A";
-            }
-            if($kelas->kelas > 2 && $kelas->kelas <=4){
-                $data['fase'] = "B";
-            }
-            if($kelas->kelas > 4 && $kelas->kelas <=6){
-                $data['fase'] = "C";
-            }
+        $kelas = $data['kelas_siswa']->kelas;
+        if($kelas->kelas > 0 && $kelas->kelas <=2){
+            $data['fase'] = "A";
+        }
+        if($kelas->kelas > 2 && $kelas->kelas <=4){
+            $data['fase'] = "B";
+        }
+        if($kelas->kelas > 4 && $kelas->kelas <=6){
+            $data['fase'] = "C";
         }
 
         $data['kelas_siswa']->nilai_projek = !empty($data['kelas_siswa']->nilai_projek) ? 
-        collect($data['kelas_siswa']->nilai_projek)->sortBy('projek_id') : 
+        collect($data['kelas_siswa']->nilai_projek)->sortBy('projek_id')->values() : 
         $data['kelas_siswa']->nilai_projek;
 
         return view('sekolah_sd.prints.project',$data);
@@ -901,7 +884,7 @@ class SekolahSDController extends Controller
             }
             // dd(collect($data['kelas_siswa']->nilai_projek));
             $data['kelas_siswa']->nilai_projek = !empty($data['kelas_siswa']->nilai_projek) ? 
-            collect($data['kelas_siswa']->nilai_projek)->sortBy('projek_id') : 
+            collect($data['kelas_siswa']->nilai_projek)->sortBy('projek_id')->values() : 
             $data['kelas_siswa']->nilai_projek;
         }
 
@@ -1031,7 +1014,7 @@ class SekolahSDController extends Controller
             $html .= view('sekolah_sd.prints.satu_project_comp',$data)->render();
 
             $item->nilai_projek = !empty($item->nilai_projek) ? 
-            collect($item->nilai_projek)->sortBy('projek_id') : 
+            collect($item->nilai_projek)->sortBy('projek_id')->values() : 
             $item->nilai_projek;
 
         }

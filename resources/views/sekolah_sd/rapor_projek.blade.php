@@ -49,6 +49,7 @@
             width: 100%;
             border: 1px solid black;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
         table.tabel_projek tr th{
             border: 1px solid black;
@@ -242,6 +243,7 @@
                                             </td>
                                         </tr>
                                     </table>
+{{-- 
                                     <table class="tabel_projek">
                                         <thead>
                                             <tr>
@@ -266,6 +268,34 @@
                                             @endforeach
                                         </tbody>
                                     </table>
+  --}}      
+                                    @foreach ($kelas_siswa->kelas->dimensi_list ?? [] as $i => $item)
+                                        @php
+                                            $nilai_p = $kelas_siswa->nilai_projek[$i] ?? null;
+                                        @endphp
+                                        <table class="tabel_projek">
+                                            <thead>
+                                                <tr>
+                                                    <th width="200">Projek Kelas {{ $kelas_siswa->kelas->nama_kelas ?? "" }}</th>
+                                                    @foreach ($item['dimensi'] ?? [] as $v)
+                                                        <th>{{ $v['dimensi_text'] }}</th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                        <td>{{ $item['nama'] }}</td>
+                                                        @foreach ($item['dimensi'] ?? [] as $j => $val)
+                                                            @php
+                                                                $nilai = $nilai_p['dimensi'][$j]['nilai'] ?? "";
+                                                            @endphp
+                                                            <td class="text-center">{{$nilai}}</td>
+                                                        @endforeach
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                    @endforeach
+
                                     @php
                                         $dimensi_list = $kelas_siswa->kelas->dimensi_list ?? [];
                                         $nilai_projek = $kelas_siswa->nilai_projek ?? []

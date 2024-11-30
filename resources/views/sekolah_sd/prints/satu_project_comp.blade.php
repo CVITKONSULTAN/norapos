@@ -164,7 +164,7 @@
 </div>
 
 <div class="page">
-    
+{{--  
     <table class="table_kop">
         <tr>
             <td>
@@ -188,7 +188,7 @@
             </td>
         </tr>
     </table>
-    
+     --}}
     @php
         $dimensi_list = $kelas_siswa->kelas->dimensi_list ?? [];
         $nilai_projek = $kelas_siswa->nilai_projek ?? []

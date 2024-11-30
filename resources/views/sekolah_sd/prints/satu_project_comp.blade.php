@@ -1,5 +1,7 @@
 
 <div class="page">
+
+{{--  
     <table class="table_kop">
         <tr>
             <td>
@@ -23,7 +25,7 @@
             </td>
         </tr>
     </table>
-    
+     --}}
     <h3 style="text-align: center;">RAPOR PROJEK PENGUATAN PROFIL PELAJAR PANCASILA</h3>
     
     <table width="100%">

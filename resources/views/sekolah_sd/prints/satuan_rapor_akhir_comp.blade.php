@@ -28,7 +28,7 @@
 </div>
 
 <div class="page" style="position: relative;">
-
+{{-- 
     <table class="table_kop">
         <tr>
             <td>
@@ -52,7 +52,7 @@
             </td>
         </tr>
     </table>
-
+  --}}
     <table width="100%">
         <tr>
             <td style="vertical-align:top;">

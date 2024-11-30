@@ -158,20 +158,27 @@ class ProjekController extends Controller
             'projek_nama'=>$request->projek_nama,
             'dimensi'=>$dimensi
         ];
-        $k = KelasSiswa::findorfail($request->kelas_siswa_id);
-        $nilai_project = $k->nilai_project ?? [];
+        // dd($projek);
+        $kelas = KelasSiswa::findorfail($request->kelas_siswa_id);
+        $nilai_project = $kelas->nilai_projek ?? [];
         if(count($nilai_project) > 0){
+            $found = null;
             foreach($nilai_project as $k => $item){
                 if($item['projek_id'] == $projek['projek_id']){
                     $nilai_project[$k] = $projek;
+                    // dd(1,$nilai_project[$k]);
+                    $found = true;
                     break;
                 }
+            }
+            if(empty($found)){
+                $nilai_project[] = $projek;    
             }
         } else {
             $nilai_project[] = $projek;
         }
-        $k->nilai_projek = $nilai_project;
-        $k->save();
+        $kelas->nilai_projek = $nilai_project;
+        $kelas->save();
         return redirect()->back()
                 ->with(['success'=>true,'Data berhasil dikaitkan']);
     }

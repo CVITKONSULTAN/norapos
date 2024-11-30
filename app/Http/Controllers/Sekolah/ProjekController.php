@@ -172,13 +172,13 @@ class ProjekController extends Controller
             }
             if(empty($found)){
                 $nilai_project[] = $projek;
-                dd("notfound",$kelas,$nilai_project,$kelas->siswa);
+                // dd("notfound",$kelas,$nilai_project,$kelas->siswa);
             }
-            dd("found",$kelas,$nilai_project);
+            // dd("found",$kelas,$nilai_project);
         } else {
             $nilai_project[] = $projek;
         }
-        dd($kelas,$nilai_project,$kelas->siswa);
+        // dd($kelas,$nilai_project,$kelas->siswa);
         $kelas->nilai_projek = $nilai_project;
         $kelas->save();
         return redirect()->back()

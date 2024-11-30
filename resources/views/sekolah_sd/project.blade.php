@@ -224,7 +224,7 @@
                                                     $data_projek = $nilai_projek[$index_projek] ?? [];
 
                                                     if(!empty($nilai_projek)){
-                                                        dd( $index_projek ,$data_projek,$nilai_projek,$project_choices_id);
+                                                        dd( $index_projek != false, $index_projek ,$data_projek,$nilai_projek,$project_choices_id);
                                                     }
 
                                                 @endphp

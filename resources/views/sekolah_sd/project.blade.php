@@ -222,7 +222,11 @@
 
                                                     if(!empty($index_projek)) 
                                                     $data_projek = $nilai_projek[$index_projek] ?? [];
-                                                
+
+                                                    if(!empty($nilai_projek)){
+                                                        dd($data_projek,$nilai_projek);
+                                                    }
+
                                                 @endphp
 
                                                 @foreach ($dimensi_list['dimensi'] ?? [] as $i => $val)

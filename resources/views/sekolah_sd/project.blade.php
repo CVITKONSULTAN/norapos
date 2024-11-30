@@ -216,7 +216,13 @@
                                                 
                                                 @php
                                                     $nilai_projek = $item->nilai_projek ?? [];
+                                                    $project_choices_id = $dimensi_list['id'] ?? 0;
+                                                    $index_projek = array_search( $project_choices_id ,array_column( $nilai_projek , 'projek_id'));
+                                                    $data_projek = [];
+
+                                                    if(!empty($index_projek)) 
                                                     $data_projek = $nilai_projek[$index_projek] ?? [];
+                                                
                                                 @endphp
 
                                                 @foreach ($dimensi_list['dimensi'] ?? [] as $i => $val)

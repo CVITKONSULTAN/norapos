@@ -428,8 +428,8 @@
                     }
                 },
                 columns: [
-                    { searchable: true, data: 'nama', orderable:true  },
-                    { searchable: true, data: 'nis', orderable:true  },
+                    { searchable: true, data: 'siswa.nama', orderable:true  },
+                    { searchable: false, data: 'nis', orderable:true  },
                     @foreach ($tp as $i => $item)
                         { 
                             searchable: false, 

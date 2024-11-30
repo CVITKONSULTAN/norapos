@@ -45,14 +45,14 @@ class KelasController extends Controller
         //     'tanpa_keterangan',
         // )
         $query = KelasSiswa::selectRaw(
-            "kelas_siswas.*, siswas.nisn, siswas.nama, JSON_UNQUOTE(JSON_EXTRACT(siswas.detail, '$.nis')) AS nis"
+            "kelas_siswas.*, siswas.nisn as nisn, siswas.nama as nama_siswa, JSON_UNQUOTE(JSON_EXTRACT(siswas.detail, '$.nis')) AS nis"
         )
         ->join('siswas', 'kelas_siswas.siswa_id', '=', 'siswas.id')
         // ->orderBy('siswas.nama', 'asc')
         ->with([
-            // 'siswa' => function($q){
-            //     $q->select('id','nama','nisn');
-            // },
+            'siswa' => function($q){
+                $q->select('id','nama','nisn');
+            },
             'kelas' => function($q){
                 $q->select(
                     'id',

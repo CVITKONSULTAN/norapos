@@ -19,7 +19,7 @@
         }
     }
 </style>
-<div class="page" style="position: relative;">
+{{-- <div class="page" style="position: relative;">
     <img
         src="{{url('/img/bingkai_buku_induk.png')}}"
         class="bg_bingkai"
@@ -46,7 +46,7 @@
             <h3 style="text-align:center;font-size: 14pt;">NISN/NIS:<br />{{ $kelas_siswa->siswa->nisn }}</h3>
         </div>
     </div>
-</div>
+</div> --}}
     
 @endsection
 

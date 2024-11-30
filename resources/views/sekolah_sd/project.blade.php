@@ -220,7 +220,7 @@
                                                     $index_projek = array_search( $project_choices_id ,array_column( $nilai_projek , 'projek_id'));
                                                     $data_projek = [];
 
-                                                    if($index_projek >= 0) 
+                                                    if($index_projek !== false && $index_projek >= 0) 
                                                     $data_projek = $nilai_projek[$index_projek] ?? [];
 
                                                     if(!empty($nilai_projek)){

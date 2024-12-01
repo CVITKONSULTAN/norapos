@@ -22,6 +22,11 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>@yield('title') - {{ Session::get('business.name') }}</title>
+        <style>
+            .widget-visible{
+                margin-bottom: 100px !important;
+            }
+        </style>
         
         @include('layouts.partials.css')
 
@@ -116,6 +121,29 @@
             s1.setAttribute('crossorigin','*');
             s0.parentNode.insertBefore(s1,s0);
             })();
+
+            Tawk_API.customStyle = {
+                visibility: {
+                    //for desktop only
+                    desktop: {
+                        position: 'bl', // bottom-right
+                        // xOffset: 15, // 15px away from right
+                        // yOffset: 60 // 40px up from bottom
+                    },
+                    // for mobile only
+                    mobile: {
+                        position: 'bl', // bottom-left
+                        // xOffset: 5, // 5px away from left
+                        // yOffset: 50 // 50px up from bottom
+                    },
+                    // change settings of bubble if necessary
+                    // bubble: {
+                    //     rotate: '0deg',
+                    //     xOffset: -20,
+                    //     yOffset: 0
+                    // }
+                }
+            }
             </script>
             <!--End of Tawk.to Script-->
     </body>

@@ -195,6 +195,7 @@
                                 <table width="100%" class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                     <thead>
                                         <tr>
+                                            <th rowspan="2">NIS</th>
                                             <th rowspan="2">Nama</th>
                                             <th style="background: #1880ca;color:#000;" colspan="{{$total_dimensi}}" id="dimensi_header" class="text-center">Penilaian Dimensi</th>
                                             <th style="background: #55a3db;color:#000;" colspan="{{$total_subelemen}}" id="subelemen_header" class="text-center">Penilaian Subelemen</th>
@@ -212,8 +213,8 @@
                                     <tbody>
                                         @foreach ($kelas_siswa as $item)    
                                             <tr>
+                                                <td>{{ $item->siswa->nis }}</td>
                                                 <td>{{ $item->siswa->nama }}</td>
-                                                
                                                 @php
                                                     $nilai_projek = $item->nilai_projek ?? [];
                                                     $project_choices_id = $dimensi_list['id'] ?? 0;

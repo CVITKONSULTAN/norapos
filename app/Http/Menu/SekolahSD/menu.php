@@ -157,6 +157,15 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                         request()->segment(2) == 'raport-akhir' 
                     ]
                 );
+                $sub->url(
+                    route('sekolah_sd.raport_table.index'),
+                    "Tabel Siswa",
+                    ['icon' => 'fa fas fa-user', 
+                    'active' =>
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'raport-table' 
+                    ]
+                );
             },
             ['icon' => 'fa fas fa-address-book']
         )->order(1);

@@ -7,6 +7,12 @@
 @csrf
 <table class="table table-bordered table-striped">
     <tr>
+        <th colspan="2">Urutan</th>
+        <td>
+            <input type="number" min="0" value="{{ $data['orders'] ?? "0"  }}" name="orders" required class="form-control" />
+        </td>
+    </tr>
+    <tr>
         <th colspan="2">Nama Mapel</th>
         <td>
             <input value="{{ $data['nama'] ?? ""  }}" name="nama" required class="form-control" />

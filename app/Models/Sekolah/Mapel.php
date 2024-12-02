@@ -16,6 +16,7 @@ class Mapel extends Model
         'tujuan_pembelajaran',
         'business_id',
         'kelas',
+        'orders'
     ];
 
     protected $casts = [

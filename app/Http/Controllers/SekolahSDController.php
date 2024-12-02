@@ -390,7 +390,6 @@ class SekolahSDController extends Controller
         $data['dimensi_list'] = [];
         if(!empty($kelas) && $request->has('index_projek')){
             $data['dimensi_list'] = $kelas->dimensi_list[$request->index_projek];
-            // dd($data);
         }
         $data['kelas_siswa'] = KelasSiswa::where('kelas_id',$request->kelas_id)
         ->get();

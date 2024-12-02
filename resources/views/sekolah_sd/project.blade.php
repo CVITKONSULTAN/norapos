@@ -213,7 +213,7 @@
                                     <tbody>
                                         @foreach ($kelas_siswa as $item)    
                                             <tr>
-                                                <td>{{ $item->siswa->nis }}</td>
+                                                <td>{{ $item->siswa->detail['nis'] ?? '' }}</td>
                                                 <td>{{ $item->siswa->nama }}</td>
                                                 @php
                                                     $nilai_projek = $item->nilai_projek ?? [];

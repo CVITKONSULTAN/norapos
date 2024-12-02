@@ -152,6 +152,7 @@
             <tr>
                 <th>No</th>
                 <th>Ekstrakurikuler</th>
+                <th>Nilai</th>
                 <th>Keterangan</th>
             </tr>
         </thead>
@@ -160,6 +161,7 @@
                 <tr>
                     <td class="text-center">{{ $key+1 }}</td>
                     <td>{{ $item->ekskul->nama }}</td>
+                    <td style="text-align: center;">{{ $item->nilai }}</td>
                     <td>{{ $item->keterangan }}</td>
                 </tr>
             @endforeach
@@ -186,7 +188,7 @@
         </tbody>
     </table>
 
-    <table class="tabel_penilaian">
+    {{-- <table class="tabel_penilaian">
         <thead>
             <tr>
                 <th>Kesimpulan</th>
@@ -199,7 +201,7 @@
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table> --}}
 
     <table class="tabel_penilaian tabel_kehadiran">
         <thead>

@@ -63,7 +63,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Ekstrakurikuler</label>
-                            <select required class="form-control" name="ekskul_id">
+                            <select id="nama_ekskul" required class="form-control" name="ekskul_id">
                                 <option value="">-- Pilih Ekskul --</option>
                                 @foreach ($ekskul as $key => $item)
                                     <option value="{{$item->id}}">{{$item->nama}}</option>
@@ -72,11 +72,16 @@
                         </div>
                         <div class="form-group">
                             <label>Nilai</label>
-                            <input maxlength="1" class="form-control" name="nilai" required />
+                            {{-- <input id="nilai_ekskul" maxlength="1" class="form-control" name="nilai" required /> --}}
+                            <select name="nilai" id="nilai_ekskul" class="form-control" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Keterangan</label>
-                            <textarea rows="5" required class="form-control" name="keterangan"></textarea>
+                            <textarea id="keterangan_ekskul" rows="5" required class="form-control" name="keterangan"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -240,6 +245,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Ekstrakurikuler</th>
+                                            <th>Nilai</th>
                                             <th>Keterangan</th>
                                             <th>Tindakan</th>
                                         </tr>
@@ -292,7 +298,7 @@
                                     </tbody>
                                 </table>
 
-                                <table class="tabel_penilaian">
+                                {{-- <table class="tabel_penilaian">
                                     <thead>
                                         <tr>
                                             <th>Kesimpulan</th>
@@ -310,7 +316,7 @@
                                             </td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </table> --}}
 
                             </div>
                         </div>
@@ -435,14 +441,14 @@
 
         const simpanRaport = (elm,id) => {
             const btn = $(elm)
-            const kesimpulan = $('#kesimpulan').val();
+            // const kesimpulan = $('#kesimpulan').val();
             const catatan_akhir = $('#catatan_akhir').val();
             $.ajax({
                 type:"POST",
                 url:"{{route('sekolah_sd.kelas.store')}}",
                 data:{
                     "update":1,
-                    "kesimpulan":kesimpulan,
+                    // "kesimpulan":kesimpulan,
                     "catatan_akhir":catatan_akhir,
                     "id":id
                 },
@@ -484,10 +490,12 @@
                     if(!result.success) return;
                     for(const k in result.data){
                         const val = result.data[k]
+                        // console.log("val.ekskul",val)
                         const template = `
                         <tr>
                             <td class="text-center">${parseInt(k)+1}</td>
                             <td>${val.ekskul.nama}</td>
+                            <td class="text-center">${val.nilai}</td>
                             <td>${val.keterangan}</td>
                             <td class="text-center">
                                 <button onclick="editEkskul(this,${val.id})" class="btn btn-primary btn-xs"><i class="fa fa-pencil-alt"></i></button>
@@ -503,6 +511,25 @@
                 },
             })
         }
+
+        $("#nilai_ekskul").change(function(){
+            const val = $(this).val();
+            let str = '';
+            switch (val) {
+                case "A":
+                    str += "Sangat aktif dalam mengikuti ekskul"
+                    break;
+                case "B":
+                    str += "Aktif mengikuti ekskul"
+                    break;
+                case "C":
+                    str += "Kurang aktif dalam mengikuti ekskul"
+                    break;
+            }
+            const nama_ekskul = $("#nama_ekskul option:selected").text();
+            str += " "+nama_ekskul;
+            $("#keterangan_ekskul").text(str)
+        })
 
         const tambahEkskul = () => {
             const modals = $("#ekskul_modal");
@@ -600,7 +627,7 @@
                     form.find('input[name=id]').val(data.id);
 
                     form.find('select[name=ekskul_id]').val(data.ekskul_id);
-                    form.find('input[name=nilai]').val(data.nilai);
+                    form.find('select[name=nilai]').val(data.nilai);
                     form.find('textarea[name=keterangan]').val(data.keterangan);
                     $("#ekskul_modal").modal("show");
                     

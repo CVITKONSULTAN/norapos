@@ -1245,5 +1245,31 @@ class SekolahSDController extends Controller
 
         return view('sekolah_sd.rekap_sumatif_walikelas',$data);
     }
+
+    function raking_kelas_index(Request $request){
+        $user = $request->user();
+        $data['kelas_perwalian'] = [];
+        $data['selected'] = null;
+        if($user->checkGuruWalikelas()){
+            $data['kelas_perwalian'] = Kelas::where('wali_kelas_id',$user->id)->get()->pluck('id')->toArray();
+            $data['selected'] = Kelas::where('wali_kelas_id',$user->id)->first();
+        }
+
+        $data['kelas'] = null;
+        if($request->kelas_id){
+            $data['kelas'] = Kelas::find($request->kelas_id);
+            $data['mapel'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
+            ->groupBy('mapel_id')
+            ->orderBy('mapels.orders','asc')
+            ->get();
+            $data['nilai_siswa'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+            ->get()
+            ->groupBy('siswa_id');
+            // ->values();
+            // dd($data['nilai_siswa'][1]);
+        }
+        return view('sekolah_sd.ranking_kelas',$data);
+    }
     
 }

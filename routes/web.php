@@ -278,6 +278,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('raport-table',"SekolahSDController@raport_table_index")
         ->name('sekolah_sd.raport_table.index');
 
+        Route::get('ranking-kelas',"SekolahSDController@raking_kelas_index")
+        ->name('sekolah_sd.ranking_kelas.index');
+
         Route::get('peserta-didik-baru',function(){
             return view('sekolah_sd.peserta_didik_baru');
         })

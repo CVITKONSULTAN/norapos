@@ -166,6 +166,15 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                         request()->segment(2) == 'raport-table' 
                     ]
                 );
+                $sub->url(
+                    route('sekolah_sd.ranking_kelas.index'),
+                    "Ranking Kelas",
+                    [
+                    'active' =>
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'ranking-kelas' 
+                    ]
+                );
             },
             ['icon' => 'fa fas fa-address-book']
         )->order(1);
@@ -366,6 +375,15 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     'active' =>
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'raport-table' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.ranking_kelas.index'),
+                    "Ranking Kelas",
+                    [
+                    'active' =>
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'ranking-kelas' 
                     ]
                 );
                 $sub->url(

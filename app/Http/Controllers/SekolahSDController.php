@@ -1264,6 +1264,7 @@ class SekolahSDController extends Controller
             ->orderBy('mapels.orders','asc')
             ->get();
             $data['nilai_siswa'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
             ->get()
             ->groupBy('siswa_id');
             // ->values();

@@ -82,8 +82,10 @@
                     <tbody>
                         @foreach ($nilai_siswa as $item)
                             @php
-                                $avg = $item[0]->avg('nilai_rapor');
-                                $total = $item[0]->sum('nilai_rapor');
+                                $avg = $item->avg('nilai_rapor');
+                                $total = $item->sum('nilai_rapor');
+                                $item = $item->sortBy('orders');
+                                // dd($item);
                             @endphp
                             <tr>
                                 <td>{{$item[0]->siswa->detail['nis'] ?? ''}}</td>

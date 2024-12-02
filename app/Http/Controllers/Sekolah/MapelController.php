@@ -45,7 +45,7 @@ class MapelController extends Controller
         }
 
         $business_id = $user->business->id;
-        $query = Mapel::select('id','nama','kategori','kelas')
+        $query = Mapel::select('orders','id','nama','kategori','kelas')
         ->where('business_id',$business_id);
 
         

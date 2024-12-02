@@ -149,6 +149,7 @@
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
                                     <tr>
+                                        <th>Urutan</th>
                                         <th>ID</th>
                                         <th>Mapel</th>
                                         <th>Kelas</th>
@@ -214,18 +215,6 @@
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                columnDefs: [
-                    {
-                        "targets": [0],
-                        "orderable": false,
-                        "searchable": false
-                    },
-                    {
-                        "targets": [3],
-                        "orderable": false,
-                        "searchable": false
-                    },
-                ],
                 processing: true,
                 serverSide: true,
                 "ajax": {
@@ -244,6 +233,7 @@
                     }
                 },
                 columns: [
+                    { data: 'orders'  },
                     { data: 'id'  },
                     { data: 'nama'  },
                     { data: 'kelas'  },

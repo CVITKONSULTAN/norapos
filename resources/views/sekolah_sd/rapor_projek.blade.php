@@ -201,7 +201,7 @@
                                         @endphp
                                         <h4>Projek {{$i+1}} | {{ $item['projek_nama'] }}</h4>
                                         <div class="container_deskripsi">
-                                            {{$project->deskripsi}}
+                                            {{$project->deskripsi ?? ""}}
                                         </div>
                                     @endforeach
                                     <table class="keterangan_table" width="100%">

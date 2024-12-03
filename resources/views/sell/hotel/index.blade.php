@@ -47,7 +47,8 @@
                         <th>@lang('sale.invoice_no')</th>
                         <th>@lang('sale.customer_name')</th>
                         <th>@lang('lang_v1.contact_no')</th>
-                        <th>@lang('sale.location')</th>
+                        {{-- <th>@lang('sale.location')</th> --}}
+                        <th>Kamar</th>
                         <th>@lang('sale.payment_status')</th>
                         <th>@lang('lang_v1.payment_method')</th>
                         <th>@lang('sale.total_amount')</th>
@@ -162,7 +163,8 @@ $(document).ready( function(){
             { data: 'invoice_no', name: 'invoice_no'},
             { data: 'name', name: 'contacts.name'},
             { data: 'mobile', name: 'contacts.mobile'},
-            { data: 'business_location', name: 'bl.name'},
+            { data: 'first_product', name: 'first_product'},
+            // { data: 'business_location', name: 'bl.name'},
             { data: 'payment_status', name: 'payment_status'},
             // { data: 'payment_methods', orderable: false, "searchable": false},
             { data: 'pembayaran', orderable: false, "searchable": false},

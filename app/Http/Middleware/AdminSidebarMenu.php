@@ -795,7 +795,7 @@ class AdminSidebarMenu
                 )->order(15);
             // }
 
-            if( !auth()->user()->checkHouseKeeping() ){
+            if( auth()->user()->checkAdmin() ){
                 
                 //Reservasi
                 $menu->dropdown(

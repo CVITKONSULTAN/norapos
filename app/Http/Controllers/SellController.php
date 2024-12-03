@@ -328,6 +328,13 @@ class SellController extends Controller
                         return $html;
                     }
                 )
+                ->addColumn('first_product',function($row){
+                    $product_name = "-";
+                    if(isset($row->sell_lines[0])){
+                        $product_name = $row->sell_lines[0]->product->name ?? "-";
+                    }
+                    return $product_name;
+                })
                 ->addColumn('pembayaran',function($row){
                     return $row->service_custom_field_1;
                 })

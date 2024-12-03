@@ -209,7 +209,7 @@
                     pageLength:-1,
                     order: [[
                         {{count($mapel)+4}}, 
-                        'asc'
+                        'desc'
                     ]],
                     ordering: false,
                     createdRow: function(row, data, dataIndex) {

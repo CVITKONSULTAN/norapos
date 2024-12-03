@@ -125,6 +125,16 @@
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center" colspan="3">Rata-Rata</th>
+                            @foreach ($mapel as $i => $item)
+                                <th class="text-center"></th>
+                            @endforeach
+                            <th class="text-center"></th>
+                            <th class="text-center"></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -239,6 +249,37 @@
                             } else {
                                 row.css('background-color', ''); // Reset warna untuk baris lainnya
                             }
+                        });
+                    },
+                    footerCallback: function(row, data, start, end, display) {
+                        var api = this.api();
+
+                        // Set teks "Rata-Rata" di kolom pertama footer
+                        $(api.column(0).footer()).html('Rata-Rata');
+
+                        // Fungsi untuk menghitung rata-rata
+                        var calculateAverage = function(index) {
+                            var total = 0;
+                            var count = 0;
+
+                            // Iterasi melalui semua data pada kolom
+                            api.column(index, { page: 'current' }).data().each(function(value, i) {
+                                var numericValue = parseFloat(value) || 0; // Konversi ke angka
+                                total += numericValue;
+                                count++;
+                            });
+
+                            return count > 0 ? (total / count).toFixed(2) : 0; // Rata-rata dengan 2 desimal
+                        };
+
+                        // Loop untuk menghitung rata-rata setiap kolom
+                        $(api.columns().footer()).each(function(index) {
+                            if (index > 2) { // Abaikan kolom non-numeric (contoh: Ranking, NIS, Nama Siswa)
+                                $(this).html(calculateAverage(index));
+                            }
+                            // else {
+                            //     $(this).html(''); // Kosongkan untuk kolom non-numeric
+                            // }
                         });
                     }
                 });

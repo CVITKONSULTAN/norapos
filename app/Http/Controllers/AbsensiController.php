@@ -22,7 +22,7 @@ class AbsensiController extends Controller
     {
         $user = $request->user();
         $data = \App\Absensi::where('business_id', $user->business_id);
-        // $check = $user->roles->filter(function ($item) { return false !== stristr($item->name, "admin"); })->count();
+        
         $check = $user->checkAdmin();
         $checkHrd = $user->checkHRD();
 

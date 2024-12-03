@@ -99,7 +99,14 @@
                 {
                     "data":"id",
                     "render":(data,type,row,meta) => {
-                        return `<button data-id="${data}" class="btn btn-danger delete_user_button">Hapus</button>`;
+                        let str = '';
+                        @if(
+                            Auth::user()->checkHRD() || 
+                            Auth::user()->checkAdmin()
+                        )
+                            str = `<button data-id="${data}" class="btn btn-danger delete_user_button">Hapus</button>`;
+                        @endif
+                        return str;
                     }
                 }
                 @endcan

@@ -720,6 +720,7 @@ class AdminSidebarMenu
         });
 
         Menu::create('admin-sidebar-hotel', function ($menu) {
+            
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             //Home
             $menu->url(action('HomeController@index'), __('home.home'), ['icon' => 'fa fas fa-tachometer-alt', 'active' => request()->segment(1) == 'home'])->order(5);
@@ -772,27 +773,28 @@ class AdminSidebarMenu
 
             //Absensi dropdown
             // if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
-            //     $menu->dropdown(
-            //         "Absensi",
-            //         function ($sub) {
-            //             if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
-            //                 $sub->url(
-            //                     route('absensi.list'),
-            //                     "Daftar Absensi",
-            //                     ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
-            //                 );
-            //             }
-            //             if (auth()->user()->can('absensi.create')) {
-            //                 $sub->url(
-            //                     route('absensi.create'),
-            //                     "Tambah",
-            //                     ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
-            //                 );
-            //             }
-            //         },
-            //         ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
-            //     )->order(15);
+                $menu->dropdown(
+                    "Absensi",
+                    function ($sub) {
+                        if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
+                            $sub->url(
+                                route('absensi.list'),
+                                "Daftar Absensi",
+                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
+                            );
+                        }
+                        if (auth()->user()->can('absensi.create')) {
+                            $sub->url(
+                                route('absensi.create'),
+                                "Tambah",
+                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
+                )->order(15);
             // }
+
             if( !auth()->user()->checkHouseKeeping() ){
                 
                 //Reservasi

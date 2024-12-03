@@ -24,9 +24,14 @@ class AbsensiController extends Controller
         $data = \App\Absensi::where('business_id', $user->business_id);
         // $check = $user->roles->filter(function ($item) { return false !== stristr($item->name, "admin"); })->count();
         $check = $user->checkAdmin();
-        if(!$check){
+        $checkHrd = $user->checkHRD();
+
+        if(
+            !$check && !$checkHrd
+        ){
             $data = $data->where('user_id',$user->id);
         }
+
         return Datatables::of($data)
         ->addColumn("name",function($q){
             return $q->user->first_name." ".$q->user->last_name;

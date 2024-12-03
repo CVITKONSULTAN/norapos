@@ -306,6 +306,13 @@ class User extends Authenticatable
         return $this->hasMany(\App\Absensi::class,"user_id","id");
     }
 
+    function checkHRD(){
+        return $this->roles()
+        ->where('name','like','%HRD%')
+        ->get()
+        ->isNotEmpty();   
+    }
+
     public function checkAbsen()
     {
         $today = Carbon::now();
@@ -319,8 +326,7 @@ class User extends Authenticatable
         return $this->roles()
         ->where('name','like','%Housekeeping%')
         ->get()
-        ->isNotEmpty();
-        
+        ->isNotEmpty();   
     }
 
     function isHotel() {

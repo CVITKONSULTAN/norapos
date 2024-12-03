@@ -296,6 +296,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/absensi', "AbsensiController@create")->name('absensi.create');
     Route::post('/absensi/store', "AbsensiController@store")->name('absensi.store');
     Route::get('/absensi/list', "AbsensiController@index")->name('absensi.list');
+    Route::get('/absensi/list/all', "AbsensiController@index_all")->name('absensi.list.all');
     Route::get('/absensi/data', "AbsensiController@data")->name('absensi.data');
 
     Route::get('/home', 'HomeController@index')->name('home');

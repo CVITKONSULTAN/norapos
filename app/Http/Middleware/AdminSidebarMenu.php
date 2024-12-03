@@ -106,18 +106,28 @@ class AdminSidebarMenu
                 $menu->dropdown(
                     "Absensi",
                     function ($sub) {
-                        if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
+                        if (
+                            auth()->user()->checkHRD() || 
+                            auth()->user()->checkAdmin()
+                        ) {
+                            $sub->url(
+                                route('absensi.list.all'),
+                                "Daftar Semua Orang",
+                                ['active' => request()->is('absensi/list/all')]
+                            );
+                        }
+                        if (auth()->user()->can('absensi.view')) {
                             $sub->url(
                                 route('absensi.list'),
-                                "Daftar Absensi",
-                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
+                                "Daftar Absensi Pribadi s",
+                                ['active' => request()->is('absensi/list')]
                             );
                         }
                         if (auth()->user()->can('absensi.create')) {
                             $sub->url(
                                 route('absensi.create'),
                                 "Tambah",
-                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
+                                ['active' => request()->is('absensi')]
                             );
                         }
                     },

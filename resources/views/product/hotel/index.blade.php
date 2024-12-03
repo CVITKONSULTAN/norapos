@@ -8,10 +8,6 @@
     <h1>
         Hotel Room
     </h1>
-    <!-- <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-        <li class="active">Here</li>
-    </ol> -->
 </section>
 
 <!-- Main content -->
@@ -19,34 +15,8 @@
 <div class="row">
     <div class="col-md-12">
     @component('components.filters', ['title' => __('report.filters')])
-        {{-- <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('type', __('product.product_type') . ':') !!}
-                {!! Form::select('type', ['single' => __('lang_v1.single'), 'variable' => __('lang_v1.variable')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_type', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div> --}}
-        {{-- <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('category_id', __('product.category') . ':') !!}
-                {!! Form::select('category_id', $categories, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_category_id', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div> --}}
-
-        {{-- <div class="col-md-3">
-            <div class="form-group">
-                {!! Form::label('unit_id', __('product.unit') . ':') !!}
-                {!! Form::select('unit_id', $units, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_unit_id', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div>
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('tax_id', __('product.tax') . ':') !!}
-                {!! Form::select('tax_id', $taxes, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_tax_id', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div> --}}
-        <div class="col-md-3">
-            <div class="form-group">
-                {{-- {!! Form::label('brand_id', __('product.brand') . ':') !!} --}}
                 {!! Form::label('brand_id', "Kategori" . ':') !!}
                 {!! Form::select('brand_id', $brands, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_brand_id', 'placeholder' => __('lang_v1.all')]); !!}
             </div>
@@ -57,12 +27,6 @@
                 {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
             </div>
         </div>
-        {{-- <div class="col-md-3">
-            <br>
-            <div class="form-group">
-                {!! Form::select('active_state', ['active' => __('business.is_active'), 'inactive' => __('lang_v1.inactive')], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'active_state', 'placeholder' => __('lang_v1.all')]); !!}
-            </div>
-        </div> --}}
 
         <!-- include module filter -->
         @if(!empty($pos_module_data))
@@ -197,11 +161,7 @@
                         @can('access_default_selling_price')
                             { data: 'selling_price', name: 'max_price', searchable: false},
                         @endcan
-                        // { data: 'current_stock', searchable: false},
-                        // { data: 'type', name: 'products.type'},
-                        // { data: 'category', name: 'c1.name'},
                         { data: 'brand', name: 'brands.name'},
-                        // { data: 'tax', name: 'tax_rates.name', searchable: false},
                         { data: 'sku', name: 'products.sku'},
                         { data: 'product_custom_field1', name: 'products.product_custom_field1'  },
                         { data: 'product_custom_field2', name: 'products.product_custom_field2'  },

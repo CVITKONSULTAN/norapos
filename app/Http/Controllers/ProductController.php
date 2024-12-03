@@ -311,8 +311,7 @@ class ProductController extends Controller
                     'is_woocommerce'
                 ));
         }
-
-        if(str_contains( strtolower(auth()->user()->business->name) , 'hotel')){
+        if(auth()->user()->business->business_category == 'hotel'){
             return view('product.hotel.index')
                 ->with(compact(
                     'rack_enabled',

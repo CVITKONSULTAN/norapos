@@ -66,16 +66,25 @@
     <div class="row">
         <div class="col-md-12">
             <h2 class="text-center">{{ "Kelas $kelas->nama_kelas (Semester $kelas->semester - $kelas->tahun_ajaran)" }}</h2>
+            <div>
+                <p class="text-right">
+                    <b>**Keterangan :<br />
+                    0-74 = Perlu Bimbingan (PB)<br />
+                    75-100 = Menunjukan Pemahaman (MP)
+                    </b>
+                </p>
+            </div>
             <div class="table-responsive">
                 <table id="product_table" class="table table-bordered table-striped ajax_view hide-footer">
                     <thead>
                         <tr>
+                            <th>Ranking</th>
                             <th>NIS</th>
                             <th>Nama Siswa</th>
                             @foreach ($mapel as $i => $item)
                                 <th>{{ $item->nama }}</th>
                             @endforeach
-                            {{-- <th>Nilai Total</th> --}}
+                            <th>Nilai Total</th>
                             <th>Rata-Rata</th>
                         </tr>
                     </thead>
@@ -85,15 +94,33 @@
                                 $avg = $item->avg('nilai_rapor');
                                 $total = $item->sum('nilai_rapor');
                                 $item = $item->sortBy('orders');
-                                // dd($item);
                             @endphp
                             <tr>
+                                <td></td>
                                 <td>{{$item[0]->siswa->detail['nis'] ?? ''}}</td>
                                 <td>{{$item[0]->siswa->nama ?? ''}}</td>
                                 @foreach ($item as $val)
-                                    <td class="text-center">{{ $val->nilai_rapor }}</td>
+                                    @php
+                                        $ket = "";
+                                        if(
+                                            $val->nilai_rapor >= 0 &&
+                                            $val->nilai_rapor <= 74
+                                        ){
+                                            $ket = " (PB)";
+                                        }
+                                        if(
+                                            $val->nilai_rapor >= 75 &&
+                                            $val->nilai_rapor <= 100
+                                        ){
+                                            $ket = " (MP)";
+                                        }
+                                    @endphp
+                                    <td class="text-center">
+                                        {{ $val->nilai_rapor }}
+                                        <span>{{ $ket }}</span>
+                                    </td>
                                 @endforeach
-                                {{-- <td>{{ $total }}</td> --}}
+                                <td>{{ $total }}</td>
                                 <td class="text-center">{{ $avg }}</td>
                             </tr>
                         @endforeach
@@ -179,7 +206,41 @@
         @if(Request::has('kelas_id'))
             $(document).ready( function(){
                 product_table = $('#product_table').DataTable({
-                    pageLength:-1
+                    pageLength:-1,
+                    order: [[
+                        {{count($mapel)+4}}, 
+                        'asc'
+                    ]],
+                    ordering: false,
+                    createdRow: function(row, data, dataIndex) {
+                        // Kosong karena penyesuaian ranking ada di drawCallback
+                    },
+                    drawCallback: function(settings) {
+                        var api = this.api();
+
+                        // Loop melalui data yang sudah diurutkan
+                        api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                            var row = $(this.node());
+
+                            // Tambahkan nomor urut ke kolom Ranking
+                            row.find('td:first').html(rowIdx + 1);
+
+                            // Terapkan warna untuk 5 baris teratas
+                            if (rowIdx === 0) {
+                                row.css('background-color', '#FFD700'); // Emas
+                            } else if (rowIdx === 1) {
+                                row.css('background-color', '#C0C0C0'); // Perak
+                            } else if (rowIdx === 2) {
+                                row.css('background-color', '#ffc285'); // Perunggu
+                            } else if (rowIdx === 3) {
+                                row.css('background-color', '#ADD8E6'); // Biru muda
+                            } else if (rowIdx === 4) {
+                                row.css('background-color', '#90EE90'); // Hijau muda
+                            } else {
+                                row.css('background-color', ''); // Reset warna untuk baris lainnya
+                            }
+                        });
+                    }
                 });
             });
         @endif

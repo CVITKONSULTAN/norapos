@@ -60,7 +60,7 @@
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>NIS</th>
                                         <th>NISN</th>
                                         <th>Nama Lengkap</th>
                                         <th>Nama Panggilan</th>
@@ -132,7 +132,12 @@
                 "url": "{{ route('sekolah_sd.siswa.data') }}",
             },
             columns: [
-                { searchable: false, data: 'id'  },
+                //{ searchable: false, data: 'id'  },
+                { searchable: false, data: 'id',
+                    render:(data,type,row)=> {
+                        return row?.detail?.nis ?? "";
+                    }
+                },
                 { data: 'nisn'  },
                 { data: 'nama'  },
                 { searchable: false, data: 'detail.nama_panggilan'  },

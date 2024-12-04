@@ -245,8 +245,8 @@
                 <table id="product_table" class="table table-bordered table-striped ajax_view hide-footer">
                     <thead>
                         <tr>
-                            <td>Nama Siswa</td> 
                             <td>NIS</td> 
+                            <td>Nama Siswa</td> 
                             @foreach ($tp as $i => $item)
                                 <td>
                                     TP {{$i+1}}
@@ -428,8 +428,8 @@
                     }
                 },
                 columns: [
-                    { searchable: true, data: 'siswa.nama', orderable:true  },
                     { searchable: false, data: 'nis', orderable:true  },
+                    { searchable: true, data: 'siswa.nama', orderable:false  },
                     @foreach ($tp as $i => $item)
                         { 
                             searchable: false, 

@@ -333,7 +333,7 @@
                     },
                     { 
                         searchable: true, 
-                        orderable: true, 
+                        orderable: false, 
                         data: 'nama',
                         render: function(data, type, row) {
                             return data ? data : '';

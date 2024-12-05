@@ -280,7 +280,7 @@
                             // dd($dimensi_list[$i],$item['dimensi']);
                             $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
                             if($kelas_siswa->id == 1162 && count($subelemen_fase) <= 0){
-                                dd("empty",$subelemen_fase, $item);
+                                dd("empty",$subelemen_fase, $item, $dimensi_list);
                             }
                         @endphp
                         <tr>

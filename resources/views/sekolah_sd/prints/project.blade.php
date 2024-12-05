@@ -254,7 +254,7 @@
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
                 if(empty($project)) {
                     if($kelas_siswa->id == 1162){
-                        dd("empty",$project);
+                        dd("empty",$project,$item);
                     }
                     continue;
                 }

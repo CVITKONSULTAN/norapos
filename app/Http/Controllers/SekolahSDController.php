@@ -409,7 +409,8 @@ class SekolahSDController extends Controller
 
         $data['business'] = $request->user()->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
         // dd($data);
 
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
@@ -454,7 +455,8 @@ class SekolahSDController extends Controller
 
         $data['business'] = $request->user()->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
         $data['ekskul'] = Ekstrakurikuler::orderBy('id','desc')->get();
 
         $user = $request->user();
@@ -515,7 +517,8 @@ class SekolahSDController extends Controller
         }
         $data['business'] = $user->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
 
         if(empty($data['kelas_siswa'])){
             return redirect()->route('sekolah_sd.kelas.index')
@@ -563,7 +566,8 @@ class SekolahSDController extends Controller
         }
         $data['business'] = $user->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
 
         $where = [
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
@@ -595,7 +599,8 @@ class SekolahSDController extends Controller
 
         $data['business'] = $request->user()->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
 
         if(empty($data['kelas_siswa'])){
             return redirect()->route('sekolah_sd.kelas.index')
@@ -855,7 +860,8 @@ class SekolahSDController extends Controller
 
         $data['business'] = $request->user()->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
         $data['ekskul'] = Ekstrakurikuler::orderBy('id','desc')->get();
 
         $user = $request->user();
@@ -910,7 +916,8 @@ class SekolahSDController extends Controller
         
         $data['business'] = $user->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
 
         if(empty($data['kelas_siswa'])){
             return redirect()->route('sekolah_sd.kelas.index')
@@ -949,7 +956,8 @@ class SekolahSDController extends Controller
         }
         $data['business'] = $user->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
 
         $kelas_siswa = KelasSiswa::where('kelas_id',$kelas->id)->get();
         $html = '';
@@ -992,7 +1000,8 @@ class SekolahSDController extends Controller
         }
         $data['business'] = $user->business;
         $data['location'] = $data['business']->locations[0];
-        $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        // $data['alamat'] = $data['location']->getLocationAddressAttribute();
+        $data['alamat'] = "Jalan Jendral Ahmad Yani";
 
         $kelas_siswa = KelasSiswa::where('kelas_id',$kelas->id)->get();
         $html = '';

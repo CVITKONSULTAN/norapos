@@ -278,16 +278,18 @@
                         @php
                             $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
                             $projek = collect($dimensi_list)->where('id',$item['projek_id'] ?? 0)->first();
-                            // $dimensi = collect($projek['dimensi'])->where('dimensi_id',)
-                            if($kelas_siswa->id == 1162 && count($subelemen_fase) <= 0){
-                                dd("empty",$value,$subelemen_fase, $item, $dimensi_list);
-                            }
+                            if(empty($projek)) continue;
+                            $dimensi = collect($projek['dimensi'])->where('dimensi_id',$value['id'] ?? 0)->first();
+                            if(empty($dimensi)) continue;
+                            $subelemen_fase = $dimensi['subelemen_fase'] ?? [];
+                            // if($kelas_siswa->id == 1162 && count($subelemen_fase) <= 0){
+                            //     dd("empty",$value,$subelemen_fase, $item, $dimensi_list);
+                            // }
                         @endphp
                         <tr>
                             <td class="dimensi_head" colspan="5">{{ $value['nama'] }}</td>
                         </tr>
                         @foreach ($value['subelemen'] ?? [] as $k => $val)
-                            {{-- {{dd($val['nilai'])}} --}}
                             <tr>
                                 <td>
                                     <p style="font-weight: bold;">{{$subelemen_fase[$k]['text'] ?? ""}}</p>

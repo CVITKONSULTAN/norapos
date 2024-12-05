@@ -252,7 +252,12 @@
         @foreach ($nilai_projek ?? [] as $i => $item)
             @php
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
-                if(empty($project)) continue;
+                if(empty($project)) {
+                    if($kelas_siswa->id == 1162){
+                        dd("empty",$project);
+                    }
+                    continue;
+                }
                 if($kelas_siswa->id == 1162){
                     dd($project);
                 }

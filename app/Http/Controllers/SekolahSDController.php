@@ -345,11 +345,7 @@ class SekolahSDController extends Controller
         }catch(Exception $e){
             $data['lm'] = [];
         }
-
-        // if($user->username == "6171055010800001"){
-        //     dd($data['lm']);
-        // }
-
+        
         return view('sekolah_sd.rekap_nilai_sumatif',$data);
     }
 

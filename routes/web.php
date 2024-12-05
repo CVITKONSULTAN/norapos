@@ -91,7 +91,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
-        // Route::get('test','SekolahSDController@test');
+        Route::get('hitung-nilai','Sekolah\NilaiSiswaController@hitungNilaiRapor')
+        ->name('sekolah_sd.hitung-formatif');
+
         Route::get('formatif-walikelas','SekolahSDController@formatif_walikelas_index')
         ->name('sekolah_sd.walikelas.formatif');
         Route::get('sumatif-walikelas','SekolahSDController@sumatif_walikelas_index')

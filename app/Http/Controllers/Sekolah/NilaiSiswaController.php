@@ -111,12 +111,9 @@ class NilaiSiswaController extends Controller
 
         }
 
-        // if(isset($input['catatan_max_tp']))
         if(!isset($input['tipe']))
         $update['catatan_max_tp'] = $input['catatan_max_tp'] ?? "";
 
-        // dd(isset($input['catatan_min_tp']) , $input['catatan_min_tp'] );
-        // if(isset($input['catatan_min_tp']))
         if(!isset($input['tipe']))
         $update['catatan_min_tp'] = $input['catatan_min_tp'] ?? "";
 
@@ -126,7 +123,6 @@ class NilaiSiswaController extends Controller
 
             $update['sumatif_tes'] = $input['sumatif_tes'] ?? 0;
             $update['sumatif_non_tes'] = $input['sumatif_non_tes'] ?? 0;
-            // dd($input,$update);
             
             $update['nilai_akhir_sumatif'] = $input['nilai_akhir_sumatif'] ?? 0;
             $update['nilai_rapor'] = $input['nilai_rapor'] ?? 0;
@@ -203,5 +199,48 @@ class NilaiSiswaController extends Controller
             return json_decode($data->nilai_sumatif,true);
         })
         ->make(true);
+    }
+
+    function hitungNilaiRapor(Request $request){
+        $kelas_id = $request->kelas_id ?? 0;
+        $mapel_id = $request->mapel_id ?? 0;
+        $ListNilai = NilaiSiswa::where([
+            'kelas_id'=>$kelas_id,
+            'mapel_id'=>$mapel_id,
+        ])->get();
+        foreach ($ListNilai as $key => $value) {
+            
+            $nilai_akhir_tp = $value->nilai_akhir_tp * 0.25;
+
+            $nilai_sumatif = 0;
+            $listSumatif = [];
+            try {
+                $listSumatif = json_decode($value->nilai_sumatif ?? "[]");
+            } catch (\Throwable $th) {
+                $listSumatif = [];
+            }
+            if(count($listSumatif) > 0){
+                $collect = collect($listSumatif);
+                $nilai_sumatif = $collect->sum() / $collect->count();
+            }
+
+            $nilai_SLA = 0;
+            if($value->sumatif_tes > 0){
+                $nilai_SLA = $value->sumatif_tes;
+            }
+            if($value->sumatif_non_tes > 0){
+                $nilai_SLA = $value->sumatif_non_tes;
+            }
+
+            $nilai_akhir_sumatif = ($nilai_sumatif * 0.25) + ($nilai_SLA * 0.5);
+
+            $value->nilai_akhir_sumatif = $nilai_akhir_sumatif;
+            $value->nilai_rapor = $nilai_akhir_tp + $nilai_akhir_sumatif;
+            // if($value->id === 3645){
+            //     dd($value->nilai_rapor);
+            // }
+            $value->save();
+        }
+        return ['status'=>true,'msg'=>'Telah berhasil di hitung ulang...'];
     }
 }

@@ -156,6 +156,11 @@
     @if(Request::has('mapel_id'))
     <div class="row">
         <div class="col-md-12">
+            <div class="text-right">
+                <button id="calculate" class="btn btn-primary" style="margin-bottom: 30px;">
+                    Hitung otomatis nilai rapor
+                </button>
+            </div>
             <div class="table-responsive">
                 <table id="product_table" class="table table-bordered table-striped ajax_view hide-footer">
                     <thead>
@@ -439,5 +444,27 @@
         if(parseInt(val) > 100) $(this).val(100)
         calculateRaport()
     })
+    @if(isset($list_data))
+        $("#calculate").click(function(){
+            const btn = $(this)
+            const id = "{{ $list_data->kelas_id }}";
+            const mapel_id = "{{ $list_data->mapel_id }}";
+            $.ajax({
+                url:"/sekolah_sd/hitung-nilai?kelas_id="+id+"&mapel_id="+mapel_id,
+                beforeSend:()=>{
+                    btn.attr('disabled')
+                },
+                complete:()=>{
+                    btn.removeAttr('disabled');
+                },
+                success:function(res){
+                    if(res.status) {
+                        reloadTable();
+                        return toastr.success(res.msg);
+                    }
+                }
+            })
+        })
+    @endif
     </script>
 @endsection

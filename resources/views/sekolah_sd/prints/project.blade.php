@@ -250,7 +250,11 @@
             $nilai_projek = $kelas_siswa->nilai_projek ?? []
         @endphp
         @foreach ($nilai_projek ?? [] as $i => $item)
-            @if(count($item['dimensi'] ?? []) > 0)
+            @php
+                $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
+                if(empty($project)) continue;
+            @endphp
+            {{-- @if(count($item['dimensi'] ?? []) > 0) --}}
                 <table style="margin-top: 20px;" class="tabel_projek">
                     <thead>
                         <tr>
@@ -288,7 +292,7 @@
                         @endforeach
                     </tbody>
                 </table>
-            @endif
+            {{-- @endif --}}
         @endforeach
 
         <table class="table_ttd">

@@ -298,7 +298,8 @@
                         Orangtua/Wali
                     </p>
                     <br />
-                    <p class="ttd">{{$kelas_siswa->siswa->detail['nama_ayah'] ?? ''}}</p>
+                    {{-- <p class="ttd">{{$kelas_siswa->siswa->detail['nama_ayah'] ?? ''}}</p> --}}
+                    <p class="ttd">(.................................)</p>
                 </td>
             </tr>
             <tr>

@@ -1054,7 +1054,8 @@
                                 Orangtua/Wali
                             </p>
                             <br />
-                            <p class="ttd">{{$siswa->detail['nama_ayah'] ?? ''}}</p>
+                            {{-- <p class="ttd">{{$siswa->detail['nama_ayah'] ?? ''}}</p> --}}
+                            <p class="ttd">(.................................)</p>
                         </td>
                     </tr>
                     <tr>

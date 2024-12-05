@@ -276,11 +276,11 @@
                     <tbody>
                         @foreach ($item['dimensi'] ?? [] as $j => $value)
                         @php
-                            // dd($dimensi_list[$i]['dimensi'][$j]);
-                            // dd($dimensi_list[$i],$item['dimensi']);
                             $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
+                            $projek = collect($dimensi_list)->where('id',$item['projek_id'] ?? 0)->first();
+                            // $dimensi = collect($projek['dimensi'])->where('dimensi_id',)
                             if($kelas_siswa->id == 1162 && count($subelemen_fase) <= 0){
-                                dd("empty",$subelemen_fase, $item, $dimensi_list);
+                                dd("empty",$value,$subelemen_fase, $item, $dimensi_list);
                             }
                         @endphp
                         <tr>

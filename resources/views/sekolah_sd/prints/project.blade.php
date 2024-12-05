@@ -123,7 +123,7 @@
     <div>
         @php
             $list_dimensi = [];
-            $counter = 1;
+            $counter = 0;
         @endphp
         
         @foreach ($kelas_siswa->nilai_projek ?? [] as $i => $item)

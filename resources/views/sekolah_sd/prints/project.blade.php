@@ -127,14 +127,14 @@
         @foreach ($kelas_siswa->nilai_projek ?? [] as $i => $item)
             @php
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
-                // dd($item);
+                if(empty($project)) continue;
                 foreach ($item['dimensi'] ?? [] as $key => $value) {
                     $list_dimensi[$value['id']] = $value['nama'];
                 }
             @endphp
             <h4>Projek {{$i+1}} | {{ $item['projek_nama'] }}</h4>
             <div class="container_deskripsi">
-                {{$project->deskripsi}}
+                {{$project->deskripsi ?? ""}}
             </div>
         @endforeach
         <table class="keterangan_table" width="100%" style="margin-top:30px; margin-bottom:30px;">
@@ -180,30 +180,35 @@
         @foreach ($kelas_siswa->kelas->dimensi_list ?? [] as $i => $item)
 
             @php
-                $nilai_p = $kelas_siswa->nilai_projek[$i] ?? null;
+                $nilai_projek = $kelas_siswa->nilai_projek ?? [];
+                if(count($nilai_projek) <= 0) continue;
+                $nilai_p = collect($nilai_projek)->where('projek_id',$item['id'] ?? 0)->first();
+                if(empty($nilai_p)) continue;
+                // dd($nilai_p);
             @endphp
-
-            <table class="tabel_projek">
-                <thead>
-                    <tr>
-                        <th width="200">Projek Kelas {{ $kelas_siswa->kelas->nama_kelas ?? "" }}</th>
-                        @foreach ($item['dimensi'] ?? [] as $v)
-                            <th>{{ $v['dimensi_text'] }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
+            @if(count($item['dimensi'] ?? []) > 0)
+                <table class="tabel_projek">
+                    <thead>
                         <tr>
-                            <td>{{ $item['nama'] }}</td>
-                            @foreach ($item['dimensi'] ?? [] as $j => $val)
-                                @php
-                                    $nilai = $nilai_p['dimensi'][$j]['nilai'] ?? "";
-                                @endphp
-                                <td class="text-center">{{$nilai}}</td>
+                            <th width="200">Projek Kelas {{ $kelas_siswa->kelas->nama_kelas ?? "" }}</th>
+                            @foreach ($item['dimensi'] ?? [] as $v)
+                                <th>{{ $v['dimensi_text'] }}</th>
                             @endforeach
                         </tr>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                <td>{{ $item['nama'] }}</td>
+                                @foreach ($item['dimensi'] ?? [] as $j => $val)
+                                    @php
+                                        $nilai = $nilai_p['dimensi'][$j]['nilai'] ?? "";
+                                    @endphp
+                                    <td class="text-center">{{$nilai}}</td>
+                                @endforeach
+                            </tr>
+                    </tbody>
+                </table>
+            @endif
         @endforeach
 
     </div>
@@ -242,42 +247,45 @@
             $nilai_projek = $kelas_siswa->nilai_projek ?? []
         @endphp
         @foreach ($nilai_projek ?? [] as $i => $item)
-            <table style="margin-top: 20px;" class="tabel_projek">
-                <thead>
-                    <tr>
-                        <th style="text-align: left;">{{ $item['projek_nama'] ?? "" }}</th>
-                        <th>BB</th>
-                        <th>MB</th>
-                        <th>BSH</th>
-                        <th>SB</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($item['dimensi'] ?? [] as $j => $value)
-                    @php
-                        // dd($dimensi_list[$i]['dimensi'][$j]);
-                        $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
-                    @endphp
-                    <tr>
-                        <td class="dimensi_head" colspan="5">{{ $value['nama'] }}</td>
-                    </tr>
-                    @foreach ($value['subelemen'] ?? [] as $k => $val)
-                        {{-- {{dd($val['nilai'])}} --}}
+            @if(count($item['dimensi'] ?? []) > 0)
+                <table style="margin-top: 20px;" class="tabel_projek">
+                    <thead>
                         <tr>
-                            <td>
-                                <p style="font-weight: bold;">{{$subelemen_fase[$k]['text'] ?? ""}}</p>
-                                <p>{{$subelemen_fase[$k]['target'] ?? ""}}</p>
-                            </td>
-                            <td class="text-center">{{ $val['nilai'] == 'BB' ? 'V' : '' }}</td>
-                            <td class="text-center">{{ $val['nilai'] == 'MB' ? 'V' : '' }}</td>
-                            <td class="text-center">{{ $val['nilai'] == 'BSH' ? 'V' : '' }}</td>
-                            <td class="text-center">{{ $val['nilai'] == 'SB' ? 'V' : '' }}</td>
+                            <th style="text-align: left;">{{ $item['projek_nama'] ?? "" }}</th>
+                            <th>BB</th>
+                            <th>MB</th>
+                            <th>BSH</th>
+                            <th>SB</th>
                         </tr>
-                    @endforeach
-                    {{-- {{dd($value,$dimensi_list)}} --}}
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($item['dimensi'] ?? [] as $j => $value)
+                        @php
+                            // dd($dimensi_list[$i]['dimensi'][$j]);
+                            // dd($dimensi_list[$i],$item['dimensi']);
+                            $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
+                        @endphp
+                        <tr>
+                            <td class="dimensi_head" colspan="5">{{ $value['nama'] }}</td>
+                        </tr>
+                        @foreach ($value['subelemen'] ?? [] as $k => $val)
+                            {{-- {{dd($val['nilai'])}} --}}
+                            <tr>
+                                <td>
+                                    <p style="font-weight: bold;">{{$subelemen_fase[$k]['text'] ?? ""}}</p>
+                                    <p>{{$subelemen_fase[$k]['target'] ?? ""}}</p>
+                                </td>
+                                <td class="text-center">{{ $val['nilai'] == 'BB' ? 'V' : '' }}</td>
+                                <td class="text-center">{{ $val['nilai'] == 'MB' ? 'V' : '' }}</td>
+                                <td class="text-center">{{ $val['nilai'] == 'BSH' ? 'V' : '' }}</td>
+                                <td class="text-center">{{ $val['nilai'] == 'SB' ? 'V' : '' }}</td>
+                            </tr>
+                        @endforeach
+                        {{-- {{dd($value,$dimensi_list)}} --}}
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         @endforeach
 
         <table class="table_ttd">

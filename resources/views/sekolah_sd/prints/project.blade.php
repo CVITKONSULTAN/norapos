@@ -123,16 +123,19 @@
     <div>
         @php
             $list_dimensi = [];
+            $counter = 1;
         @endphp
+        
         @foreach ($kelas_siswa->nilai_projek ?? [] as $i => $item)
             @php
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
                 if(empty($project)) continue;
+                $counter = $counter + 1;
                 foreach ($item['dimensi'] ?? [] as $key => $value) {
                     $list_dimensi[$value['id']] = $value['nama'];
                 }
             @endphp
-            <h4>Projek {{$i+1}} | {{ $item['projek_nama'] }}</h4>
+            <h4>Projek {{$counter}} | {{ $item['projek_nama'] }}</h4>
             <div class="container_deskripsi">
                 {{$project->deskripsi ?? ""}}
             </div>

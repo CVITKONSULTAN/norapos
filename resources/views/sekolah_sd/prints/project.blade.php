@@ -258,9 +258,9 @@
                     // }
                     continue;
                 }
-                // if($kelas_siswa->id == 1162){
-                //     dd($project);
-                // }
+                if($kelas_siswa->id == 1162){
+                    dd($project,$nilai_projek);
+                }
             @endphp
             {{-- @if(count($item['dimensi'] ?? []) > 0) --}}
                 <table style="margin-top: 20px;" class="tabel_projek">

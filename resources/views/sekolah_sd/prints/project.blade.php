@@ -181,13 +181,11 @@
         </table>
         
         @foreach ($kelas_siswa->kelas->dimensi_list ?? [] as $i => $item)
-
             @php
                 $nilai_projek = $kelas_siswa->nilai_projek ?? [];
                 if(count($nilai_projek) <= 0) continue;
                 $nilai_p = collect($nilai_projek)->where('projek_id',$item['id'] ?? 0)->first();
                 if(empty($nilai_p)) continue;
-                // dd($nilai_p);
             @endphp
             @if(count($item['dimensi'] ?? []) > 0)
                 <table class="tabel_projek">
@@ -252,15 +250,6 @@
         @foreach ($nilai_projek ?? [] as $i => $item)
             @php
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
-                // if(empty($project)) {
-                //     // if($kelas_siswa->id == 1162){
-                //     //     dd("empty",$project,$item);
-                //     // }
-                //     continue;
-                // }
-                // if($kelas_siswa->id == 1162){
-                //     dd($project,$nilai_projek);
-                // }
             @endphp
             @if(!empty($project))
                 <table style="margin-top: 20px;" class="tabel_projek">
@@ -275,33 +264,29 @@
                     </thead>
                     <tbody>
                         @foreach ($item['dimensi'] ?? [] as $j => $value)
-                        @php
-                            $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
-                            $projek = collect($dimensi_list)->where('id',$item['projek_id'] ?? 0)->first();
-                            if(empty($projek)) continue;
-                            $dimensi = collect($projek['dimensi'])->where('dimensi_id',$value['id'] ?? 0)->first();
-                            if(empty($dimensi)) continue;
-                            $subelemen_fase = $dimensi['subelemen_fase'] ?? [];
-                            // if($kelas_siswa->id == 1162 && count($subelemen_fase) <= 0){
-                            //     dd("empty",$value,$subelemen_fase, $item, $dimensi_list);
-                            // }
-                        @endphp
-                        <tr>
-                            <td class="dimensi_head" colspan="5">{{ $value['nama'] }}</td>
-                        </tr>
-                        @foreach ($value['subelemen'] ?? [] as $k => $val)
+                            @php
+                                $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
+                                $projek = collect($dimensi_list)->where('id',$item['projek_id'] ?? 0)->first();
+                                if(empty($projek)) continue;
+                                $dimensi = collect($projek['dimensi'])->where('dimensi_id',$value['id'] ?? 0)->first();
+                                if(empty($dimensi)) continue;
+                                $subelemen_fase = $dimensi['subelemen_fase'] ?? [];
+                            @endphp
                             <tr>
-                                <td>
-                                    <p style="font-weight: bold;">{{$subelemen_fase[$k]['text'] ?? ""}}</p>
-                                    <p>{{$subelemen_fase[$k]['target'] ?? ""}}</p>
-                                </td>
-                                <td class="text-center">{{ $val['nilai'] == 'BB' ? 'V' : '' }}</td>
-                                <td class="text-center">{{ $val['nilai'] == 'MB' ? 'V' : '' }}</td>
-                                <td class="text-center">{{ $val['nilai'] == 'BSH' ? 'V' : '' }}</td>
-                                <td class="text-center">{{ $val['nilai'] == 'SB' ? 'V' : '' }}</td>
+                                <td class="dimensi_head" colspan="5">{{ $value['nama'] }}</td>
                             </tr>
-                        @endforeach
-                        {{-- {{dd($value,$dimensi_list)}} --}}
+                            @foreach ($value['subelemen'] ?? [] as $k => $val)
+                                <tr>
+                                    <td>
+                                        <p style="font-weight: bold;">{{$subelemen_fase[$k]['text'] ?? ""}}</p>
+                                        <p>{{$subelemen_fase[$k]['target'] ?? ""}}</p>
+                                    </td>
+                                    <td class="text-center">{{ $val['nilai'] == 'BB' ? 'V' : '' }}</td>
+                                    <td class="text-center">{{ $val['nilai'] == 'MB' ? 'V' : '' }}</td>
+                                    <td class="text-center">{{ $val['nilai'] == 'BSH' ? 'V' : '' }}</td>
+                                    <td class="text-center">{{ $val['nilai'] == 'SB' ? 'V' : '' }}</td>
+                                </tr>
+                            @endforeach
                         @endforeach
                     </tbody>
                 </table>

@@ -253,9 +253,9 @@
             @php
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
                 if(empty($project)) {
-                    if($kelas_siswa->id == 1162){
-                        dd("empty",$project,$item);
-                    }
+                    // if($kelas_siswa->id == 1162){
+                    //     dd("empty",$project,$item);
+                    // }
                     continue;
                 }
                 // if($kelas_siswa->id == 1162){
@@ -279,6 +279,9 @@
                             // dd($dimensi_list[$i]['dimensi'][$j]);
                             // dd($dimensi_list[$i],$item['dimensi']);
                             $subelemen_fase = $dimensi_list[$i]['dimensi'][$j]['subelemen_fase'] ?? [];
+                            if($kelas_siswa->id == 1162 && count($subelemen_fase) <= 0){
+                                dd("empty",$subelemen_fase, $item);
+                            }
                         @endphp
                         <tr>
                             <td class="dimensi_head" colspan="5">{{ $value['nama'] }}</td>

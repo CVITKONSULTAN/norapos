@@ -253,14 +253,14 @@
             @php
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
                 if(empty($project)) {
-                    if($kelas_siswa->id == 1162){
-                        dd("empty",$project);
-                    }
+                    // if($kelas_siswa->id == 1162){
+                    //     dd("empty",$project);
+                    // }
                     continue;
                 }
-                if($kelas_siswa->id == 1162){
-                    dd($project);
-                }
+                // if($kelas_siswa->id == 1162){
+                //     dd($project);
+                // }
             @endphp
             {{-- @if(count($item['dimensi'] ?? []) > 0) --}}
                 <table style="margin-top: 20px;" class="tabel_projek">

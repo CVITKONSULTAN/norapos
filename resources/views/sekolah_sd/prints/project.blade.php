@@ -252,17 +252,17 @@
         @foreach ($nilai_projek ?? [] as $i => $item)
             @php
                 $project = \App\Models\Sekolah\RaporProjek::find($item['projek_id']);
-                if(empty($project)) {
-                    // if($kelas_siswa->id == 1162){
-                    //     dd("empty",$project,$item);
-                    // }
-                    continue;
-                }
+                // if(empty($project)) {
+                //     // if($kelas_siswa->id == 1162){
+                //     //     dd("empty",$project,$item);
+                //     // }
+                //     continue;
+                // }
                 // if($kelas_siswa->id == 1162){
                 //     dd($project,$nilai_projek);
                 // }
             @endphp
-            {{-- @if(count($item['dimensi'] ?? []) > 0) --}}
+            @if(!empty($project))
                 <table style="margin-top: 20px;" class="tabel_projek">
                     <thead>
                         <tr>
@@ -303,7 +303,7 @@
                         @endforeach
                     </tbody>
                 </table>
-            {{-- @endif --}}
+            @endif
         @endforeach
 
         <table class="table_ttd">

@@ -25,6 +25,10 @@
         <input value="{{$data['nik'] ?? ""}}" minlength="6" required name="nik" class="form-control" />
     </div>
     <div class="form-group col-sm-6">
+        <label>NBM</label>
+        <input value="{{$data['nbm'] ?? ""}}" minlength="6" required name="nbm" class="form-control" />
+    </div>
+    <div class="form-group col-sm-6">
         <label>NIP/NRG</label>
         <input value="{{$data['nip'] ?? ""}}" name="nip" class="form-control" />
     </div>

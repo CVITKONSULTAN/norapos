@@ -63,6 +63,7 @@
                                 <thead>
                                     <tr>
                                         <td>ID</td>
+                                        <td>NBM</td>
                                         <td>NIK</td>
                                         <td>NIP/NRG</td>
                                         <td>Nama Lengkap</td>
@@ -133,6 +134,7 @@
             },
             columns: [
                 { searchable: false, data: 'id'  },
+                { data: 'nbm'  },
                 { data: 'nik'  },
                 { data: 'nip'  },
                 { data: 'nama'  },

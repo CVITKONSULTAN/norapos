@@ -181,6 +181,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::post('data-mapel/apply',"Sekolah\MapelController@applyKelas")
         ->name('sekolah_sd.mapel.apply');
 
+        Route::post('data-mapel/apply/perkelas',"Sekolah\MapelController@applyKelasPerkelas")
+        ->name('sekolah_sd.mapel.apply.perkelas');
+
         Route::post('data-mapel',"Sekolah\MapelController@store")
         ->name('sekolah_sd.mapel.store');
         Route::get('data-mapel/data',"Sekolah\MapelController@data")

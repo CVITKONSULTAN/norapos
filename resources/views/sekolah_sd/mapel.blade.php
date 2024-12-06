@@ -1,6 +1,13 @@
 @extends('layouts.app')
 @section('title', "Mata Pelajaran")
 
+@section('css')
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+    />
+@endsection
+
 @section('content')
 
 <!-- Content Header (Page header) -->
@@ -46,6 +53,34 @@
                             @endforeach
                         </select>
                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+                  </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="apply_modal_perkelas" class="modal fade">
+        <div class="modal-dialog">
+            <form class="modal-content" method="POST" action="{{ route('sekolah_sd.mapel.apply.perkelas') }}">
+                <input type="hidden" name="mapel_id" value="" id="mapel_id" />
+                @csrf
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Apply Mapel Perkelas
+                    </h4>
+                </div>
+                <div class="modal-body row">
+                    <div class="form-group col-sm-12">
+                        <label>Kelas</label>
+                        <select name="kelas_id" class="kelas_selection_filter"></select>
+                    </div>
+                    <div class="form-group col-sm-12">
+                        <label>Mapel</label>
+                        <input id="mapel_field" class="form-control" readonly value="" />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
@@ -211,6 +246,9 @@
 @endsection
 
 @section('javascript')
+    <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+    ></script>
     <script type="text/javascript">
 
         $(document).ready( function(){
@@ -246,8 +284,11 @@
                     { 
                         data: 'id',
                         className:"text-center",
-                        render:(data)=> {
+                        render:(data,type,row)=> {
                             const template = `
+                                <button onclick="applyPerkelas(this,${data},'${row.nama}')" class="btn btn-primary btn-xs">
+                                    Apply Perkelas
+                                </button>
                                 <a 
                                     class="btn btn-primary btn-xs" 
                                     href="{{ route('sekolah_sd.mapel.index') }}/${data}/edit"
@@ -369,6 +410,54 @@
             console.log($(this).val());
             mapel_wali.ajax.reload();
         })
+
+        const applyPerkelas = (elm,id,nama) => {
+            const modals = $("#apply_modal_perkelas")
+            modals.find('#mapel_id').val(id)
+            modals.find('#mapel_field').val(nama)
+            modals.modal('show');
+        }
+
+        let selectizeInstanceKelasFilter;
+
+        $(function () {
+
+            selectizeInstanceKelasFilter = $(".kelas_selection_filter").selectize({
+                placeholder: 'Cari disini...',
+                maxItems: 1,
+                create: false,
+                valueField: 'id',         // Field to use as the value
+                labelField: 'name',       // Field to use as the label
+                searchField: 'name',      // Field to use for searching
+                // onChange: onChangeData,
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+                    let url = '/sekolah_sd/kelas-data?draw=4&columns%5B0%5D%5Bdata%5D=id&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=tahun_ajaran&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=semester&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=nama_kelas&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=id&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc&start=0&length=25&search%5Bvalue%5D=';
+                    @if( isset($kelas_perwalian) && count($kelas_perwalian) > 0)
+                        url = `/sekolah_sd/kelas-data?filter_list_id=${list_kelas_id}&draw=4&columns%5B0%5D%5Bdata%5D=id&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=tahun_ajaran&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=semester&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=nama_kelas&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=id&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=asc&start=0&length=25&search%5Bvalue%5D=`;
+                    @endif
+                    $.ajax({
+                        url: url+query,
+                        type: 'GET',
+                        dataType: 'json',
+                        error: function(error) {
+                            console.log(error)
+                            callback();
+                        },
+                        success: function(res) {
+                            // console.log("Options Loaded:", res);
+                            const results = res.data.map(item => ({
+                                id: item.id,
+                                name: `${item.nama_kelas} (Semester ${item.semester} - ${item.tahun_ajaran})`
+                            }));
+                            callback(results);
+                        }
+                    });
+                }
+            })[0].selectize;
+
+
+        });
 
     </script>
 @endsection

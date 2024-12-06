@@ -239,10 +239,7 @@ class MapelController extends Controller
                 'kelas'=>$request->kelas,
             ]);
         })->delete();
-        // })->count();
-        // dd($n,$kelasSiswa->count());
         foreach($kelasSiswa as $k => $item){
-            // dd($item);
             $kelas = new KelasController();
             $kelas->storeKelasMapel($item,$item->kelas->kelas);
         }
@@ -250,4 +247,40 @@ class MapelController extends Controller
         ->route('sekolah_sd.mapel.index',['kelas'=>$kelas])
         ->with('success', 'All good!');
     }
+    
+    function applyKelasPerkelas(Request $request){
+
+        $kelas_id = $request->kelas_id ?? 0;
+        $mapel_id = $request->mapel_id ?? 0;
+
+        $mapel = Mapel::findorfail($mapel_id);
+        
+        $n = NilaiSiswa::where([
+            'kelas_id'=>$kelas_id,
+            'mapel_id'=>$mapel_id
+        ])->get();
+        foreach ($n as $key => $value) {
+            $value->nilai_tp = null;
+            $value->nilai_akhir_tp = null;
+            $value->nilai_sumatif = null;
+            $value->nilai_akhir_sumatif = null;
+            $value->nilai_rapor = null;
+            $value->kolom_max_tp = null;
+            $value->nilai_max_tp = null;
+            $value->catatan_max_tp = null;
+            $value->kolom_min_tp = null;
+            $value->nilai_min_tp = null;
+            $value->catatan_min_tp = null;
+            $value->sumatif_tes = null;
+            $value->sumatif_non_tes = null;
+            $value->tp_mapel = json_encode($mapel->tujuan_pembelajaran);
+            $value->lm_mapel = json_encode($mapel->lingkup_materi);
+            $value->save();
+        }
+
+        return redirect()
+        ->route('sekolah_sd.mapel.index')
+        ->with('success', 'All good!');
+    }
+
 }

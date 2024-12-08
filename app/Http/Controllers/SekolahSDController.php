@@ -847,12 +847,12 @@ class SekolahSDController extends Controller
         //     $value->user_id = $u->id;
         //     $value->save();
         // }
-        // $siswa = Siswa::all();
-        // foreach ($siswa as $key => $value) {
-        //     $value->nama = ucwords($value->nama);
-        //     $value->save();
-        // }
-        // return count($siswa);
+        $siswa = Siswa::all();
+        foreach ($siswa as $key => $value) {
+            $value->nama = ucwords(strtolower($value->nama));
+            $value->save();
+        }
+        return count($siswa);
     }
 
     function rapor_project_index(Request $request){

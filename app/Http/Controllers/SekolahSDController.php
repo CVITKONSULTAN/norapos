@@ -831,23 +831,28 @@ class SekolahSDController extends Controller
     }
 
     function test(Request $request){
-        $business_id = $request->user()->business->id;
-        $tendik = TenagaPendidik::all();
-        foreach($tendik as $key => $value){
-            $u = User::where('username',$value->nik)->first();
-            if(empty($u)) {
-                $insert_user = [
-                    'first_name'=>$value->nama,
-                    'username'=>$value->nik,
-                    'business_id'=>$business_id,
-                    'password'=> bcrypt($value->nik)
-                ];
-                $u = User::create($insert_user);
-            }
-            $value->user_id = $u->id;
+        // $business_id = $request->user()->business->id;
+        // $tendik = TenagaPendidik::all();
+        // foreach($tendik as $key => $value){
+        //     $u = User::where('username',$value->nik)->first();
+        //     if(empty($u)) {
+        //         $insert_user = [
+        //             'first_name'=>$value->nama,
+        //             'username'=>$value->nik,
+        //             'business_id'=>$business_id,
+        //             'password'=> bcrypt($value->nik)
+        //         ];
+        //         $u = User::create($insert_user);
+        //     }
+        //     $value->user_id = $u->id;
+        //     $value->save();
+        // }
+        $siswa = Siswa::all();
+        foreach ($siswa as $key => $value) {
+            $value->nama = ucwords($value->nama);
             $value->save();
         }
-        return count($tendik);
+        return count($siswa);
     }
 
     function rapor_project_index(Request $request){

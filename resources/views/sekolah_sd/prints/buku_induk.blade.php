@@ -1055,7 +1055,7 @@
                             </p>
                             <br />
                             {{-- <p class="ttd">{{$siswa->detail['nama_ayah'] ?? ''}}</p> --}}
-                            <p class="ttd">(.................................)</p>
+                            <p class="ttd">.................................</p>
                         </td>
                     </tr>
                     <tr>
@@ -1065,7 +1065,7 @@
                                 Kepala Sekolah
                             </p>
                             <br />
-                            <p class="ttd">Hj. Yumi Pariyanti, S.Pd</p>
+                            <p class="ttd">Yumi Pariyanti,S.Pd</p>
                             <p style="margin:0px;">NBM. 833 488</p>
                         </td>
                     </tr>

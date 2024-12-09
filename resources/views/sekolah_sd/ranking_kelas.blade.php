@@ -231,10 +231,10 @@
                     //         }
                     //     }
                     // ],
-                    // order: [[
-                    //     {{count($mapel)+4}}, 
-                    //     'desc'
-                    // ]],
+                    order: [[
+                        {{count($mapel)+4}}, 
+                        'desc'
+                    ]],
                     // ordering: false,
                     drawCallback: function(settings) {
                         var api = this.api();

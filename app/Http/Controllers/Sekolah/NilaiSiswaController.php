@@ -271,6 +271,7 @@ class NilaiSiswaController extends Controller
                     $data
                 );
             }
+            unset($data->tp_keterangan);
             $data->save();
         }
         // return ['status'=>true,'msg'=>'Catatan penilaian telah diperbaharui...'];

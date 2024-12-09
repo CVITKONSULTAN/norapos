@@ -95,6 +95,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('hitung-nilai','Sekolah\NilaiSiswaController@hitungNilaiRapor')
         ->name('sekolah_sd.hitung-formatif');
+        Route::get('calculate-catatan-penilaian','Sekolah\NilaiSiswaController@generateCatatanPenilaian')
+        ->name('sekolah_sd.calculate-catatan-penilaian');
 
         Route::get('formatif-walikelas','SekolahSDController@formatif_walikelas_index')
         ->name('sekolah_sd.walikelas.formatif');

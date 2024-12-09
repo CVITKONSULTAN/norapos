@@ -73,7 +73,7 @@ class NilaiSiswaController extends Controller
             $update['kolom_max_tp'] = array_search($update['nilai_max_tp'], $nilai_tp);
             $data->tp_keterangan = $data->mapel->tujuan_pembelajaran[$update['kolom_max_tp']] ?? "";
 
-            if($update['nilai_max_tp'] < $this->nilai_tengah_formatif){
+            if($update['nilai_max_tp'] <= $this->nilai_tengah_formatif){
                 $update['catatan_max_tp'] = "";
             } else {
                 $catatan_max = $this->prosesPesan(
@@ -89,7 +89,7 @@ class NilaiSiswaController extends Controller
             $update['kolom_min_tp'] = array_search($update['nilai_min_tp'], $nilai_tp);
             $data->tp_keterangan = $data->mapel->tujuan_pembelajaran[$update['kolom_min_tp']] ?? "";
 
-            if($update['nilai_min_tp'] > $this->nilai_tengah_formatif){
+            if($update['nilai_min_tp'] >= $this->nilai_tengah_formatif){
                 $update['catatan_min_tp'] = "";
             } else {
                 $catatan_min = $this->prosesPesan(
@@ -242,5 +242,34 @@ class NilaiSiswaController extends Controller
             $value->save();
         }
         return ['status'=>true,'msg'=>'Telah berhasil di hitung ulang...'];
+    }
+
+
+    function generateCatatanPenilaian(Request $request){
+        $kelas_id = $request->kelas_id ?? 0;
+        $mapel_id = $request->mapel_id ?? 0;
+        $ListNilai = NilaiSiswa::where(['kelas_id'=>$kelas_id])->get();
+        foreach ($ListNilai as $key => $data) {
+            if($data->nilai_max_tp < $this->nilai_tengah_formatif){
+                $data->catatan_max_tp = "";
+            } else {
+                $data->catatan_max_tp = $this->prosesPesan(
+                    $data->nilai_max_tp,
+                    'max',
+                    $data
+                );
+            }
+            if($data->nilai_min_tp >= $this->nilai_tengah_formatif){
+                $data->catatan_min_tp = "";
+            } else {
+                $data->catatan_min_tp = $this->prosesPesan(
+                    $data->nilai_min_tp,
+                    'min',
+                    $data
+                );
+            }
+            $data->save();
+        }
+        return ['status'=>true,'msg'=>'Catatan penilaian telah diperbaharui...'];
     }
 }

@@ -32,12 +32,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="product_list_tab">
-                            <div class="filter">
-                                <div class="form-group">
-                                    <label>Kelas</label>
-                                    <select name="kelas_id" class="kelas_selection_filter"></select>
+                            <form style="margin-bottom: 20px;" action="/sekolah_sd/calculate-catatan-penilaian">
+                                <div class="filter">
+                                    <div class="form-group">
+                                        <label>Kelas</label>
+                                        <select name="kelas_id" class="kelas_selection_filter"></select>
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="text-right">
+                                    <button class="btn btn-primary">Generate Catatan Penilaian</button>
+                                </div>
+                            </form>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                     <thead>

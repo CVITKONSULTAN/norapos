@@ -121,7 +121,10 @@
                                     </td>
                                 @endforeach
                                 <td>{{ $total }}</td>
-                                <td class="text-center">{{ number_format($avg,0) }}</td>
+                                @php
+                                    $avg = number_format($avg,0);
+                                @endphp
+                                <td data-sort="{{$avg}}" class="text-center">{{$avg}}</td>
                             </tr>
                         @endforeach
                     </tbody>

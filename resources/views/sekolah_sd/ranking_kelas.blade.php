@@ -221,11 +221,16 @@
 
                 product_table = $('#product_table').DataTable({
                     pageLength:-1,
-                    // order: [[
-                    //     {{count($mapel)+4}}, 
-                    //     'desc'
-                    // ]],
-                    // "order": [[-1, "asc"]],
+                    columnDefs: [
+                        {
+                            targets: -1, // Kolom terakhir (Rata-Rata)
+                            render: function(data, type, row) {
+                                // Ambil hanya angka dari data kolom
+                                return type === 'sort' ? parseFloat(data) : data;
+                            }
+                        }
+                    ],
+                    // order: [[-1, 'asc']], // Urutkan berdasarkan kolom "Rata-Rata"
                     ordering: false,
                     createdRow: function(row, data, dataIndex) {
                         // Kosong karena penyesuaian ranking ada di drawCallback
@@ -288,8 +293,8 @@
                         });
                     }
                 });
-                console.log(product_table.columns().count() - 1);
-                product_table.order([product_table.columns().count() - 1, 'asc']).draw();
+                // console.log(product_table.columns().count() - 1);
+                // product_table.order([product_table.columns().count() - 1, 'asc']).draw();
             });
         @endif
 

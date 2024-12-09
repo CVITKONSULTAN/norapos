@@ -1273,12 +1273,53 @@ class SekolahSDController extends Controller
             ->groupBy('mapel_id')
             ->orderBy('mapels.orders','asc')
             ->get();
-            $data['nilai_siswa'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+            // $data['nilai_siswa'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+            $nilai_siswa = NilaiSiswa::where('kelas_id',$data['kelas']->id)
             ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
             ->get()
             ->groupBy('siswa_id');
-            // ->values();
-            // dd($data['nilai_siswa'][1]);
+
+            $data['nilai_siswa'] = [];
+
+            foreach ($nilai_siswa as $key => $item) {
+                $avg = $item->avg('nilai_rapor');
+                $avg = number_format($avg,0);
+                $total = $item->sum('nilai_rapor');
+                $listItem = $item->sortBy('orders');
+
+                $nis = $item[0]->siswa->detail['nis'] ?? '';
+                $nama = $item[0]->siswa->nama ?? '';
+
+                $list_data = [
+                    'nis'=>$nis,
+                    'nama'=>$nama,
+                    'total'=>$total,
+                    'avg'=>$avg,
+                    'list_nilai'=>[],
+                ];
+                foreach ($listItem as $val) {
+                    $ket = "";
+                    if(
+                        $val->nilai_rapor >= 0 &&
+                        $val->nilai_rapor <= 74
+                    ){
+                        $ket = " (PB)";
+                    }
+                    if(
+                        $val->nilai_rapor >= 75 &&
+                        $val->nilai_rapor <= 100
+                    ){
+                        $ket = " (MP)";
+                    }
+                    $list_data['list_nilai'][] = [
+                        "nilai_rapor"=>$val->nilai_rapor,
+                        "ket"=>$ket
+                    ];
+                }
+                $data['nilai_siswa'][] = $list_data;
+            }
+
+            $data['nilai_siswa'] = collect($data['nilai_siswa'])->sortByDesc('avg');
         }
         return view('sekolah_sd.ranking_kelas',$data);
     }

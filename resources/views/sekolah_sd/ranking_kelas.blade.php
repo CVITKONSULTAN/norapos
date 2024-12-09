@@ -90,41 +90,18 @@
                     </thead>
                     <tbody>
                         @foreach ($nilai_siswa as $item)
-                            @php
-                                $avg = $item->avg('nilai_rapor');
-                                $total = $item->sum('nilai_rapor');
-                                $item = $item->sortBy('orders');
-                            @endphp
                             <tr>
                                 <td></td>
-                                <td>{{$item[0]->siswa->detail['nis'] ?? ''}}</td>
-                                <td>{{$item[0]->siswa->nama ?? ''}}</td>
-                                @foreach ($item as $val)
-                                    @php
-                                        $ket = "";
-                                        if(
-                                            $val->nilai_rapor >= 0 &&
-                                            $val->nilai_rapor <= 74
-                                        ){
-                                            $ket = " (PB)";
-                                        }
-                                        if(
-                                            $val->nilai_rapor >= 75 &&
-                                            $val->nilai_rapor <= 100
-                                        ){
-                                            $ket = " (MP)";
-                                        }
-                                    @endphp
+                                <td>{{$item['nis']}}</td>
+                                <td>{{$item['nama']}}</td>
+                                @foreach ($item['list_nilai'] as $val)
                                     <td class="text-center">
-                                        {{ $val->nilai_rapor }}
-                                        <span>{{ $ket }}</span>
+                                        {{ $val['nilai_rapor'] }}
+                                        <span>{{ $val['ket'] }}</span>
                                     </td>
                                 @endforeach
-                                <td>{{ $total }}</td>
-                                @php
-                                    $avg = number_format($avg,0);
-                                @endphp
-                                <td data-sort="{{$avg}}" class="text-center">{{$avg}}</td>
+                                <td>{{ $item['total'] }}</td>
+                                <td data-sort="{{$item['avg']}}" class="text-center">{{$item['avg']}}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -219,94 +196,53 @@
         @if(Request::has('kelas_id'))
             $(document).ready( function(){
 
-                // product_table = $('#product_table').DataTable({
-                //     pageLength:-1,
-                //     order: [[
-                //         {{count($mapel)+4}}, 
-                //         'desc'
-                //     ]],
-                //     // ordering: false,
-                //     drawCallback: function(settings) {
-                //         var api = this.api();
-
-                //         // Loop melalui data yang sudah diurutkan
-                //         api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
-                //             var row = $(this.node());
-
-                //             // Tambahkan nomor urut ke kolom Ranking
-                //             row.find('td:first').html(rowIdx + 1);
-
-                //             // Terapkan warna untuk 5 baris teratas
-                //             if (rowIdx === 0) {
-                //                 row.css('background-color', '#FFD700'); // Emas
-                //             } else if (rowIdx === 1) {
-                //                 row.css('background-color', '#C0C0C0'); // Perak
-                //             } else if (rowIdx === 2) {
-                //                 row.css('background-color', '#ffc285'); // Perunggu
-                //             } else if (rowIdx === 3) {
-                //                 row.css('background-color', '#ADD8E6'); // Biru muda
-                //             } else if (rowIdx === 4) {
-                //                 row.css('background-color', '#90EE90'); // Hijau muda
-                //             } else {
-                //                 row.css('background-color', ''); // Reset warna untuk baris lainnya
-                //             }
-                //         });
-                //     },
-                //     footerCallback: function(row, data, start, end, display) {
-                //         var api = this.api();
-
-                //         // Set teks "Rata-Rata" di kolom pertama footer
-                //         $(api.column(0).footer()).html('Rata-Rata');
-
-                //         // Fungsi untuk menghitung rata-rata
-                //         var calculateAverage = function(index) {
-                //             var total = 0;
-                //             var count = 0;
-
-                //             // Iterasi melalui semua data pada kolom
-                //             api.column(index, { page: 'current' }).data().each(function(value, i) {
-                //                 var numericValue = parseFloat(value) || 0; // Konversi ke angka
-                //                 total += numericValue;
-                //                 count++;
-                //             });
-
-                //             return count > 0 ? (total / count).toFixed(2) : 0; // Rata-rata dengan 2 desimal
-                //         };
-
-                //         // Loop untuk menghitung rata-rata setiap kolom
-                //         $(api.columns().footer()).each(function(index) {
-                //             if (index > 2) { // Abaikan kolom non-numeric (contoh: Ranking, NIS, Nama Siswa)
-                //                 $(this).html(calculateAverage(index));
-                //             }
-                //         });
-                //     }
-                // });
-
                 product_table = $('#product_table').DataTable({
-                    pageLength: -1,
-                    order: [[{{count($mapel) + 4}}, 'desc']], // Urutkan berdasarkan kolom tertentu
-                    columnDefs: [
-                        {
-                            targets: [{{count($mapel) + 4}}], // Targetkan kolom "Rata-Rata"
-                            render: function(data, type, row) {
-                                // Hilangkan "(MP)" dan konversi ke angka
-                                const val = parseFloat(data.replace(/[^\d.]/g, '')) || 0;
-                                return val;
-                            },
-                            type: 'num' // Paksa urutan numerik
-                        }
-                    ],
+                    pageLength:-1,
+                    order: [[
+                        {{count($mapel)+4}}, 
+                        'desc'
+                    ]],
+                    ordering: false,
+                    drawCallback: function(settings) {
+                        var api = this.api();
+
+                        // Loop melalui data yang sudah diurutkan
+                        api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                            var row = $(this.node());
+
+                            // Tambahkan nomor urut ke kolom Ranking
+                            row.find('td:first').html(rowIdx + 1);
+
+                            // Terapkan warna untuk 5 baris teratas
+                            if (rowIdx === 0) {
+                                row.css('background-color', '#FFD700'); // Emas
+                            } else if (rowIdx === 1) {
+                                row.css('background-color', '#C0C0C0'); // Perak
+                            } else if (rowIdx === 2) {
+                                row.css('background-color', '#ffc285'); // Perunggu
+                            } else if (rowIdx === 3) {
+                                row.css('background-color', '#ADD8E6'); // Biru muda
+                            } else if (rowIdx === 4) {
+                                row.css('background-color', '#90EE90'); // Hijau muda
+                            } else {
+                                row.css('background-color', ''); // Reset warna untuk baris lainnya
+                            }
+                        });
+                    },
                     footerCallback: function(row, data, start, end, display) {
                         var api = this.api();
 
+                        // Set teks "Rata-Rata" di kolom pertama footer
                         $(api.column(0).footer()).html('Rata-Rata');
 
+                        // Fungsi untuk menghitung rata-rata
                         var calculateAverage = function(index) {
                             var total = 0;
                             var count = 0;
 
+                            // Iterasi melalui semua data pada kolom
                             api.column(index, { page: 'current' }).data().each(function(value, i) {
-                                var numericValue = parseFloat(value.replace(/[^\d.]/g, '')) || 0; // Konversi ke angka
+                                var numericValue = parseFloat(value) || 0; // Konversi ke angka
                                 total += numericValue;
                                 count++;
                             });
@@ -314,12 +250,53 @@
                             return count > 0 ? (total / count).toFixed(2) : 0; // Rata-rata dengan 2 desimal
                         };
 
+                        // Loop untuk menghitung rata-rata setiap kolom
                         $(api.columns().footer()).each(function(index) {
-                            if (index > 2) {
+                            if (index > 2) { // Abaikan kolom non-numeric (contoh: Ranking, NIS, Nama Siswa)
                                 $(this).html(calculateAverage(index));
                             }
                         });
-                    },
+                    }
+                });
+
+                // product_table = $('#product_table').DataTable({
+                //     pageLength: -1,
+                //     order: [[{{count($mapel) + 4}}, 'desc']], // Urutkan berdasarkan kolom tertentu
+                //     columnDefs: [
+                //         {
+                //             targets: [{{count($mapel) + 4}}], // Targetkan kolom "Rata-Rata"
+                //             render: function(data, type, row) {
+                //                 // Hilangkan "(MP)" dan konversi ke angka
+                //                 const val = parseFloat(data.replace(/[^\d.]/g, '')) || 0;
+                //                 return val;
+                //             },
+                //             type: 'num' // Paksa urutan numerik
+                //         }
+                //     ],
+                //     footerCallback: function(row, data, start, end, display) {
+                //         var api = this.api();
+
+                //         $(api.column(0).footer()).html('Rata-Rata');
+
+                //         var calculateAverage = function(index) {
+                //             var total = 0;
+                //             var count = 0;
+
+                //             api.column(index, { page: 'current' }).data().each(function(value, i) {
+                //                 var numericValue = parseFloat(value.replace(/[^\d.]/g, '')) || 0; // Konversi ke angka
+                //                 total += numericValue;
+                //                 count++;
+                //             });
+
+                //             return count > 0 ? (total / count).toFixed(2) : 0; // Rata-rata dengan 2 desimal
+                //         };
+
+                //         $(api.columns().footer()).each(function(index) {
+                //             if (index > 2) {
+                //                 $(this).html(calculateAverage(index));
+                //             }
+                //         });
+                //     },
                     // drawCallback: function(settings) {
                     //     var api = this.api();
 
@@ -346,37 +323,37 @@
                     //         }
                     //     });
                     // },
-                });
+                // });
 
                 // Tambahkan event listener untuk pengurutan
-                $('#product_table').on('order.dt', function() { // Pastikan elemen DOM digunakan di sini
-                    let api = product_table;
-                    console.log("trigger");
+                // $('#product_table').on('order.dt', function() { // Pastikan elemen DOM digunakan di sini
+                //     let api = product_table;
+                //     console.log("trigger");
 
-                    // Loop melalui data yang sudah diurutkan
-                    api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
-                        let row = $(this.node());
+                //     // Loop melalui data yang sudah diurutkan
+                //     api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                //         let row = $(this.node());
 
-                        console.log("rowIdx", rowIdx);
-                        // Tambahkan nomor urut ke kolom Ranking
-                        row.find('td:first').html(rowIdx + 1);
+                //         console.log("rowIdx", rowIdx);
+                //         // Tambahkan nomor urut ke kolom Ranking
+                //         row.find('td:first').html(rowIdx + 1);
 
-                        // Terapkan warna untuk 5 baris teratas
-                        if (rowIdx === 0) {
-                            row.css('background-color', '#FFD700'); // Emas
-                        } else if (rowIdx === 1) {
-                            row.css('background-color', '#C0C0C0'); // Perak
-                        } else if (rowIdx === 2) {
-                            row.css('background-color', '#ffc285'); // Perunggu
-                        } else if (rowIdx === 3) {
-                            row.css('background-color', '#ADD8E6'); // Biru muda
-                        } else if (rowIdx === 4) {
-                            row.css('background-color', '#90EE90'); // Hijau muda
-                        } else {
-                            row.css('background-color', ''); // Reset warna untuk baris lainnya
-                        }
-                    });
-                });
+                //         // Terapkan warna untuk 5 baris teratas
+                //         if (rowIdx === 0) {
+                //             row.css('background-color', '#FFD700'); // Emas
+                //         } else if (rowIdx === 1) {
+                //             row.css('background-color', '#C0C0C0'); // Perak
+                //         } else if (rowIdx === 2) {
+                //             row.css('background-color', '#ffc285'); // Perunggu
+                //         } else if (rowIdx === 3) {
+                //             row.css('background-color', '#ADD8E6'); // Biru muda
+                //         } else if (rowIdx === 4) {
+                //             row.css('background-color', '#90EE90'); // Hijau muda
+                //         } else {
+                //             row.css('background-color', ''); // Reset warna untuk baris lainnya
+                //         }
+                //     });
+                // });
 
             });
         @endif

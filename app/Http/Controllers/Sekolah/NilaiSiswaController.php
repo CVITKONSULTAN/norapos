@@ -250,9 +250,11 @@ class NilaiSiswaController extends Controller
         $mapel_id = $request->mapel_id ?? 0;
         $ListNilai = NilaiSiswa::where(['kelas_id'=>$kelas_id])->get();
         foreach ($ListNilai as $key => $data) {
+
             if($data->nilai_max_tp < $this->nilai_tengah_formatif){
                 $data->catatan_max_tp = "";
             } else {
+                $data->tp_keterangan = $data->mapel->tujuan_pembelajaran[$update['kolom_max_tp']] ?? "";
                 $data->catatan_max_tp = $this->prosesPesan(
                     $data->nilai_max_tp,
                     'max',
@@ -262,6 +264,7 @@ class NilaiSiswaController extends Controller
             if($data->nilai_min_tp >= $this->nilai_tengah_formatif){
                 $data->catatan_min_tp = "";
             } else {
+                $data->tp_keterangan = $data->mapel->tujuan_pembelajaran[$update['kolom_min_tp']] ?? "";
                 $data->catatan_min_tp = $this->prosesPesan(
                     $data->nilai_min_tp,
                     'min',

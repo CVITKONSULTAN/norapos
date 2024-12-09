@@ -239,28 +239,31 @@
                     drawCallback: function(settings) {
                         var api = this.api();
 
-                        // Loop melalui data yang sudah diurutkan
-                        api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
-                            var row = $(this.node());
+                        setTimeout(() => {
+                            // Loop melalui data yang sudah diurutkan
+                            api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                                var row = $(this.node());
+    
+                                // Tambahkan nomor urut ke kolom Ranking
+                                row.find('td:first').html(rowIdx + 1);
+    
+                                // Terapkan warna untuk 5 baris teratas
+                                if (rowIdx === 0) {
+                                    row.css('background-color', '#FFD700'); // Emas
+                                } else if (rowIdx === 1) {
+                                    row.css('background-color', '#C0C0C0'); // Perak
+                                } else if (rowIdx === 2) {
+                                    row.css('background-color', '#ffc285'); // Perunggu
+                                } else if (rowIdx === 3) {
+                                    row.css('background-color', '#ADD8E6'); // Biru muda
+                                } else if (rowIdx === 4) {
+                                    row.css('background-color', '#90EE90'); // Hijau muda
+                                } else {
+                                    row.css('background-color', ''); // Reset warna untuk baris lainnya
+                                }
+                            });
+                        }, 3000);
 
-                            // Tambahkan nomor urut ke kolom Ranking
-                            row.find('td:first').html(rowIdx + 1);
-
-                            // Terapkan warna untuk 5 baris teratas
-                            if (rowIdx === 0) {
-                                row.css('background-color', '#FFD700'); // Emas
-                            } else if (rowIdx === 1) {
-                                row.css('background-color', '#C0C0C0'); // Perak
-                            } else if (rowIdx === 2) {
-                                row.css('background-color', '#ffc285'); // Perunggu
-                            } else if (rowIdx === 3) {
-                                row.css('background-color', '#ADD8E6'); // Biru muda
-                            } else if (rowIdx === 4) {
-                                row.css('background-color', '#90EE90'); // Hijau muda
-                            } else {
-                                row.css('background-color', ''); // Reset warna untuk baris lainnya
-                            }
-                        });
                     },
                     footerCallback: function(row, data, start, end, display) {
                         var api = this.api();

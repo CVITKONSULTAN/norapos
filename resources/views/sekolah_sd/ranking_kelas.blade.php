@@ -221,23 +221,21 @@
 
                 product_table = $('#product_table').DataTable({
                     pageLength:-1,
-                    columnDefs: [
-                        {
-                            targets: -1, // Kolom terakhir (Rata-Rata)
-                            render: function(data, type, row) {
-                                // Ambil hanya angka dari data kolom
-                                return type === 'sort' ? parseFloat(data) : data;
-                            }
-                        }
-                    ],
-                    order: [[
-                        {{count($mapel)+4}}, 
-                        'desc'
-                    ]],
-                    ordering: false,
-                    createdRow: function(row, data, dataIndex) {
-                        // Kosong karena penyesuaian ranking ada di drawCallback
-                    },
+                    // columnDefs: [
+                    //     {
+                    //         targets: -1, // Kolom terakhir (Rata-Rata)
+                    //         render: function(data, type, row) {
+                    //             // Ambil hanya angka dari data kolom
+                    //             data = type === 'sort' ? parseFloat(data) : data;
+                    //             return data;
+                    //         }
+                    //     }
+                    // ],
+                    // order: [[
+                    //     {{count($mapel)+4}}, 
+                    //     'desc'
+                    // ]],
+                    // ordering: false,
                     drawCallback: function(settings) {
                         var api = this.api();
 

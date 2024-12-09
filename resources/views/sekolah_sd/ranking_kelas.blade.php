@@ -230,7 +230,10 @@
                             }
                         }
                     ],
-                    // order: [[-1, 'asc']], // Urutkan berdasarkan kolom "Rata-Rata"
+                    order: [[
+                        {{count($mapel)+4}}, 
+                        'desc'
+                    ]],
                     ordering: false,
                     createdRow: function(row, data, dataIndex) {
                         // Kosong karena penyesuaian ranking ada di drawCallback

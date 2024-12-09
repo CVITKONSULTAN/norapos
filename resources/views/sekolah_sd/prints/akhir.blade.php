@@ -157,19 +157,23 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($ekskul_siswa as $key => $item)    
+            @if(count($ekskul_siswa) > 0)
+                @foreach ($ekskul_siswa as $key => $item)    
+                    <tr>
+                        <td class="text-center">{{ $key+1 }}</td>
+                        <td>{{ $item->ekskul->nama }}</td>
+                        <td style="text-align: center;">{{ $item->nilai }}</td>
+                        <td>{{ $item->keterangan }}</td>
+                    </tr>
+                @endforeach
+            @else 
                 <tr>
-                    <td class="text-center">{{ $key+1 }}</td>
-                    <td>{{ $item->ekskul->nama }}</td>
-                    <td style="text-align: center;">{{ $item->nilai }}</td>
-                    <td>{{ $item->keterangan }}</td>
+                    <td style="text-align: center" >-</td>
+                    <td style="text-align: center" >-</td>
+                    <td style="text-align: center" >-</td>
+                    <td style="text-align: center" >-</td>
                 </tr>
-            @endforeach
-            {{-- <tr>
-                <td class="text-center">2</td>
-                <td>Renang</td>
-                <td>Kurang aktif mengikuti kegiatan Ekstrakurikuler</td>
-            </tr> --}}
+            @endif
         </tbody>
     </table>
 

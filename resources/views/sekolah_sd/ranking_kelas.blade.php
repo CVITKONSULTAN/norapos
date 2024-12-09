@@ -348,6 +348,8 @@
                     },
                 });
 
+                product_table.draw();
+
                 // Tambahkan event listener untuk pengurutan
                 $('#product_table').on('order.dt', function() { // Pastikan elemen DOM digunakan di sini
                     let api = product_table;

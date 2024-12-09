@@ -219,51 +219,95 @@
         @if(Request::has('kelas_id'))
             $(document).ready( function(){
 
+                // product_table = $('#product_table').DataTable({
+                //     pageLength:-1,
+                //     order: [[
+                //         {{count($mapel)+4}}, 
+                //         'desc'
+                //     ]],
+                //     // ordering: false,
+                //     drawCallback: function(settings) {
+                //         var api = this.api();
+
+                //         // Loop melalui data yang sudah diurutkan
+                //         api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                //             var row = $(this.node());
+
+                //             // Tambahkan nomor urut ke kolom Ranking
+                //             row.find('td:first').html(rowIdx + 1);
+
+                //             // Terapkan warna untuk 5 baris teratas
+                //             if (rowIdx === 0) {
+                //                 row.css('background-color', '#FFD700'); // Emas
+                //             } else if (rowIdx === 1) {
+                //                 row.css('background-color', '#C0C0C0'); // Perak
+                //             } else if (rowIdx === 2) {
+                //                 row.css('background-color', '#ffc285'); // Perunggu
+                //             } else if (rowIdx === 3) {
+                //                 row.css('background-color', '#ADD8E6'); // Biru muda
+                //             } else if (rowIdx === 4) {
+                //                 row.css('background-color', '#90EE90'); // Hijau muda
+                //             } else {
+                //                 row.css('background-color', ''); // Reset warna untuk baris lainnya
+                //             }
+                //         });
+                //     },
+                //     footerCallback: function(row, data, start, end, display) {
+                //         var api = this.api();
+
+                //         // Set teks "Rata-Rata" di kolom pertama footer
+                //         $(api.column(0).footer()).html('Rata-Rata');
+
+                //         // Fungsi untuk menghitung rata-rata
+                //         var calculateAverage = function(index) {
+                //             var total = 0;
+                //             var count = 0;
+
+                //             // Iterasi melalui semua data pada kolom
+                //             api.column(index, { page: 'current' }).data().each(function(value, i) {
+                //                 var numericValue = parseFloat(value) || 0; // Konversi ke angka
+                //                 total += numericValue;
+                //                 count++;
+                //             });
+
+                //             return count > 0 ? (total / count).toFixed(2) : 0; // Rata-rata dengan 2 desimal
+                //         };
+
+                //         // Loop untuk menghitung rata-rata setiap kolom
+                //         $(api.columns().footer()).each(function(index) {
+                //             if (index > 2) { // Abaikan kolom non-numeric (contoh: Ranking, NIS, Nama Siswa)
+                //                 $(this).html(calculateAverage(index));
+                //             }
+                //         });
+                //     }
+                // });
+
                 product_table = $('#product_table').DataTable({
-                    pageLength:-1,
-                    // columnDefs: [
-                    //     {
-                    //         targets: -1, // Kolom terakhir (Rata-Rata)
-                    //         render: function(data, type, row) {
-                    //             // Ambil hanya angka dari data kolom
-                    //             data = type === 'sort' ? parseFloat(data) : data;
-                    //             return data;
-                    //         }
-                    //     }
-                    // ],
-                    order: [[
-                        {{count($mapel)+4}}, 
-                        'desc'
-                    ]],
-                    // ordering: false,
+                    pageLength: -1,
+                    order: [[{{count($mapel) + 4}}, 'desc']], // Urutkan berdasarkan kolom tertentu
                     drawCallback: function(settings) {
+                        // Fungsi default untuk mewarnai dan memberi nomor baris
                         var api = this.api();
 
-                        setTimeout(() => {
-                            // Loop melalui data yang sudah diurutkan
-                            api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
-                                var row = $(this.node());
-    
-                                // Tambahkan nomor urut ke kolom Ranking
-                                row.find('td:first').html(rowIdx + 1);
-    
-                                // Terapkan warna untuk 5 baris teratas
-                                if (rowIdx === 0) {
-                                    row.css('background-color', '#FFD700'); // Emas
-                                } else if (rowIdx === 1) {
-                                    row.css('background-color', '#C0C0C0'); // Perak
-                                } else if (rowIdx === 2) {
-                                    row.css('background-color', '#ffc285'); // Perunggu
-                                } else if (rowIdx === 3) {
-                                    row.css('background-color', '#ADD8E6'); // Biru muda
-                                } else if (rowIdx === 4) {
-                                    row.css('background-color', '#90EE90'); // Hijau muda
-                                } else {
-                                    row.css('background-color', ''); // Reset warna untuk baris lainnya
-                                }
-                            });
-                        }, 3000);
+                        api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                            var row = $(this.node());
+                            row.find('td:first').html(rowIdx + 1);
 
+                            // Terapkan warna untuk 5 baris teratas
+                            if (rowIdx === 0) {
+                                row.css('background-color', '#FFD700'); // Emas
+                            } else if (rowIdx === 1) {
+                                row.css('background-color', '#C0C0C0'); // Perak
+                            } else if (rowIdx === 2) {
+                                row.css('background-color', '#ffc285'); // Perunggu
+                            } else if (rowIdx === 3) {
+                                row.css('background-color', '#ADD8E6'); // Biru muda
+                            } else if (rowIdx === 4) {
+                                row.css('background-color', '#90EE90'); // Hijau muda
+                            } else {
+                                row.css('background-color', ''); // Reset warna untuk baris lainnya
+                            }
+                        });
                     },
                     footerCallback: function(row, data, start, end, display) {
                         var api = this.api();
@@ -291,14 +335,20 @@
                             if (index > 2) { // Abaikan kolom non-numeric (contoh: Ranking, NIS, Nama Siswa)
                                 $(this).html(calculateAverage(index));
                             }
-                            // else {
-                            //     $(this).html(''); // Kosongkan untuk kolom non-numeric
-                            // }
                         });
                     }
                 });
-                // console.log(product_table.columns().count() - 1);
-                // product_table.order([product_table.columns().count() - 1, 'asc']).draw();
+
+                // Event `order` untuk memastikan aksi tambahan dilakukan setelah sorting
+                product_table.on('order.dt', function() {
+                    setTimeout(function() {
+                        console.log("Sorting selesai, jalankan logika tambahan di sini.");
+                        
+                        // Jika Anda ingin memanipulasi DOM tambahan
+                        $('#status').text('Sorting selesai!');
+                    }, 500); // Delay 500ms agar memastikan proses selesai
+                });
+
             });
         @endif
 

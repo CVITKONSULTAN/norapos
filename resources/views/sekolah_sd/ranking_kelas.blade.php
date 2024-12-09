@@ -121,7 +121,7 @@
                                     </td>
                                 @endforeach
                                 <td>{{ $total }}</td>
-                                <td class="text-center">{{ $avg }}</td>
+                                <td class="text-center">{{ number_format($avg,0) }}</td>
                             </tr>
                         @endforeach
                     </tbody>

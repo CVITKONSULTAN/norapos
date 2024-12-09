@@ -270,6 +270,8 @@ class NilaiSiswaController extends Controller
             }
             $data->save();
         }
-        return ['status'=>true,'msg'=>'Catatan penilaian telah diperbaharui...'];
+        // return ['status'=>true,'msg'=>'Catatan penilaian telah diperbaharui...'];
+        return redirect()->back()
+            ->with(['success'=>true,'message'=>"Catatan penilaian telah diperbaharui..."]);
     }
 }

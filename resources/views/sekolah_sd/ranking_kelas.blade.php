@@ -285,7 +285,7 @@
                         });
                     }
                 });
-
+                console.log(product_table.columns().count() - 1);
                 product_table.order([product_table.columns().count() - 1, 'asc']).draw();
             });
         @endif

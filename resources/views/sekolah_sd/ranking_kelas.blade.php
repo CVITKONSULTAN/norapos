@@ -215,12 +215,14 @@
 
         @if(Request::has('kelas_id'))
             $(document).ready( function(){
+
                 product_table = $('#product_table').DataTable({
                     pageLength:-1,
-                    order: [[
-                        {{count($mapel)+4}}, 
-                        'desc'
-                    ]],
+                    // order: [[
+                    //     {{count($mapel)+4}}, 
+                    //     'desc'
+                    // ]],
+                    // "order": [[-1, "asc"]],
                     ordering: false,
                     createdRow: function(row, data, dataIndex) {
                         // Kosong karena penyesuaian ranking ada di drawCallback
@@ -283,6 +285,8 @@
                         });
                     }
                 });
+
+                product_table.order([product_table.columns().count() - 1, 'asc']).draw();
             });
         @endif
 

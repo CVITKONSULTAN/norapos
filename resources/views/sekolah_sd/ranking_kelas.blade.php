@@ -283,66 +283,68 @@
                 // });
 
                 product_table = $('#product_table').DataTable({
-    pageLength: -1,
-    order: [[{{count($mapel) + 4}}, 'desc']], // Urutkan berdasarkan kolom tertentu
-    columnDefs: [
-        {
-            targets: [{{count($mapel) + 4}}], // Targetkan kolom "Rata-Rata"
-            render: function(data, type, row) {
-                // Hilangkan "(MP)" dan konversi ke angka
-                return parseFloat(data.replace(/[^\d.]/g, '')) || 0;
-            },
-            type: 'num' // Paksa urutan numerik
-        }
-    ],
-    drawCallback: function(settings) {
-        var api = this.api();
+                    pageLength: -1,
+                    order: [[{{count($mapel) + 4}}, 'desc']], // Urutkan berdasarkan kolom tertentu
+                    columnDefs: [
+                        {
+                            targets: [{{count($mapel) + 4}}], // Targetkan kolom "Rata-Rata"
+                            render: function(data, type, row) {
+                                // Hilangkan "(MP)" dan konversi ke angka
+                                const val = parseFloat(data.replace(/[^\d.]/g, '')) || 0;
+                                console.log("val",val)
+                                return val;
+                            },
+                            type: 'num' // Paksa urutan numerik
+                        }
+                    ],
+                    drawCallback: function(settings) {
+                        var api = this.api();
 
-        api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
-            var row = $(this.node());
-            row.find('td:first').html(rowIdx + 1);
+                        api.rows({ order: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                            var row = $(this.node());
+                            row.find('td:first').html(rowIdx + 1);
 
-            // Terapkan warna untuk 5 baris teratas
-            if (rowIdx === 0) {
-                row.css('background-color', '#FFD700'); // Emas
-            } else if (rowIdx === 1) {
-                row.css('background-color', '#C0C0C0'); // Perak
-            } else if (rowIdx === 2) {
-                row.css('background-color', '#ffc285'); // Perunggu
-            } else if (rowIdx === 3) {
-                row.css('background-color', '#ADD8E6'); // Biru muda
-            } else if (rowIdx === 4) {
-                row.css('background-color', '#90EE90'); // Hijau muda
-            } else {
-                row.css('background-color', ''); // Reset warna untuk baris lainnya
-            }
-        });
-    },
-    footerCallback: function(row, data, start, end, display) {
-        var api = this.api();
+                            // Terapkan warna untuk 5 baris teratas
+                            if (rowIdx === 0) {
+                                row.css('background-color', '#FFD700'); // Emas
+                            } else if (rowIdx === 1) {
+                                row.css('background-color', '#C0C0C0'); // Perak
+                            } else if (rowIdx === 2) {
+                                row.css('background-color', '#ffc285'); // Perunggu
+                            } else if (rowIdx === 3) {
+                                row.css('background-color', '#ADD8E6'); // Biru muda
+                            } else if (rowIdx === 4) {
+                                row.css('background-color', '#90EE90'); // Hijau muda
+                            } else {
+                                row.css('background-color', ''); // Reset warna untuk baris lainnya
+                            }
+                        });
+                    },
+                    footerCallback: function(row, data, start, end, display) {
+                        var api = this.api();
 
-        $(api.column(0).footer()).html('Rata-Rata');
+                        $(api.column(0).footer()).html('Rata-Rata');
 
-        var calculateAverage = function(index) {
-            var total = 0;
-            var count = 0;
+                        var calculateAverage = function(index) {
+                            var total = 0;
+                            var count = 0;
 
-            api.column(index, { page: 'current' }).data().each(function(value, i) {
-                var numericValue = parseFloat(value.replace(/[^\d.]/g, '')) || 0; // Konversi ke angka
-                total += numericValue;
-                count++;
-            });
+                            api.column(index, { page: 'current' }).data().each(function(value, i) {
+                                var numericValue = parseFloat(value.replace(/[^\d.]/g, '')) || 0; // Konversi ke angka
+                                total += numericValue;
+                                count++;
+                            });
 
-            return count > 0 ? (total / count).toFixed(2) : 0; // Rata-rata dengan 2 desimal
-        };
+                            return count > 0 ? (total / count).toFixed(2) : 0; // Rata-rata dengan 2 desimal
+                        };
 
-        $(api.columns().footer()).each(function(index) {
-            if (index > 2) {
-                $(this).html(calculateAverage(index));
-            }
-        });
-    }
-});
+                        $(api.columns().footer()).each(function(index) {
+                            if (index > 2) {
+                                $(this).html(calculateAverage(index));
+                            }
+                        });
+                    }
+                });
 
             });
         @endif

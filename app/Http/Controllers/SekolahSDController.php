@@ -1278,6 +1278,7 @@ class SekolahSDController extends Controller
             // $data['nilai_siswa'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
             $nilai_siswa = NilaiSiswa::where('kelas_id',$data['kelas']->id)
             ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
+            ->whereNull('mapels.deleted_at')
             ->get()
             ->groupBy('siswa_id');
 

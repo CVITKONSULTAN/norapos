@@ -482,6 +482,7 @@ class SekolahSDController extends Controller
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
+        ->whereHas('mapel')
         ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
         ->orderBy('mapels.orders','asc')
         ->with('mapel')
@@ -539,6 +540,7 @@ class SekolahSDController extends Controller
         ];
 
         $data['nilai_list'] = NilaiSiswa::where($where)
+        ->whereHas('mapel')
         ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
         ->orderBy('mapels.orders','asc')
         ->with('mapel')

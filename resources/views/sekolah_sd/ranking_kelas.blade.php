@@ -97,7 +97,7 @@
                                 @foreach ($item['list_nilai'] as $val)
                                     <td class="text-center">
                                         {{ $val['nilai_rapor'] }}
-                                        <span>{{ $val['ket'] }}</span>
+                                        {{-- <span>{{ $val['ket'] }}</span> --}}
                                     </td>
                                 @endforeach
                                 <td>{{ $item['total'] }}</td>

@@ -1272,6 +1272,7 @@ class SekolahSDController extends Controller
             $data['kelas'] = Kelas::find($request->kelas_id);
             $data['mapel'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
             ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
+            ->whereNull('mapels.deleted_at')
             ->groupBy('mapel_id')
             ->orderBy('mapels.orders','asc')
             ->get();

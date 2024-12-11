@@ -1285,7 +1285,7 @@ class SekolahSDController extends Controller
 
             foreach ($nilai_siswa as $key => $item) {
                 $avg = $item->avg('nilai_rapor');
-                $avg = number_format($avg,0);
+                $avg = number_format($avg,2);
                 $total = $item->sum('nilai_rapor');
                 $listItem = $item->sortBy('orders');
 

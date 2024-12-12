@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Platform pendidikan yang mempermudah administrasi, pengelolaan, dan komunikasi di lingkungan pendidikan."
+      content="Situs ini dipersiapkan sebagai layanan sistem informasi PPDB Online atau PSB Online jenjang sekolah SD Muhammadiyah 2 Kota Pontianak"
     />
     <meta
       name="keywords"
       content="platform pendidikan, administrasi sekolah, KoneksiEdu, manajemen sekolah, pendidikan Indonesia"
     />
+    <link rel="shortcut icon" href="/images/simuda-favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/simuda-favicon.ico" type="image/x-icon">
     <title>PPDB - SIMUDA PONTIANAK</title>
     <style>
         img {

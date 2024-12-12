@@ -1327,5 +1327,9 @@ class SekolahSDController extends Controller
         }
         return view('sekolah_sd.ranking_kelas',$data);
     }
+
+    function ppdb(Request $request){
+        return view('compro.koneksiedu.ppdb');
+    }
     
 }

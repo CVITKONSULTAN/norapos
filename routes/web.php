@@ -34,9 +34,12 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
         Route::get('/services', "MultiDomainController@services")->name("multi.services");
         if($host == 'koneksiedu.com'){
             Route::get('/login', "MultiDomainController@login")->name("multi.login");
+            Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
         }
     }
 });
+
+
 
 Route::get('/command', function () {
     // Artisan::call('migrate');

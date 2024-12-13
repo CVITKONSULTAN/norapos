@@ -89,6 +89,10 @@ Route::get('wilayah','itkonsultan\WilayahController@getData');
 Route::post('midtrans-notify','itkonsultan\DataController@midtrans_notify');
 Route::get('payment-landing','itkonsultan\ViewerController@landing_payment');
 
+Route::group(['prefix'=>'pejantan'],function(){
+    Route::get('jalan','pejantan\DataController@sk_jalan');
+});
+
 Route::group(['prefix'=>'itkonsultan'],function(){
 
     Route::get('form','itkonsultan\ViewerController@form');

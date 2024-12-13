@@ -4,7 +4,7 @@ namespace App\Http\Controllers\pejantan;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Helpers\Helper;
 use DB;
 
 class DataController extends Controller

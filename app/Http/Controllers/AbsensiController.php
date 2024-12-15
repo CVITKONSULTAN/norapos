@@ -47,13 +47,23 @@ class AbsensiController extends Controller
                 $masuk_data = $value->where('tipe','masuk')->first();
                 $pulang_data = $value->where('tipe','pulang')->first();
 
+                $jam_masuk = "";
+                if(!empty($masuk_data)){
+                    $jam_masuk = $masuk_data->created_at->format("H:i:s") ?? "";
+                }
+
+                $jam_pulang = "";
+                if(!empty($pulang_data)){
+                    $jam_pulang = $pulang_data->created_at->format("H:i:s") ?? "";
+                }
+
                 $row[] = [
                     "tanggal" => $key,
                     "nama"=>$nama,
-                    "jam_masuk"=> $masuk_data->created_at->format("H:i:s") ?? null,
-                    "foto_masuk"=> $masuk_data->picture ?? null,
-                    "koordinat_masuk"=> $masuk_data->coordinates ?? null,
-                    "jam_pulang"=> $pulang_data->created_at->format("H:i:s") ?? null,
+                    "jam_masuk"=> $jam_masuk,
+                    "foto_masuk"=> $masuk_data->picture ?? "",
+                    "koordinat_masuk"=> $masuk_data->coordinates ?? "",
+                    "jam_pulang"=> $jam_pulang,
                     "foto_pulang"=> $pulang_data->picture ?? null,
                     "koordinat_pulang"=> $pulang_data->coordinates ?? null,
                 ];

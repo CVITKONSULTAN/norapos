@@ -39,6 +39,7 @@
                         <tr>
                             <th>Tanggal</th>
                             <th>Nama</th>
+                            <th>Jam Kerja</th>
                             <th>Masuk</th>
                             <th>Pulang</th>
                         </tr>
@@ -77,6 +78,7 @@
             "columns":[
                 {"data":"tanggal"},
                 {"data":"nama"},
+                {"data":"hours_time"},
                 {
                     "data":"foto_masuk",
                     "render":(data,type,row,meta) => {

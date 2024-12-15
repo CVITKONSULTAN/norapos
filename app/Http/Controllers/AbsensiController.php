@@ -52,8 +52,10 @@ class AbsensiController extends Controller
                 }
 
                 $jam_pulang = "";
+                $hours_time = 0;
                 if(!empty($pulang_data)){
                     $jam_pulang = $pulang_data->created_at->format("H:i:s") ?? "";
+                    $hours_time = $masuk_data->created_at->diff($pulang_data->created_at)->format('%H:%I:%S');
                 }
 
                 $row[] = [
@@ -63,6 +65,7 @@ class AbsensiController extends Controller
                     "foto_masuk"=> $masuk_data->picture ?? "",
                     "koordinat_masuk"=> $masuk_data->coordinates ?? "",
                     "jam_pulang"=> $jam_pulang,
+                    "hours_time"=> $hours_time,
                     "foto_pulang"=> $pulang_data->picture ?? null,
                     "koordinat_pulang"=> $pulang_data->coordinates ?? null,
                 ];

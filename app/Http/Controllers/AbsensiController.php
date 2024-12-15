@@ -48,7 +48,7 @@ class AbsensiController extends Controller
                 $pulang_data = $value->where('tipe','pulang')->first();
 
                 $row[] = [
-                    "created_at" => $key,
+                    "tanggal" => $key,
                     "nama"=>$nama,
                     "jam_masuk"=> $masuk_data->created_at->format("H:i:s") ?? null,
                     "foto_masuk"=> $masuk_data->picture ?? null,
@@ -117,5 +117,9 @@ class AbsensiController extends Controller
                 "data"=>$request->user()
             ];
         }
+    }
+
+    function index_all(Request $request){
+        return view('absensi.index_all');
     }
 }

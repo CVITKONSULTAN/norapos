@@ -60,97 +60,67 @@
 
 @section('javascript')
     <script>
+        $(document).ready( function(){
+            product_table = $('#data_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ordering:false,
+                searching:false,
 
-        const data_table = $('#data_table').DataTable({
-            processing: true,
-            serverSide: true,
-            ordering:false,
-            searching:false,
-
-            ajax: {
-                url:'{{ route("absensi.data") }}',
-                "data": function ( d ) {
-                    d.grouping = 1;
-                    d.filter_tanggal = $("#filter_tanggal").val();
-                    d = __datatable_ajax_callback(d);
-                }
-            },
-            "columns":[
-                {"data":"tanggal"},
-                {"data":"nama"},
-                {"data":"hours_time"},
-                {
-                    "data":"foto_masuk",
-                    "render":(data,type,row,meta) => {
-                        const koor = row.koordinat_masuk;
-                        let coor = '';
-                        let akurasi = '';
-                        const foto = data ? `<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>` : '';
-                        if(koor){
-                            coor = '<a target="_blank" href="https://maps.google.com/?q='+koor.latitude+','+koor.longitude+'">'+koor.latitude+','+koor.longitude+'</a>';
-                            akurasi = parseFloat(koor.accuracy).toFixed(2);
-                        }
-                        return `
-                        Jam : ${row.jam_masuk}<br/>
-                        Koordinat : ${coor}<br/>
-                        Akurasi : ${akurasi}<br/>
-                        ${foto}`;
+                ajax: {
+                    url:'{{ route("absensi.data") }}',
+                    "data": function ( d ) {
+                        d.grouping = 1;
+                        d.filter_tanggal = $("#filter_tanggal").val();
+                        d = __datatable_ajax_callback(d);
                     }
                 },
-                {
-                    "data":"foto_pulang",
-                    "render":(data,type,row,meta) => {
-                        const koor = row.koordinat_pulang;
-                        let coor = '';
-                        let akurasi = '';
-                        const foto = data ? `<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>` : '';
-                        if(koor){
-                            coor = '<a target="_blank" href="https://maps.google.com/?q='+koor.latitude+','+koor.longitude+'">'+koor.latitude+','+koor.longitude+'</a>';
-                            akurasi = parseFloat(koor.accuracy).toFixed(2);
+                "columns":[
+                    {"data":"tanggal"},
+                    {"data":"nama"},
+                    {"data":"hours_time"},
+                    {
+                        "data":"foto_masuk",
+                        "render":(data,type,row,meta) => {
+                            const koor = row.koordinat_masuk;
+                            let coor = '';
+                            let akurasi = '';
+                            const foto = data ? `<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>` : '';
+                            if(koor){
+                                coor = '<a target="_blank" href="https://maps.google.com/?q='+koor.latitude+','+koor.longitude+'">'+koor.latitude+','+koor.longitude+'</a>';
+                                akurasi = parseFloat(koor.accuracy).toFixed(2);
+                            }
+                            return `
+                            Jam : ${row.jam_masuk}<br/>
+                            Koordinat : ${coor}<br/>
+                            Akurasi : ${akurasi}<br/>
+                            ${foto}`;
                         }
-                        return `
-                        Jam : ${row.jam_pulang}<br/>
-                        Koordinat : ${coor}<br/>
-                        Akurasi : ${akurasi}<br/>
-                        ${foto}`;
+                    },
+                    {
+                        "data":"foto_pulang",
+                        "render":(data,type,row,meta) => {
+                            const koor = row.koordinat_pulang;
+                            let coor = '';
+                            let akurasi = '';
+                            const foto = data ? `<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>` : '';
+                            if(koor){
+                                coor = '<a target="_blank" href="https://maps.google.com/?q='+koor.latitude+','+koor.longitude+'">'+koor.latitude+','+koor.longitude+'</a>';
+                                akurasi = parseFloat(koor.accuracy).toFixed(2);
+                            }
+                            return `
+                            Jam : ${row.jam_pulang}<br/>
+                            Koordinat : ${coor}<br/>
+                            Akurasi : ${akurasi}<br/>
+                            ${foto}`;
+                        }
                     }
-                }
-            ]
+                ]
+            });
         });
 
         $("#filter_tanggal").change(function(){
-            data_table.ajax.reload();
+            product_table.ajax.reload();
         })
-
-        @can('absensi.delete')
-            $(document).on('click', 'button.delete_user_button', function(){
-                swal({
-                title: LANG.sure,
-                text: LANG.confirm_delete_user,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        const href = "{{ route('absensi.store') }}";
-                        const id = $(this).data('id');
-                        $.ajax({
-                            method: "POST",
-                            url: href,
-                            dataType: "json",
-                            data: {delete:1,id:id},
-                            success: function(result){
-                                if(result.status){
-                                    toastr.success(result.message);
-                                    data_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.message);
-                                }
-                            }
-                        });
-                    }
-                });
-            });
-        @endcan
     </script>
 @endsection

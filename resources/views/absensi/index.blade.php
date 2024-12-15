@@ -17,6 +17,16 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary', 'title' => "Semua absensi"])
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label>Start Tanggal</label>
+                    <input class="form-control" type="date" name="filter_start" value="" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>End Tanggal</label>
+                    <input class="form-control" type="date" name="filter_end" value="" />
+                </div>
+            </div>
         {{-- @can('absensi.create') --}}
             @slot('tool')
                 <div class="box-tools">

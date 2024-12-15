@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
+use DB;
 
 class AbsensiController extends Controller
 {
@@ -21,7 +22,44 @@ class AbsensiController extends Controller
     public function data(Request $request)
     {
         $user = $request->user();
-        $data = \App\Absensi::where('business_id', $user->business_id);
+        
+        $data = \App\Absensi::where('business_id', $user->business_id)
+        ->orderBy('id','desc')
+        ->select('*');
+
+        if($request->grouping){
+
+            $date = Carbon::now()->format("Y-m-d");
+            $filter_tanggal = $request->filter_tanggal ?? $date;
+            
+            $data = $data->addSelect(DB::raw('DATE(created_at) as created_date'))
+                    ->having('created_date', '=', $filter_tanggal);
+
+            $data = $data->get()->groupBy('user_id');
+
+            $row = [];
+            foreach ($data as $key => $value) {
+
+                // dd();
+                // $nama = $value[0]->user->name ?? "";
+                $nama = $value[0]->user->getUserFullNameAttribute() ?? "";
+
+                $masuk_data = $value->where('tipe','masuk')->first();
+                $pulang_data = $value->where('tipe','pulang')->first();
+
+                $row[] = [
+                    "created_at" => $key,
+                    "nama"=>$nama,
+                    "jam_masuk"=> $masuk_data->created_at->format("H:i:s") ?? null,
+                    "foto_masuk"=> $masuk_data->picture ?? null,
+                    "koordinat_masuk"=> $masuk_data->coordinates ?? null,
+                    "jam_pulang"=> $pulang_data->created_at->format("H:i:s") ?? null,
+                    "foto_pulang"=> $pulang_data->picture ?? null,
+                    "koordinat_pulang"=> $pulang_data->coordinates ?? null,
+                ];
+            }
+            return Datatables::of($row)->make(true);
+        }
         
         $check = $user->checkAdmin();
         $checkHrd = $user->checkHRD();
@@ -31,6 +69,8 @@ class AbsensiController extends Controller
         ){
             $data = $data->where('user_id',$user->id);
         }
+
+        // dd( $data->groupBy('created_at')->get() );
 
         return Datatables::of($data)
         ->addColumn("name",function($q){

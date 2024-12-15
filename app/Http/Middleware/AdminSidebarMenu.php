@@ -110,16 +110,16 @@ class AdminSidebarMenu
                             auth()->user()->checkHRD() || 
                             auth()->user()->checkAdmin()
                         ) {
-                            $sub->url(
-                                route('absensi.list.all'),
-                                "Daftar Semua Orang",
-                                ['active' => request()->is('absensi/list/all')]
-                            );
+                            // $sub->url(
+                            //     route('absensi.list.all'),
+                            //     "Daftar Semua Orang",
+                            //     ['active' => request()->is('absensi/list/all')]
+                            // );
                         }
                         if (auth()->user()->can('absensi.view')) {
                             $sub->url(
                                 route('absensi.list'),
-                                "Daftar Absensi Pribadi s",
+                                "Daftar Absensi",
                                 ['active' => request()->is('absensi/list')]
                             );
                         }

@@ -83,7 +83,7 @@
                         const koor = row.koordinat_masuk;
                         let coor = '';
                         let akurasi = '';
-                        const foto = data ? '<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>' : '';
+                        const foto = data ? `<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>` : '';
                         if(koor){
                             coor = '<a target="_blank" href="https://maps.google.com/?q='+koor.latitude+','+koor.longitude+'">'+koor.latitude+','+koor.longitude+'</a>';
                             akurasi = parseFloat(koor.accuracy).toFixed(2);
@@ -101,7 +101,7 @@
                         const koor = row.koordinat_pulang;
                         let coor = '';
                         let akurasi = '';
-                        const foto = data ? '<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>' : '';
+                        const foto = data ? `<a target="_blank" href="${data}"><img class="img img-responsive absensi_picture" src="${data}" /></a>` : '';
                         if(koor){
                             coor = '<a target="_blank" href="https://maps.google.com/?q='+koor.latitude+','+koor.longitude+'">'+koor.latitude+','+koor.longitude+'</a>';
                             akurasi = parseFloat(koor.accuracy).toFixed(2);

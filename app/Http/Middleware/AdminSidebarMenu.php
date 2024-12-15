@@ -106,10 +106,11 @@ class AdminSidebarMenu
                 $menu->dropdown(
                     "Absensi",
                     function ($sub) {
-                        if (
-                            auth()->user()->checkHRD()
-                        ) {
-                        // if (auth()->user()->can('absensi.view_all')) {
+                        // if (
+                        //     auth()->user()->checkHRD() || 
+                        //     auth()->user()->checkAdmin()
+                        // ) {
+                        if (auth()->user()->can('absensi.view_all')) {
                             $sub->url(
                                 route('absensi.list.all'),
                                 "Data Pertanggal",
@@ -782,28 +783,33 @@ class AdminSidebarMenu
             }
 
             //Absensi dropdown
-            // if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
-                $menu->dropdown(
-                    "Absensi",
-                    function ($sub) {
-                        if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
-                            $sub->url(
-                                route('absensi.list'),
-                                "Daftar Absensi",
-                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
-                            );
-                        }
-                        if (auth()->user()->can('absensi.create')) {
-                            $sub->url(
-                                route('absensi.create'),
-                                "Tambah",
-                                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
-                            );
-                        }
-                    },
-                    ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
-                )->order(15);
-            // }
+            $menu->dropdown(
+                "Absensi",
+                function ($sub) {
+                    if (auth()->user()->can('absensi.view_all')) {
+                        $sub->url(
+                            route('absensi.list.all'),
+                            "Data Pertanggal",
+                            ['active' => request()->is('absensi/list/all')]
+                        );
+                    }
+                    if (auth()->user()->can('absensi.view') || auth()->user()->can('absensi.view_all')) {
+                        $sub->url(
+                            route('absensi.list'),
+                            "Daftar Absensi",
+                            ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
+                        );
+                    }
+                    if (auth()->user()->can('absensi.create')) {
+                        $sub->url(
+                            route('absensi.create'),
+                            "Tambah",
+                            ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
+            )->order(15);
 
             if( auth()->user()->checkAdmin() ){
                 

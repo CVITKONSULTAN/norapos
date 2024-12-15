@@ -40,8 +40,7 @@ class AbsensiController extends Controller
             $row = [];
             foreach ($data as $key => $value) {
 
-                // dd();
-                // $nama = $value[0]->user->name ?? "";
+                $tgl = $value[0]->created_at->format("Y-m-d");
                 $nama = $value[0]->user->getUserFullNameAttribute() ?? "";
 
                 $masuk_data = $value->where('tipe','masuk')->first();
@@ -58,7 +57,7 @@ class AbsensiController extends Controller
                 }
 
                 $row[] = [
-                    "tanggal" => $key,
+                    "tanggal" => $tgl,
                     "nama"=>$nama,
                     "jam_masuk"=> $jam_masuk,
                     "foto_masuk"=> $masuk_data->picture ?? "",

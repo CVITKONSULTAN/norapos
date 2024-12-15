@@ -106,11 +106,10 @@ class AdminSidebarMenu
                 $menu->dropdown(
                     "Absensi",
                     function ($sub) {
-                        // if (
-                        //     auth()->user()->checkHRD() || 
-                        //     auth()->user()->checkAdmin()
-                        // ) {
-                        if (auth()->user()->can('absensi.view_all')) {
+                        if (
+                            auth()->user()->checkHRD()
+                        ) {
+                        // if (auth()->user()->can('absensi.view_all')) {
                             $sub->url(
                                 route('absensi.list.all'),
                                 "Data Pertanggal",

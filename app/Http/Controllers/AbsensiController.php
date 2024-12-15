@@ -24,7 +24,7 @@ class AbsensiController extends Controller
         $user = $request->user();
         
         $data = \App\Absensi::where('business_id', $user->business_id)
-        ->orderBy('id','desc')
+        ->orderBy('created','desc')
         ->select('*');
 
         if($request->grouping){

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,4 +116,17 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     Route::post('transaction','itkonsultan\DataController@store_transaction')->name('itko.trx_store');
     Route::post('history-transaction','itkonsultan\DataController@history_transaction')->name('itko.trx_history');
     
+});
+
+Route::get('process-sk-jembaran',function(){
+    $data = DB::table('sk_jembatan')->get();
+    foreach ($data as $key => $value) {
+        DB::table('sk_jembatan')->where('id', $value->id)
+        ->update([
+            'Latitude'=> str_replace(",",".",$value->Latitude),
+            'Longitude'=> str_replace(",",".",$value->Longitude),
+            "LAT_LONG"=> str_replace(",",".",$value->Longitude)
+        ]);
+    }
+    return ['status'=>true,"message"=>"OK"];
 });

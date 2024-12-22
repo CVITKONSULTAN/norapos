@@ -61,10 +61,10 @@ class DataController extends Controller
                 break;
             case 'jembatan_perkecamatan':
                 $result = [];
-                $Kecamatan = DB::table('sk_jembatan')->groupBy('KECAMATAN')->get();
+                $Kecamatan = DB::table('sk_jembatan')->groupBy('Kecamatan')->get();
                 foreach ($Kecamatan as $key => $value) {
-                    dd($value);
-                    $result[$value->KECAMATAN] = DB::table('sk_jembatan')->where('KECAMATAN',$value->KECAMATAN)
+                    // dd($value);
+                    $result[$value->Kecamatan] = DB::table('sk_jembatan')->where('Kecamatan',$value->Kecamatan)
                     ->count();
                 }
                 return Helper::DataReturn(true,"OK",$result);

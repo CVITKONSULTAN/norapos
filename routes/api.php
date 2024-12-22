@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use DB;
+// use DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +93,7 @@ Route::get('payment-landing','itkonsultan\ViewerController@landing_payment');
 Route::group(['prefix'=>'pejantan'],function(){
     Route::get('config','pejantan\DataController@config');
     Route::get('jalan','pejantan\DataController@sk_jalan');
+    Route::get('chart','pejantan\DataController@chart');
     Route::get('jembatan','pejantan\DataController@sk_jembatan');
 });
 
@@ -120,13 +121,13 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     
 });
 
-Route::get('process-sk-jembaran',function(){
-    $data = DB::table('sk_jalan')->get();
-    foreach ($data as $key => $value) {
-        DB::table('sk_jalan')->where('id', $value->id)
-        ->update([
-            'PANJANG'=> str_replace(",",".",$value->PANJANG)
-        ]);
-    }
-    return ['status'=>true,"message"=>"OK"];
-});
+// Route::get('process-sk-jembaran',function(){
+//     $data = DB::table('sk_jalan')->get();
+//     foreach ($data as $key => $value) {
+//         DB::table('sk_jalan')->where('id', $value->id)
+//         ->update([
+//             'PANJANG'=> str_replace(",",".",$value->PANJANG)
+//         ]);
+//     }
+//     return ['status'=>true,"message"=>"OK"];
+// });

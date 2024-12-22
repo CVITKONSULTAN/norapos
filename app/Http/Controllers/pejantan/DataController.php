@@ -63,7 +63,7 @@ class DataController extends Controller
                 $result = [];
                 $Kecamatan = DB::table('sk_jembatan')->groupBy('KECAMATAN')->get();
                 foreach ($Kecamatan as $key => $value) {
-                    dd($value,$value->KECAMATAN);
+                    dd($value);
                     $result[$value->KECAMATAN] = DB::table('sk_jembatan')->where('KECAMATAN',$value->KECAMATAN)
                     ->count();
                 }

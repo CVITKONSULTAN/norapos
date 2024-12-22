@@ -42,7 +42,7 @@ class DataController extends Controller
         switch ($tipe) {
             case 'panjang_jalan_kecamatan':
                 $result = [];
-                $Kecamatan = DB::table('sk_jalan')->groupBy('KECAMATAN');
+                $Kecamatan = DB::table('sk_jalan')->groupBy('KECAMATAN')->get();
                 foreach ($Kecamatan as $key => $value) {
                     dd($value);
                     $result[$value] = DB::table('sk_jalan')->where('KECAMATAN',$value)
@@ -52,7 +52,7 @@ class DataController extends Controller
                 break;
             case 'tipe_jembatan':
                 $result = [];
-                $tipe = DB::table('sk_jembatan')->groupBy('Tipe');
+                $tipe = DB::table('sk_jembatan')->groupBy('Tipe')->get();
                 foreach ($tipe as $key => $value) {
                     $result[] = DB::table('sk_jembatan')->where('Tipe',$value)
                     ->sum('Tipe');
@@ -61,7 +61,7 @@ class DataController extends Controller
                 break;
             case 'jembatan_perkecamatan':
                 $result = [];
-                $Kecamatan = DB::table('sk_jembatan')->groupBy('KECAMATAN');
+                $Kecamatan = DB::table('sk_jembatan')->groupBy('KECAMATAN')->get();
                 foreach ($Kecamatan as $key => $value) {
                     $result[$value] = DB::table('sk_jembatan')->where('KECAMATAN',$value)
                     ->count();

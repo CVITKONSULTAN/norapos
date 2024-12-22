@@ -17,9 +17,20 @@ class DataController extends Controller
             return Helper::DataReturn(false,$th->getMessage());
         }
     }
+
     function sk_jembatan(Request $request){
         try {
             $data = DB::table('sk_jembatan')->get();
+            return Helper::DataReturn(true,"OK",$data);
+        } catch (\Throwable $th) {
+            return Helper::DataReturn(false,$th->getMessage());
+        }
+    }
+
+    function config(Request $request){
+        try {
+            $tipe = $request->tipe ?? "";
+            $data = DB::table('sk_config')->where('tipe',$tipe)->first();
             return Helper::DataReturn(true,"OK",$data);
         } catch (\Throwable $th) {
             return Helper::DataReturn(false,$th->getMessage());

@@ -91,6 +91,7 @@ Route::post('midtrans-notify','itkonsultan\DataController@midtrans_notify');
 Route::get('payment-landing','itkonsultan\ViewerController@landing_payment');
 
 Route::group(['prefix'=>'pejantan'],function(){
+    Route::get('config','pejantan\DataController@config');
     Route::get('jalan','pejantan\DataController@sk_jalan');
     Route::get('jembatan','pejantan\DataController@sk_jembatan');
 });

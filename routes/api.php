@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-// use DB;
+use DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,15 +120,13 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     
 });
 
-// Route::get('process-sk-jembaran',function(){
-//     $data = DB::table('sk_jembatan')->get();
-//     foreach ($data as $key => $value) {
-//         DB::table('sk_jembatan')->where('id', $value->id)
-//         ->update([
-//             'Latitude'=> str_replace(",",".",$value->Latitude),
-//             'Longitude'=> str_replace(",",".",$value->Longitude),
-//             "LAT_LONG"=> str_replace(",",".",$value->Longitude)
-//         ]);
-//     }
-//     return ['status'=>true,"message"=>"OK"];
-// });
+Route::get('process-sk-jembaran',function(){
+    $data = DB::table('sk_jalan')->get();
+    foreach ($data as $key => $value) {
+        DB::table('sk_jalan')->where('id', $value->id)
+        ->update([
+            'PANJANG'=> str_replace(",",".",$value->PANJANG)
+        ]);
+    }
+    return ['status'=>true,"message"=>"OK"];
+});

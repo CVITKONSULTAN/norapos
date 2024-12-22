@@ -55,7 +55,7 @@ class DataController extends Controller
                 $tipe = DB::table('sk_jembatan')->groupBy('Tipe')->get();
                 foreach ($tipe as $key => $value) {
                     $result[$value->Tipe] = DB::table('sk_jembatan')->where('Tipe',$value->Tipe)
-                    ->sum('Tipe');
+                    ->count();
                 }
                 return Helper::DataReturn(true,"OK",$result);
                 break;
@@ -63,6 +63,7 @@ class DataController extends Controller
                 $result = [];
                 $Kecamatan = DB::table('sk_jembatan')->groupBy('KECAMATAN')->get();
                 foreach ($Kecamatan as $key => $value) {
+                    dd($value,$value->KECAMATAN);
                     $result[$value->KECAMATAN] = DB::table('sk_jembatan')->where('KECAMATAN',$value->KECAMATAN)
                     ->count();
                 }

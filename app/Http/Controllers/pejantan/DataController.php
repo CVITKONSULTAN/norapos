@@ -45,7 +45,7 @@ class DataController extends Controller
                 $Kecamatan = DB::table('sk_jalan')->groupBy('KECAMATAN')->get();
                 foreach ($Kecamatan as $key => $value) {
                     // dd($value);
-                    $result[$value] = DB::table('sk_jalan')->where('KECAMATAN',$value->KECAMATAN)
+                    $result[$value->KECAMATAN] = DB::table('sk_jalan')->where('KECAMATAN',$value->KECAMATAN)
                     ->sum('PANJANG');
                 }
                 return Helper::DataReturn(true,"OK",$result);
@@ -54,7 +54,7 @@ class DataController extends Controller
                 $result = [];
                 $tipe = DB::table('sk_jembatan')->groupBy('Tipe')->get();
                 foreach ($tipe as $key => $value) {
-                    $result[] = DB::table('sk_jembatan')->where('Tipe',$value->Tipe)
+                    $result[$value->Tipe] = DB::table('sk_jembatan')->where('Tipe',$value->Tipe)
                     ->sum('Tipe');
                 }
                 return Helper::DataReturn(true,"OK",$result);
@@ -63,7 +63,7 @@ class DataController extends Controller
                 $result = [];
                 $Kecamatan = DB::table('sk_jembatan')->groupBy('KECAMATAN')->get();
                 foreach ($Kecamatan as $key => $value) {
-                    $result[$value] = DB::table('sk_jembatan')->where('KECAMATAN',$value->KECAMATAN)
+                    $result[$value->KECAMATAN] = DB::table('sk_jembatan')->where('KECAMATAN',$value->KECAMATAN)
                     ->count();
                 }
                 return Helper::DataReturn(true,"OK",$result);

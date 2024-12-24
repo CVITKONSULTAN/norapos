@@ -40,6 +40,21 @@ class DataController extends Controller
     function chart(Request $request){
         $tipe = $request->tipe ?? "";
         switch ($tipe) {
+            case 'kerusakan_jalan':
+                $result = [];
+                $jenis = [
+                    "BAIK_KM",
+                    "SEDANG_KM",
+                    "RUSAK_RINGAN_KM",
+                    "RUSAK_BERAT_KM"
+                ];
+                foreach ($Kecamatan as $key => $value) {
+                    // dd($value);
+                    $result[$value->KECAMATAN] = DB::table('sk_jalan')->where('KECAMATAN',$value->KECAMATAN)
+                    ->sum('PANJANG');
+                }
+                return Helper::DataReturn(true,"OK",$result);
+                break;
             case 'panjang_jalan_kecamatan':
                 $result = [];
                 $Kecamatan = DB::table('sk_jalan')->groupBy('KECAMATAN')->get();

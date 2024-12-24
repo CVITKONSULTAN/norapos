@@ -121,13 +121,22 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     
 });
 
-// Route::get('process-sk-jembaran',function(){
-//     $data = DB::table('sk_jalan')->get();
-//     foreach ($data as $key => $value) {
-//         DB::table('sk_jalan')->where('id', $value->id)
-//         ->update([
-//             'PANJANG'=> str_replace(",",".",$value->PANJANG)
-//         ]);
-//     }
-//     return ['status'=>true,"message"=>"OK"];
-// });
+Route::get('process-sk-jembaran',function(){
+    $data = DB::table('sk_jalan')->get();
+    foreach ($data as $key => $value) {
+
+        $value->BAIK_KM = $value->BAIK_KM == "-" ? null : str_replace(",",".",$value->BAIK_KM);
+        $value->SEDANG_KM = $value->SEDANG_KM == "-" ? null : str_replace(",",".",$value->SEDANG_KM);
+        $value->RUSAK_RINGAN_KM = $value->RUSAK_RINGAN_KM == "-" ? null : str_replace(",",".",$value->RUSAK_RINGAN_KM);
+        $value->RUSAK_BERAT_KM = $value->RUSAK_BERAT_KM == "-" ? null : str_replace(",",".",$value->RUSAK_BERAT_KM);
+
+        DB::table('sk_jalan')->where('id', $value->id)
+        ->update([
+            'BAIK_KM'=> $value->BAIK_KM,
+            'SEDANG_KM'=> $value->SEDANG_KM,
+            'RUSAK_RINGAN_KM'=> $value->RUSAK_RINGAN_KM,
+            'RUSAK_BERAT_KM'=> $value->RUSAK_BERAT_KM,
+        ]);
+    }
+    return ['status'=>true,"message"=>"OK"];
+});

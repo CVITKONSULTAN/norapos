@@ -92,6 +92,20 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/reservasi', "ReservasiController@index");
     Route::get('/reservasi/data', "HotelController@reservasi_list");
 
+    Route::group(['prefix'=>'pejantan'],function(){
+
+        Route::get('home','pejantan\DataController@home')->name('pejantan.home');
+        Route::get('jalan',function(){
+            return view('pejantan.jalan');
+        })->name('pejantan.jalan');
+        Route::get('jembatan',function(){
+            return view('pejantan.jembatan');
+        })->name('pejantan.jembatan');
+        Route::get('jalan/data','pejantan\DataController@jalan')->name('pejantan.jalan.api');
+        Route::get('jembatan/data','pejantan\DataController@jembatan')->name('pejantan.jembatan.api');
+
+    });
+
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
         Route::get('hitung-nilai','Sekolah\NilaiSiswaController@hitungNilaiRapor')

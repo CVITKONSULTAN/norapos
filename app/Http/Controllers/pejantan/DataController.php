@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Helper;
 use DB;
+use DataTables;
 
 class DataController extends Controller
 {
@@ -88,5 +89,23 @@ class DataController extends Controller
                 return Helper::DataReturn(false,"Tipe tidak ditemukan");
                 break;
         }
+    }
+
+    function jalan(Request $request){
+        $query = DB::table('sk_jalan');
+        return DataTables::of($query)
+        ->make(true);
+    }
+
+    function jembatan(Request $request){
+        $query = DB::table('sk_jembatan');
+        return DataTables::of($query)
+        ->make(true);
+    }
+
+    function home(Request $request){
+        $data['jembatan'] = DB::table('sk_jembatan')->count();
+        $data['jalan'] = DB::table('sk_jalan')->count();
+        return Helper::DataReturn(true,"OK",$data);
     }
 }

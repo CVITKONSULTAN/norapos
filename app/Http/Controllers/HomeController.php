@@ -58,6 +58,13 @@ class HomeController extends Controller
             return redirect()->to('/products');
         }
 
+        if (
+            auth()->user()->can('dashboard.data') &&
+            auth()->user()->business->business_category == "pejantan"
+        ) {
+            return view('pejantan.home');
+        }
+
         if (!auth()->user()->can('dashboard.data')) {
             return view('home.index');
         }

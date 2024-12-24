@@ -48,10 +48,10 @@ class DataController extends Controller
                     "RUSAK_RINGAN_KM",
                     "RUSAK_BERAT_KM"
                 ];
-                foreach ($Kecamatan as $key => $value) {
+                foreach ($jenis as $key => $value) {
                     // dd($value);
-                    $result[$value->KECAMATAN] = DB::table('sk_jalan')->where('KECAMATAN',$value->KECAMATAN)
-                    ->sum('PANJANG');
+                    $result[$value] = DB::table('sk_jalan')
+                    ->sum($value);
                 }
                 return Helper::DataReturn(true,"OK",$result);
                 break;
@@ -59,7 +59,6 @@ class DataController extends Controller
                 $result = [];
                 $Kecamatan = DB::table('sk_jalan')->groupBy('KECAMATAN')->get();
                 foreach ($Kecamatan as $key => $value) {
-                    // dd($value);
                     $result[$value->KECAMATAN] = DB::table('sk_jalan')->where('KECAMATAN',$value->KECAMATAN)
                     ->sum('PANJANG');
                 }

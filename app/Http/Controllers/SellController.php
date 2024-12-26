@@ -111,6 +111,21 @@ class SellController extends Controller
                     ->whereNotNull('transactions.pay_term_type')
                     ->whereRaw("IF(transactions.pay_term_type='days', DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number DAY) < CURDATE(), DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number MONTH) < CURDATE())");
             }
+            
+            if(
+                request()->has('list_status_filter') 
+                && !empty(request()->input('list_status_filter'))
+            ){
+                $list_status_filter = request()->input('list_status_filter');
+                if(in_array('overdue',$list_status_filter)){
+                    $sells->whereIn('transactions.payment_status', ['due', 'partial'])
+                    ->whereNotNull('transactions.pay_term_number')
+                    ->whereNotNull('transactions.pay_term_type')
+                    ->whereRaw("IF(transactions.pay_term_type='days', DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number DAY) < CURDATE(), DATE_ADD(transactions.transaction_date, INTERVAL transactions.pay_term_number MONTH) < CURDATE())");
+                } else {
+                    $sells->whereIn('transactions.payment_status', $list_status_filter);
+                }
+            }
 
             //Add condition for location,used in sales representative expense report
             if (request()->has('location_id')) {

@@ -132,6 +132,7 @@
 <script type="text/javascript">
 
 let history_cetak_table;
+let list_status_filter = [];
 
 $(document).ready( function(){
     //Date range as a button
@@ -168,6 +169,10 @@ $(document).ready( function(){
                 d.created_by = $('#created_by').val();
                 d.sales_cmsn_agnt = $('#sales_cmsn_agnt').val();
                 d.service_staffs = $('#service_staffs').val();
+
+                console.log("list_status_filter",list_status_filter)
+
+                d.list_status_filter = list_status_filter;
                 
                 @if($is_woocommerce)
                     if($('#synced_from_woocommerce').is(':checked')) {
@@ -228,7 +233,7 @@ $(document).ready( function(){
             for (var r in data){
                 let total_paid_row = typeof($(data[r].total_paid).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_paid).data('orig-value')) : 0;
                 total_paid_row = isNaN(total_paid_row) ? 0 : total_paid_row;
-                console.log("total_paid_row",r,total_paid_row);
+                // console.log("total_paid_row",r,total_paid_row);
                 footer_sale_total += typeof($(data[r].final_total).data('orig-value')) != 'undefined' ? parseFloat($(data[r].final_total).data('orig-value')) : 0;
                 footer_total_paid += total_paid_row;
                 footer_total_remaining += typeof($(data[r].total_remaining).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_remaining).data('orig-value')) : 0;
@@ -289,9 +294,42 @@ $(document).ready( function(){
     });
 });
 
+$(document).ready(function () {
+    // Inisialisasi iCheck pada elemen checkbox
+    $(".check_status_input").iCheck({
+        checkboxClass: 'icheckbox_square-blue', // Kelas iCheck yang digunakan
+    });
+
+    // Event handler untuk checkbox yang aktif
+    $(".check_status_input").on('ifChanged', function () {
+
+         // Cek jika checkbox dengan ID 'overdue' diaktifkan
+         if ($(this).attr("id") === "overdue" && $(this).is(":checked")) {
+            // Uncheck semua checkbox kecuali 'overdue'
+            $(".check_status_input").not("#overdue").iCheck('uncheck');
+        } else if ($(this).attr("id") !== "overdue") {
+            // Jika checkbox lain dicentang, uncheck 'overdue'
+            $("#overdue").iCheck('uncheck');
+        }
+
+        // Dapatkan semua nilai checkbox yang aktif
+        const activeValues = $(".check_status_input:checked").map(function () {
+            return $(this).val();
+        }).get();
+
+        // Tampilkan hasil di konsol
+        // console.log("Checkbox aktif:", activeValues);
+        list_status_filter = activeValues;
+        sell_table.ajax.reload();
+
+    });
+});
+
+
+
 $(document).on('click','.detail_history_cetak_modal', function(){
     const id = $(this).data('id')
-    console.log(id,$(this));
+    // console.log(id,$(this));
     const link = `/log_activity/data?column[]=actions&search[]=printInvoice&column[]=action_reference&search[]=transaction&column[]=relation_id&search[]=${id}`
     history_cetak_table.ajax.url(link).load();
     $('.history_print').modal('show')

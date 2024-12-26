@@ -26,6 +26,9 @@
             .widget-visible{
                 margin-bottom: 100px !important;
             }
+            .list_checkbox .checkbox {
+                display: inline-block;
+            }
         </style>
         
         @include('layouts.partials.css')

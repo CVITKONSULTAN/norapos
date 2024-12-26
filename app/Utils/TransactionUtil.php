@@ -38,8 +38,13 @@ class TransactionUtil extends Util
      *
      * @return boolean
      */
-    public function createSellTransaction($business_id, $input, $invoice_total, $user_id, $uf_data = true)
-    {
+    public function createSellTransaction(
+        $business_id, 
+        $input, 
+        $invoice_total, 
+        $user_id, 
+        $uf_data = true
+    ) {
         $invoice_scheme_id = !empty($input['invoice_scheme_id']) ? $input['invoice_scheme_id'] : null;
         $invoice_no = !empty($input['invoice_no']) ? $input['invoice_no'] : $this->getInvoiceNumber($business_id, $input['status'], $input['location_id'], $invoice_scheme_id);
 
@@ -4915,4 +4920,31 @@ class TransactionUtil extends Util
 
         return $parent_payment;
     }
+
+    function checkInvoiceNo(
+        $nomor,
+        $business_id,
+        $business_location = null,
+        $exclude = null
+    ){
+        $where = [
+            'invoice_no'=>$nomor,
+            'business_id'=>$business_id
+        ];
+        if(!empty($business_location)){
+            $where['location_id'] = $business_location;
+        }
+        $t = Transaction::where($where);
+        if(!empty($exclude)){
+            $t = $t->where('id','!=',$exclude);
+        }
+        $t = $t->first();
+        $status = empty($t);
+        return [
+            'status'=>$status,
+            'msg'=>
+            $status ? "OK" : "No invoice telah digunakan"
+        ];
+    }
+
 }

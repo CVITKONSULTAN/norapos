@@ -173,6 +173,14 @@
 						{!! Form::select('invoice_scheme_id', $invoice_schemes, $default_invoice_schemes->id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
 					</div>
 				</div>
+				@if(!empty($business_details->custom_invoice_no))
+					<div class="col-sm-3">
+						<div class="form-group">
+							{!! Form::label('invoice_no',  'Invoice No :*' ) !!}
+							{!! Form::text('invoice_no', null, ['id'=>'invoice_no','class' => 'form-control','placeholder' => "Nomor invoice...",'required']); !!}
+						</div>
+					</div>
+				@endif
 				<div class="clearfix"></div>
 				<!-- Call restaurant module if defined -->
 		        @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
@@ -180,6 +188,7 @@
 		          		<div class="col-md-3"></div>
 		        	</span>
 		        @endif
+
 			@endcomponent
 
 			@component('components.widget', ['class' => 'box-primary'])
@@ -467,4 +476,20 @@
     @if(in_array('tables' ,$enabled_modules) || in_array('modifiers' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
     	<script src="{{ asset('js/restaurant.js?v=' . $asset_v) }}"></script>
     @endif
+	
+	<script>
+		$("#invoice_no").change(function(){
+			const val = $(this).val();
+			$.ajax({
+				type:"GET",
+				url:"{{ route('invoice_no.check') }}",
+				data:{"invoice_no":val},
+				success:function(res){
+					if(!res.status){
+						toastr.error(res.msg);
+					}
+				}
+			})
+		})
+	</script>
 @endsection

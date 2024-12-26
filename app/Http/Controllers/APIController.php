@@ -1786,5 +1786,25 @@ class APIController extends Controller
     //     return view('hotel.print.registered_card',$data);
     // }
 
+    public function checkInvoiceNo(Request $request){
+        // return "OK";
+        // dd($request->all());
+        if(
+            !$request->has('invoice_no') ||
+            empty($request->invoice_no)
+        ){
+            return ['status'=>false,'msg'=>'Bad request'];
+        }
+        $business = $request->user()->business;
+        $location_id = $request->location_id ?? null;
+        $exclude = $request->exclude ?? null;
+        return $this->transactionUtil->checkInvoiceNo(
+            $request->invoice_no,
+            $business->id,
+            $location_id,
+            $exclude
+        );
+    }
+
 
 }

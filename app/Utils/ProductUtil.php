@@ -847,11 +847,7 @@ class ProductUtil extends Util
         $location_id
     )
     {
-        // dd(
-        //     $variation_data,
-        //     $accounting_method,
-        //     $location_id
-        // );
+        
         $variation_details = Variation::where('id', $variation_data['variation_id'])
                                         ->with(['product', 'product.product_tax'])
                                         ->first();
@@ -1429,7 +1425,7 @@ class ProductUtil extends Util
         foreach ($transaction->purchase_lines as $purchase_line) {
             if ($purchase_line->product->enable_stock == 1) {
 
-        //Available quantity in the purchase line
+                //Available quantity in the purchase line
                 $purchase_line_qty_avlbl = $purchase_line->quantity_remaining;
 
                 if ($purchase_line_qty_avlbl <= 0) {
@@ -1437,8 +1433,8 @@ class ProductUtil extends Util
                 }
 
                 //update sell line purchase line mapping
-                $sell_line_purchase_lines =
-        TransactionSellLinesPurchaseLines::where('purchase_line_id', 0)
+                $sell_line_purchase_lines = 
+                TransactionSellLinesPurchaseLines::where('purchase_line_id', 0)
                 ->join('transaction_sell_lines as tsl', 'tsl.id', '=', 'transaction_sell_lines_purchase_lines.sell_line_id')
                 ->join('transactions as t', 'tsl.transaction_id', '=', 't.id')
                 ->where('t.location_id', $transaction->location_id)
@@ -1456,6 +1452,7 @@ class ProductUtil extends Util
                             $slpl->save();
                             //update purchase line quantity sold
                             $purchase_line->quantity_sold += $slpl->quantity;
+                            dd($purchase_line->quantity_sold);
                             $purchase_line->save();
                         } else {
                             $diff = $slpl->quantity - $purchase_line_qty_avlbl;
@@ -1468,15 +1465,17 @@ class ProductUtil extends Util
                             $purchase_line->save();
 
                             TransactionSellLinesPurchaseLines::create([
-                'sell_line_id' => $slpl->sell_line_id,
-                'purchase_line_id' => 0,
-                'quantity' => $diff
-              ]);
+                                'sell_line_id' => $slpl->sell_line_id,
+                                'purchase_line_id' => 0,
+                                'quantity' => $diff
+                            ]);
+
                             break;
                         }
                     }
                 }
             }
+            dd($purchase_line);
         }
     }
 

@@ -146,12 +146,20 @@
 					</div>
 				</div>
 				@if($transaction->status == 'draft')
-				<div class="col-sm-3">
-					<div class="form-group">
-						{!! Form::label('invoice_scheme_id', __('invoice.invoice_scheme') . ':') !!}
-						{!! Form::select('invoice_scheme_id', $invoice_schemes, $default_invoice_schemes->id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+					<div class="col-sm-3">
+						<div class="form-group">
+							{!! Form::label('invoice_scheme_id', __('invoice.invoice_scheme') . ':') !!}
+							{!! Form::select('invoice_scheme_id', $invoice_schemes, $default_invoice_schemes->id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
+						</div>
 					</div>
-				</div>
+				@endif
+				@if(!empty($business_details->custom_invoice_no))
+					<div class="col-sm-3">
+						<div class="form-group">
+							{!! Form::label('invoice_no',  'Invoice No :*' ) !!}
+							{!! Form::text('invoice_no', $transaction->invoice_no ?? "", ['id'=>'invoice_no','class' => 'form-control','placeholder' => "Nomor invoice...",'required']); !!}
+						</div>
+					</div>
 				@endif
 				<div class="clearfix"></div>
 				<!-- Call restaurant module if defined -->
@@ -420,4 +428,19 @@
     @if(in_array('tables' ,$enabled_modules) || in_array('modifiers' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
     	<script src="{{ asset('js/restaurant.js?v=' . $asset_v) }}"></script>
     @endif
+	<script>
+		$("#invoice_no").change(function(){
+			const val = $(this).val();
+			$.ajax({
+				type:"GET",
+				url:"{{ route('invoice_no.check') }}",
+				data:{"invoice_no":val,"exclude":{{$transaction->id}}},
+				success:function(res){
+					if(!res.status){
+						toastr.error(res.msg);
+					}
+				}
+			})
+		})
+	</script>
 @endsection

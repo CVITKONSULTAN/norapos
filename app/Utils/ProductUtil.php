@@ -1452,7 +1452,7 @@ class ProductUtil extends Util
                             $slpl->save();
                             //update purchase line quantity sold
                             $purchase_line->quantity_sold += $slpl->quantity;
-                            dd($purchase_line->quantity_sold);
+                            // dd($purchase_line->quantity_sold);
                             $purchase_line->save();
                         } else {
                             $diff = $slpl->quantity - $purchase_line_qty_avlbl;
@@ -1475,7 +1475,7 @@ class ProductUtil extends Util
                     }
                 }
             }
-            dd($purchase_line);
+            // dd($purchase_line);
         }
     }
 

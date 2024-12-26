@@ -99,19 +99,19 @@
                             <strong><i class="fa fa-envelope margin-r-5"></i> 
                             @lang('business.email')</strong>
                             <p class="text-muted">
-                            {{$business->owner->email}}
+                            {{$business->owner->email ?? ""}}
                             </p>
 
                             <strong><i class="fa fa-address-book-o margin-r-5"></i> 
                             @lang('business.mobile')</strong>
                             <p class="text-muted">
-                            {{$business->owner->contact_no}}
+                            {{$business->owner->contact_no ?? ""}}
                             </p>
 
                             <strong><i class="fa fa-map-marker margin-r-5"></i> 
                             @lang('business.address')</strong>
                             <p class="text-muted">
-                            {{$business->owner->address}}
+                            {{$business->owner->address ?? ""}}
                             </p>
                         </div>
                     </div>

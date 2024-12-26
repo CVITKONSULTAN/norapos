@@ -82,7 +82,7 @@
                             @lang('business.created_by')</strong>
                             @if(!empty($created_by))
                             <p class="text-muted">
-                            {{$created_by->surname}} {{$created_by->first_name}} {{$created_by->last_name}}
+                            {{$created_by->surname ?? ""}} {{$created_by->first_name}} {{$created_by->last_name}}
                             </p>
                             @endif
                         </div>
@@ -93,7 +93,7 @@
                             <strong><i class="fa fa-user-circle-o margin-r-5"></i> 
                             @lang('business.owner')</strong>
                             <p class="text-muted">
-                            {{$business->owner->surname}} {{$business->owner->first_name}} {{$business->owner->last_name}}
+                            {{$business->owner->surname ?? ""}} {{$business->owner->first_name}} {{$business->owner->last_name}}
                             </p>
 
                             <strong><i class="fa fa-envelope margin-r-5"></i> 

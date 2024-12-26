@@ -339,7 +339,9 @@ class ProductUtil extends Util
     public function updateProductQuantity($location_id, $product_id, $variation_id, $new_quantity, $old_quantity = 0, $number_format = null, $uf_data = true)
     {
         if ($uf_data) {
+            // dd($qty_difference,$new_quantity,$old_quantity);
             $qty_difference = $this->num_uf($new_quantity, $number_format) - $this->num_uf($old_quantity, $number_format);
+            // dd($qty_difference,$new_quantity,$old_quantity);
         } else {
             $qty_difference = $new_quantity - $old_quantity;
         }
@@ -870,8 +872,9 @@ class ProductUtil extends Util
             $variation_stock_location = VariationLocationDetails::where('variation_id', $variation_id)
             ->where('location_id', $location_id)
             ->first();
-
-            $current_stock = $variation_stock_location->qty_available ?? 0;
+            
+            $current_stock = floatval(str_replace('.','',$variation_stock_location->qty_available ?? "0"));
+            // dd("detail",floatval($current_stock));
 
             $total_harga_current = $hpp_before * $current_stock;
 
@@ -1184,7 +1187,6 @@ class ProductUtil extends Util
                 $unit = Unit::find($data['sub_unit_id']);
                 $multiplier = !empty($unit->base_unit_multiplier) ? $unit->base_unit_multiplier : 1;
             }
-
             $new_quantity = $this->num_uf($data['quantity']) * $multiplier;
 
             //Edit product price
@@ -1197,6 +1199,7 @@ class ProductUtil extends Util
                 }
                 
                 $variation_data['qty'] = $new_quantity;
+                // dd($variation_data['qty'], $data['quantity']);
                 $variation_data['pp_without_discount'] = ($this->num_uf($data['pp_without_discount'], $currency_details)*$exchange_rate) / $multiplier;
                 $variation_data['variation_id'] = $data['variation_id'];
                 $variation_data['purchase_price'] = $purchase_price;
@@ -1210,8 +1213,9 @@ class ProductUtil extends Util
                 );
             }
 
-
-            $new_quantity_f = $this->num_f($new_quantity);
+            // $new_quantity_f = $this->num_f($new_quantity);
+            $new_quantity_f = $new_quantity;
+            // dd($new_quantity_f);
             //update existing purchase line
             if (isset($data['purchase_line_id'])) {
                 $purchase_line = PurchaseLine::findOrFail($data['purchase_line_id']);
@@ -1227,7 +1231,13 @@ class ProductUtil extends Util
 
                 //Increase quantity only if status is received
                 if ($transaction->status == 'received') {
-                    $this->updateProductQuantity($transaction->location_id, $data['product_id'], $data['variation_id'], $new_quantity_f, 0, $currency_details);
+                    $this->updateProductQuantity(
+                        $transaction->location_id, $data['product_id'], 
+                        $data['variation_id'], 
+                        $new_quantity_f, 
+                        0, 
+                        $currency_details
+                    );
                 }
             }
 

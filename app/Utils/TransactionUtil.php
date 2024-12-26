@@ -1421,6 +1421,7 @@ class TransactionUtil extends Util
             if (!empty($line->sub_unit->short_name)) {
                 $unit_name = $line->sub_unit->short_name;
             }
+            // dd($line->quantity);
 
             $line_array = [
                 //Field for 1st column
@@ -1428,7 +1429,8 @@ class TransactionUtil extends Util
                 'variation' => (empty($variation->name) || $variation->name == 'DUMMY') ? '' : $variation->name,
                 'product_variation' => (empty($product_variation->name) || $product_variation->name == 'DUMMY') ? '' : $product_variation->name,
                 //Field for 2nd column
-                'quantity' => $this->num_f($line->quantity, false, $business_details, true),
+                // 'quantity' => $this->num_f($line->quantity, false, $business_details, true),
+                'quantity' => $line->quantity,
                 'quantity_uf' => $line->quantity,
                 'units' => $unit_name,
 

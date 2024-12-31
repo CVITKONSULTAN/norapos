@@ -1062,6 +1062,16 @@ class SellPosController extends Controller
 
                 $transaction = $this->transactionUtil->updateSellTransaction($id, $business_id, $input, $invoice_total, $user_id);
 
+                if($request->has('invoice_no')){
+                    $transaction = Transaction::where('id', $transaction_id)
+                            ->where('business_id', $business_id)
+                            ->firstOrFail();
+                    // $invoice_no = $request->invoice_no ?? $transaction->invoice_no;
+                    $transaction->invoice_no = $request->invoice_no;
+                    $transaction->save();
+                }
+
+
                 //Update Sell lines
                 $deleted_lines = $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id'], true, $status_before);
 

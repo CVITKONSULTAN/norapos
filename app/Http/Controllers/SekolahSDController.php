@@ -1361,6 +1361,18 @@ class SekolahSDController extends Controller
     function upload(Request $request){
         try {
 
+            // Validasi file upload
+            $validated = $request->validate([
+                'file_data' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:512', // ukuran dalam kilobyte (500KB)
+            ]);
+
+            if (!$request->hasFile('file_data') || !$request->file('file_data')->isValid()) {
+                return [
+                    "status"=>false,
+                    'message' => "Format data hanya boleh image, dan maksimal ukuran 500KB"
+                ];
+            }
+
             $pathFile = $request->file_data->store('file_ppdb');
             $pathFile = url('uploads/'.$pathFile);
 

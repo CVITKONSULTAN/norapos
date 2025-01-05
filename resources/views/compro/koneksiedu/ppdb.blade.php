@@ -51,7 +51,7 @@
             class="hidden md:flex justify-between items-center gap-6 lg:gap-12"
           >
             <a
-              href="/index.html"
+              href="/"
               class="text-gray-800 hover:text-[#286D6B] transition-colors"
               >Home</a
             >
@@ -66,7 +66,7 @@
               >Contact</a
             >
             <a
-              href="/login.html"
+              href="/login"
               class="text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-4 lg:px-8 rounded-md"
               >Login</a
             >

@@ -82,7 +82,7 @@ Route::group(['prefix'=>'sekolah_sd'],function(){
     Route::get('raport-project/{id}/print',"SekolahSDController@raport_project_print");
 
     Route::post('ppdb/store','SekolahSDController@ppdb_store');
-    Route::post('upload','SekolahSDController@upload')->name('sekolah_sd.upload');
+    // Route::post('upload','SekolahSDController@upload')->name('sekolah_sd.upload');
 
 });
 
@@ -96,6 +96,7 @@ Route::post('forget-password',"APIController@forget_password")->name('api.forget
 
 Route::middleware(['Cors'])->group(function () {
     Route::get("data","APIController@data");
+    Route::post('upload','SekolahSDController@upload')->name('sekolah_sd.upload');
 });
 
 Route::get('wilayah','itkonsultan\WilayahController@getData');

@@ -11,7 +11,7 @@
       name="keywords"
       content="platform pendidikan, administrasi sekolah, KoneksiEdu, manajemen sekolah, pendidikan Indonesia"
     />
-    <title>Login KoneksiEdu - Platform Pendidikan Terintegrasi</title>
+    <title>PPDB SD MUHAMMADIYAH 2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       /* Default background image for desktop */

@@ -96,7 +96,7 @@ Route::post('forget-password',"APIController@forget_password")->name('api.forget
 
 Route::middleware(['Cors'])->group(function () {
     Route::get("data","APIController@data");
-    Route::post('upload','SekolahSDController@upload')->name('sekolah_sd.upload');
+    Route::post('/sekolah_sd/upload','SekolahSDController@upload')->name('sekolah_sd.upload');
 });
 
 Route::get('wilayah','itkonsultan\WilayahController@getData');

@@ -39,6 +39,7 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     }
 });
 
+Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
 
 
 Route::get('/command', function () {

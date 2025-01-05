@@ -59,6 +59,10 @@ Route::group(['middleware'=>'auth:api'],function(){
 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
+
+        // Route::get('ppdb','SekolahSDController@ppdb_store');
+        // Route::post('upload','SekolahSDController@upload');
+
         Route::get('kelas','SekolahSDController@kelas_siswa_api');
         Route::get('profil','SekolahSDController@profil_siswa_api');
         Route::post('update-password','SekolahSDController@update_password');
@@ -69,8 +73,17 @@ Route::group(['middleware'=>'auth:api'],function(){
 });
 
 Route::group(['prefix'=>'sekolah_sd'],function(){
+
+    Route::get('/',function(){
+        return ['status'=>"OK"];
+    });
+
     Route::get('raport-akhir/{id}/print',"SekolahSDController@raport_akhir_print");
     Route::get('raport-project/{id}/print',"SekolahSDController@raport_project_print");
+
+    Route::post('ppdb/store','SekolahSDController@ppdb_store');
+    Route::post('upload','SekolahSDController@upload')->name('sekolah_sd.upload');
+
 });
 
 Route::post('fcm-token','APIController@fcm_token_store');
@@ -121,22 +134,6 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     
 });
 
-// Route::get('process-sk-jembaran',function(){
-//     $data = DB::table('sk_jalan')->get();
-//     foreach ($data as $key => $value) {
-
-//         $value->BAIK_KM = $value->BAIK_KM == "-" ? null : str_replace(",",".",$value->BAIK_KM);
-//         $value->SEDANG_KM = $value->SEDANG_KM == "-" ? null : str_replace(",",".",$value->SEDANG_KM);
-//         $value->RUSAK_RINGAN_KM = $value->RUSAK_RINGAN_KM == "-" ? null : str_replace(",",".",$value->RUSAK_RINGAN_KM);
-//         $value->RUSAK_BERAT_KM = $value->RUSAK_BERAT_KM == "-" ? null : str_replace(",",".",$value->RUSAK_BERAT_KM);
-
-//         DB::table('sk_jalan')->where('id', $value->id)
-//         ->update([
-//             'BAIK_KM'=> $value->BAIK_KM,
-//             'SEDANG_KM'=> $value->SEDANG_KM,
-//             'RUSAK_RINGAN_KM'=> $value->RUSAK_RINGAN_KM,
-//             'RUSAK_BERAT_KM'=> $value->RUSAK_BERAT_KM,
-//         ]);
-//     }
-//     return ['status'=>true,"message"=>"OK"];
-// });
+Route::get('test',function(){
+    return view('test');
+});

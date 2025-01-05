@@ -17,11 +17,14 @@ use \App\Models\Sekolah\JurnalKelas;
 use \App\Models\Sekolah\RaporProjek;
 use \App\Models\Sekolah\DimensiProjek;
 use \App\Models\Sekolah\DataDimensiID;
+use \App\Models\Sekolah\PPDBSekolah;
 use \App\User;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
 use DB;
+
+use Storage;
 
 
 class SekolahSDController extends Controller
@@ -1330,6 +1333,48 @@ class SekolahSDController extends Controller
 
     function ppdb(Request $request){
         return view('compro.koneksiedu.ppdb');
+    }
+
+    function ppdb_store(Request $request){
+        try{
+
+            $input = $request->all();
+            PPDBSekolah::create([
+                'nama'=>$request->nama ?? "",
+                'detail'=>$input
+            ]);
+
+            return [
+                "status" => true,
+                "message" =>"Data berhasil disimpan terimakasih...",
+                "data" => null
+            ];
+
+        } catch (\Throwable $th) {
+            return [
+                "status"=>false,
+                "message"=>$th->getMessage(),
+            ];
+        }
+    }
+
+    function upload(Request $request){
+        try {
+
+            $pathFile = $request->file_data->store('file_ppdb');
+            $pathFile = url('uploads/'.$pathFile);
+
+            return [
+                "status"=>true,
+                "data"=> $pathFile,
+            ];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return [
+                "status"=>false,
+                "message"=>$th->getMessage(),
+            ];
+        }
     }
     
 }

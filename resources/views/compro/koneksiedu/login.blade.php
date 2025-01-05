@@ -246,7 +246,7 @@
       });
 
       const gotoLink = () => {
-        window.location.href = "https://wa.me/6285157815452";
+        window.location.href = "https://wa.me/6281254197359";
       }
     </script>
   </body>

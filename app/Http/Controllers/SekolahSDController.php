@@ -1363,7 +1363,7 @@ class SekolahSDController extends Controller
 
             // Validasi file upload
             $validated = $request->validate([
-                'file_data' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:512', // ukuran dalam kilobyte (500KB)
+                'file_data' => 'required|image|max:512', // ukuran dalam kilobyte (500KB)
             ]);
 
             if (!$request->hasFile('file_data') || !$request->file('file_data')->isValid()) {

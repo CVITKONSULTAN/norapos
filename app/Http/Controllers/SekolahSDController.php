@@ -23,7 +23,7 @@ use \App\User;
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
 use DB;
-
+use DataTables;
 use Storage;
 
 
@@ -1339,8 +1339,12 @@ class SekolahSDController extends Controller
         try{
 
             $input = $request->all();
+            $nama = $request->nama ?? "";
+            if($request->nama_lengkap){
+                $nama = $request->nama_lengkap;
+            }
             PPDBSekolah::create([
-                'nama'=>$request->nama ?? "",
+                'nama'=>$nama,
                 'detail'=>$input
             ]);
 
@@ -1387,6 +1391,41 @@ class SekolahSDController extends Controller
                 "message"=>$th->getMessage(),
             ];
         }
+    }
+
+    function ppdb_data(Request $request){
+        $query = PPDBSekolah::query();
+        return DataTables::of($query)
+        ->make(true);
+    }
+
+    function ppdb_data_show($id){
+        $data = PPDBSekolah::find($id);
+        if(empty($data)){
+            return [
+                'status'=>false,
+                'message'=>'Data not found'
+            ];    
+        }
+        return [
+            'status'=>true,
+            'message'=>'OK',
+            'data'=>$data
+        ];
+    }
+
+    function update_nama_ppdb(Request $request){
+        $list = PPDBSekolah::get();
+        foreach ($list as $key => $value) {
+            if($value->detail['nama_lengkap']){
+                $value->nama = $value->detail['nama_lengkap'];
+                $value->save();
+            }
+        }
+        return [
+            'status'=>true,
+            'message'=>'OK'
+        ];
     }
     
 }

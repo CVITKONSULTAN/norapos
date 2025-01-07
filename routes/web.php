@@ -39,7 +39,7 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     }
 });
 
-Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
+// Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
 
 
 Route::get('/command', function () {
@@ -108,6 +108,14 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     });
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
+
+        Route::get('ppdb/update','SekolahSDController@update_nama_ppdb')
+        ->name('sekolah_sd.ppdb.update');
+
+        Route::get('ppdb/list','SekolahSDController@ppdb_data')
+        ->name('sekolah_sd.ppdb.data');
+        Route::get('ppdb/{id}','SekolahSDController@ppdb_data_show')
+        ->name('sekolah_sd.ppdb.show');
 
         Route::get('hitung-nilai','Sekolah\NilaiSiswaController@hitungNilaiRapor')
         ->name('sekolah_sd.hitung-formatif');

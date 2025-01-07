@@ -14,6 +14,9 @@
         }
         .table_profile_dashboard_sekolah tr td {
             padding: 10px;
+            word-wrap: break-word; /* Membungkus kata jika terlalu panjang */
+            word-break: break-word; /* Membagi kata panjang menjadi bagian lebih kecil */
+            white-space: normal; /* Memastikan teks membungkus */
         }
     </style>
 @endsection

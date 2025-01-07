@@ -86,7 +86,7 @@
           <ul class="flex flex-col items-center space-y-4 py-6">
             <li>
               <a
-                href="/index.html"
+                href="/"
                 class="text-gray-800 hover:text-[#286D6B] transition-colors"
                 >Home</a
               >
@@ -107,7 +107,7 @@
             </li>
             <li class="w-full px-4">
               <a
-                href="/login.html"
+                href="/login"
                 class="flex items-center justify-center text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-8 rounded-md"
                 >Login</a
               >

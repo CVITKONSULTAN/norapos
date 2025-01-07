@@ -1,4 +1,4 @@
-const baseURL = "https://koneksiedu.com";
+const baseURL = "";
 
 const linkBerkasPPDB = {
   link_pembayaran_ppdb: "",

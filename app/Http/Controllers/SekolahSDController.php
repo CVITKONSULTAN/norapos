@@ -1417,7 +1417,7 @@ class SekolahSDController extends Controller
     function update_nama_ppdb(Request $request){
         $list = PPDBSekolah::get();
         foreach ($list as $key => $value) {
-            if($value->detail['nama_lengkap']){
+            if(isset($value->detail['nama_lengkap'])){
                 $value->nama = $value->detail['nama_lengkap'];
                 $value->save();
             }

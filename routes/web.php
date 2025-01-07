@@ -116,6 +116,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.ppdb.data');
         Route::get('ppdb/{id}','SekolahSDController@ppdb_data_show')
         ->name('sekolah_sd.ppdb.show');
+        Route::post('ppdb/{id}','SekolahSDController@ppdb_data_store')
+        ->name('sekolah_sd.ppdb.store');
 
         Route::get('hitung-nilai','Sekolah\NilaiSiswaController@hitungNilaiRapor')
         ->name('sekolah_sd.hitung-formatif');

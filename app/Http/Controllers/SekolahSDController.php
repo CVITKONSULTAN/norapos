@@ -1427,5 +1427,36 @@ class SekolahSDController extends Controller
             'message'=>'OK'
         ];
     }
+
+    function ppdb_data_store(Request $request,$id){
+        $data = PPDBSekolah::find($id);
+        $input = $request->all();
+        if($request->has('delete')){
+            $data->delete();
+            return [
+                'status'=>true,
+                'message'=>'OK'
+            ];
+        }
+        if($request->has('update')){
+
+            $nama = $request->nama ?? "";
+            if($request->nama_lengkap){
+                $nama = $request->nama_lengkap;
+            }
+
+            $data->update([
+                'nama'=>$nama,
+                'detail'=>$input
+            ]);
+
+            return [
+                'status'=>true,
+                'message'=>'OK'
+            ];
+        }
+
+        return ['status'=>false];
+    }
     
 }

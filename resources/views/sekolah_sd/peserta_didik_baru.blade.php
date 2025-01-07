@@ -116,6 +116,7 @@
     }
 
         $(document).ready( function(){
+            
             product_table = $('#product_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -137,16 +138,9 @@
                                 >
                                     Detail
                                 </button>
-                                <button 
-                                    class="btn btn-primary btn-xs" 
-                                    onclick="editData(${data})"
-                                >
-                                    Edit
-                                </button>
                                 <a 
                                     class="btn btn-danger btn-xs delete-product" 
-                                    href="{{ route('sekolah_sd.ekskul.store') }}/${data}"
-                                    data-id="${data}"
+                                    onclick="deleteData(${data})"
                                 >
                                     Hapus
                                 </a>
@@ -156,7 +150,31 @@
                     }
                 ]
             });
+
         });
+
+        const deleteData = (id) => {
+            swal({
+                title: LANG.sure,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        method: "POST",
+                        url: `/sekolah_sd/ppdb/${id}`,
+                        data:{delete:1},
+                        dataType: "json",
+                        success: function(response){
+                            if(response.status){
+                                product_table.ajax.reload();
+                            }
+                        }
+                    });
+                }
+            });
+        } 
 
     </script>
 @endsection

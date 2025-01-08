@@ -1394,7 +1394,7 @@ class SekolahSDController extends Controller
     }
 
     function ppdb_data(Request $request){
-        $query = PPDBSekolah::query();
+        $query = PPDBSekolah::orderBy('id','desc');
         return DataTables::of($query)
         ->make(true);
     }

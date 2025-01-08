@@ -68,6 +68,10 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Nama</th>
+                                        <th>Tgl Lahir</th>
+                                        <th>No. HP</th>
+                                        <th>Jarak</th>
+                                        <th>Waktu Tempuh</th>
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>
@@ -91,7 +95,29 @@
     <script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
     <script type="text/javascript">
 
+    const HitungTglLahir = (tgl_lahir) => {
+        if(!tgl_lahir || tgl_lahir == null) return '-';
+        // Tanggal lahir
+        const birthDate = moment(tgl_lahir, 'YYYY-MM-DD');
+        // Tanggal saat ini
+        const currentDate = moment();
+
+        // Hitung selisih tahun dan bulan
+        const years = currentDate.diff(birthDate, 'years');
+        const months = currentDate.diff(birthDate.add(years, 'years'), 'months');
+
+        // Output
+        // console.log(`Umur: ${years} tahun dan ${months} bulan.`);
+        return `${years} tahun ${months} bulan`;
+    }
+
     const detailData = (id) => {
+        const image_attribute_list = [
+            'bukti_bayar_ppdb',
+            'kartu_keluarga',
+            'akta_lahir',
+            'pas_foto',
+        ];
         $.ajax({
             url:`/sekolah_sd/ppdb/${id}`,
             success:(response)=>{
@@ -102,10 +128,20 @@
                 if(response.data.detail){
                     for(const k in response.data.detail){
                         const val = response.data.detail[k]
+                        let str = val;
+                        if(val == null) str = '-';
+                        if(image_attribute_list.includes(k))
+                        str = `<img class="img-responsive" src="${val}" />`
+
+                        if(k == 'tanggal_lahir'){
+                            const hitung = HitungTglLahir(val);
+                            str = `${val} (${hitung})`
+                        }
+
                         const template = `<tr>
                             <td>${k}</td>
                             <td>:</td>
-                            <td>${val}</td>
+                            <td>${str}</td>
                         </tr>`
                         $("#data_detail_table").append(template);
                     }
@@ -126,6 +162,37 @@
                 columns: [
                     {data:'id'},
                     {data:'nama'},
+                    {
+                        searchable: false,
+                        data:'id',
+                        render:(data,type,row)=> {
+                            if(!row.detail.tanggal_lahir) return '-';
+                            const hitung = HitungTglLahir(row.detail.tanggal_lahir);
+                            const tgl = moment(row.detail.tanggal_lahir).format('D/M/Y');
+                            return `${tgl} (${hitung})`
+                        }
+                    },
+                    {
+                        searchable: false,
+                        data:'id',
+                        render:(data,type,row)=> {
+                            return row.detail.no_hp ?? "-";
+                        }
+                    },
+                    {
+                        searchable: false,
+                        data:'id',
+                        render:(data,type,row)=> {
+                            return row.detail.jarak_ke_sekolah ?? "-";
+                        }
+                    },
+                    {
+                        searchable: false,
+                        data:'id',
+                        render:(data,type,row)=> {
+                            return row.detail.waktu_tempuh_ke_sekolah ?? "-";
+                        }
+                    },
                     {
                         searchable: false,
                         data: 'id',

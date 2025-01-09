@@ -39,7 +39,7 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     }
 });
 
-// Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
+Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
 
 
 Route::get('/command', function () {
@@ -318,6 +318,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('peserta-didik-baru/export',"SekolahSDController@export_ppdb")->name('sekolah_sd.ppdb.export');
         Route::get('peserta-didik-baru/cetak',"SekolahSDController@export_cetak")->name('sekolah_sd.ppdb.cetak');
+        Route::get('peserta-didik-baru/check',"SekolahSDController@checkNikPPDB")->name('sekolah_sd.ppdb.cek_nik');
 
         Route::get('peserta-didik-baru',function(){
             return view('sekolah_sd.peserta_didik_baru');

@@ -840,5 +840,38 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/compro/koneksiedu/script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+      const changeNIK = () => {
+        const val = $("#nik").val();
+        if(!val) return;
+        $.ajax({
+          url:"{{route('sekolah_sd.ppdb.cek_nik')}}",
+          data:{nik:val},
+          success:(response)=>{
+            if(!response.status) {
+              $("#button-submit").removeAttr('disabled')
+              return;
+            }
+            if(response.status)
+              Swal.fire({
+                title: 'Info',
+                text: '"NIK ini telah terdaftar"',
+                icon: 'info',
+                background: '#fef2c0',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'OK',
+              });
+
+              console.log($("#button-submit"));
+              
+              $("#button-submit").attr('disabled',true)
+          }
+        })
+      }
+      $("#nik").change(changeNIK)
+      // $("#nik").keyup(changeNIK)
+    </script>
   </body>
 </html>

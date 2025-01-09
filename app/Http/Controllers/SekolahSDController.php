@@ -1472,5 +1472,12 @@ class SekolahSDController extends Controller
         $data['kolom'] = array_keys($first->detail);
         return view('sekolah_sd.prints.list_ppdb',$data);
     }
+
+    function checkNikPPDB(Request $request){
+        $nik = $request->nik ?? null;
+        $check = PPDBSekolah::whereRaw("JSON_EXTRACT(detail, '$.nik') = '$nik'")->first();
+        if(empty($check)) return ['status'=>false,'message'=>'Not registered before'];
+        return ['status'=>true,'data'=>$check];
+    }
     
 }

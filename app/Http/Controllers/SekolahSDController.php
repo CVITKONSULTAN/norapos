@@ -25,6 +25,10 @@ use App\Helpers\Helper;
 use DB;
 use DataTables;
 use Storage;
+// use Excel;
+use Maatwebsite\Excel\Facades\Excel;
+
+use App\Exports\PPDBExport;
 
 
 class SekolahSDController extends Controller
@@ -1457,6 +1461,16 @@ class SekolahSDController extends Controller
         }
 
         return ['status'=>false];
+    }
+
+    function export_ppdb(Request $request){
+        return Excel::download(new PPDBExport, 'ppdbExport.xlsx');
+    }
+    function export_cetak(Request $request){
+        $data['list'] = PPDBSekolah::orderBy('id','desc')->get();
+        $first = $data['list']->first();
+        $data['kolom'] = array_keys($first->detail);
+        return view('sekolah_sd.prints.list_ppdb',$data);
     }
     
 }

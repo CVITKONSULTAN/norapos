@@ -316,6 +316,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('ranking-kelas',"SekolahSDController@raking_kelas_index")
         ->name('sekolah_sd.ranking_kelas.index');
 
+        Route::get('peserta-didik-baru/export',"SekolahSDController@export_ppdb")->name('sekolah_sd.ppdb.export');
+        Route::get('peserta-didik-baru/cetak',"SekolahSDController@export_cetak")->name('sekolah_sd.ppdb.cetak');
+
         Route::get('peserta-didik-baru',function(){
             return view('sekolah_sd.peserta_didik_baru');
         })

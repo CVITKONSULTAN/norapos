@@ -62,6 +62,10 @@
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="product_list_tab">
+                        <div class="text-right">
+                            <a href="{{route('sekolah_sd.ppdb.export')}}" class="btn btn-primary"><i class="fa fa-upload"></i> Ekspor</a>
+                            {{-- <a href="{{route('sekolah_sd.ppdb.cetak')}}" class="btn btn-primary"><i class="fa fa-print"></i> Cetak</a> --}}
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
                                 <thead>
@@ -156,6 +160,8 @@
             product_table = $('#product_table').DataTable({
                 processing: true,
                 serverSide: true,
+                dom: 'Bfrtip', // Hapus 'B' jika ingin tombol sepenuhnya dihilangkan
+                buttons: [],   // Kosongkan konfigurasi tombol untuk menonaktifkan semua tombol ekspor
                 "ajax": {
                     "url": "{{ route('sekolah_sd.ppdb.data') }}"
                 },

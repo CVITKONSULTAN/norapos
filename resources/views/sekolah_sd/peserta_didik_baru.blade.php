@@ -207,6 +207,12 @@
                             const template = `
                                 <button 
                                     class="btn btn-primary btn-xs" 
+                                    onclick="cetakData(${data})"
+                                >
+                                    Cetak
+                                </button>
+                                <button 
+                                    class="btn btn-primary btn-xs" 
                                     onclick="detailData(${data})"
                                 >
                                     Detail
@@ -248,6 +254,11 @@
                 }
             });
         } 
+
+        const cetakData = (id) => {
+            const url = `/ppdb-simuda/print/${id}`;
+            window.open(url, '_blank');
+        }
 
     </script>
 @endsection

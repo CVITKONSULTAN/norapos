@@ -122,6 +122,12 @@
         Formulir Registrasi Calon Peserta Didik Baru
       </h1>
 
+      <div>
+        <h2 class="text-xl font-bold text-[#286D6B] mb-4">
+          Anak anda sudah terdaftar dan ingin print bukti pendaftaran? <a style="color: blue;" href="javascript:void(0)" onclick="popupCetakBukti()">Klik Disini</a>
+        </h2>
+      </div>
+
       <form
         onsubmit="submitPPDB(event)"
         class="bg-white p-6 rounded-lg shadow-md space-y-6"
@@ -841,9 +847,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/compro/koneksiedu/script.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <script>
-      const changeNIK = () => {
-        const val = $("#nik").val();
+      const changeNIK = (input,print) => {
+        let val = $("#nik").val();
+        if(input) val = input;
         if(!val) return;
         $.ajax({
           url:"{{route('sekolah_sd.ppdb.cek_nik')}}",
@@ -851,20 +859,45 @@
           success:(response)=>{
             if(!response.status) {
               $("#button-submit").removeAttr('disabled')
+              if(print){
+                Swal.fire({
+                  title: 'Info',
+                  text: 'Nik belum pernah terdaftar',
+                  icon: 'info',
+                  background: '#fef2c0',
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'OK',
+                });
+              }
               return;
             }
-            if(response.status)
+            if(response.status){
+              if(print){
+                Swal.fire({
+                  title: 'Info',
+                  text: 'NIK terdaftar, tunggu sebentar...',
+                  icon: 'info',
+                  background: '#fef2c0',
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'OK',
+                });
+                const id = response.data.id;
+                const url = `/ppdb-simuda/print/${id}`;
+                window.location.href = url;
+                return;
+              }
               Swal.fire({
                 title: 'Info',
-                text: '"NIK ini telah terdaftar"',
+                text: 'NIK ini telah terdaftar',
                 icon: 'info',
                 background: '#fef2c0',
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'OK',
               });
-
-              console.log($("#button-submit"));
+            }
               
               $("#button-submit").attr('disabled',true)
           }
@@ -872,6 +905,65 @@
       }
       $("#nik").change(changeNIK)
       // $("#nik").keyup(changeNIK)
+
+      const HitungTglLahir = (tgl_lahir) => {
+        if(!tgl_lahir || tgl_lahir == null) return '-';
+        // Tanggal lahir
+        const birthDate = moment(tgl_lahir, 'YYYY-MM-DD');
+        // Tanggal saat ini
+        const currentDate = moment();
+
+        // Hitung selisih tahun dan bulan
+        const years = currentDate.diff(birthDate, 'years');
+        const months = currentDate.diff(birthDate.add(years, 'years'), 'months');
+
+        // Output
+        // console.log(`Umur: ${years} tahun dan ${months} bulan.`);
+        // return `${years} tahun ${months} bulan`;
+        // return {tahun:years,bulan:months}
+        return months
+      }
+
+      $("#tanggal-lahir").change(function(){
+        const val = $(this).val()
+        const res = HitungTglLahir(val)
+        if(res < 66){
+          Swal.fire({
+            title: 'Info',
+            text: 'Umur kurang dari 5 Tahun 6 Bulan',
+            icon: 'info',
+            background: '#fef2c0',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'OK',
+          });
+          
+          $("#button-submit").attr('disabled',true)
+          return;
+        }
+        $("#button-submit").removeAttr('disabled')
+        return;
+      })
+
+      const popupCetakBukti = () => {
+        Swal.fire({
+          title: 'Masukkan NIK',
+          input: 'text',
+          inputPlaceholder: '...',
+          showCancelButton: true,
+          confirmButtonText: 'Submit',
+          preConfirm: (value) => {
+            if (!value) {
+              Swal.showValidationMessage('NIK tidak boleh kosong!');
+            }
+            return value; // Jika validasi berhasil, kembalikan nilai
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            changeNIK(result.value,true);
+          }
+        });
+      }
     </script>
   </body>
 </html>

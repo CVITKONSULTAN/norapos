@@ -1479,5 +1479,11 @@ class SekolahSDController extends Controller
         if(empty($check)) return ['status'=>false,'message'=>'Not registered before'];
         return ['status'=>true,'data'=>$check];
     }
+
+    function ppdb_print(Request $request,$id){
+        $data['data'] = PPDBSekolah::findorfail($id);
+        // $data['kolom'] = array_keys($data['data']->detail);
+        return view('sekolah_sd.prints.ppdb_print',$data);
+    }
     
 }

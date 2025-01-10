@@ -32,7 +32,7 @@
             'akta_lahir',
             'pas_foto',
         ];
-        $data->detail = array_reverse($data->detail);
+        // $data->detail = array_reverse($data->detail);
         @endphp
         @foreach ($data->detail as $k => $item)    
             <tr>

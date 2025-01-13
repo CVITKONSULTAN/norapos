@@ -403,11 +403,13 @@
           </p>
 
           <div class="flex justify-start gap-4 md:gap-8 items-center mt-6">
-            <img
-              src="/compro/koneksiedu/assets/images/gplay.png"
-              class="w-36 md:w-48 h-auto cursor-pointer"
-              alt="Ikon Siswa"
-            />
+            <a href="https://play.google.com/store/apps/details?id=com.itkonsultan.simuda">
+              <img
+                src="/compro/koneksiedu/assets/images/gplay.png"
+                class="w-36 md:w-48 h-auto cursor-pointer"
+                alt="Ikon Siswa"
+              />
+            </a>
             <img
               src="/compro/koneksiedu/assets/images/kurikulum.png"
               class="w-36 md:w-48 h-auto"

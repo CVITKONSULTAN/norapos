@@ -137,11 +137,13 @@
           <div
             class="flex justify-start gap-2 md:gap-8 items-center mt-4 md:mt-6"
           >
-            <img
-              src="/compro/koneksiedu/assets/images/gplay.png"
-              class="w-40 md:w-48 h-auto cursor-pointer"
-              alt="Google Play"
-            />
+            <a href="https://play.google.com/store/apps/details?id=com.itkonsultan.simuda">
+              <img
+                src="/compro/koneksiedu/assets/images/gplay.png"
+                class="w-40 md:w-48 h-auto cursor-pointer"
+                alt="Google Play"
+              />
+            </a>
             <img
               src="/compro/koneksiedu/assets/images/kurikulum.png"
               class="w-40 md:w-48 h-auto"

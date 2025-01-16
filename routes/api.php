@@ -22,6 +22,8 @@ Route::get('/hotel/print', 'APIController@hotel_print');
 Route::get('/hotel/room/print', 'APIController@hotel_room_print');
 
 Route::group(['middleware'=>'auth:api'],function(){
+
+    Route::post('delete-account','APIController@deleteAccount');
     
     Route::post('/card', 'CardLogController@store');
 
@@ -59,9 +61,6 @@ Route::group(['middleware'=>'auth:api'],function(){
 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
-
-        // Route::get('ppdb','SekolahSDController@ppdb_store');
-        // Route::post('upload','SekolahSDController@upload');
 
         Route::get('kelas','SekolahSDController@kelas_siswa_api');
         Route::get('profil','SekolahSDController@profil_siswa_api');

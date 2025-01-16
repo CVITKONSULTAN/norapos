@@ -196,7 +196,14 @@ class APIController extends Controller
     function login(Request $request){
         try {
             $user = \App\User::where('username',$request->username)->first();
+
             if(empty($user)){
+                return response()->json(
+                    Helper::DataReturn(false,"Akun tidak ditemukan"), 
+                400); 
+            }
+
+            if($user->status !== "active"){
                 return response()->json(
                     Helper::DataReturn(false,"Akun tidak ditemukan"), 
                 400); 
@@ -1804,6 +1811,22 @@ class APIController extends Controller
             $location_id,
             $exclude
         );
+    }
+
+    function deleteAccount(Request $request){
+        try {
+            
+            $user = $request->user();
+            $user->status = 'terminated';
+            $user->save();
+            return response()->json(
+                Helper::DataReturn(true,"Akun berhasil di hapus..."), 
+            200);             
+        } catch (\Throwable $th) {
+            return response()->json(
+                Helper::DataReturn(false,"Akun tidak ditemukan"), 
+            400); 
+        }
     }
 
 

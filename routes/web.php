@@ -320,7 +320,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('peserta-didik-baru/export',"SekolahSDController@export_ppdb")->name('sekolah_sd.ppdb.export');
         Route::get('peserta-didik-baru/cetak',"SekolahSDController@export_cetak")->name('sekolah_sd.ppdb.cetak');
-        Route::get('peserta-didik-baru/check',"SekolahSDController@checkNikPPDB")->name('sekolah_sd.ppdb.cek_nik');
 
         Route::get('peserta-didik-baru',function(){
             return view('sekolah_sd.peserta_didik_baru');
@@ -687,3 +686,5 @@ Route::get('/print-invoice/{transaction_id}', 'SellPosController@printInvoice')-
 Route::group(['prefix'=>'webview'],function(){
     Route::get('/reports/profit-loss', 'ReportController@getProfitLossWebview');
 });
+
+Route::get('/sekolah_sd/peserta-didik-baru/check',"SekolahSDController@checkNikPPDB")->name('sekolah_sd.ppdb.cek_nik');

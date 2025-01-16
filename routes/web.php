@@ -688,3 +688,5 @@ Route::group(['prefix'=>'webview'],function(){
 });
 
 Route::get('/sekolah_sd/peserta-didik-baru/check',"SekolahSDController@checkNikPPDB")->name('sekolah_sd.ppdb.cek_nik');
+
+Route::get('/simuda-privacy-policy',"SekolahSDController@simudaPrivacy")->name('sekolah_sd.simuda.privacy');

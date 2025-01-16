@@ -1485,5 +1485,9 @@ class SekolahSDController extends Controller
         // $data['kolom'] = array_keys($data['data']->detail);
         return view('sekolah_sd.prints.ppdb_print',$data);
     }
+
+    function simudaPrivacy(Request $request){
+        return view('compro.koneksiedu.privacy-policy-simuda');
+    }
     
 }

@@ -15,13 +15,8 @@ include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
 
-$database_domain = ['beautyproclinic.com','koneksiedu.com'];
+$database_domain = ['beautyproclinic.com','koneksiedu.com','si-muda.com'];
 
-// Route::get('/test-login', function(){
-//     $domain = "koneksiedu";
-//     $data = [];
-//     return view("compro.$domain.login",$data);
-// });
 
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     $host = request()->getHost();
@@ -32,7 +27,10 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
         Route::get('/contact', "MultiDomainController@contact")->name("multi.contact");
         Route::get('/product', "MultiDomainController@product")->name("multi.product");
         Route::get('/services', "MultiDomainController@services")->name("multi.services");
-        if($host == 'koneksiedu.com'){
+        if(
+            $host == 'koneksiedu.com' ||
+            $host == 'si-muda.com'
+        ){
             Route::get('/login', "MultiDomainController@login")->name("multi.login");
             Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
         }

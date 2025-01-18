@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Spatie\Permission\Models\Role;
+
 
 class MakeSiswaUsers extends Command
 {
@@ -40,9 +42,17 @@ class MakeSiswaUsers extends Command
         echo "Membuat user dari siswas table \n";
         $siswas = \App\Models\Sekolah\Siswa::all();
         $business = \App\Business::where('business_category','sekolah_sd')->first();
+        $role = Role::where('business_id', $business->id)
+        ->where('name','like','%orang tua%')
+        ->first();
+        if(empty($role)){
+            echo "Role orang tua tidak ditemukan \n";
+            return;
+        }
         foreach ($siswas as $k => $siswa) {
             $u = \App\User::where('username',$siswa->nisn)->first();
             if(!empty($u)){
+                $u->assignRole($role->name);
                 echo "User dengan username ".$siswa->nisn." sudah ada \n";
                 continue;
             }
@@ -53,6 +63,7 @@ class MakeSiswaUsers extends Command
             $user->password = bcrypt($siswa->nisn);
             $user->business_id = $business->id;
             $user->save();
+            $user->assignRole($role->name);
         }
         echo "User berhasil dibuat \n";
         echo "Selesai ($k) \n";

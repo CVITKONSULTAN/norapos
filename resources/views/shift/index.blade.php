@@ -103,7 +103,16 @@
             } ],
             "columns":[
                 {"data":"id"},
-                {"data":"status"},
+                {
+                    "data":"status",
+                    "render":(data,type,row,meta) => {
+                        if(data == 'reviewed'){
+                            return `<span class="label label-success">Telah Direview</span>`;
+                        } else {
+                            return `<span class="label label-warning">Belum Direview</span>`;
+                        }
+                    }
+                },
                 {
                     "data":"file_path",
                     "render":(data,type,row,meta) => {
@@ -131,7 +140,6 @@
                         return moment(data).format('DD/MM/YYYY HH:mm:ss');
                     }
                 },
-                @can('shift.action')
                 {
                     "data":"id",
                     "render":(data,type,row,meta) => {
@@ -148,7 +156,6 @@
                         return str;
                     }
                 }
-                @endcan
             ]
         });
 

@@ -71,6 +71,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Status</th>
+                            <th>Cash</th>
+                            <th>Transfer</th>
+                            <th>Room</th>
                             <th>File</th>
                             <th>Upload By</th>
                             <th>Timestamp</th>
@@ -93,6 +96,13 @@
 
 @section('javascript')
     <script>
+
+        function formatNum(number) {
+            const reverse = number.toString().split('').reverse().join('');
+            const ribuan = reverse.match(/\d{1,3}/g);
+            const hasil = ribuan.join('.').split('').reverse().join('');
+            return `${hasil}`;
+            }
 
         const tambahData  = () => {
             $("#tambah_data").modal('show');
@@ -123,6 +133,22 @@
                         } else {
                             return `<span class="label label-warning">Belum Direview</span>`;
                         }
+                    }
+                },
+                {
+                    "data":"total_cash",
+                    "render":(data,type,row,meta) => {
+                        return formatNum(data);
+                    }
+                },
+                {"data":"total_transfer",
+                    "render":(data,type,row,meta) => {
+                        return formatNum(data);
+                    }
+                },
+                {"data":"total_room",
+                    "render":(data,type,row,meta) => {
+                        return formatNum(data);
                     }
                 },
                 {

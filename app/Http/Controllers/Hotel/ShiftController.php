@@ -73,6 +73,7 @@ class ShiftController extends Controller
                 ];
 
                 $data->reviewed_by = $user->id;
+                $data->status = 'reviewed';
                 $data->save();
 
                 return [

@@ -61,7 +61,7 @@ class ShiftController extends Controller
     public function store(Request $request)
     {
         try {
-
+            
             $user = $request->user();
             
             if($request->accepted){
@@ -90,6 +90,7 @@ class ShiftController extends Controller
                 ];
             }
 
+            $input = $request->all();
 
             $filepath = $request->filePath->store('shiftlog');
             $filepath = "/uploads/$filepath";

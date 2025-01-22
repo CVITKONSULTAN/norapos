@@ -12,6 +12,9 @@ class ShiftLog extends Model
         'reviewed_by',
         'user_id',
         'business_id',
+        'total_cash',
+        'total_transfer',
+        'total_room',
     ];
 
     public function reviewed()

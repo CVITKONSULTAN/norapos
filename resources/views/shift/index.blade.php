@@ -25,6 +25,18 @@
                         <label for="name">File Data</label>
                         <input type="file" class="form-control" name="filePath" required />
                     </div>
+                    <div class="form-group">
+                        <label>Total Cash (Walk in)</label>
+                        <input type="number" class="form-control" name="total_cash" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Total Transfer (Walk in)</label>
+                        <input type="number" class="form-control" name="total_transfer" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Total Room</label>
+                        <input type="number" class="form-control" name="total_room" required />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>

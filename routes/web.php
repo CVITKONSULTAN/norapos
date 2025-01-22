@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Artisan;
 
 $database_domain = ['beautyproclinic.com','koneksiedu.com','si-muda.com'];
 
-
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     $host = request()->getHost();
     if(in_array($host,$database_domain)){
@@ -330,6 +329,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/card', "CardLogController@index");
     Route::get('/card/data', "CardLogController@data");
+
+    Route::get('/log-shift-receptionist', "Hotel\ShiftController@index")->name('shift.index');
+    Route::post('/log-shift-receptionist/store', "Hotel\ShiftController@store")->name('shift.store');
+    Route::get('/log-shift-receptionist/data', "Hotel\ShiftController@data")->name('shift.data');
 
     Route::get('/absensi', "AbsensiController@create")->name('absensi.create');
     Route::post('/absensi/store', "AbsensiController@store")->name('absensi.store');

@@ -77,9 +77,34 @@
                         );
                     }
                 },
-                ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
+                ['icon' => 'fa fas fa-user']
             )->order(15);
 
+            //Shift Log dropdown
+            if( 
+                auth()->user()->checkReceptionist() ||
+                auth()->user()->checkAdmin() ||
+                auth()->user()->checkHRD()
+            ){
+                $menu->dropdown(
+                    "Shift Log",
+                    function ($sub) {
+                        $sub->url(
+                            route('shift.index'),
+                            "Daftar data",
+                            [
+                                'icon' => 'fa fas fa-list', 
+                                'active' => 
+                                    request()->segment(1) == 'log-shift-receptionist' && 
+                                    request()->segment(2) == ''
+                                ]
+                        );
+                    },
+                    ['icon' => 'fa fa-clock']
+                )->order(15);
+            }
+
+            
             if( auth()->user()->checkAdmin() ){
                 
                 //Reservasi

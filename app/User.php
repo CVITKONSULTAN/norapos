@@ -361,6 +361,12 @@ class User extends Authenticatable
         ->first();
         return !empty($check);
     }
+    function checkReceptionist(){
+        $role_name = "RESEPSIONIST";
+        $check = $this->roles()->where('name','like','%'.$role_name.'%')
+        ->first();
+        return !empty($check);
+    }
 
     function tendik(){
         return $this->hasOne(TenagaPendidik::class,'user_id','id');

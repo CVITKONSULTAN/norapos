@@ -36,6 +36,7 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     }
 });
 
+Route::get('/hotel/available', "HotelController@avail_display")->name("hotel.avail.display");
 Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
 Route::get('/ppdb-simuda/print/{id}', "SekolahSDController@ppdb_print")->name("sekolah.ppdb_print");
 

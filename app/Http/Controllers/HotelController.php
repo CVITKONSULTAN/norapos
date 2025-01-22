@@ -7,9 +7,13 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use Yajra\DataTables\Facades\DataTables;
 
+use App\Brands;
+use App\Product;
+
 
 class HotelController extends Controller
 {
+
     function reservasi_list(Request $request){
         $page = $request->page ?? 1;
         if($page < 0) $page = 1;
@@ -118,4 +122,62 @@ class HotelController extends Controller
             }
         }
     }
+
+    function availablity_kamar(Request $request){
+        
+        $business_id = $request->business_id ?? 11;
+
+        $query = Product::leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+        ->join('units', 'products.unit_id', '=', 'units.id')
+        ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
+        ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
+        ->leftJoin('tax_rates', 'products.tax', '=', 'tax_rates.id')
+        ->join('variations as v', 'v.product_id', '=', 'products.id')
+        ->leftJoin('variation_location_details as vld', 'vld.variation_id', '=', 'v.id')
+        ->where('products.business_id', $business_id)
+        ->where('products.type', '!=', 'modifier')
+        ->select(
+            'products.id',
+            'products.name as product',
+            'products.type',
+            'c1.name as category',
+            'c2.name as sub_category',
+            'units.actual_name as unit',
+            'brands.name as brand',
+            'tax_rates.name as tax',
+            'products.sku',
+            'products.image',
+            'products.enable_stock',
+            'products.is_inactive',
+            'products.not_for_selling',
+            'products.product_custom_field1',
+            'products.product_custom_field2',
+            'products.product_custom_field3',
+            'products.product_custom_field4'
+        )
+        ->groupBy('products.id')
+        ->get();
+
+        $groupBrand = $query->groupBy('brand');
+        $res = [];
+        foreach ($groupBrand as $key => $value) {
+            $total = $value->count();
+            $avail = $value->whereIn('product_custom_field2', ['VCI','VC'])->count();
+            $res[] = [
+                "brand" => $key,
+                "total" => $total,
+                "available" => $avail
+            ];
+        }
+        return [
+            'status'=>true,
+            'data'=>$res
+        ];
+
+    }
+
+    function avail_display(Request $request){
+        return view('hotel.frontend-ketersediaan');
+    }
+
 }

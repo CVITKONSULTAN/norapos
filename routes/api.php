@@ -18,6 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+Route::get('/hotel/available', "HotelController@availablity_kamar")->name("hotel.avail");
 Route::get('/hotel/print', 'APIController@hotel_print');
 Route::get('/hotel/room/print', 'APIController@hotel_room_print');
 

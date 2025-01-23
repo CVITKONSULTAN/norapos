@@ -133,7 +133,7 @@
         }
 
         .text-keterangan{
-            font-size: 8pt;
+            font-size: 10pt;
         }
 
     </style>
@@ -150,8 +150,8 @@
             <iframe src="https://20.detik.com/watch/livestreaming-trans7?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
         </div>
         <div class="mt-2">
-            <h1 class="text-keterangan">Informasi lebih lanjut mengenai ketersediaan kamar dapat menghubungi 
-                <span style="color: red;">RECEPTIONIS</span> atau hubungi layanan hotel pada nomor berikut : 
+            <h1 class="text-keterangan">Informasi  mengenai ketersediaan kamar hubungi 
+                <span style="color: red;">RECEPTIONIS</span> atau 
                 <span style="color:red;">082255985321</span>
             </h1>    
             <p style="font-size: 7pt;">Load data dalam (<span class="counter">15</span>)s</p>

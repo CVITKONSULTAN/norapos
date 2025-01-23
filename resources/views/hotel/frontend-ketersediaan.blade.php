@@ -58,7 +58,7 @@
         }
 
         .room-card {
-            flex: 0 0 45%;
+            flex: 0 0 25%;
             background: linear-gradient(270deg, #ff9a9e, #fad0c4);
             color: black;
             text-align: center;
@@ -66,12 +66,19 @@
             padding: 20px;
             border-radius: 10px;
             animation: gradientCard 7s ease infinite;
-            font-size: 1.5rem;
+            /* font-size: 1.5rem; */
+            font-size: 12pt;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .room-card h1 {
+            font-size: 20px;
+        }
+        .room-card h2 {
+            font-size: 15px;
+        }
         .room-card strong {
-            font-size: 1.2rem;
+            font-size: 13pt;
         }
 
         .room-card:nth-child(1) {
@@ -117,13 +124,18 @@
 
         .footer .marquee span {
             display: inline-block;
-            animation: marquee 15s linear infinite;
+            animation: marquee 30s linear infinite;
         }
 
         @keyframes marquee {
             from { transform: translateX(100%); }
             to { transform: translateX(-100%); }
         }
+
+        .text-keterangan{
+            font-size: 13pt;
+        }
+
     </style>
 </head>
 <body>
@@ -137,22 +149,17 @@
         <div class="ratio ratio-16x9">
             <iframe src="https://20.detik.com/watch/livestreaming-trans7?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
         </div>
-        <div class="mt-5">
-            <h1>Informasi lebih lanjut mengenai ketersediaan kamar dapat menghubungi 
+        <div class="mt-2">
+            <h1 class="text-keterangan">Informasi lebih lanjut mengenai ketersediaan kamar dapat menghubungi 
                 <span style="color: red;">RECEPTIONIS</span> atau hubungi layanan hotel pada nomor berikut : 
                 <span style="color:red;">082255985321</span>
             </h1>    
-            <p>Load data dalam (<span class="counter">15</span>)s</p>
+            <p style="font-size: 7pt;">Load data dalam (<span class="counter">15</span>)s</p>
         </div>
     </div>
 
     <!-- Room Availability Cards -->
-    <div class="room-cards">
-        {{-- <div class="room-card">
-            <h1>10</h1>
-            <h2>Single Room</h2>
-        </div> --}}
-    </div>
+    <div class="room-cards"></div>
 
     <div class="footer">
         <div class="marquee">
@@ -188,6 +195,14 @@
                     data.forEach((room, index) => {
                         if(room.brand == "") return;
                         const card = `
+                            <div class="room-card">
+                                <h1>${room.available}</h1>
+                                <h2>${room.brand} (${room.total})</h2>
+                            </div>
+                            <div class="room-card">
+                                <h1>${room.available}</h1>
+                                <h2>${room.brand} (${room.total})</h2>
+                            </div>
                             <div class="room-card">
                                 <h1>${room.available}</h1>
                                 <h2>${room.brand} (${room.total})</h2>

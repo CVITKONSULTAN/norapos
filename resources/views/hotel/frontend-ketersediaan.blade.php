@@ -63,7 +63,7 @@
             color: black;
             text-align: center;
             margin: 10px;
-            padding: 20px;
+            padding: 10px;
             border-radius: 10px;
             animation: gradientCard 7s ease infinite;
             /* font-size: 1.5rem; */
@@ -133,7 +133,7 @@
         }
 
         .text-keterangan{
-            font-size: 13pt;
+            font-size: 8pt;
         }
 
     </style>

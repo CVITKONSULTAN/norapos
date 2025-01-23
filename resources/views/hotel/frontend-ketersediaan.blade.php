@@ -199,14 +199,6 @@
                                 <h1>${room.available}</h1>
                                 <h2>${room.brand} (${room.total})</h2>
                             </div>
-                            <div class="room-card">
-                                <h1>${room.available}</h1>
-                                <h2>${room.brand} (${room.total})</h2>
-                            </div>
-                            <div class="room-card">
-                                <h1>${room.available}</h1>
-                                <h2>${room.brand} (${room.total})</h2>
-                            </div>
                         `;
                         roomCards.append(card);
                     });

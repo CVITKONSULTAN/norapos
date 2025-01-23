@@ -133,7 +133,7 @@
         }
 
         .text-keterangan{
-            font-size: 10pt;
+            font-size: 14pt;
         }
 
     </style>

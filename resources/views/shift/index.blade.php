@@ -80,9 +80,9 @@
                             <th>Reviewed By</th>
                             <th>Reviewed Time</th>
                             {{-- @can('shift.action') --}}
-                            @if(auth()->user()->checkAdmin() || auth()->user()->checkHRD())
+                            {{-- @if(auth()->user()->checkAdmin() || auth()->user()->checkHRD()) --}}
                                 <th>@lang( 'messages.action' )</th>
-                            @endif
+                            {{-- @endif --}}
                             {{-- @endcan --}}
                         </tr>
                     </thead>

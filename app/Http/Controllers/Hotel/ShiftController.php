@@ -92,6 +92,10 @@ class ShiftController extends Controller
 
             $input = $request->all();
 
+            $validated = $request->validate([
+                'filePath' => 'required|file|mimes:xls,xlsx', // ukuran dalam kilobyte (500KB)
+            ]);
+
             $filepath = $request->filePath->store('shiftlog');
             $filepath = "/uploads/$filepath";
             

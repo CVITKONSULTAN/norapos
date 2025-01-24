@@ -23,7 +23,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="name">File Data</label>
-                        <input type="file" class="form-control" name="filePath" required />
+                        <input accept=".xls,.xlsx" type="file" class="form-control" name="filePath" required />
                     </div>
                     <div class="form-group">
                         <label>Total Cash (Walk in)</label>

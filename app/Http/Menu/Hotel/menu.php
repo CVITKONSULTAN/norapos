@@ -84,6 +84,7 @@
             if( 
                 auth()->user()->checkReceptionist() ||
                 auth()->user()->checkAdmin() ||
+                auth()->user()->checkRole('AKUNTAN') ||
                 auth()->user()->checkHRD()
             ){
                 $menu->dropdown(

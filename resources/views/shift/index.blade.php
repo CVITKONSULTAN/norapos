@@ -79,11 +79,7 @@
                             <th>Timestamp</th>
                             <th>Reviewed By</th>
                             <th>Reviewed Time</th>
-                            {{-- @can('shift.action') --}}
-                            {{-- @if(auth()->user()->checkAdmin() || auth()->user()->checkHRD()) --}}
-                                <th>@lang( 'messages.action' )</th>
-                            {{-- @endif --}}
-                            {{-- @endcan --}}
+                            <th>@lang( 'messages.action' )</th>
                         </tr>
                     </thead>
                 </table>
@@ -184,7 +180,8 @@
                         let str = '';
                         @if(
                             Auth::user()->checkHRD() || 
-                            Auth::user()->checkAdmin()
+                            Auth::user()->checkAdmin() ||
+                            auth()->user()->checkRole('AKUNTAN')
                         )
                             if(!row.reviewed_by){
                                 str += `<button data-id="${data}" class="btn btn-primary update_status">Telah Direview</button> `;
@@ -204,7 +201,11 @@
         $("#filter_start").change(filterLoad)
         $("#filter_end").change(filterLoad)
         
-        @if(auth()->user()->checkAdmin() || auth()->user()->checkHRD())
+        @if(
+            auth()->user()->checkAdmin() || 
+            auth()->user()->checkHRD() ||
+            auth()->user()->checkRole('AKUNTAN')
+        )
             $(document).on('click', 'button.delete_button', function(){
                 swal({
                 title: LANG.sure,

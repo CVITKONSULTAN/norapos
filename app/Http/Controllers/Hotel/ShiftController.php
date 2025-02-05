@@ -33,11 +33,10 @@ class ShiftController extends Controller
         ->orderBy('created_at','desc')
         ->select('*');
         
-        $check = $user->checkAdmin();
-        $checkHrd = $user->checkHRD();
+        $check = $user->checkAdmin() || $user->checkHRD() || auth()->user()->checkRole('AKUNTAN');
 
         if(
-            !$check && !$checkHrd
+            !$check
         ){
             $data = $data->where('user_id',$user->id);
         }

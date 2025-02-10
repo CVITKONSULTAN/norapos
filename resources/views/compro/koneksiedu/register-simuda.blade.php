@@ -177,10 +177,11 @@
           <!-- Input fields -->
           <div class="flex flex-col items-start gap-4 mt-4 w-full">
             <input
-              type="text"
+              type="number"
               name="nisn"
               placeholder="Masukkan NISN"
               class="w-full p-3 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-[#286D6B]"
+              required
             />
             @if ($errors->has('nisn'))
                 <span class="help-block">
@@ -192,6 +193,7 @@
               type="email"
               placeholder="Masukkan email anda"
               class="w-full p-3 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-[#286D6B]"
+              required
             />
             @if ($errors->has('email'))
                 <span class="help-block">

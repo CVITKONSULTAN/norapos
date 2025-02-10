@@ -24,11 +24,10 @@ use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
 use DB;
 use DataTables;
-use Storage;
-// use Excel;
+use Storage;;
 use Maatwebsite\Excel\Facades\Excel;
-
 use App\Exports\PPDBExport;
+use Illuminate\Support\Facades\Password;
 
 
 class SekolahSDController extends Controller
@@ -1488,6 +1487,34 @@ class SekolahSDController extends Controller
 
     function simudaPrivacy(Request $request){
         return view('compro.koneksiedu.privacy-policy-simuda');
+    }
+    function register_form(Request $request){
+        return view('compro.koneksiedu.register-simuda');
+    }
+
+    function register(Request $request){
+        
+        try{
+            $user = User::where('username',$request->nisn)->first();
+            if(empty($user))
+            return ['status'=>false,'message'=>'Data user tidak ditemukan'];
+            $user->email = $request->email;
+            $user->save();
+    
+            $response = Password::sendResetLink(['email'=>$user->email]);
+    
+            if($response == Password::RESET_LINK_SENT){
+                return [
+                    'status'=>true,
+                    'message'=>'Link pengaturan password telah dikirim ke email anda, tolong cek inbox/spam...'
+                ];
+            }
+    
+            return ['status'=>false,'message'=>'Gagal mengirim link pengaturan password, tolong hubungi admin...'];
+        } catch(\Exception $e){
+            return ['status'=>false,'message'=>$e->getMessage()];
+        }
+
     }
     
 }

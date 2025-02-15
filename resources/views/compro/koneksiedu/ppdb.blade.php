@@ -23,6 +23,10 @@
       .help-block{
         color: red;
       }
+      img.close_icon{
+        width: 150px;
+        text-align: center;
+      }
       /* Background image for mobile devices */
       @media (max-width: 768px) {
         section.hero {
@@ -123,724 +127,734 @@
       </h1>
 
       <div>
-        <h2 class="text-xl font-bold text-[#286D6B] mb-4">
+        <h2 class="text-xl font-bold text-[#286D6B] mb-4" style="text-align: center;">
           Anak anda sudah terdaftar dan ingin print bukti pendaftaran? <a style="color: blue;" href="javascript:void(0)" onclick="popupCetakBukti()">Klik Disini</a>
         </h2>
       </div>
 
-      <form
-        onsubmit="submitPPDB(event)"
-        class="bg-white p-6 rounded-lg shadow-md space-y-6"
-      >
-        <!-- Bagian A -->
-        <div>
-          <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-            A. Jenis Pendaftaran
-          </h2>
-
-          <div class="space-y-4">
-            <div>
-              <label for="jenis-pendaftaran" class="block font-medium"
-                >Jenis Pendaftaran</label
-              >
-              <select
-                id="jenis-pendaftaran"
-                class="w-full border rounded-lg px-4 py-2"
-                required
-              >
-                <option value="siswa-baru">Siswa Baru</option>
-                <option value="mutasi">Mutasi</option>
-              </select>
-            </div>
-            <div id="input-nama-asal-sekolah" class="invisible">
-              <label for="nama-asal-sekolah" class="block font-medium"
-                >Nama Asal Sekolah</label
-              >
-              <input
-                type="text"
-                id="nama-asal-sekolah"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Asal Sekolah"
-              />
-            </div>
-            <div id="input-npsn-asal-sekolah" class="invisible">
-              <label for="npsn-asal-sekolah" class="block font-medium"
-                >NPSN Asal Sekolah</label
-              >
-              <input
-                type="text"
-                id="npsn-asal-sekolah"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="NPSN Asal Sekolah"
-              />
-            </div>
+      @if(true)
+        <h1 class="text-xl font-bold text-[#286D6B] mb-4" style="color: rgb(155, 0, 0); text-align:center; margin-top:50px;">
+          <div style="display: flex;justify-content: center;">
+            <img src="/sekolah/promote.png" class="close_icon" />
           </div>
-        </div>
+          Pendaftaran sudah di tutup pada tanggal 14 Februari 2025 pukul 14.00 WIB
+        </h1>
+      @else
+        <form
+          onsubmit="submitPPDB(event)"
+          class="bg-white p-6 rounded-lg shadow-md space-y-6"
+        >
+          <!-- Bagian A -->
+          <div>
+            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
+              A. Jenis Pendaftaran
+            </h2>
 
-        <!-- Bagian B -->
-        <div>
-          <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-            B. Identitas Calon Peserta Didik Baru
-          </h2>
-
-          <div class="space-y-4">
-            <div>
-              <label for="nama-lengkap" class="block font-medium"
-                >Nama Lengkap</label
-              >
-              <input
-                type="text"
-                id="nama-lengkap"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Lengkap"
-                required
-              />
-            </div>
-
-            <div>
-              <label class="block font-medium">Jenis Kelamin</label>
-              <div class="flex items-center space-x-4">
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    name="jenis-kelamin"
-                    value="Laki-Laki"
-                    class="mr-2"
-                    required
-                  />
-                  Laki-Laki
-                </label>
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    name="jenis-kelamin"
-                    value="Perempuan"
-                    class="mr-2"
-                  />
-                  Perempuan
-                </label>
-              </div>
-            </div>
-
-            <div id="input-nisn" class="invisible">
-              <label for="nisn" name="nisn" class="block font-medium"
-                >NISN</label
-              >
-              <input
-                type="text"
-                name="nisn"
-                id="nisn"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="NISN"
-              />
-            </div>
-
-            <div>
-              <label for="nik" class="block font-medium">NIK</label>
-              <input
-                type="text"
-                id="nik"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="NIK"
-                required
-              />
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-4">
               <div>
-                <label for="tempat-lahir" class="block font-medium"
-                  >Tempat Lahir</label
+                <label for="jenis-pendaftaran" class="block font-medium"
+                  >Jenis Pendaftaran</label
+                >
+                <select
+                  id="jenis-pendaftaran"
+                  class="w-full border rounded-lg px-4 py-2"
+                  required
+                >
+                  <option value="siswa-baru">Siswa Baru</option>
+                  <option value="mutasi">Mutasi</option>
+                </select>
+              </div>
+              <div id="input-nama-asal-sekolah" class="invisible">
+                <label for="nama-asal-sekolah" class="block font-medium"
+                  >Nama Asal Sekolah</label
                 >
                 <input
                   type="text"
-                  id="tempat-lahir"
+                  id="nama-asal-sekolah"
                   class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Tempat Lahir"
-                  required
+                  placeholder="Nama Asal Sekolah"
                 />
               </div>
-              <div>
-                <label for="tanggal-lahir" class="block font-medium"
-                  >Tanggal Lahir</label
+              <div id="input-npsn-asal-sekolah" class="invisible">
+                <label for="npsn-asal-sekolah" class="block font-medium"
+                  >NPSN Asal Sekolah</label
                 >
                 <input
-                  type="date"
-                  id="tanggal-lahir"
+                  type="text"
+                  id="npsn-asal-sekolah"
                   class="w-full border rounded-lg px-4 py-2"
-                  required
+                  placeholder="NPSN Asal Sekolah"
                 />
               </div>
             </div>
+          </div>
 
+          <!-- Bagian B -->
+          <div>
+            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
+              B. Identitas Calon Peserta Didik Baru
+            </h2>
+
+            <div class="space-y-4">
+              <div>
+                <label for="nama-lengkap" class="block font-medium"
+                  >Nama Lengkap</label
+                >
+                <input
+                  type="text"
+                  id="nama-lengkap"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Nama Lengkap"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block font-medium">Jenis Kelamin</label>
+                <div class="flex items-center space-x-4">
+                  <label class="flex items-center">
+                    <input
+                      type="radio"
+                      name="jenis-kelamin"
+                      value="Laki-Laki"
+                      class="mr-2"
+                      required
+                    />
+                    Laki-Laki
+                  </label>
+                  <label class="flex items-center">
+                    <input
+                      type="radio"
+                      name="jenis-kelamin"
+                      value="Perempuan"
+                      class="mr-2"
+                    />
+                    Perempuan
+                  </label>
+                </div>
+              </div>
+
+              <div id="input-nisn" class="invisible">
+                <label for="nisn" name="nisn" class="block font-medium"
+                  >NISN</label
+                >
+                <input
+                  type="text"
+                  name="nisn"
+                  id="nisn"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="NISN"
+                />
+              </div>
+
+              <div>
+                <label for="nik" class="block font-medium">NIK</label>
+                <input
+                  type="text"
+                  id="nik"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="NIK"
+                  required
+                />
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="tempat-lahir" class="block font-medium"
+                    >Tempat Lahir</label
+                  >
+                  <input
+                    type="text"
+                    id="tempat-lahir"
+                    class="w-full border rounded-lg px-4 py-2"
+                    placeholder="Tempat Lahir"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="tanggal-lahir" class="block font-medium"
+                    >Tanggal Lahir</label
+                  >
+                  <input
+                    type="date"
+                    id="tanggal-lahir"
+                    class="w-full border rounded-lg px-4 py-2"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="agama" class="block font-medium">Agama</label>
+                <select
+                  id="agama"
+                  class="w-full border rounded-lg px-4 py-2"
+                  required
+                >
+                  <option value="islam">Islam</option>
+                  <option value="kristen">Kristen</option>
+                  <option value="buddha">Buddha</option>
+                  <option value="hindu">Hindu</option>
+                  <option value="konghucu">Konghucu</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="kebutuhan-khusus" class="block font-medium"
+                  >Berkebutuhan Khusus</label
+                >
+                <input
+                  type="text"
+                  id="kebutuhan-khusus"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Berkebutuhan Khusus"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="alamat" class="block font-medium">Alamat Rumah</label>
+                <textarea
+                  id="alamat"
+                  class="w-full border rounded-lg px-4 py-2"
+                  rows="3"
+                  placeholder="Alamat Rumah"
+                  required
+                ></textarea>
+              </div>
+
+              <div>
+                <label for="dusun" class="block font-medium">Dusun</label>
+                <input
+                  type="text"
+                  id="dusun"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Nama Dusun"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="kelurahan" class="block font-medium"
+                  >Kelurahan/Desa</label
+                >
+                <input
+                  type="text"
+                  id="kelurahan"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Nama Kelurahan/Desa"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="kecamatan" class="block font-medium">Kecamatan</label>
+                <input
+                  type="text"
+                  id="kecamatan"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Nama Kecamatan"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="kabupaten" class="block font-medium"
+                  >Kabupaten/Kota</label
+                >
+                <input
+                  type="text"
+                  id="kabupaten"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Nama Kabupaten/Kota"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="provinsi" class="block font-medium">Provinsi</label>
+                <input
+                  type="text"
+                  id="provinsi"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Nama Provinsi"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="transportasi" class="block font-medium"
+                  >Alat Transportasi ke Sekolah</label
+                >
+                <input
+                  type="text"
+                  id="transportasi"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Alat Transportasi ke Sekolah"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="jenis-tinggal" class="block font-medium"
+                  >Jenis Tinggal</label
+                >
+                <input
+                  type="text"
+                  id="jenis-tinggal"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Jenis Tinggal"
+                  required
+                />
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="telpon-rumah" class="block font-medium"
+                    >No. Telp Rumah</label
+                  >
+                  <input
+                    type="text"
+                    id="telpon-rumah"
+                    class="w-full border rounded-lg px-4 py-2"
+                    placeholder="No. Telp Rumah"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="telpon-hape" class="block font-medium"
+                    >No. HP</label
+                  >
+                  <input
+                    type="text"
+                    id="telpon-hape"
+                    class="w-full border rounded-lg px-4 py-2"
+                    placeholder="No. HP"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="email-pribadi" class="block font-medium"
+                  >Email Pribadi</label
+                >
+                <input
+                  type="email"
+                  id="email-pribadi"
+                  class="w-full border rounded-lg px-4 py-2"
+                  placeholder="Email Pribadi"
+                  required
+                />
+              </div>
+
+              <div>
+                <label for="pas-foto" class="block font-medium">
+                  Pas Foto Siswa (Format: .jpeg, .jpg, .png)
+                </label>
+                <input
+                  type="file"
+                  id="pas-foto"
+                  class="w-full border rounded-lg px-4 py-2"
+                  accept=".jpeg, .jpg, .png"
+                  required
+                  onchange="validateAndCompressFile(this, 'pas-foto')"
+                />
+                <div id="pas-foto-loading" class="hidden">Loading...</div>
+                <img
+                  id="pas-foto-preview"
+                  class="hidden w-32 mt-2"
+                  alt="Preview"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Bagian C -->
+          <div class="space-y-4">
+            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
+              C. Data Orangtua/Wali
+            </h2>
+            <!-- Ayah -->
             <div>
-              <label for="agama" class="block font-medium">Agama</label>
-              <select
-                id="agama"
+              <label for="ayah-nama" class="block font-medium">Nama Ayah</label>
+              <input
+                placeholder="Nama Ayah"
+                type="text"
+                id="ayah-nama"
                 class="w-full border rounded-lg px-4 py-2"
-                required
+              />
+            </div>
+            <div>
+              <label for="ayah-tahun-lahir" class="block font-medium"
+                >Tahun Lahir Ayah:</label
               >
-                <option value="islam">Islam</option>
-                <option value="kristen">Kristen</option>
-                <option value="buddha">Buddha</option>
-                <option value="hindu">Hindu</option>
-                <option value="konghucu">Konghucu</option>
+              <input
+                placeholder="Tahun Lahir Ayah"
+                type="text"
+                name="ayah-tahun-lahir"
+                id="ayah-tahun-lahir"
+                class="w-full border rounded-lg px-4 py-2"
+              />
+            </div>
+            <div>
+              <label class="block font-medium">Pekerjaan Ayah:</label>
+              <input
+                placeholder="Pekerjaan Ayah"
+                type="text"
+                name="pekerjaan-ayah"
+                id="pekerjaan-ayah"
+                class="w-full border rounded-lg px-4 py-2"
+              />
+            </div>
+            <div>
+              <label for="pendidikan-ayah" class="block font-medium"
+                >Pendidikan Ayah</label
+              >
+              <select
+                placeholder="Pendidikan Ayah"
+                id="pendidikan-ayah"
+                class="w-full border rounded-lg px-4 py-2"
+              >
+                <option value="">Pilih Pendidikan</option>
+                <option>S3</option>
+                <option>S2</option>
+                <option>D4/S1</option>
+                <option>D3</option>
+                <option>D2</option>
+                <option>D1</option>
+                <option>SMA Sederajat</option>
+                <option>SMP Sederajat</option>
+                <option>SD Sederajat</option>
+                <option>Putus SD</option>
+                <option>Tidak Sekolah</option>
               </select>
             </div>
-
             <div>
-              <label for="kebutuhan-khusus" class="block font-medium"
+              <label for="kebutuhan-khusus-ayah" class="block font-medium"
                 >Berkebutuhan Khusus</label
               >
               <input
                 type="text"
-                id="kebutuhan-khusus"
+                id="kebutuhan-khusus-ayah"
                 class="w-full border rounded-lg px-4 py-2"
                 placeholder="Berkebutuhan Khusus"
-                required
               />
             </div>
-
             <div>
-              <label for="alamat" class="block font-medium">Alamat Rumah</label>
-              <textarea
-                id="alamat"
-                class="w-full border rounded-lg px-4 py-2"
-                rows="3"
-                placeholder="Alamat Rumah"
-                required
-              ></textarea>
-            </div>
-
-            <div>
-              <label for="dusun" class="block font-medium">Dusun</label>
+              <label class="block font-medium">Penghasilan Bulanan Ayah</label>
               <input
                 type="text"
-                id="dusun"
+                id="penghasilan-ayah"
+                name="penghasilan-ayah"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Dusun"
-                required
+                placeholder="Penghasilan Bulanan Ayah"
               />
             </div>
-
+            <!-- Ibu -->
             <div>
-              <label for="kelurahan" class="block font-medium"
-                >Kelurahan/Desa</label
+              <label for="ibu-nama" class="block font-medium">Nama Ibu</label>
+              <input
+                type="text"
+                id="ibu-nama"
+                class="w-full border rounded-lg px-4 py-2"
+                placeholder="Nama Ibu"
+              />
+            </div>
+            <div>
+              <label for="ibu-tahun-lahir" class="block font-medium"
+                >Tahun Lahir Ibu:</label
               >
               <input
                 type="text"
-                id="kelurahan"
+                name="ibu-tahun-lahir"
+                id="ibu-tahun-lahir"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Kelurahan/Desa"
-                required
+                placeholder="Tahun Lahir Ibu"
               />
             </div>
-
             <div>
-              <label for="kecamatan" class="block font-medium">Kecamatan</label>
+              <label class="block font-medium">Pekerjaan Ibu:</label>
               <input
                 type="text"
-                id="kecamatan"
+                name="pekerjaan-ibu"
+                id="pekerjaan-ibu"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Kecamatan"
-                required
+                placeholder="Pekerjaan Ibu"
               />
             </div>
-
             <div>
-              <label for="kabupaten" class="block font-medium"
-                >Kabupaten/Kota</label
+              <label for="pendidikan-ibu" class="block font-medium"
+                >Pendidikan Ibu</label
+              >
+              <select
+                id="pendidikan-ibu"
+                class="w-full border rounded-lg px-4 py-2"
+              >
+                <option value="">Pilih Pendidikan</option>
+                <option>S3</option>
+                <option>S2</option>
+                <option>D4/S1</option>
+                <option>D3</option>
+                <option>D2</option>
+                <option>D1</option>
+                <option>SMA Sederajat</option>
+                <option>SMP Sederajat</option>
+                <option>SD Sederajat</option>
+                <option>Putus SD</option>
+                <option>Tidak Sekolah</option>
+              </select>
+            </div>
+            <div>
+              <label for="kebutuhan-khusus-ibu" class="block font-medium"
+                >Berkebutuhan Khusus</label
               >
               <input
                 type="text"
-                id="kabupaten"
+                id="kebutuhan-khusus-ibu"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Kabupaten/Kota"
-                required
+                placeholder="Berkebutuhan Khusus"
               />
             </div>
-
             <div>
-              <label for="provinsi" class="block font-medium">Provinsi</label>
+              <label class="block font-medium">Penghasilan Bulanan Ibu</label>
               <input
                 type="text"
-                id="provinsi"
+                id="penghasilan-ibu"
+                name="penghasilan-ibu"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Provinsi"
-                required
+                placeholder="Penghasilan Bulanan Ibu"
               />
             </div>
-
+            <!-- Wali -->
             <div>
-              <label for="transportasi" class="block font-medium"
-                >Alat Transportasi ke Sekolah</label
+              <label for="wali-nama" class="block font-medium">Nama Wali</label>
+              <input
+                type="text"
+                id="wali-nama"
+                class="w-full border rounded-lg px-4 py-2"
+                placeholder="Nama Wali"
+              />
+            </div>
+            <div>
+              <label for="wali-tahun-lahir" class="block font-medium"
+                >Tahun Lahir Wali:</label
               >
               <input
                 type="text"
-                id="transportasi"
+                id="wali-tahun-lahir"
+                name="wali-tahun-lahir"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Alat Transportasi ke Sekolah"
-                required
+                placeholder="Tahun Lahir Wali"
               />
             </div>
-
             <div>
-              <label for="jenis-tinggal" class="block font-medium"
-                >Jenis Tinggal</label
+              <label class="block font-medium">Pekerjaan Wali:</label>
+              <input
+                type="text"
+                id="pekerjaan-wali"
+                name="pekerjaan-wali"
+                class="w-full border rounded-lg px-4 py-2"
+                placeholder="Pekerjaan Wali"
+              />
+            </div>
+            <div>
+              <label for="pendidikan-wali" class="block font-medium"
+                >Pendidikan Wali</label
+              >
+              <select
+                id="pendidikan-wali"
+                class="w-full border rounded-lg px-4 py-2"
+              >
+                <option value="">Pilih Pendidikan</option>
+                <option>S3</option>
+                <option>S2</option>
+                <option>D4/S1</option>
+                <option>D3</option>
+                <option>D2</option>
+                <option>D1</option>
+                <option>SMA Sederajat</option>
+                <option>SMP Sederajat</option>
+                <option>SD Sederajat</option>
+                <option>Putus SD</option>
+                <option>Tidak Sekolah</option>
+              </select>
+            </div>
+            <div>
+              <label for="kebutuhan-khusus-wali" class="block font-medium"
+                >Berkebutuhan Khusus</label
               >
               <input
                 type="text"
-                id="jenis-tinggal"
+                id="kebutuhan-khusus-wali"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Jenis Tinggal"
-                required
+                placeholder="Berkebutuhan Khusus"
               />
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label for="telpon-rumah" class="block font-medium"
-                  >No. Telp Rumah</label
-                >
-                <input
-                  type="text"
-                  id="telpon-rumah"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="No. Telp Rumah"
-                  required
-                />
-              </div>
-              <div>
-                <label for="telpon-hape" class="block font-medium"
-                  >No. HP</label
-                >
-                <input
-                  type="text"
-                  id="telpon-hape"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="No. HP"
-                  required
-                />
-              </div>
-            </div>
-
             <div>
-              <label for="email-pribadi" class="block font-medium"
-                >Email Pribadi</label
-              >
+              <label class="block font-medium">Penghasilan Bulanan Wali</label>
               <input
-                type="email"
-                id="email-pribadi"
+                type="text"
+                id="penghasilan-wali"
+                name="penghasilan-wali"
                 class="w-full border rounded-lg px-4 py-2"
-                placeholder="Email Pribadi"
-                required
+                placeholder="Penghasilan Bulanan Wali"
               />
             </div>
 
+            <!-- Bagian D -->
             <div>
-              <label for="pas-foto" class="block font-medium">
-                Pas Foto Siswa (Format: .jpeg, .jpg, .png)
-              </label>
-              <input
-                type="file"
-                id="pas-foto"
-                class="w-full border rounded-lg px-4 py-2"
-                accept=".jpeg, .jpg, .png"
-                required
-                onchange="validateAndCompressFile(this, 'pas-foto')"
-              />
-              <div id="pas-foto-loading" class="hidden">Loading...</div>
-              <img
-                id="pas-foto-preview"
-                class="hidden w-32 mt-2"
-                alt="Preview"
-              />
-            </div>
-          </div>
-        </div>
+              <h2 class="text-xl font-bold text-[#286D6B] mb-4">
+                D. Data Periodik Calon Peserta Didik
+              </h2>
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label for="tinggi-badan" class="block font-medium"
+                      >Tinggi Badan</label
+                    >
+                    <input
+                      type="number"
+                      id="tinggi-badan"
+                      class="w-full border rounded-lg px-4 py-2"
+                      placeholder="Tinggi Badan (cm)"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label for="berat-bedan" class="block font-medium"
+                      >Berat Badan</label
+                    >
+                    <input
+                      type="number"
+                      id="berat-badan"
+                      class="w-full border rounded-lg px-4 py-2"
+                      placeholder="Berat Badan (kg)"
+                      required
+                    />
+                  </div>
+                </div>
 
-        <!-- Bagian C -->
-        <div class="space-y-4">
-          <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-            C. Data Orangtua/Wali
-          </h2>
-          <!-- Ayah -->
-          <div>
-            <label for="ayah-nama" class="block font-medium">Nama Ayah</label>
-            <input
-              placeholder="Nama Ayah"
-              type="text"
-              id="ayah-nama"
-              class="w-full border rounded-lg px-4 py-2"
-            />
-          </div>
-          <div>
-            <label for="ayah-tahun-lahir" class="block font-medium"
-              >Tahun Lahir Ayah:</label
-            >
-            <input
-              placeholder="Tahun Lahir Ayah"
-              type="text"
-              name="ayah-tahun-lahir"
-              id="ayah-tahun-lahir"
-              class="w-full border rounded-lg px-4 py-2"
-            />
-          </div>
-          <div>
-            <label class="block font-medium">Pekerjaan Ayah:</label>
-            <input
-              placeholder="Pekerjaan Ayah"
-              type="text"
-              name="pekerjaan-ayah"
-              id="pekerjaan-ayah"
-              class="w-full border rounded-lg px-4 py-2"
-            />
-          </div>
-          <div>
-            <label for="pendidikan-ayah" class="block font-medium"
-              >Pendidikan Ayah</label
-            >
-            <select
-              placeholder="Pendidikan Ayah"
-              id="pendidikan-ayah"
-              class="w-full border rounded-lg px-4 py-2"
-            >
-              <option value="">Pilih Pendidikan</option>
-              <option>S3</option>
-              <option>S2</option>
-              <option>D4/S1</option>
-              <option>D3</option>
-              <option>D2</option>
-              <option>D1</option>
-              <option>SMA Sederajat</option>
-              <option>SMP Sederajat</option>
-              <option>SD Sederajat</option>
-              <option>Putus SD</option>
-              <option>Tidak Sekolah</option>
-            </select>
-          </div>
-          <div>
-            <label for="kebutuhan-khusus-ayah" class="block font-medium"
-              >Berkebutuhan Khusus</label
-            >
-            <input
-              type="text"
-              id="kebutuhan-khusus-ayah"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Berkebutuhan Khusus"
-            />
-          </div>
-          <div>
-            <label class="block font-medium">Penghasilan Bulanan Ayah</label>
-            <input
-              type="text"
-              id="penghasilan-ayah"
-              name="penghasilan-ayah"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Penghasilan Bulanan Ayah"
-            />
-          </div>
-          <!-- Ibu -->
-          <div>
-            <label for="ibu-nama" class="block font-medium">Nama Ibu</label>
-            <input
-              type="text"
-              id="ibu-nama"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Nama Ibu"
-            />
-          </div>
-          <div>
-            <label for="ibu-tahun-lahir" class="block font-medium"
-              >Tahun Lahir Ibu:</label
-            >
-            <input
-              type="text"
-              name="ibu-tahun-lahir"
-              id="ibu-tahun-lahir"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Tahun Lahir Ibu"
-            />
-          </div>
-          <div>
-            <label class="block font-medium">Pekerjaan Ibu:</label>
-            <input
-              type="text"
-              name="pekerjaan-ibu"
-              id="pekerjaan-ibu"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Pekerjaan Ibu"
-            />
-          </div>
-          <div>
-            <label for="pendidikan-ibu" class="block font-medium"
-              >Pendidikan Ibu</label
-            >
-            <select
-              id="pendidikan-ibu"
-              class="w-full border rounded-lg px-4 py-2"
-            >
-              <option value="">Pilih Pendidikan</option>
-              <option>S3</option>
-              <option>S2</option>
-              <option>D4/S1</option>
-              <option>D3</option>
-              <option>D2</option>
-              <option>D1</option>
-              <option>SMA Sederajat</option>
-              <option>SMP Sederajat</option>
-              <option>SD Sederajat</option>
-              <option>Putus SD</option>
-              <option>Tidak Sekolah</option>
-            </select>
-          </div>
-          <div>
-            <label for="kebutuhan-khusus-ibu" class="block font-medium"
-              >Berkebutuhan Khusus</label
-            >
-            <input
-              type="text"
-              id="kebutuhan-khusus-ibu"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Berkebutuhan Khusus"
-            />
-          </div>
-          <div>
-            <label class="block font-medium">Penghasilan Bulanan Ibu</label>
-            <input
-              type="text"
-              id="penghasilan-ibu"
-              name="penghasilan-ibu"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Penghasilan Bulanan Ibu"
-            />
-          </div>
-          <!-- Wali -->
-          <div>
-            <label for="wali-nama" class="block font-medium">Nama Wali</label>
-            <input
-              type="text"
-              id="wali-nama"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Nama Wali"
-            />
-          </div>
-          <div>
-            <label for="wali-tahun-lahir" class="block font-medium"
-              >Tahun Lahir Wali:</label
-            >
-            <input
-              type="text"
-              id="wali-tahun-lahir"
-              name="wali-tahun-lahir"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Tahun Lahir Wali"
-            />
-          </div>
-          <div>
-            <label class="block font-medium">Pekerjaan Wali:</label>
-            <input
-              type="text"
-              id="pekerjaan-wali"
-              name="pekerjaan-wali"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Pekerjaan Wali"
-            />
-          </div>
-          <div>
-            <label for="pendidikan-wali" class="block font-medium"
-              >Pendidikan Wali</label
-            >
-            <select
-              id="pendidikan-wali"
-              class="w-full border rounded-lg px-4 py-2"
-            >
-              <option value="">Pilih Pendidikan</option>
-              <option>S3</option>
-              <option>S2</option>
-              <option>D4/S1</option>
-              <option>D3</option>
-              <option>D2</option>
-              <option>D1</option>
-              <option>SMA Sederajat</option>
-              <option>SMP Sederajat</option>
-              <option>SD Sederajat</option>
-              <option>Putus SD</option>
-              <option>Tidak Sekolah</option>
-            </select>
-          </div>
-          <div>
-            <label for="kebutuhan-khusus-wali" class="block font-medium"
-              >Berkebutuhan Khusus</label
-            >
-            <input
-              type="text"
-              id="kebutuhan-khusus-wali"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Berkebutuhan Khusus"
-            />
-          </div>
-          <div>
-            <label class="block font-medium">Penghasilan Bulanan Wali</label>
-            <input
-              type="text"
-              id="penghasilan-wali"
-              name="penghasilan-wali"
-              class="w-full border rounded-lg px-4 py-2"
-              placeholder="Penghasilan Bulanan Wali"
-            />
-          </div>
-
-          <!-- Bagian D -->
-          <div>
-            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-              D. Data Periodik Calon Peserta Didik
-            </h2>
-            <div class="space-y-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label for="tinggi-badan" class="block font-medium"
-                    >Tinggi Badan</label
+                  <label for="jarak-ke-sekolah" class="block font-medium"
+                    >Jarak Tempat Tinggal Ke Sekolah</label
                   >
                   <input
-                    type="number"
-                    id="tinggi-badan"
+                    placeholder="Jarak Tempat Tinggal Ke Sekolah"
+                    type="text"
+                    id="jarak-ke-sekolah"
                     class="w-full border rounded-lg px-4 py-2"
-                    placeholder="Tinggi Badan (cm)"
                     required
                   />
                 </div>
                 <div>
-                  <label for="berat-bedan" class="block font-medium"
-                    >Berat Badan</label
+                  <label for="waktu-ke-sekolah" class="block font-medium"
+                    >Waktu Tempuh Berangkat Ke Sekolah</label
                   >
                   <input
-                    type="number"
-                    id="berat-badan"
+                    placeholder="Waktu Tempuh Berangkat Ke Sekolah"
+                    type="text"
+                    id="waktu-ke-sekolah"
                     class="w-full border rounded-lg px-4 py-2"
-                    placeholder="Berat Badan (kg)"
                     required
                   />
                 </div>
-              </div>
-
-              <div>
-                <label for="jarak-ke-sekolah" class="block font-medium"
-                  >Jarak Tempat Tinggal Ke Sekolah</label
-                >
-                <input
-                  placeholder="Jarak Tempat Tinggal Ke Sekolah"
-                  type="text"
-                  id="jarak-ke-sekolah"
-                  class="w-full border rounded-lg px-4 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label for="waktu-ke-sekolah" class="block font-medium"
-                  >Waktu Tempuh Berangkat Ke Sekolah</label
-                >
-                <input
-                  placeholder="Waktu Tempuh Berangkat Ke Sekolah"
-                  type="text"
-                  id="waktu-ke-sekolah"
-                  class="w-full border rounded-lg px-4 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label for="prestasi-peserta" class="block font-medium"
-                  >Prestasi Calon Peserta Didik</label
-                >
-                <textarea
-                  id="prestasi"
-                  class="w-full border rounded-lg px-4 py-2"
-                  rows="3"
-                  placeholder="Prestasi Calon Peserta Didik"
-                ></textarea>
-              </div>
-            </div>
-          </div>
-          <!-- Bagian E -->
-          <div>
-            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-              E. Berkas Persyaratan
-            </h2>
-
-            <div class="space-y-4">
-              <div>
-                <label for="bukti-pembayaran" class="block font-medium">
-                  Bukti Pembayaran PPDB (Format: .jpeg, .jpg, .png)
-                </label>
-                <input
-                  type="file"
-                  id="bukti-pembayaran"
-                  class="w-full border rounded-lg px-4 py-2"
-                  accept=".jpeg, .jpg, .png"
-                  required
-                  onchange="validateAndCompressFile(this, 'bukti-pembayaran')"
-                />
-                <div id="bukti-pembayaran-loading" class="hidden">
-                  Loading...
+                <div>
+                  <label for="prestasi-peserta" class="block font-medium"
+                    >Prestasi Calon Peserta Didik</label
+                  >
+                  <textarea
+                    id="prestasi"
+                    class="w-full border rounded-lg px-4 py-2"
+                    rows="3"
+                    placeholder="Prestasi Calon Peserta Didik"
+                  ></textarea>
                 </div>
-                <img
-                  id="bukti-pembayaran-preview"
-                  class="hidden w-32 mt-2"
-                  alt="Preview"
-                />
-              </div>
-              <div>
-                <label for="kartu-keluarga" class="block font-medium">
-                  Kartu Keluarga (Format: .jpeg, .jpg, .png)
-                </label>
-                <input
-                  type="file"
-                  id="kartu-keluarga"
-                  class="w-full border rounded-lg px-4 py-2"
-                  accept=".jpeg, .jpg, .png"
-                  required
-                  onchange="validateAndCompressFile(this, 'kartu-keluarga')"
-                />
-                <div id="kartu-keluarga-loading" class="hidden">Loading...</div>
-                <img
-                  id="kartu-keluarga-preview"
-                  class="hidden w-32 mt-2"
-                  alt="Preview"
-                />
-              </div>
-              <div>
-                <label for="akta-lahir" class="block font-medium">
-                  Akta Kelahiran Siswa (Format: .jpeg, .jpg, .png)
-                </label>
-                <input
-                  type="file"
-                  id="akta-lahir"
-                  class="w-full border rounded-lg px-4 py-2"
-                  accept=".jpeg, .jpg, .png"
-                  required
-                  onchange="validateAndCompressFile(this, 'akta-lahir')"
-                />
-                <div id="akta-lahir-loading" class="hidden">Loading...</div>
-                <img
-                  id="akta-lahir-preview"
-                  class="hidden w-32 mt-2"
-                  alt="Preview"
-                />
               </div>
             </div>
-          </div>
+            <!-- Bagian E -->
+            <div>
+              <h2 class="text-xl font-bold text-[#286D6B] mb-4">
+                E. Berkas Persyaratan
+              </h2>
 
-          <div class="w-full flex justify-center mt-6">
-            <button
-              id="button-submit"
-              type="submit"
-              class="bg-[#286D6B] w-full text-white text-lg font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-[#1d524f] transition duration-300 ease-in-out transform hover:-translate-y-1"
-            >
-              Kirim
-            </button>
+              <div class="space-y-4">
+                <div>
+                  <label for="bukti-pembayaran" class="block font-medium">
+                    Bukti Pembayaran PPDB (Format: .jpeg, .jpg, .png)
+                  </label>
+                  <input
+                    type="file"
+                    id="bukti-pembayaran"
+                    class="w-full border rounded-lg px-4 py-2"
+                    accept=".jpeg, .jpg, .png"
+                    required
+                    onchange="validateAndCompressFile(this, 'bukti-pembayaran')"
+                  />
+                  <div id="bukti-pembayaran-loading" class="hidden">
+                    Loading...
+                  </div>
+                  <img
+                    id="bukti-pembayaran-preview"
+                    class="hidden w-32 mt-2"
+                    alt="Preview"
+                  />
+                </div>
+                <div>
+                  <label for="kartu-keluarga" class="block font-medium">
+                    Kartu Keluarga (Format: .jpeg, .jpg, .png)
+                  </label>
+                  <input
+                    type="file"
+                    id="kartu-keluarga"
+                    class="w-full border rounded-lg px-4 py-2"
+                    accept=".jpeg, .jpg, .png"
+                    required
+                    onchange="validateAndCompressFile(this, 'kartu-keluarga')"
+                  />
+                  <div id="kartu-keluarga-loading" class="hidden">Loading...</div>
+                  <img
+                    id="kartu-keluarga-preview"
+                    class="hidden w-32 mt-2"
+                    alt="Preview"
+                  />
+                </div>
+                <div>
+                  <label for="akta-lahir" class="block font-medium">
+                    Akta Kelahiran Siswa (Format: .jpeg, .jpg, .png)
+                  </label>
+                  <input
+                    type="file"
+                    id="akta-lahir"
+                    class="w-full border rounded-lg px-4 py-2"
+                    accept=".jpeg, .jpg, .png"
+                    required
+                    onchange="validateAndCompressFile(this, 'akta-lahir')"
+                  />
+                  <div id="akta-lahir-loading" class="hidden">Loading...</div>
+                  <img
+                    id="akta-lahir-preview"
+                    class="hidden w-32 mt-2"
+                    alt="Preview"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="w-full flex justify-center mt-6">
+              <button
+                id="button-submit"
+                type="submit"
+                class="bg-[#286D6B] w-full text-white text-lg font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-[#1d524f] transition duration-300 ease-in-out transform hover:-translate-y-1"
+              >
+                Kirim
+              </button>
+            </div>
+            <!-- end form -->
           </div>
-          <!-- end form -->
-        </div>
-      </form>
+        </form>
+      @endif
+
     </main>
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

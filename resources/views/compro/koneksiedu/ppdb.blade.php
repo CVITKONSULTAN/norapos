@@ -13,6 +13,7 @@
     />
     <title>PPDB SD MUHAMMADIYAH 2</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
     <style>
       /* Default background image for desktop */
       section.hero {
@@ -135,7 +136,8 @@
       @if(true)
         <h1 class="text-xl font-bold text-[#286D6B] mb-4" style="color: rgb(155, 0, 0); text-align:center; margin-top:50px;">
           <div style="display: flex;justify-content: center;">
-            <img src="/sekolah/promote.png" class="close_icon" />
+            {{-- <img src="/sekolah/promote.png" class="close_icon" /> --}}
+            <dotlottie-player src="https://lottie.host/c00e3e17-42f9-4793-b0f4-05e130ecac3c/8n0iB3jsFO.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
           </div>
           Pendaftaran sudah di tutup pada tanggal 14 Februari 2025 pukul 14.00 WIB
         </h1>

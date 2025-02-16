@@ -27,7 +27,6 @@ class HotelController extends Controller
             "hotel_reservasis.id as ID",
             "harga as HARGA",
             "ota as OTA",
-            "hotel_reservasis.contact_id as CID",
             "c.name as NAMA",
             "c.mobile as NO HP",
             "durasi as LAMA MENGINAP",
@@ -36,6 +35,7 @@ class HotelController extends Controller
             "brand_name as TIPE KAMAR",
             "metode_pembayaran as PEMBAYARAN",
             "deposit as DEPOSIT",
+            "hotel_reservasis.contact_id as CID",
         )
         ->orderBy('id','desc');
 

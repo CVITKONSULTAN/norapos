@@ -399,7 +399,8 @@ class APIController extends Controller
         $price_group_id = request()->input('price_group', '');
         $product_types = request()->get('product_types', []);
 
-        $business_type = request()->get('business_type', null);
+        // $business_type = request()->get('business_type', null);
+        $business_type = $business->business_category ?? null;
 
         $search_fields = request()->get('search_fields', ['name', 'sku']);
         if (in_array('sku', $search_fields)) {
@@ -410,9 +411,9 @@ class APIController extends Controller
 
             $query = \App\Product::where('products.business_id',$business->id);
 
-            if($request->not_for_selling){
+            // if($request->not_for_selling){
                 $query = $query->where("products.not_for_selling",0);
-            }
+            // }
 
             if($request->brand_id){
                 $query = $query->where('products.brand_id',$request->brand_id);
@@ -431,21 +432,21 @@ class APIController extends Controller
             ->select(
                 'products.id as id',
                 'products.name as ROOM NAME',
-                'products.not_for_selling as NOT FOR SELL',
-                'products.product_custom_field1 as KET. KERUSAKAN',
+                // 'products.not_for_selling as NOT FOR SELL',
+                // 'products.product_custom_field1 as KET. KERUSAKAN',
                 'products.product_custom_field2 as KEBERSIHAN',
                 "brands.name as TIPE KAMAR",
                 "transaction_sell_lines.created_at as LAST CHECK IN",
-                'variations.sell_price_inc_tax as selling_price',
-                'products.sku as SKU'
+                'variations.sell_price_inc_tax as PRICE',
+                // 'products.sku as SKU'
             )
             ->groupBy('id')
             ->orderBy('id','asc')
             ->get();
-            
+            // dd($result->first());
             foreach ($result as $key => $value) {
-                $result[$key]['selling_price'] = intval($value->selling_price);
-                $result[$key]['PRICE'] = number_format($value->selling_price,0,",",".");
+                // $result[$key]['selling_price'] = intval($value->selling_price);
+                // $result[$key]['PRICE'] = number_format($value->selling_price,0,",",".");
 
                 $check = \App\TransactionSellLine::where([
                     'product_id'=>$value['id'],
@@ -456,8 +457,6 @@ class APIController extends Controller
                 ->first();
 
                 $result[$key]['TODAY AVAILABLE'] = empty($check) ? 1 : 0;
-                // unset($result[$key]['image_url']);
-                // dd($result[$key]);
             }
             
         } else {

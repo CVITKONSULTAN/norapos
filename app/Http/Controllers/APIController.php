@@ -1163,7 +1163,7 @@ class APIController extends Controller
                         TP.transaction_id=transactions.id) as total_paid'),
         )
         ->where('transactions.business_id',$business_id)
-        ->where('transactions.type','!=', 'expense')
+        ->where('transactions.type', 'sell')
         ->orderBy('id','desc');
 
         

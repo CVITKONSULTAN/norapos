@@ -444,20 +444,20 @@ class APIController extends Controller
             ->orderBy('id','asc')
             ->get();
             // dd($result->first());
-            // foreach ($result as $key => $value) {
-            //     // $result[$key]['selling_price'] = intval($value->selling_price);
-            //     // $result[$key]['PRICE'] = number_format($value->selling_price,0,",",".");
+            foreach ($result as $key => $value) {
+                $result[$key]['selling_price'] = intval($value->PRICE);
+                $result[$key]['PRICE'] = number_format($value->PRICE,0,",",".");
 
-            //     $check = \App\TransactionSellLine::where([
-            //         'product_id'=>$value['id'],
-            //     ])
-            //     ->whereHas('transaction',function($q){
-            //         return $q->whereNull('shipping_status');
-            //     })
-            //     ->first();
+                // $check = \App\TransactionSellLine::where([
+                //     'product_id'=>$value['id'],
+                // ])
+                // ->whereHas('transaction',function($q){
+                //     return $q->whereNull('shipping_status');
+                // })
+                // ->first();
 
-            //     $result[$key]['TODAY AVAILABLE'] = empty($check) ? 1 : 0;
-            // }
+                // $result[$key]['TODAY AVAILABLE'] = empty($check) ? 1 : 0;
+            }
             
         } else {
             $result = $this->productUtil->filterProductAPI($business_id, $search_term, $location_id, $not_for_selling, $price_group_id, $product_types, $search_fields, $check_qty);

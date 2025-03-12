@@ -9,7 +9,9 @@
 	</a>
 
     <!-- Sidebar Menu -->
-    @if(auth()->user()->business->business_category == "pejantan")
+    @if(auth()->user()->business->business_category == "primajasa")
+      {!! Menu::render('admin-sidebar-primajasa', 'adminltecustom'); !!}
+    @elseif(auth()->user()->business->business_category == "pejantan")
       {!! Menu::render('admin-sidebar-pejantan', 'adminltecustom'); !!}
     @elseif(auth()->user()->business->business_category == "sekolah_sd")
       {!! Menu::render('admin-sidebar-sekolah_sd', 'adminltecustom'); !!}

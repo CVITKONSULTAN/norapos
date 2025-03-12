@@ -2,8 +2,11 @@
 <!-- Main Header -->
   <header class="main-header no-print">
     <a href="{{route('home')}}" class="logo">
-      
-      <span class="logo-lg">{{ Session::get('business.name') }}</span>
+      @if(auth()->user()->business->logo)
+        <img src="{{ asset( 'uploads/business_logos/' . auth()->user()->business->logo) }}" alt="Logo" class="img-logo">
+      @else
+        <span class="logo-lg">{{ Session::get('business.name') }}</span>
+      @endif
     </a>
 
     <!-- Header Navbar -->

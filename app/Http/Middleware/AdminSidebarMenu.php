@@ -730,6 +730,7 @@ class AdminSidebarMenu
             }
         });
 
+        include_once(base_path('app/Http/Menu/PrimaJasa/menu.php'));
         include_once(base_path('app/Http/Menu/Pejantan/menu.php'));
         include_once(base_path('app/Http/Menu/Hotel/menu.php'));
         include_once(base_path('app/Http/Menu/SekolahSD/menu.php'));

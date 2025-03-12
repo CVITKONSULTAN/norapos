@@ -29,6 +29,9 @@
             .list_checkbox .checkbox {
                 display: inline-block;
             }
+            img.img-logo{
+                height: 55px;
+            }
         </style>
         
         @include('layouts.partials.css')

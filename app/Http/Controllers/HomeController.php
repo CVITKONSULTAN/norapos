@@ -59,6 +59,12 @@ class HomeController extends Controller
         }
 
         if (
+            auth()->user()->business->business_category == "primajasa"
+        ) {
+            return view('primajasa.home');
+        }
+
+        if (
             auth()->user()->can('dashboard.data') &&
             auth()->user()->business->business_category == "pejantan"
         ) {

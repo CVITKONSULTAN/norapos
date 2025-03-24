@@ -27,19 +27,20 @@ class AbsensiController extends Controller
         ->orderBy('created_at','desc')
         ->select('*');
 
+        $date = Carbon::now()->format("Y-m-d");
+        if($request->start && $request->end){
+            $start = Carbon::parse($request->start)->format('Y-m-d');
+            $end = Carbon::parse($request->end)->format('Y-m-d');
+            $data = $data->whereBetween('created_at',[$start,$end]);
+        } else {
+            $filter_tanggal = $request->filter_tanggal ?? $date;
+            
+            $data = $data->addSelect(DB::raw('DATE(created_at) as created_date'))
+                    ->having('created_date', '=', $filter_tanggal);
+        }
+        
         if($request->grouping){
 
-            $date = Carbon::now()->format("Y-m-d");
-            if($request->start && $request->end){
-                $start = Carbon::parse($request->start)->format('Y-m-d');
-                $end = Carbon::parse($request->end)->format('Y-m-d');
-                $data = $data->whereBetween('created_at',[$start,$end]);
-            } else {
-                $filter_tanggal = $request->filter_tanggal ?? $date;
-                
-                $data = $data->addSelect(DB::raw('DATE(created_at) as created_date'))
-                        ->having('created_date', '=', $filter_tanggal);
-            }
 
             $data = $data->get()->groupBy('user_id');
 

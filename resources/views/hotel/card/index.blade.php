@@ -73,7 +73,8 @@
 
         $(document).ready( function(){
             product_table = $('#product_table').DataTable({
-                pageLength: -1,
+                lengthMenu: [[-1, 10, 25, 50], ["Semua", 10, 25, 50]],
+                pageLength: 10,
                 processing: true,
                 serverSide: true,
                 aaSorting: [[3, 'asc']],

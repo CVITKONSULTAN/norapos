@@ -20,11 +20,17 @@
             <div class="row">
                 <div class="form-group col-md-4">
                     <label>Start Tanggal</label>
-                    <input class="form-control" type="date" name="filter_start" value="" />
+                    <input class="form-control" type="date" 
+                    id="filter_start" 
+                    name="filter_start" 
+                    value="{{ \Carbon\Carbon::now()->subDay()->format("Y-m-d") }}" />
                 </div>
                 <div class="form-group col-md-4">
                     <label>End Tanggal</label>
-                    <input class="form-control" type="date" name="filter_end" value="" />
+                    <input class="form-control" type="date" 
+                    id="filter_end" 
+                    name="filter_end" 
+                    value="{{ \Carbon\Carbon::now()->addDay()->format("Y-m-d") }}" />
                 </div>
             </div>
         {{-- @can('absensi.create') --}}
@@ -69,7 +75,16 @@
         const data_table = $('#data_table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("absensi.data") }}',
+            lengthMenu: [[-1, 10, 25, 50], ["Semua", 10, 25, 50]],
+            pageLength: -1,
+            ajax: {
+                    url:'{{ route("absensi.data") }}',
+                    "data": function ( d ) {
+                        d.start = $("#filter_start").val();
+                        d.end = $("#filter_end").val();
+                        d = __datatable_ajax_callback(d);
+                    }
+            },
             columnDefs: [ {
                 "orderable": false,
                 "searchable": false
@@ -152,5 +167,12 @@
              });
         });
         @endcan
+
+        $("#filter_start").change(function(){
+            data_table.ajax.reload();
+        })
+        $("#filter_end").change(function(){
+            data_table.ajax.reload();
+        })
     </script>
 @endsection

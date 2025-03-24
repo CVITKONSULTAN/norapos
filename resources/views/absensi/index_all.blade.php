@@ -19,10 +19,20 @@
     @component('components.widget', ['class' => 'box-primary', 'title' => "Semua absensi"])
             <div class="row">
                 <div class="form-group col-md-4">
+                    <label>Start Tanggal</label>
+                    <input id="filter_start" class="form-control" type="date" name="filter_start" value="{{ \Carbon\Carbon::now()->subDay()->format("Y-m-d") }}" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>End Tanggal</label>
+                    <input id="filter_end" class="form-control" type="date" name="filter_end" value="{{ \Carbon\Carbon::now()->addDay()->format("Y-m-d") }}" />
+                </div>
+            </div>
+            {{-- <div class="row">
+                <div class="form-group col-md-4">
                     <label>Filter Tanggal</label>
                     <input id="filter_tanggal" class="form-control" type="date" name="filter_tanggal" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />
                 </div>
-            </div>
+            </div> --}}
         {{-- @can('absensi.create') --}}
             {{-- @slot('tool')
                 <div class="box-tools">
@@ -66,12 +76,14 @@
                 serverSide: true,
                 ordering:false,
                 searching:false,
-
+                lengthMenu: [[-1, 10, 25, 50], ["Semua", 10, 25, 50]],
+                pageLength: -1,
                 ajax: {
                     url:'{{ route("absensi.data") }}',
                     "data": function ( d ) {
                         d.grouping = 1;
-                        d.filter_tanggal = $("#filter_tanggal").val();
+                        d.start = $("#filter_start").val();
+                        d.end = $("#filter_end").val();
                         d = __datatable_ajax_callback(d);
                     }
                 },
@@ -119,7 +131,10 @@
             });
         });
 
-        $("#filter_tanggal").change(function(){
+        $("#filter_start").change(function(){
+            product_table.ajax.reload();
+        })
+        $("#filter_end").change(function(){
             product_table.ajax.reload();
         })
     </script>

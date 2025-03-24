@@ -139,6 +139,11 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     
 });
 
-Route::get('test',function(){
-    return view('test');
-});
+// Route::get('test',function(){
+//     $user = \App\User::where('username','kartika')->first();
+//     $user->password = bcrypt('Kartika123456');
+//     $user->save();
+//     // ->update(['password'=>bcrypt('Kartika123456')]);
+//     return "OK";
+//     // return view('test');
+// });

@@ -44,7 +44,7 @@
         {{-- @endcan --}}
         {{-- @can('absensi.view') --}}
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="data_table">
+                <table class="table table-bordered table-striped" id="product_table">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -72,9 +72,19 @@
 
 @section('javascript')
     <script>
-        const data_table = $('#data_table').DataTable({
+        const product_table = $('#product_table').DataTable({
             processing: true,
             serverSide: true,
+            dom: 'lBfrtip', // Menampilkan tombol export
+            paging: true,   // Mengaktifkan paging (pagination)
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Export ke Excel',
+                    title: 'Data Pegawai',
+                    className: 'btn btn-success' // Tambahkan class Bootstrap jika perlu
+                }
+            ],
             lengthMenu: [[-1, 10, 25, 50], ["Semua", 10, 25, 50]],
             pageLength: -1,
             ajax: {
@@ -157,7 +167,7 @@
                         success: function(result){
                             if(result.status){
                                 toastr.success(result.message);
-                                data_table.ajax.reload();
+                                product_table.ajax.reload();
                             } else {
                                 toastr.error(result.message);
                             }
@@ -169,10 +179,10 @@
         @endcan
 
         $("#filter_start").change(function(){
-            data_table.ajax.reload();
+            product_table.ajax.reload();
         })
         $("#filter_end").change(function(){
-            data_table.ajax.reload();
+            product_table.ajax.reload();
         })
     </script>
 @endsection

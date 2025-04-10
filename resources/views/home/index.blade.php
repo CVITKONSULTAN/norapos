@@ -381,6 +381,7 @@
                   }
               })
         }
+        loadData();
       </script>
     @endif
 @endif

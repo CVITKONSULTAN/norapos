@@ -9,6 +9,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 use App\Brands;
 use App\Product;
+use Illuminate\Support\Str;
 
 
 class HotelController extends Controller
@@ -160,9 +161,24 @@ class HotelController extends Controller
 
         $groupBrand = $query->groupBy('brand');
         $res = [];
+        $stats = [
+            'superior' => 0,
+            'riverside' => 0,
+        ];
         foreach ($groupBrand as $key => $value) {
             $total = $value->count();
             $avail = $value->whereIn('product_custom_field2', ['VCI','VC'])->count();
+
+            $riverside = $value->filter(function ($item) {
+                return Str::contains($item->brand, 'Riverside');
+            })->count();
+            $superior = $value->filter(function ($item) {
+                return Str::contains($item->brand, 'Superior');
+            })->count();
+
+            $stats['superior'] += $superior;
+            $stats['riverside'] += $riverside;
+
             $res[] = [
                 "brand" => $key,
                 "total" => $total,
@@ -171,7 +187,8 @@ class HotelController extends Controller
         }
         return [
             'status'=>true,
-            'data'=>$res
+            'data'=>$res,
+            'stats'=>$stats
         ];
 
     }

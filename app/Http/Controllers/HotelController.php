@@ -169,10 +169,14 @@ class HotelController extends Controller
             $total = $value->count();
             $avail = $value->whereIn('product_custom_field2', ['VCI','VC'])->count();
 
-            $riverside = $value->filter(function ($item) {
+            $riverside = $value
+            ->whereIn('product_custom_field2', ['VCI','VC'])
+            ->filter(function ($item) {
                 return Str::contains($item->brand, 'Riverside');
             })->count();
-            $superior = $value->filter(function ($item) {
+            $superior = $value
+            ->whereIn('product_custom_field2', ['VCI','VC'])
+            ->filter(function ($item) {
                 return Str::contains($item->brand, 'Superior');
             })->count();
 

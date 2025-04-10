@@ -192,8 +192,8 @@
                 success: (response) => {
                     if(!response.status) return;
                     const data = response.data;
-                    $(`.stats_superior`).text(data.stats.superior ?? 0):
-                    $(`.stats_riverside`).text(data.stats.riverside ?? 0):
+                    $(`.stats_superior`).text(data.stats.superior ?? 0);
+                    $(`.stats_riverside`).text(data.stats.riverside ?? 0);
                     const roomCards = $('.room-cards')
                     roomCards.empty();
                     data.forEach((room, index) => {

@@ -155,6 +155,8 @@
                 <span style="color:red;">082255985321</span>
             </h1>    
             <p style="font-size: 7pt;">Load data dalam (<span class="counter">15</span>)s</p>
+            <p style="font-size: 12pt;">Superior <span class="stats_superior">0</span></p>
+            <p style="font-size: 12pt;">Riverside <span class="stats_riverside">0</span></p>
         </div>
     </div>
 
@@ -190,6 +192,8 @@
                 success: (response) => {
                     if(!response.status) return;
                     const data = response.data;
+                    $(`.stats_superior`).text(data.stats.superior ?? 0):
+                    $(`.stats_riverside`).text(data.stats.riverside ?? 0):
                     const roomCards = $('.room-cards')
                     roomCards.empty();
                     data.forEach((room, index) => {

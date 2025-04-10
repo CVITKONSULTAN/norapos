@@ -148,6 +148,43 @@
         <!-- /.info-box -->
       </div>
 
+      @if(auth()->user()->business->id == 11)
+        <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
+          <div class="info-box info-box-new-style">
+            <span class="info-box-icon bg-red">
+              <i class="fas fa-minus-circle"></i>
+            </span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">
+                  Superior
+              </span>
+              <span class="info-box-number stats_superior"><i class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
+          <div class="info-box info-box-new-style">
+            <span class="info-box-icon bg-red">
+              <i class="fas fa-minus-circle"></i>
+            </span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">
+                  Riverside
+              </span>
+              <span class="info-box-number stats_riverside"><i class="fas fa-sync fa-spin fa-fw margin-bottom"></i></span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
+      @endif
+
+
+
   	</div>
   	{{-- <div class="row row-custom">
         <!-- expense -->
@@ -330,6 +367,21 @@
     @if(!empty($all_locations))
       {!! $sells_chart_1->script() !!}
       {!! $sells_chart_2->script() !!}
+    @endif
+    @if(auth()->user()->business->id == 11)
+      <script>
+        const loadData = () => {
+              $.ajax({
+                  url: '{{route("hotel.avail")}}',
+                  method: 'GET',
+                  success: (response) => {
+                      if(!response.status) return;
+                      $(`.stats_superior`).text(response.stats.superior ?? 0);
+                      $(`.stats_riverside`).text(response.stats.riverside ?? 0);
+                  }
+              })
+        }
+      </script>
     @endif
 @endif
 @endsection

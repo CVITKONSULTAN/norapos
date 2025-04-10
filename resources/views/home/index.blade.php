@@ -151,8 +151,8 @@
       @if(auth()->user()->business->id == 11)
         <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
           <div class="info-box info-box-new-style">
-            <span class="info-box-icon bg-red">
-              <i class="fas fa-minus-circle"></i>
+            <span class="info-box-icon bg-blue">
+              <i class="fas fa-bed"></i>
             </span>
 
             <div class="info-box-content">
@@ -167,8 +167,8 @@
         </div>
         <div class="col-md-3 col-sm-6 col-xs-12 col-custom">
           <div class="info-box info-box-new-style">
-            <span class="info-box-icon bg-red">
-              <i class="fas fa-minus-circle"></i>
+            <span class="info-box-icon bg-blue">
+              <i class="fas fa-bed"></i>
             </span>
 
             <div class="info-box-content">

@@ -15,7 +15,12 @@ include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
 
-$database_domain = ['beautyproclinic.com','koneksiedu.com','si-muda.com'];
+$database_domain = ['beautyproclinic.com','koneksiedu.com','si-muda.com','grandkartika.com'];
+
+Route::get('/kartika', function(){
+    $data = KartikaSetup();
+    return view('compro.grandkartika.index',$data);
+})->name("multi.index");
 
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     $host = request()->getHost();
@@ -26,6 +31,11 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
         Route::get('/contact', "MultiDomainController@contact")->name("multi.contact");
         Route::get('/product', "MultiDomainController@product")->name("multi.product");
         Route::get('/services', "MultiDomainController@services")->name("multi.services");
+
+        if($host == 'grandkartika.com'){
+            Route::get('/login', "MultiDomainController@login")->name("multi.login");
+        }
+
         if(
             $host == 'koneksiedu.com' ||
             $host == 'si-muda.com'

@@ -143,3 +143,14 @@ if (! function_exists('str_ordinal')) {
         return number_format($number) . $suffix;
     }
 }
+
+function KartikaSetup()
+{
+    return [
+        'phone' => "+6282255985321",
+        'address' => "Jl. Rahadi Usman No.2 Pontianak - Kalimantan Barat",
+        'direction_link' => "https://maps.app.goo.gl/XnL5uYdpt5RhoH2v9",
+        'logo' => "/hotel/img/kartika_logo.png",
+        'logo_white' => "/hotel/img/logo_white.png"
+    ];
+}

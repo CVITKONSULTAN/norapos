@@ -17,6 +17,9 @@ class MultiDomainController extends Controller
     }
     public function index($domain, $tld, Request $request)
     {
+        if($domain == 'grandkartika') {
+            $data = KartikaSetup();
+        }
         $data['domain'] = $domain;
         $data['tld'] = $tld;
         return view("compro.$domain.index",$data);

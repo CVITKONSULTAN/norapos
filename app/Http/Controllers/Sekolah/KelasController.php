@@ -253,7 +253,7 @@ class KelasController extends Controller
     }
 
     function KelasData(Request $request){
-        $query = Kelas::query();
+        $query = Kelas::orderBy('id','desc');
         if($request->filter_list_id){
             try{
                 $filter_list_id = json_decode($request->filter_list_id,true);

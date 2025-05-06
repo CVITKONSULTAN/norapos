@@ -23,6 +23,7 @@ use \App\User;
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
 use DB;
+use Log;
 use DataTables;
 use Storage;;
 use Maatwebsite\Excel\Facades\Excel;

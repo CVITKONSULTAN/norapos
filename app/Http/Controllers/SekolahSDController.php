@@ -63,6 +63,7 @@ class SekolahSDController extends Controller
             ->get()
             ->pluck('id')
             ->toArray();
+            Log::info(json_encode($data['kelas_perwalian']));
             $data['selected'] = Kelas::where('wali_kelas_id',$user->id)->first();
         }
         return view('sekolah_sd.ruang_kelas',$data);

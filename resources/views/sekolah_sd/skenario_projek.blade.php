@@ -9,6 +9,13 @@
         border-radius: 5px;
         margin-top: 30px;
     }
+    #alert_container{
+        display: none;
+        color: black !important;
+    }
+    #alert_container ul li{
+        color: black !important;
+    }
 </style>
 @endsection
 
@@ -114,9 +121,18 @@
             <div class="modal-body">
                <div class="form-group">
                 <label>Tahun Ajaran</label>
-                <select name="tahun_ajaran" class="form-control">
+                <select id="tahun_ajaran" name="tahun_ajaran" class="form-control">
                     <option value="">-- Pilih --</option>
                     @foreach ($tahun_ajaran as $item)
+                        <option value="{{$item}}">{{$item}}</option>
+                    @endforeach
+                </select>
+               </div>
+               <div class="form-group">
+                <label>Semester</label>
+                <select id="semester" name="semester" class="form-control">
+                    <option value="">-- Pilih --</option>
+                    @foreach ($semester as $item)
                         <option value="{{$item}}">{{$item}}</option>
                     @endforeach
                 </select>
@@ -130,9 +146,15 @@
                     @endforeach
                 </select>
                </div>
+               <div id="alert_container">
+                <div class="alert alert-info" role="alert">
+                    <h3>Kelas yang akan terdampak pada apply sebagai berikut : </h3>
+                    <ul id="list_kelas"></ul>
+                </div>
+               </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+                <button id="save_btn" type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
               </div>
         </form>
@@ -352,6 +374,37 @@
     const applyProjek = () => {
         $("#apply_projek").modal("show");
     }
+
+    $("#level_kelas").change(function(){
+        const id = $(this).val();
+        const tahun_ajaran = $("#tahun_ajaran").val();
+        const semester = $("#semester").val();
+        $.ajax({
+            url:`{{route('sekolah_sd.kelas_repo.data')}}`,
+            data:{
+                level_kelas:id,
+                tahun_ajaran:tahun_ajaran,
+                semester:semester
+            },
+            beforeSend: () => {
+                $("#save_btn").attr('disabled',true);
+                $("#alert_container").hide();
+            },
+            success: res => {
+                console.log(res)
+                if(!res.data) return;
+                if(res.data.length <= 0 ) return;
+                const list = $("#list_kelas");
+                list.empty();
+                for(const k in res.data){
+                    const val = res.data[k];
+                    list.append(`<li>Kelas ${val.nama_kelas} (Semester ${val.semester} - ${val.tahun_ajaran})</li>`)
+                }
+                $("#alert_container").show();
+                $("#save_btn").removeAttr('disabled');
+            }
+        })
+    })
 
  </script>
 @endsection

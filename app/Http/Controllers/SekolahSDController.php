@@ -843,6 +843,7 @@ class SekolahSDController extends Controller
             $data['rapor_projek'] = RaporProjek::where('kelas',$request->kelas)->get();
         }
         $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
         return view('sekolah_sd.skenario_projek',$data);
     }
 

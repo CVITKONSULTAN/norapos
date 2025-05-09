@@ -125,22 +125,19 @@ class ProjekController extends Controller
         ->with('dimensi')
         ->get();
 
-        // dd($raporProjek->toArray());
-
-
         $kelasList = Kelas::where([
             'tahun_ajaran' => $request->tahun_ajaran,
             'kelas' => $request->kelas,
+            'semester' => $request->semester,
         ])->get();
-        // dd($kelasList,$request->all());
+
         foreach ($kelasList as $key => $value) {
-            // dd($raporProjek->toArray());
+
             $value->dimensi_list = $raporProjek->toArray();
-            // $value->dimensi_list = json_encode($raporProjek->toArray());
-            // dd($value->dimensi_list);
+            
             $value->save();
         }
-        // return ['status'=>];
+
         return redirect()->back()
                 ->with(['success'=>true,'Data berhasil dikaitkan']);
     }
@@ -160,7 +157,7 @@ class ProjekController extends Controller
         ];
         $kelas = KelasSiswa::findorfail($request->kelas_siswa_id);
         $nilai_project = $kelas->nilai_projek ?? [];
-        // dd($nilai_project,$projek);
+
         if(count($nilai_project) > 0){
             $found = null;
             foreach($nilai_project as $k => $item){
@@ -172,13 +169,11 @@ class ProjekController extends Controller
             }
             if(empty($found)){
                 $nilai_project[] = $projek;
-                // dd("notfound",$kelas,$nilai_project,$kelas->siswa);
             }
-            // dd("found",$kelas,$nilai_project);
         } else {
             $nilai_project[] = $projek;
         }
-        // dd($kelas,$nilai_project,$kelas->siswa);
+
         $kelas->nilai_projek = $nilai_project;
         $kelas->save();
         return redirect()->back()

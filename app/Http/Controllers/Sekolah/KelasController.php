@@ -265,6 +265,15 @@ class KelasController extends Controller
         if($request->kelas){
             $query = $query->where('kelas',$request->kelas);
         }
+        if($request->level_kelas){
+            $query = $query->where('kelas','like',"%$request->level_kelas%");
+        }
+        if($request->tahun_ajaran){
+            $query = $query->where('tahun_ajaran',$request->tahun_ajaran);
+        }
+        if($request->semester){
+            $query = $query->where('semester',$request->semester);
+        }
         if($request->kelas_list){
             $query = $query->whereIn('kelas',$request->kelas_list);
         }

@@ -41,52 +41,11 @@
 </div>
 
 <section class="content">
-{{-- 
-    <div id="editor_modal_project" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-	                <h4 class="modal-title">
-                        Form Data Project
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Nama Project</label>
-                        <input class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Deskripsi</label>
-                        <textarea rows="5" class="form-control"></textarea>
-                    </div>
-                    <hr />
-                        <h3 class="text-center">Indikator Penilaian</h3>
-                    <hr />
-                    <div class="indikator_penilaian_container row">
-                        <div class="form-group col-sm-6">
-                            <label>Indikator 1.</label>
-                            <textarea rows="5" class="form-control"></textarea>
-                        </div>
-                        <div class="form-group col-sm-6">
-                            <label>Indikator 2.</label>
-                            <textarea rows="5" class="form-control"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
-                  </div>
-            </div>
-        </div>
-    </div>
-  --}}
 
     <div id="editor_modal_project" class="modal fade">
         <div class="modal-dialog">
             <form method="POST" class="modal-content" action="{{route('sekolah_sd.rapor_projek.storeNilai')}}" >
                 @csrf
-                {{-- {{dd($dimensi_list)}} --}}
                 <input type="hidden" name="projek_id" value="{{ $dimensi_list['id'] ?? 0 }}" />
                 <input type="hidden" name="projek_nama" value="{{ $dimensi_list['nama'] ?? 0 }}" />
                 <input type="hidden" name="kelas_siswa_id" value="0" />
@@ -460,7 +419,7 @@
                     dom.append(`<option value="">-- Pilih --</option>`)
                     kelas = res.data
                     res.data.map((item,index)=>{
-                        dom.append(`<option value="${item.id}" data-index="${index}">${item.nama_kelas}</option>`)
+                        dom.append(`<option value="${item.id}" data-index="${index}">${item.nama_kelas} (Semester ${item.semester} - ${item.tahun_ajaran})</option>`)
                     })
                 }
             })

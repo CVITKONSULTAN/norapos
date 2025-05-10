@@ -227,7 +227,7 @@ class KelasController extends Controller
                 $tendik = TenagaPendidik::find($request->wali_kelas_id);
                 if(!empty($tendik)){
                     $input['nama_wali_kelas'] = $tendik->nama;
-                    $input['nbm_wali_kelas'] = $tendik->nbm;
+                    $input['nbm_wali_kelas'] = empty($tendik->nbm) ? $tendik->nik : $tendik->nbm;
                     $user_id = $tendik->user->id;
                     $input['wali_kelas_id'] = $user_id;
                 }

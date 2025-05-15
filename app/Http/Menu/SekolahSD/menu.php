@@ -107,16 +107,30 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                 request()->segment(2) == 'peserta-didik-baru' 
             ]
         );
-        $menu->url(
-            action('SekolahSDController@data_mapel_index'),
-            "Mata Pelajaran",
-            [
-                'icon' => 'fa fas fa-cubes', 
-                'active' =>
-                request()->segment(1) == 'sekolah_sd' &&
-                request()->segment(2) == 'data-mapel' 
-            ]
-        );
+        if($user->checkAdmin()){
+            $menu->url(
+                action('SekolahSDController@data_mapel_index'),
+                "Mata Pelajaran",
+                [
+                    'icon' => 'fa fas fa-cubes', 
+                    'active' =>
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'data-mapel' 
+                ]
+            );
+        }
+        if(!$user->checkAdmin() && $user->business->show_mapel == 1){
+            $menu->url(
+                action('SekolahSDController@data_mapel_index'),
+                "Mata Pelajaran",
+                [
+                    'icon' => 'fa fas fa-cubes', 
+                    'active' =>
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'data-mapel' 
+                ]
+            );
+        }
         $menu->url(
             action('SekolahSDController@data_rekap_absen_index'),
             "Rekap Absen Siswa",

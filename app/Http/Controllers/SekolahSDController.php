@@ -174,6 +174,7 @@ class SekolahSDController extends Controller
                     'semester' => $filter['semester'],
                     'nama_kelas' => $filter['nama_kelas'],
                 ])->first();
+                Log::info("check kelas >> ".json_encode($kelas));
             }
         }
 

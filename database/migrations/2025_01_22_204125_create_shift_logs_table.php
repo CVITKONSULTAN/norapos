@@ -16,7 +16,8 @@ class CreateShiftLogsTable extends Migration
         Schema::create('shift_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->text('status')->default('not reviewed');
+            // $table->text('status')->default('not reviewed');
+            $table->text('status');
             $table->text('file_path');
             
             $table->integer('reviewed_by')->unsigned()->nullable();

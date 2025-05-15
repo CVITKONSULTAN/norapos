@@ -9,13 +9,13 @@
     <tr>
         <th colspan="2">Urutan</th>
         <td>
-            <input type="number" min="0" value="{{ $data['orders'] ?? "0"  }}" name="orders" required class="form-control" />
+            <input readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}"  type="number" min="0" value="{{ $data['orders'] ?? "0"  }}" name="orders" required class="form-control" />
         </td>
     </tr>
     <tr>
         <th colspan="2">Nama Mapel</th>
         <td>
-            <input value="{{ $data['nama'] ?? ""  }}" name="nama" required class="form-control" />
+            <input readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}" value="{{ $data['nama'] ?? ""  }}" name="nama" required class="form-control" />
         </td>
     </tr>
     <tr>
@@ -96,8 +96,9 @@
 </table>
 
 <div class="text-center">
+    <button class="btn btn-warning" id="reset_btn" type="button">Reset</button>
     <a href="{{route('sekolah_sd.mapel.index')}}" type="button" class="btn btn-danger">Kembali</a>
-    <button class="btn btn-primary">Simpan</button>
+    <button type="submit" class="btn btn-primary">Simpan</button>
 </div>
 
 @section('javascript')
@@ -166,6 +167,11 @@
             const key = $(this).data('key')
             LM_INDEX--;
             $('.lm_key_'+key).remove();
+        });
+
+        $("#reset_btn").click(function(){
+            $(".tujuan_pembelajaran_list").empty();
+            $(".lingkup_materi_list").empty();
         });
 
     </script>

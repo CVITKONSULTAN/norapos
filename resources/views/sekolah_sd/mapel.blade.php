@@ -178,6 +178,12 @@
                             )
                                 <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
                                 <button onclick="applykelas(this)" class="btn btn-success">Apply ke Kelas</button>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="check1">
+                                    <label class="form-check-label" for="check1">
+                                        Show Mapel di GURU
+                                    </label>
+                                </div>
                             @endif
                         </div>
                         <div class="table-responsive">
@@ -445,7 +451,6 @@
                             callback();
                         },
                         success: function(res) {
-                            // console.log("Options Loaded:", res);
                             const results = res.data.map(item => ({
                                 id: item.id,
                                 name: `${item.nama_kelas} (Semester ${item.semester} - ${item.tahun_ajaran})`
@@ -457,6 +462,36 @@
             })[0].selectize;
 
 
+        });
+
+        const updateShowMapel = (showMapel) => {
+            $.ajax({
+                url: '{{route("sekolah_sd.mapel.update_show_mapel")}}',
+                type: 'POST',
+                data:{
+                    show:showMapel
+                },
+                beforeSend:function(){
+                    $('#check1').attr('disabled')
+                },
+                complete:function(){
+                    $('#check1').removeAttr('disabled')
+                },
+                error: function(error) {
+                    console.log(error)
+                },
+                success: function(res) {
+                    
+                }
+            });
+        }
+
+        $('#check1').change(function () {
+            if ($(this).is(':checked')) {
+                updateShowMapel(1)
+            } else {
+                updateShowMapel(0)
+            }
         });
 
     </script>

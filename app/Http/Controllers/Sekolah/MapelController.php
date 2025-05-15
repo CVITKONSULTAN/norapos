@@ -8,6 +8,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 use Excel;
 
+use \App\Business;
 use \App\Imports\MapelImport;
 use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\Kelas;
@@ -281,6 +282,20 @@ class MapelController extends Controller
         return redirect()
         ->route('sekolah_sd.mapel.index')
         ->with('success', 'All good!');
+    }
+
+    function update_show_mapel(Request $request) {
+        $user = $request->user();
+        $show_mapel = $request->show ?? 0;
+        Business::where('id',$user->business->id)->update([
+            'show_mapel'=>$show_mapel
+        ]);
+        return [
+            'status'=>true,
+            'message'=>'OK',
+            'data'=>$show_mapel,
+            'business'=>$user->business->show_mapel
+        ];
     }
 
 }

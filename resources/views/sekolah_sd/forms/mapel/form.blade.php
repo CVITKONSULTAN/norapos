@@ -32,6 +32,7 @@
             <select 
             @if(!Str::contains(Request::url(), '/create'))
                 readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}"
+                disabled="{{Auth::user()->checkAdmin() ? "true" : "false"}}"
             @endif
             required name="kelas" class="form-control">
                 @foreach ([

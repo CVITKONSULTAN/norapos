@@ -9,19 +9,31 @@
     <tr>
         <th colspan="2">Urutan</th>
         <td>
-            <input readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}"  type="number" min="0" value="{{ $data['orders'] ?? "0"  }}" name="orders" required class="form-control" />
+            <input 
+            @if(!Str::contains(Request::url(), '/create'))
+                readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}"  
+            @endif
+            type="number" min="0" value="{{ $data['orders'] ?? "0"  }}" name="orders" required class="form-control" />
         </td>
     </tr>
     <tr>
         <th colspan="2">Nama Mapel</th>
         <td>
-            <input readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}" value="{{ $data['nama'] ?? ""  }}" name="nama" required class="form-control" />
+            <input 
+            @if(!Str::contains(Request::url(), '/create'))
+                readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}"
+            @endif
+            value="{{ $data['nama'] ?? ""  }}" name="nama" required class="form-control" />
         </td>
     </tr>
     <tr>
         <th colspan="2">Kelas</th>
         <td>
-            <select required name="kelas" class="form-control">
+            <select 
+            @if(!Str::contains(Request::url(), '/create'))
+                readonly="{{Auth::user()->checkAdmin() ? "true" : "false"}}"
+            @endif
+            required name="kelas" class="form-control">
                 @foreach ([
                         "1",
                         "2",

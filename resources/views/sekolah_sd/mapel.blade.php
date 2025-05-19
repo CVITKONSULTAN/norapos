@@ -179,7 +179,7 @@
                                 <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
                                 <button onclick="applykelas(this)" class="btn btn-success">Apply ke Kelas</button>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="check1">
+                                    <input {{ auth()->user()->business->show_mapel == 1 ? 'checked' : '' }} class="form-check-input" type="checkbox" id="check1">
                                     <label class="form-check-label" for="check1">
                                         Show Mapel di GURU
                                     </label>

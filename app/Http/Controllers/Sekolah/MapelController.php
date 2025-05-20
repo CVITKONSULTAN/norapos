@@ -260,24 +260,70 @@ class MapelController extends Controller
             'kelas_id'=>$kelas_id,
             'mapel_id'=>$mapel_id
         ])->get();
-        foreach ($n as $key => $value) {
-            $value->nilai_tp = null;
-            $value->nilai_akhir_tp = null;
-            $value->nilai_sumatif = null;
-            $value->nilai_akhir_sumatif = null;
-            $value->nilai_rapor = null;
-            $value->kolom_max_tp = null;
-            $value->nilai_max_tp = null;
-            $value->catatan_max_tp = null;
-            $value->kolom_min_tp = null;
-            $value->nilai_min_tp = null;
-            $value->catatan_min_tp = null;
-            $value->sumatif_tes = null;
-            $value->sumatif_non_tes = null;
-            $value->tp_mapel = json_encode($mapel->tujuan_pembelajaran);
-            $value->lm_mapel = json_encode($mapel->lingkup_materi);
-            $value->save();
+
+        if(!empty($n)){
+            foreach ($n as $key => $value) {
+                $value->nilai_tp = null;
+                $value->nilai_akhir_tp = null;
+                $value->nilai_sumatif = null;
+                $value->nilai_akhir_sumatif = null;
+                $value->nilai_rapor = null;
+                $value->kolom_max_tp = null;
+                $value->nilai_max_tp = null;
+                $value->catatan_max_tp = null;
+                $value->kolom_min_tp = null;
+                $value->nilai_min_tp = null;
+                $value->catatan_min_tp = null;
+                $value->sumatif_tes = null;
+                $value->sumatif_non_tes = null;
+                $value->tp_mapel = json_encode($mapel->tujuan_pembelajaran);
+                $value->lm_mapel = json_encode($mapel->lingkup_materi);
+                $value->save();
+            }
         }
+
+        if(!empty($n)){
+
+            $kelasSiswa = KelasSiswa::where('kelas_id',$kelas_id)->get();
+            foreach ($kelasSiswa as $key => $value) {
+                $n = NilaiSiswa::where([
+                    'siswa_id'=> $value->siswa_id,
+                    'kelas_id'=> $value->kelas_id,
+                    'mapel_id'=> $mapel_id,
+                ])->first();
+                if(empty($n)){
+                    $n = NilaiSiswa::create([
+                        'siswa_id'=> $value->siswa_id,
+                        'kelas_id'=> $value->kelas_id,
+                        'mapel_id'=> $mapel_id,
+                        'tp_mapel' => json_encode($mapel->tujuan_pembelajaran),
+                        'lm_mapel' => json_encode($mapel->lingkup_materi)
+                    ]);
+                } else {
+                    $n->update([
+                        'tp_mapel' => json_encode($mapel->tujuan_pembelajaran),
+                        'lm_mapel' => json_encode($mapel->lingkup_materi),
+                        'nilai_tp' => null,
+                        'nilai_akhir_tp' => null,
+                        'nilai_sumatif' => null,
+                        'nilai_akhir_sumatif' => null,
+                        'nilai_rapor' => null,
+
+                        'kolom_max_tp' => null,
+                        'nilai_max_tp' => null,
+                        'catatan_max_tp' => null,
+                        'kolom_min_tp' => null,
+                        'nilai_min_tp' => null,
+                        'catatan_min_tp' => null,
+
+                        'sumatif_tes' => null,
+                        'sumatif_non_tes' => null,
+
+                    ]);
+                }
+            }
+        }
+
 
         return redirect()
         ->route('sekolah_sd.mapel.index')

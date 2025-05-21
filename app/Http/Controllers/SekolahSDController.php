@@ -515,7 +515,7 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
-        if( $data['kelas_siswa']->kelas_siswa == "0139092677" ){
+        if( $data['kelas_siswa']->kelas->siswa->nisn == "0139092677" ){
             dd(
                 $data['kelas_siswa']->kelas,
                 $data['kelas_siswa']->siswa,

@@ -174,7 +174,7 @@ class SekolahSDController extends Controller
                     'semester' => $filter['semester'],
                     'nama_kelas' => $filter['nama_kelas'],
                 ])->first();
-                Log::info("check kelas >> ".json_encode($kelas));
+                // Log::info("check kelas >> ".json_encode($kelas));
             }
         }
 
@@ -515,7 +515,7 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
-        Log::info( json_encode( $data['kelas_siswa']->kelas->siswa ));
+        Log::info("data['kelas_siswa'] >> ". json_encode( $data['kelas_siswa']->kelas->siswa ));
 
         // if( $data['kelas_siswa']->kelas->siswa->nisn == "0139092677" ){
         //     dd(

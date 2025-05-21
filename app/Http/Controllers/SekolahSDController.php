@@ -520,7 +520,6 @@ class SekolahSDController extends Controller
 
             $nilai_list = NilaiSiswa::where([
                 'kelas_id'=> $data['kelas_siswa']->kelas_id,
-                'siswa_id'=> $data['kelas_siswa']->siswa_id,
             ])
             ->whereHas('mapel',function($q){
                 $q->where('nama',"Seni dan Budaya")
@@ -528,9 +527,14 @@ class SekolahSDController extends Controller
             })
             ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
             ->orderBy('mapels.orders','asc')
-            ->get();
+            ->count();
 
-            Log::info("nilai_list >> ". json_encode($nilai_list) );
+            // foreach($nilai_list as $item){
+            //     $item->save();
+            // }
+
+            Log::info("nilai_list >> ". $nilai_list );
+            // Log::info("nilai_list >> ". json_encode($nilai_list) );
         }
 
         return view('sekolah_sd.raport_akhir',$data);

@@ -515,6 +515,14 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
+        if( $data['kelas_siswa']->kelas_siswa == "0139092677" ){
+            dd(
+                $data['kelas_siswa']->kelas,
+                $data['kelas_siswa']->siswa,
+                $data['nilai_list']
+            );
+        }
+
         return view('sekolah_sd.raport_akhir',$data);
     }
 

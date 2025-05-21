@@ -526,14 +526,13 @@ class SekolahSDController extends Controller
                 ->where('kelas','!=','6');
             })
             ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
-            ->orderBy('mapels.orders','asc')
-            ->delete();
+            ->get();
 
-            // foreach($nilai_list as $item){
-            //     $item->save();
-            // }
+            foreach($nilai_list as $item){
+                $item->save();
+            }
 
-            Log::info("OK");
+            Log::info("row affected >> ". $nilai_list->count() );
             // Log::info("nilai_list >> ". $nilai_list );
             // Log::info("nilai_list >> ". json_encode($nilai_list) );
         }

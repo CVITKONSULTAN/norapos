@@ -527,13 +527,14 @@ class SekolahSDController extends Controller
             })
             ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
             ->orderBy('mapels.orders','asc')
-            ->count();
+            ->delete();
 
             // foreach($nilai_list as $item){
             //     $item->save();
             // }
 
-            Log::info("nilai_list >> ". $nilai_list );
+            Log::info("OK");
+            // Log::info("nilai_list >> ". $nilai_list );
             // Log::info("nilai_list >> ". json_encode($nilai_list) );
         }
 

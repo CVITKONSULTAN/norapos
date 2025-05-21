@@ -515,15 +515,12 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
-        Log::info("data['kelas_siswa'] >> ". json_encode( $data['kelas_siswa']->kelas->siswa ));
-
-        // if( $data['kelas_siswa']->kelas->siswa->nisn == "0139092677" ){
-        //     dd(
-        //         $data['kelas_siswa']->kelas,
-        //         $data['kelas_siswa']->siswa,
-        //         $data['nilai_list']
-        //     );
-        // }
+        
+        if( $data['kelas_siswa']->siswa->nisn == "0139092677" ){
+            Log::info("data['nilai_list'] >> ". 
+            json_encode( $data['nilai_list'] )
+            );
+        }
 
         return view('sekolah_sd.raport_akhir',$data);
     }

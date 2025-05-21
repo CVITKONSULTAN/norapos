@@ -515,7 +515,7 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
-        Log::info($data['kelas_siswa']->kelas->siswa);
+        Log::info( json_encode( $data['kelas_siswa']->kelas->siswa ));
 
         // if( $data['kelas_siswa']->kelas->siswa->nisn == "0139092677" ){
         //     dd(

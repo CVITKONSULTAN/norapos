@@ -529,7 +529,7 @@ class SekolahSDController extends Controller
             ->get();
 
             foreach($nilai_list as $item){
-                $item->save();
+                $item->delete();
             }
 
             Log::info("row affected >> ". $nilai_list->count() );

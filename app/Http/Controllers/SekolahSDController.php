@@ -517,9 +517,20 @@ class SekolahSDController extends Controller
 
         
         if( $data['kelas_siswa']->siswa->nisn == "0139092677" ){
-            Log::info("data['nilai_list'] >> ". 
-            json_encode( $data['nilai_list'] )
-            );
+
+            $nilai_list = NilaiSiswa::where([
+                'kelas_id'=> $data['kelas_siswa']->kelas_id,
+                'siswa_id'=> $data['kelas_siswa']->siswa_id,
+            ])
+            ->whereHas('mapel',function($q){
+                $q->where('nama',"Seni dan Budaya")
+                ->where('kelas','!=','6');
+            })
+            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
+            ->orderBy('mapels.orders','asc')
+            ->get();
+
+            Log::info("nilai_list >> ". json_encode($nilai_list) );
         }
 
         return view('sekolah_sd.raport_akhir',$data);

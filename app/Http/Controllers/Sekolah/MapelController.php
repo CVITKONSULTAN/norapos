@@ -255,6 +255,13 @@ class MapelController extends Controller
         $mapel_id = $request->mapel_id ?? 0;
 
         $mapel = Mapel::findorfail($mapel_id);
+        $kelas = Kelas::findorfail($kelas_id);
+
+        if($kelas->kelas != $mapel->kelas){
+            return redirect()
+            ->back()
+            ->with('error', 'Kelas tidak sesuai dengan level kelas mapel');
+        }
         
         $n = NilaiSiswa::where([
             'kelas_id'=>$kelas_id,

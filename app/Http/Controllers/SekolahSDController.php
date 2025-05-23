@@ -515,7 +515,11 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
-         if( $data['kelas_siswa']->siswa->nisn == "0135452195" ){
+         if( 
+            $data['kelas_siswa']->siswa->nisn == "0136321795" ||
+            $data['kelas_siswa']->siswa->nisn == "3133538726" ||
+            $data['kelas_siswa']->siswa->nisn == "0139092677" 
+         ){
 
             $nilai_list = NilaiSiswa::where([
                 'kelas_id'=> $data['kelas_siswa']->kelas_id,

@@ -240,7 +240,7 @@ class HotelController extends Controller
         
         $result = [];
         foreach ($groupBrand as $key => $value) {
-            $data = \App\RoomAllotment::where('business_id', $business_id)
+            $data = \App\RoomAllotments::where('business_id', $business_id)
             ->where('qty_date', $request->qty_date)
             ->where('room_category', $request->room_category)
             ->first();

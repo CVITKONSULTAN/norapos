@@ -1139,11 +1139,14 @@ class APIController extends Controller
         if($request->business){
             $business_id = $request->business;
         }
+        
         $data = \App\Blog::where('business_id',$business_id)
+        ->where('category',$request->category ?? "general")
         ->orderBy('id','DESC')
         ->skip($skip)
         ->take(10)
         ->get();
+
         return Helper::DataReturn(true,"OK",$data);
     }
 

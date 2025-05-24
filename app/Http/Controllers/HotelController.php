@@ -314,7 +314,7 @@ class HotelController extends Controller
         200); 
     }
 
-    function webview_payment(Request $request){
+    function paymentMobile(Request $request){
         $link = "https://wa.me/6282255985321?text=Hallo+%20Kartika%20Hotel%2C%20saya%20ingin%20melakukan%20pemesanan%20kamar.%0A%0A";
         return redirect()->to($link);
     }

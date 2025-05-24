@@ -239,9 +239,12 @@ class HotelController extends Controller
         $groupBrand = $query->groupBy('brand');
         
         $result = [];
+
+        $qty_date = $request->check_in_date ?? date('Y-m-d');
+        
         foreach ($groupBrand as $key => $value) {
             $data = \App\RoomAllotments::where('business_id', $business_id)
-            ->where('qty_date', $request->qty_date)
+            ->where('qty_date', $qty_date)
             ->where('room_category', $request->room_category)
             ->first();
             $result[] = [

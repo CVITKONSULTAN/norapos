@@ -201,4 +201,96 @@ class HotelController extends Controller
         return view('hotel.frontend-ketersediaan');
     }
 
+    function RoomAllotmentsList(Request $request){
+
+         $query = Product::leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+        ->join('units', 'products.unit_id', '=', 'units.id')
+        ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
+        ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
+        ->leftJoin('tax_rates', 'products.tax', '=', 'tax_rates.id')
+        ->join('variations as v', 'v.product_id', '=', 'products.id')
+        ->leftJoin('variation_location_details as vld', 'vld.variation_id', '=', 'v.id')
+        ->where('products.business_id', $business_id)
+        ->where('products.type', '!=', 'modifier')
+        ->select(
+            'products.id',
+            'products.name as product',
+            'products.type',
+            'c1.name as category',
+            'c2.name as sub_category',
+            'units.actual_name as unit',
+            'brands.name as brand',
+            'tax_rates.name as tax',
+            'products.sku',
+            'products.image',
+            'products.enable_stock',
+            'products.is_inactive',
+            'products.not_for_selling',
+            'products.product_custom_field1',
+            'products.product_custom_field2',
+            'products.product_custom_field3',
+            'products.product_custom_field4'
+        )
+        ->groupBy('products.id')
+        ->get();
+
+        $groupBrand = $query->groupBy('brand');
+        
+        $result = [];
+        foreach ($groupBrand as $key => $value) {
+            $data = \App\RoomAllotment::where('business_id', $request->business_id)
+            ->where('qty_date', $request->qty_date)
+            ->where('room_category', $request->room_category)
+            ->first();
+            $result[] = [
+                'brand' => $key,
+                'qty_room' => $data ? $data->qty_room : 0,
+                'price' => $data ? $data->price : 0,
+                'close_out' => $data ? $data->close_out : false,
+            ];
+        }
+
+        return response()->json(
+                Helper::DataReturn(true,"OK",$result), 
+            200);
+    }
+
+    function RoomAllotmentsStore(Request $request)
+    {
+        try {
+
+            $business_id = $request->business_id ?? 11;
+
+            $input = [
+                'business_id' => $business_id,
+                'qty_date' => $request->qty_date,
+                'room_category' => $request->room_category,
+                'price' => $request->price,
+            ];
+
+            $check = \App\RoomAllotments::where([
+                'business_id' => $business_id,
+                'qty_date' => $request->qty_date,
+                'room_category' => $request->room_category
+            ])->first();
+            
+            if($check){
+                $check->qty_room = $request->qty_room;
+                $check->price = $request->price;
+                $check->close_out = $request->close_out ?? 0;
+                $check->save();
+            } else {
+                \App\RoomAllotments::create($input);
+            }
+            
+            return response()->json(
+                Helper::DataReturn(true,"Data berhasil disimpan"), 
+            200);             
+        } catch (\Throwable $th) {
+            return response()->json(
+                Helper::DataReturn(false,"Akun tidak ditemukan"), 
+            400); 
+        }
+    }
+
 }

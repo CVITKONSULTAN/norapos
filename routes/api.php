@@ -23,6 +23,10 @@ Route::get('/hotel/available', "HotelController@availablity_kamar")->name("hotel
 Route::get('/hotel/print', 'APIController@hotel_print');
 Route::get('/hotel/room/print', 'APIController@hotel_room_print');
 
+//mobile kartika apps
+Route::get('/room-allotments/list', 'HotelController@RoomAllotments');
+// Route::post('/room-allotments', 'HotelController@RoomAllotmentsStore');
+
 Route::group(['middleware'=>'auth:api'],function(){
 
     Route::post('delete-account','APIController@deleteAccount');
@@ -60,6 +64,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::post('/checkout/store', 'APIController@checkoutStore');
     Route::post('/checkin/update', 'APIController@checkinUpdate');
     // end hotel kartika
+    
 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){

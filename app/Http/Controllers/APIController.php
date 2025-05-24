@@ -1147,17 +1147,17 @@ class APIController extends Controller
         // Log::info('$category >> '.$category);
         // Log::info('$skip >> '.$skip);
         
-        // $data = \App\Blog::where('business_id',$business_id)
-        // ->where('category',$category)
-        // ->orderBy('id','DESC')
-        // ->skip($skip)
-        // ->take(10)
-        // ->get();
+        $data = \App\Blog::where('business_id',$business_id)
+        ->where('category',$category)
+        ->orderBy('id','DESC')
+        ->skip($skip)
+        ->take(10)
+        ->get();
 
         // Log::info('$data >> '.json_encode($data));
         // dd(\App\Blog::all(),$data,$business_id,$category,$skip);
 
-        $data = \App\Blog::all();
+        // $data = \App\Blog::all();
 
         return Helper::DataReturn(true,"OK",$data);
     }

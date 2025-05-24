@@ -1155,7 +1155,7 @@ class APIController extends Controller
         ->get();
 
         // Log::info('$data >> '.json_encode($data));
-        dd($data,$business,$category,$skip);
+        dd($data,$business_id,$category,$skip);
 
         return Helper::DataReturn(true,"OK",$data);
     }

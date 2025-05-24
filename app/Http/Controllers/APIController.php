@@ -1143,9 +1143,9 @@ class APIController extends Controller
 
         $category = $request->category ?? "general";
 
-        Log::info('list blog >> '.$business_id);
-        Log::info('$category >> '.$category);
-        Log::info('$skip >> '.$skip);
+        // Log::info('list blog >> '.$business_id);
+        // Log::info('$category >> '.$category);
+        // Log::info('$skip >> '.$skip);
         
         $data = \App\Blog::where('business_id',$business_id)
         ->where('category',$category)
@@ -1154,7 +1154,8 @@ class APIController extends Controller
         ->take(10)
         ->get();
 
-        Log::info('$data >> '.json_encode($data));
+        // Log::info('$data >> '.json_encode($data));
+        dd($data,$business,$category,$skip);
 
         return Helper::DataReturn(true,"OK",$data);
     }

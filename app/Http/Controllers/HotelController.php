@@ -241,7 +241,7 @@ class HotelController extends Controller
         $result = [];
 
         $qty_date = $request->check_in_date ?? date('Y-m-d');
-        
+
         foreach ($groupBrand as $key => $value) {
             $data = \App\RoomAllotments::where('business_id', $business_id)
             ->where('qty_date', $qty_date)
@@ -301,6 +301,22 @@ class HotelController extends Controller
                 Helper::DataReturn(false,"Akun tidak ditemukan"), 
             400); 
         }
+    }
+
+    function bookingMobile(Request $request){
+        $business_id = $request->business_id ?? 11;
+
+
+        return response()->json(
+            Helper::DataReturn(true,"OK",[
+                'link'=> route('hotel.webview_payment')
+            ]), 
+        200); 
+    }
+
+    function webview_payment(Request $request){
+        $link = "https://wa.me/6282255985321?text=Hallo+%20Kartika%20Hotel%2C%20saya%20ingin%20melakukan%20pemesanan%20kamar.%0A%0A";
+        return redirect()->to($link);
     }
 
 }

@@ -25,6 +25,8 @@ Route::get('/hotel/room/print', 'APIController@hotel_room_print');
 
 //mobile kartika apps
 Route::get('/room-allotments/list', 'HotelController@RoomAllotmentsList');
+Route::post('/booking', 'HotelController@bookingMobile');
+Route::get('/webview_payment', 'HotelController@paymentMobile')->name('hotel.webview_payment');
 // Route::post('/room-allotments', 'HotelController@RoomAllotmentsStore');
 
 Route::group(['middleware'=>'auth:api'],function(){

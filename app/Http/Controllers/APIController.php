@@ -7,6 +7,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Str;
 use Hash;
 use DB;
+use Log;
 
 
 use App\Helpers\Helper;

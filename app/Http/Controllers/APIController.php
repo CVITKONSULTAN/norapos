@@ -1150,8 +1150,8 @@ class APIController extends Controller
         $data = \App\Blog::where('business_id',$business_id)
         ->where('category',$category)
         ->orderBy('id','DESC')
-        ->skip($skip)
-        ->take(10)
+        // ->skip($skip)
+        // ->take(10)
         ->get();
 
         // Log::info('$data >> '.json_encode($data));

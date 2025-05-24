@@ -235,10 +235,12 @@ class HotelController extends Controller
         ->get();
 
         $groupBrand = $query->groupBy('brand');
+
+        $business_id = $request->business_id ?? 11;
         
         $result = [];
         foreach ($groupBrand as $key => $value) {
-            $data = \App\RoomAllotment::where('business_id', $request->business_id)
+            $data = \App\RoomAllotment::where('business_id', $business_id)
             ->where('qty_date', $request->qty_date)
             ->where('room_category', $request->room_category)
             ->first();

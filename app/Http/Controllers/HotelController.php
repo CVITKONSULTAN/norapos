@@ -245,6 +245,11 @@ class HotelController extends Controller
             ->where('room_category', $request->room_category)
             ->first();
             $result[] = [
+                'photo' => [
+                    'https://development.norapos.com/img/default.png',
+                    'https://development.norapos.com/img/default.png',
+                    'https://development.norapos.com/img/default.png'
+                ],
                 'brand' => $key,
                 'qty_room' => $data ? $data->qty_room : 0,
                 'price' => $data ? $data->price : 0,

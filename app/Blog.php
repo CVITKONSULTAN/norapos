@@ -15,6 +15,7 @@ class Blog extends Model
         "published_at",
         'user_id',
         'business_id',
+        'category',
     ];
 
     public function user()

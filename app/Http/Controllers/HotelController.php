@@ -203,6 +203,8 @@ class HotelController extends Controller
 
     function RoomAllotmentsList(Request $request){
 
+        $business_id = $request->business_id ?? 11;
+
          $query = Product::leftJoin('brands', 'products.brand_id', '=', 'brands.id')
         ->join('units', 'products.unit_id', '=', 'units.id')
         ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
@@ -235,8 +237,6 @@ class HotelController extends Controller
         ->get();
 
         $groupBrand = $query->groupBy('brand');
-
-        $business_id = $request->business_id ?? 11;
         
         $result = [];
         foreach ($groupBrand as $key => $value) {

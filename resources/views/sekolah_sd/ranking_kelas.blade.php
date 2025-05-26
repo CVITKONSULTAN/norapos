@@ -108,7 +108,9 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center" colspan="3">Rata-Rata</th>
+                            <th class="text-center">Rata-Rata</th>
+                            <th class="text-center"></th>
+                            <th class="text-center"></th>
                             @foreach ($mapel as $i => $item)
                                 <th class="text-center"></th>
                             @endforeach

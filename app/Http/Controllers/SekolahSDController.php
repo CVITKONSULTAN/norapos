@@ -1335,6 +1335,8 @@ class SekolahSDController extends Controller
             ->get()
             ->groupBy('siswa_id');
 
+            Log::info('nilais_siswa >> '. json_encode($nilai_siswa));
+
             $data['nilai_siswa'] = [];
 
             foreach ($nilai_siswa as $key => $item) {

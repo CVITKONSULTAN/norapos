@@ -264,7 +264,7 @@
 
                 product_table = $('#product_table').DataTable({
                     pageLength: -1,
-                    ordering: false,
+                    ordering: true,
                     order: [[{{ count($mapel) + 4 }}, 'desc']],
                     columnDefs: [
                         {

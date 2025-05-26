@@ -140,7 +140,10 @@
         let selectizeInstanceKelasFilter;
 
         const onChangeData = (value) => {
-
+            console.log(value);
+            if(value == "" || value == null) {
+                return;
+            }
             @if(Request::has('kelas_id'))
                 const kelas_id = "{{Request::get('kelas_id')}}"
                 if(value == kelas_id) {

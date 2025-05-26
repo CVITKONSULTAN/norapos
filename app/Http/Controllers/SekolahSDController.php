@@ -1306,6 +1306,7 @@ class SekolahSDController extends Controller
         $data['selected'] = null;
         if($user->checkGuruWalikelas()){
             $data['kelas_perwalian'] = Kelas::where('wali_kelas_id',$user->id)->get()->pluck('id')->toArray();
+            arsort( $data['kelas_perwalian'] ) ;
             $data['selected'] = Kelas::where('wali_kelas_id',$user->id)->first();
         }
 

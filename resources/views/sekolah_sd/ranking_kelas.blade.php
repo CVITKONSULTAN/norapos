@@ -144,13 +144,9 @@
             if(value == "" || value == null) {
                 return;
             }
-            @if(Request::has('kelas_id'))
-                const kelas_id = "{{Request::get('kelas_id')}}"
-                if(value == kelas_id) {
-                    return;
-                }
+            @if(!Request::has('kelas_id'))
+                $("#form_filter").submit();
             @endif
-            $("#form_filter").submit();
         }
 
         $(function () {

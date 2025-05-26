@@ -58,6 +58,7 @@
                         <select name="kelas_id" class="kelas_selection_filter"></select>
                     </div>
                 </div>
+                <button type="submit" class="btn btn-primary btn-block">Lihat Data</button>
             </div>
         @endcomponent
     </form>
@@ -144,9 +145,6 @@
             if(value == "" || value == null) {
                 return;
             }
-            @if(!Request::has('kelas_id'))
-                $("#form_filter").submit();
-            @endif
         }
 
         $(function () {

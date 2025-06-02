@@ -44,21 +44,28 @@ class SiswaImportDapodik implements ToCollection, WithHeadingRow, WithStartRow
         // $res_trouble_nisn = [];
         foreach ($rows as $row) {
             // $row adalah Collection dari satu baris (index numerik)
-            $val = [
-                'nama'      => $row[2],
-                'nis'       => $row[3],
-                'jk'        => $row[4],
-                'nisn'      => $row[5],
-                'kelas'     => $row[6],
-                'tempat_lahir' => $row[7],
-                'tanggal_lahir' => $row[8], // Pastikan ini format tanggal
-                'nik'       => $row[9],
-                'agama'     => $row[10],
-                'alamat'    => $row[11],
-                'ayah'      => $row['ayah'] ?? null,
-                'ibu'       => $row['ibu'] ?? null,
-            ];
-            $transform[] = $val;
+            
+            try {
+                $val = [
+                    'nama'      => $row[2],
+                    'nis'       => $row[3],
+                    'jk'        => $row[4],
+                    'nisn'      => $row[5],
+                    'kelas'     => $row[6],
+                    'tempat_lahir' => $row[7],
+                    'tanggal_lahir' => $row[8], // Pastikan ini format tanggal
+                    'nik'       => $row[9],
+                    'agama'     => $row[10],
+                    'alamat'    => $row[11],
+                    'ayah'      => $row['ayah'] ?? null,
+                    'ibu'       => $row['ibu'] ?? null,
+                ];
+                $transform[] = $val;
+            } catch (\Exception $e) {
+                Log::error('Error converting row to array: ' . $e->getMessage());
+                Log::info("Error row data: " . json_encode($row));
+                continue; // skip this row if conversion fails
+            }
 
             $siswa = Siswa::where('nisn',$val['nisn'])->first();
 
@@ -109,7 +116,7 @@ class SiswaImportDapodik implements ToCollection, WithHeadingRow, WithStartRow
                 }
 
                 if(empty($siswa)){
-                    Log::info('error import siswa dapodik : '. json_encode($val) ." \n ". json_encode($siswa));
+                    Log::error('error import siswa dapodik : '. json_encode($val) ." \n ". json_encode($siswa));
                 }
             }
         }

@@ -47,16 +47,16 @@ class SiswaImportDapodik implements ToCollection, WithHeadingRow, WithStartRow
             
             try {
                 $val = [
-                    'nama'      => $row[2],
-                    'nis'       => $row[3],
-                    'jk'        => $row[4],
-                    'nisn'      => $row[5],
-                    'kelas'     => $row[6],
-                    'tempat_lahir' => $row[7],
-                    'tanggal_lahir' => $row[8], // Pastikan ini format tanggal
-                    'nik'       => $row[9],
-                    'agama'     => $row[10],
-                    'alamat'    => $row[11],
+                    'nama'      => $row["nama"],
+                    'nis'       => $row["nis"],
+                    'jk'        => $row["jk"],
+                    'nisn'      => $row["nisn"],
+                    'kelas'     => $row["kls"],
+                    'tempat_lahir' => $row["tempat_lahir"],
+                    'tanggal_lahir' => $row["tanggal_lahir"], // Pastikan ini format tanggal
+                    'nik'       => $row["nik"],
+                    'agama'     => $row["agama"],
+                    'alamat'    => $row["alamat"],
                     'ayah'      => $row['ayah'] ?? null,
                     'ibu'       => $row['ibu'] ?? null,
                 ];

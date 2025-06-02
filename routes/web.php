@@ -194,8 +194,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('data-siswa',"SekolahSDController@data_siswa_index")
         ->name('sekolah_sd.siswa.index');
-        Route::get('data-siswa/create',"SekolahSDController@data_siswa_create")
-        ->name('sekolah_sd.siswa.create');
+        // Route::get('data-siswa/create',"SekolahSDController@data_siswa_create")
+        // ->name('sekolah_sd.siswa.create');
         // Route::get('data-siswa/{id}/edit',"Sekolah\SiswaController@edit")
         // ->name('sekolah_sd.siswa.edit');
 
@@ -203,7 +203,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.siswa.store');
         Route::get('data-siswa/data',"Sekolah\SiswaController@data")
         ->name('sekolah_sd.siswa.data');
-        
+
         Route::put('data-siswa/{id}',"Sekolah\SiswaController@update")
         ->name('sekolah_sd.siswa.update');
 

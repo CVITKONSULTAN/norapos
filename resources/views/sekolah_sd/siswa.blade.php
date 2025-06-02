@@ -45,9 +45,9 @@
                         <a href="#product_list_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cubes" aria-hidden="true"></i> Semua Data</a>
                     </li>
                     <li>
-                        <a target="_blank" href="{{ route('sekolah_sd.siswa.create') }}">
+                        {{-- <a target="_blank" href="{{ route('sekolah_sd.siswa.create') }}">
                             <i class="fa fa-plus" aria-hidden="true"></i> Tambah Data
-                        </a>
+                        </a> --}}
                     </li>
                 </ul>
 

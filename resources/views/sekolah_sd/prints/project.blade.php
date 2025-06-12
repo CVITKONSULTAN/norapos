@@ -303,7 +303,7 @@
                     </p>
                     <br />
                     <p class="ttd">{{$kelas_siswa->kelas->nama_wali_kelas}}</p>
-                    <p style="margin:0px;">{{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
+                    <p style="margin:0px;">NBM. {{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
                 </td>
                 <td style="text-align: center;">
                     <p>

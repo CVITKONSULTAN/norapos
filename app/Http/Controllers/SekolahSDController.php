@@ -502,6 +502,8 @@ class SekolahSDController extends Controller
         ->orderBy('mapels.orders','asc')
         ->with('mapel')
         ->get();
+
+        Log::info("nilai_list >> ". json_encode($data['nilai_list']) );
         
         $data['fase'] = null;
         $kelas = $data['kelas_siswa']->kelas;

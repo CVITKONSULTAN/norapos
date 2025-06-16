@@ -528,15 +528,15 @@ class SekolahSDController extends Controller
                 $q->where('nama',"Matematika")
                 ->where('kelas','!=','3 CI');
             })
-            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id');
-            // ->delete();
+            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
+            ->delete();
 
             // foreach($nilai_list as $item){
             //     $item->delete();
             // }
 
-        //     Log::info("OK");
-            Log::info("row affected >> ". $nilai_list->count() );
+            Log::info("OK");
+            // Log::info("row affected >> ". $nilai_list->count() );
         //     // Log::info("nilai_list >> ". $nilai_list );
         //     // Log::info("nilai_list >> ". json_encode($nilai_list) );
         }

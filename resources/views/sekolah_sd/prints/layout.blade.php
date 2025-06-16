@@ -86,12 +86,15 @@
             vertical-align: top;
         }
         table.tabel_kehadiran{
-            width: 35%;
+            width: 61%;
         }
         table.tabel_kehadiran tr td{
             padding: 2px 5px;
             border: 0px;
             border-bottom: 1px solid black;
+        }
+        table.no_border tr td{
+            border: none;
         }
         
         @page {

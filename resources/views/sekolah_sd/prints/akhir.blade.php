@@ -207,29 +207,69 @@
         </tbody>
     </table> --}}
 
-    <table class="tabel_penilaian tabel_kehadiran">
-        <thead>
-            <tr>
-                <th colspan="3">Ketidakhadiran</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Sakit</td>
-                <td>:</td>
-                <td>{{$kelas_siswa->sakit ?? 0}} hari</td>
-            </tr>
-            <tr>
-                <td>Izin</td>
-                <td>:</td>
-                <td>{{$kelas_siswa->izin ?? 0}} hari</td>
-            </tr>
-            <tr>
-                <td>Tanpa Keterangan</td>
-                <td>:</td>
-                <td>{{$kelas_siswa->tanpa_keterangan ?? 0}} hari</td>
-            </tr>
-        </tbody>
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 50%;vertical-align:top;">
+                <table class="tabel_penilaian tabel_kehadiran"
+                @if($kelas_siswa->kelas->semester == 1)
+                    style="width:35%;"
+                @endif
+                >
+                    <thead>
+                        <tr>
+                            <th colspan="3">Ketidakhadiran</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sakit</td>
+                            <td>:</td>
+                            <td>{{$kelas_siswa->sakit ?? 0}} hari</td>
+                        </tr>
+                        <tr>
+                            <td>Izin</td>
+                            <td>:</td>
+                            <td>{{$kelas_siswa->izin ?? 0}} hari</td>
+                        </tr>
+                        <tr>
+                            <td>Tanpa Keterangan</td>
+                            <td>:</td>
+                            <td>{{$kelas_siswa->tanpa_keterangan ?? 0}} hari</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            @if($kelas_siswa->kelas->semester == 2)
+            <td style="width: 50%;vertical-align:top;">
+                <table class="tabel_penilaian">
+                    <thead>
+                        <tr>
+                            <th>Keputusan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                Berdasarkan pencapaian kompetensi pada semester ke-1 dan ke-2, peserta didik <br />
+                                <table class="no_border" style="margin-left: -10px;">
+                                    <tr>
+                                        <td>Naik ke kelas</td>
+                                        <td>:</td>
+                                        <td>{{ $naik_kelas }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tinggal di kelas</td>
+                                        <td>:</td>
+                                        <td>-</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            @endif
+        </tr>
     </table>
 
     <table class="table_ttd">
@@ -246,6 +286,7 @@
             </td>
             <td style="text-align: center;">
                 <p>
+                    Pontianak, 20 Juni 2025<br />
                     Mengetahui,<br />
                     Orangtua/Wali
                 </p>

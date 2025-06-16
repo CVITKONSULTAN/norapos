@@ -502,8 +502,6 @@ class SekolahSDController extends Controller
         ->orderBy('mapels.orders','asc')
         ->with('mapel')
         ->get();
-
-        // Log::info("nilai_list >> ". json_encode($data['nilai_list']) );
         
         $data['fase'] = null;
         $kelas = $data['kelas_siswa']->kelas;
@@ -590,6 +588,8 @@ class SekolahSDController extends Controller
         $data['ekskul_siswa'] = EkskulSiswa::where($where)
         ->with('ekskul')
         ->get();
+
+        $data['naik_kelas'] = angkaKeRomawi( $kelas->kelas+1 ). " (".ucfirst( angkaKeHuruf($kelas->kelas+1) ).")";
 
         return view('sekolah_sd.prints.akhir',$data);
     }

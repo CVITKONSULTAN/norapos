@@ -517,31 +517,29 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
-        //  if( 
-        //     $data['kelas_siswa']->siswa->nisn == "0136321795" ||
-        //     $data['kelas_siswa']->siswa->nisn == "3133538726" ||
-        //     $data['kelas_siswa']->siswa->nisn == "0139092677" 
-        //  ){
+         if( 
+            $data['kelas_siswa']->siswa->nisn == "0153381467"
+         ){
 
-        //     $nilai_list = NilaiSiswa::where([
-        //         'kelas_id'=> $data['kelas_siswa']->kelas_id,
-        //     ])
-        //     ->whereHas('mapel',function($q){
-        //         $q->where('nama',"Seni dan Budaya")
-        //         ->where('kelas','!=','6');
-        //     })
-        //     ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
-        //     ->delete();
+            $nilai_list = NilaiSiswa::where([
+                'kelas_id'=> $data['kelas_siswa']->kelas_id,
+            ])
+            ->whereHas('mapel',function($q){
+                $q->where('nama',"Matematika")
+                ->where('kelas','!=','3 CI');
+            })
+            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id');
+            // ->delete();
 
-        //     // foreach($nilai_list as $item){
-        //     //     $item->delete();
-        //     // }
+            // foreach($nilai_list as $item){
+            //     $item->delete();
+            // }
 
         //     Log::info("OK");
-        //     // Log::info("row affected >> ". $nilai_list->count() );
+            Log::info("row affected >> ". $nilai_list->count() );
         //     // Log::info("nilai_list >> ". $nilai_list );
         //     // Log::info("nilai_list >> ". json_encode($nilai_list) );
-        // }
+        }
 
         return view('sekolah_sd.raport_akhir',$data);
     }

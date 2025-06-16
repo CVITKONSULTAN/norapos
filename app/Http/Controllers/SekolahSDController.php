@@ -503,7 +503,7 @@ class SekolahSDController extends Controller
         ->with('mapel')
         ->get();
 
-        Log::info("nilai_list >> ". json_encode($data['nilai_list']) );
+        // Log::info("nilai_list >> ". json_encode($data['nilai_list']) );
         
         $data['fase'] = null;
         $kelas = $data['kelas_siswa']->kelas;

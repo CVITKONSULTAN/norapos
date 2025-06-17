@@ -298,7 +298,7 @@
                 <td style="text-align: center;">
                     {{-- {{dd()}} --}}
                     <p>
-                        Mengetahui,<br />
+                        {{-- Mengetahui,<br /> --}}
                         Wali Kelas
                     </p>
                     <br />
@@ -307,7 +307,8 @@
                 </td>
                 <td style="text-align: center;">
                     <p>
-                        Mengetahui,<br />
+                        {{-- Mengetahui,<br /> --}}
+                        Pontianak, 20 Juni 2025<br />
                         Orangtua/Wali
                     </p>
                     <br />
@@ -318,7 +319,7 @@
             <tr>
                 <td colspan="2" style="text-align: center;">
                     <p>
-                        <br />
+                        Mengetahui,<br />
                         Kepala Sekolah
                     </p>
                     <br />

@@ -592,7 +592,7 @@ class SekolahSDController extends Controller
         $lvlkelas = $kelas->kelas;
         $lvlkelas = preg_replace('/\D+/', '', $lvlkelas);
         $lvlkelas = $lvlkelas+1;
-        Log::info("kelas >> ". $kelas->kelas." -> ". $lvlkelas);
+        // Log::info("kelas >> ". $kelas->kelas." -> ". $lvlkelas);
 
         $data['naik_kelas'] = angkaKeRomawi( $lvlkelas ). " (".ucfirst( angkaKeHuruf($lvlkelas) ).")";
 

@@ -590,7 +590,7 @@ class SekolahSDController extends Controller
         ->get();
 
         $lvlkelas = $kelas->kelas;
-        $lvlkelas = preg_match_all('/\d+/', $lvlkelas);
+        $lvlkelas = preg_replace('/\D+/', '', $lvlkelas);
         $lvlkelas = $lvlkelas+1;
         Log::info("kelas >> ". $kelas->kelas." -> ". $lvlkelas);
 

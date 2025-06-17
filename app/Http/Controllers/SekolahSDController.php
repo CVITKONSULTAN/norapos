@@ -589,7 +589,13 @@ class SekolahSDController extends Controller
         ->with('ekskul')
         ->get();
 
-        $data['naik_kelas'] = angkaKeRomawi( $kelas->kelas+1 ). " (".ucfirst( angkaKeHuruf($kelas->kelas+1) ).")";
+        $lvlkelas = $kelas->kelas;
+        $lvlkelas = preg_match_all('/\d+/', $lvlkelas);
+        $lvlkelas = $lvlkelas+1;
+
+        $data['naik_kelas'] = angkaKeRomawi( $lvlkelas ). " (".ucfirst( angkaKeHuruf($lvlkelas) ).")";
+
+        // dd($data['naik_kelas']);
 
         return view('sekolah_sd.prints.akhir',$data);
     }

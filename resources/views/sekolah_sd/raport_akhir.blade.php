@@ -531,6 +531,25 @@
             $("#keterangan_ekskul").text(str)
         })
 
+        $("#nama_ekskul").change(function(){
+            const val = $("#nilai_ekskul").val();
+            let str = '';
+            switch (val) {
+                case "A":
+                    str += "Sangat aktif dalam mengikuti ekskul"
+                    break;
+                case "B":
+                    str += "Aktif mengikuti ekskul"
+                    break;
+                case "C":
+                    str += "Kurang aktif dalam mengikuti ekskul"
+                    break;
+            }
+            const nama_ekskul = $("#nama_ekskul option:selected").text();
+            str += " "+nama_ekskul;
+            $("#keterangan_ekskul").text(str)
+        })
+
         const tambahEkskul = () => {
             const modals = $("#ekskul_modal");
             modals.find('input[name=insert]').val(1);

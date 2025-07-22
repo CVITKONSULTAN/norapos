@@ -814,9 +814,11 @@ class APIController extends Controller
             400); 
 
             $vid = $p->variations()->first()->id ?? 0;
-
-            $p->product_custom_field2 = "OC";
-            $p->save();
+            
+            if(!str_contains( strtolower($p->name) ,'show')){
+                $p->product_custom_field2 = "OC";
+                $p->save();
+            }
 
             $input['products'][0]['variation_id'] = $vid;
         }

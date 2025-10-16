@@ -26,6 +26,7 @@
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "5.8.*",
         "maatwebsite/excel": "^3.1.8",
+        "midtrans/midtrans-php": "^2.6",
         "milon/barcode": "^6.0",
         "mpdf/mpdf": "^8.0",
         "nexmo/laravel": "^2.2",

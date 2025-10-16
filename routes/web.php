@@ -11,6 +11,7 @@
 |
 */
 
+include_once('ciptakarya.php');
 include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;

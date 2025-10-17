@@ -4,6 +4,9 @@ namespace App\Http\Controllers\CiptaKarya;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\CiptaKarya\PengajuanPBG;
+use Validator;
+use DataTables;
 
 class DataController extends Controller
 {
@@ -42,9 +45,65 @@ class DataController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store_pbg(Request $request)
     {
-        //
+        // ========== DELETE ==========
+        if ($request->delete == 1) {
+            if (!$request->id) {
+                return response()->json(['status' => false, 'message' => 'ID tidak ditemukan']);
+            }
+
+            $data = PengajuanPBG::find($request->id);
+            if (!$data) {
+                return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+            }
+
+            $data->delete();
+            return response()->json(['status' => true, 'message' => 'Data berhasil dihapus']);
+        }
+
+        // ========== INSERT ==========
+        if ($request->insert == 1) {
+
+            // Validasi simple
+            $validator = Validator::make($request->all(), [
+                'no_permohonan' => 'required|unique:pengajuan,no_permohonan',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }
+
+            $data = PengajuanPBG::create($request->except(['_token', 'insert', 'update', 'delete']));
+            return response()->json(['status' => true, 'message' => 'Data berhasil ditambahkan', 'data' => $data]);
+        }
+
+        // ========== UPDATE ==========
+        if ($request->update == 1) {
+            if (!$request->id) {
+                return response()->json(['status' => false, 'message' => 'ID wajib dikirim untuk update']);
+            }
+
+            $data = PengajuanPBG::find($request->id);
+            if (!$data) {
+                return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+            }
+
+            // Validasi unik kecuali data sendiri
+            $validator = Validator::make($request->all(), [
+                'no_permohonan' => 'required|unique:pengajuan,no_permohonan,' . $request->id,
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }
+
+            $data->update($request->except(['_token', 'insert', 'update', 'delete']));
+            return response()->json(['status' => true, 'message' => 'Data berhasil diperbarui', 'data' => $data]);
+        }
+
+        return response()->json(['status' => false, 'message' => 'Tidak ada aksi yang dipilih']);
+
     }
 
     /**
@@ -82,13 +141,12 @@ class DataController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * List Datatables PBG
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function list_data_pbg()
     {
-        //
+        return DataTables::of(PengajuanPBG::query())->make(true);
     }
 }

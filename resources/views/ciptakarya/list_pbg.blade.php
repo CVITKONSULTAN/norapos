@@ -314,22 +314,27 @@
 
 
 
-        $(document).on('click', 'button.delete_user_button', function(){
+        $(document).on('click', 'button.delete_pengajuan', function(){
             swal({
-            title: LANG.sure,
-            text: LANG.confirm_delete_user,
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
+                title: LANG.sure,
+                text: "Data petugas akan dihapus. Lanjutkan?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
             }).then((willDelete) => {
                 if (willDelete) {
-                    const href = "{{ route('absensi.store') }}";
+                    const href = "{{ route('ciptakarya.store_pbg') }}"; // route yang sama seperti add/update
                     const id = $(this).data('id');
+
                     $.ajax({
                         method: "POST",
                         url: href,
                         dataType: "json",
-                        data: {delete:1,id:id},
+                        data: {
+                            delete: 1,
+                            id: id,
+                            _token: "{{ csrf_token() }}" // keamanan laravel
+                        },
                         success: function(result){
                             if(result.status){
                                 toastr.success(result.message);
@@ -337,18 +342,105 @@
                             } else {
                                 toastr.error(result.message);
                             }
+                        },
+                        error: function(){
+                            toastr.error("Gagal menghapus data!");
                         }
                     });
                 }
             });
         });
 
-        const addPengajuan = (tipe) =>{
+        const addPengajuan = (tipe) => {
             uploadedFiles = [];
-            // Kosongkan list file manual
+
+            const modals = $("#editor_modal_pengajuan");
+
+            // ✅ Update Title Modal
+            modals.find('.modal-title').html(`Tambah Data Pengajuan <b>${tipe}</b>`);
+
+            // ✅ Reset hanya input & textarea biasa (jaga hidden)
+            modals.find('input:not([type=hidden])').val("");
+            modals.find('textarea').val("");
+
+            // ✅ Atur state hidden input
+            modals.find('input[name=tipe]').val(tipe);
+            modals.find('input[name=insert]').val(1);
+            modals.find('input[name=update]').val(0);
+            modals.find('input[name=id]').val(0);
+
+            // ✅ Kosongkan list file manual
             $('#list_uploaded_file').html('');
-            const modals = $("#editor_modal_pengajuan")
-            modals.find('input[type!=hidden]').val("");
+
+            // ✅ Reset Dropzone
+            if (dzPengajuan) {
+                dzPengajuan.removeAllFiles(true);
+            }
+
+            // ✅ Pastikan pesan dropzone muncul lagi
+            $('#dropzone_pengajuan .dz-message').show();
+
+            modals.modal('show');
+        };
+
+        $(document).on('click', '.edit_pengajuan', function () {
+            const id = $(this).data('id');
+            const url = `{{ route('ciptakarya.list_data_pbg') }}/${id}/detail`;
+
+            $.get(url, function(res) {
+                if (res.status) {
+                    fillFormForEdit(res.data);
+                } else {
+                    swal("Gagal", "Data tidak ditemukan", "error");
+                }
+            });
+        });
+
+        function fillFormForEdit(data) {
+            const modals = $("#editor_modal_pengajuan");
+
+            // Ubah title modal
+            modals.find('.modal-title').html(`Edit Data Pengajuan <b>${data.tipe}</b>`);
+
+            // Set state
+            modals.find('input[name=tipe]').val(data.tipe);
+            modals.find('input[name=insert]').val(0);
+            modals.find('input[name=update]').val(1);
+            modals.find('input[name=id]').val(data.id);
+
+            // Isi form field
+            modals.find('input[name=no_permohonan]').val(data.no_permohonan);
+            modals.find('input[name=no_krk]').val(data.no_krk);
+            modals.find('input[name=nama_pemohon]').val(data.nama_pemohon);
+            modals.find('input[name=nik]').val(data.nik);
+            modals.find('textarea[name=alamat]').val(data.alamat);
+            modals.find('input[name=fungsi_bangunan]').val(data.fungsi_bangunan);
+            modals.find('input[name=nama_bangunan]').val(data.nama_bangunan);
+            modals.find('input[name=jumlah_bangunan]').val(data.jumlah_bangunan);
+            modals.find('input[name=jumlah_lantai]').val(data.jumlah_lantai);
+            modals.find('input[name=luas_bangunan]').val(data.luas_bangunan);
+            modals.find('textarea[name=lokasi_bangunan]').val(data.lokasi_bangunan);
+            modals.find('input[name=no_persil]').val(data.no_persil);
+            modals.find('input[name=luas_tanah]').val(data.luas_tanah);
+            modals.find('input[name=pemilik_tanah]').val(data.pemilik_tanah);
+            modals.find('input[name=gbs_min]').val(data.gbs_min);
+            modals.find('input[name=kdh_min]').val(data.kdh_min);
+            modals.find('input[name=kdb_max]').val(data.kdb_max);
+
+            // Reset Dropzone & file list
+            dzPengajuan.removeAllFiles(true);
+            uploadedFiles = [];
+            $('#list_uploaded_file').html('');
+
+            // Jika ada file lama
+            if (data.uploaded_files && data.uploaded_files.length > 0) {
+                data.uploaded_files.forEach((fileUrl) => {
+                    uploadedFiles.push(fileUrl);
+                    addFileToList(fileUrl.split('/').pop(), fileUrl);
+                });
+            }
+
+            // Show modal
             modals.modal('show');
         }
 

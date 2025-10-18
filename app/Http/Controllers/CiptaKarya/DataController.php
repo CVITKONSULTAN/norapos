@@ -108,14 +108,17 @@ class DataController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource PBG
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show_pbg($id)
     {
-        //
+         $data = PengajuanPBG::find($id);
+        return $data ?
+            response()->json(['status' => true, 'data' => $data]) :
+            response()->json(['status' => false]);
     }
 
     /**
@@ -148,7 +151,7 @@ class DataController extends Controller
      */
     public function list_data_pbg()
     {
-        return DataTables::of(PengajuanPBG::query())->make(true);
+        return DataTables::of(PengajuanPBG::orderBy('id','desc'))->make(true);
     }
 
     /**
@@ -158,7 +161,7 @@ class DataController extends Controller
      */
     public function list_data_petugas()
     {
-        return DataTables::of(PetugasLapangan::query())->make(true);
+        return DataTables::of(PetugasLapangan::orderBy('id','desc'))->make(true);
     }
 
     /**

@@ -150,9 +150,32 @@ class DataController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function list_data_pbg()
+    public function list_data_pbg(Request $request)
     {
-        return DataTables::of(PengajuanPBG::orderBy('id','desc'))->make(true);
+        // return DataTables::of(PengajuanPBG::orderBy('id','desc'))->make(true);
+        $query = PengajuanPBG::query()->orderBy('id', 'desc');
+
+        // ✅ Filter Tahun (created_at)
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->whereYear('created_at', $request->tahun);
+        }
+
+        // ✅ Filter Kategori Permohonan (misal: fungsi_bangunan / tipe)
+        if ($request->has('kategori') && $request->kategori != '') {
+            $query->where('fungsi_bangunan', $request->kategori);
+        }
+
+        // ✅ Filter Jenis Izin (field: tipe — PBG / SLF)
+        if ($request->has('jenis') && $request->jenis != '') {
+            $query->where('tipe', $request->jenis);
+        }
+
+        // ✅ Filter Status (pending / approved / rejected)
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        return DataTables::of($query)->make(true);
     }
 
     /**

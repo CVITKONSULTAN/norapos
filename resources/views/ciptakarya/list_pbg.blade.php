@@ -201,27 +201,27 @@
             <p>Filter Data :</p>
             <div class="row">
                 <div class="form-group col-md-2">
-                    <select class="form-control" required>
-                        <option>-- Pilih Tahun --</option>
+                    <select id="filter_tahun" class="form-control" required>
+                        <option>-- Semua Tahun --</option>
                     </select>
                 </div>
                 <div class="form-group col-md-2">
-                    <select class="form-control" required>
-                        <option>-- Pilih Kategori Permohonan --</option>
+                    <select id="filter_kategori" class="form-control" required>
+                        <option>-- Semua Kategori Permohonan --</option>
                     </select>
                 </div>
                 <div class="form-group col-md-2">
-                    <select class="form-control" required>
-                        <option>-- Pilih Jenis Izin --</option>
+                    <select id="filter_jenis" class="form-control" required>
+                        <option>-- Semua Jenis Izin --</option>
                     </select>
                 </div>
                 <div class="form-group col-md-2">
-                    <select class="form-control" required>
-                        <option>-- Pilih Status --</option>
+                    <select id="filter_status" class="form-control" required>
+                        <option>-- Semua Status --</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-primary">Tampilkan Data</button>
+                    <button onclick="filteringData()" class="btn btn-primary">Tampilkan Data</button>
                 </div>
             </div>
             <div class="table-responsive">
@@ -261,22 +261,16 @@
             dom: 'lBfrtip',
             paging: true,
             order: [], // ✅ Nonaktifkan sorting default!
-            // buttons: [
-            //     {
-            //         extend: 'excelHtml5',
-            //         text: 'Export ke Excel',
-            //         title: 'Data Pengajuan',
-            //         className: 'btn btn-success'
-            //     }
-            // ],
             lengthMenu: [[-1, 10, 25, 50], ["Semua", 10, 25, 50]],
             pageLength: 10,
             ajax: {
                 url: '{{ route("ciptakarya.list_data_pbg_datatables") }}', // Ganti dengan route pengajuan kamu
                 data: function(d) {
-                    // Tambahkan filter jika ada, contoh:
-                    // d.status = $("#filter_status").val();
                     d = __datatable_ajax_callback(d);
+                    d.tahun = $('#filter_tahun').val();
+                    d.kategori = $('#filter_kategori').val();
+                    d.jenis = $('#filter_jenis').val();
+                    d.status = $('#filter_status').val();
                 }
             },
             columns: [
@@ -312,7 +306,13 @@
             ]
         });
 
+        // $('#filter_tahun, #filter_kategori, #filter_jenis, #filter_status').on('change', function () {
+        //     product_table.ajax.reload();
+        // });
 
+        const filteringData = () => {
+            product_table.ajax.reload();
+        }
 
         $(document).on('click', 'button.delete_pengajuan', function(){
             swal({

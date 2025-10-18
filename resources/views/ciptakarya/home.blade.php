@@ -3,6 +3,22 @@
 
 @section('css')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.53.0/apexcharts.min.css" />    
+    <style>
+        /* Skeleton Effect (Shimmer UI Loading) */
+        .skeleton {
+            display: inline-block;
+            width: 100%;
+            height: 24px;
+            background: linear-gradient(90deg, #e3e3e3 25%, #f5f5f5 50%, #e3e3e3 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -24,7 +40,7 @@
   
               <div class="info-box-content">
                 <span class="info-box-text">PBG & SLF Terbit</span>
-                <span class="info-box-number total_jalan">
+                <span class="info-box-number total_terbit">
                     <i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>
                 </span>
               </div>
@@ -38,7 +54,7 @@
   
               <div class="info-box-content">
                 <span class="info-box-text">Jumlah Pengajuan</span>
-                <span class="info-box-number total_jembatan">
+                <span class="info-box-number total_pengajuan">
                     <i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>
                 </span>
               </div>
@@ -52,7 +68,7 @@
   
               <div class="info-box-content">
                 <span class="info-box-text">Total Retribusi (Rp)</span>
-                <span class="info-box-number total_jembatan">
+                <span class="info-box-number total_retribusi">
                     <i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>
                 </span>
               </div>
@@ -103,238 +119,78 @@
     <script src="{{ asset('js/home.js?v=' . $asset_v) }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.53.0/apexcharts.min.js"></script>
     <script>
+        // ✅ Apply skeleton at start
+        $('.total_terbit, .total_pengajuan, .total_retribusi').addClass('skeleton');
 
-        const options = {
+        // ✅ Initial empty charts (placeholder)
+        const chartRekap = new ApexCharts(document.querySelector("#chart"), {
             series: [
-                {
-                    name: 'PBG & SLF Terbit',
-                    type: 'line',
-                    data: [10,15,10,0]
-                }, 
-                {
-                    name: 'Jumlah Pengajuan',
-                    type: 'line',
-                    data: [20,30,80,0]
-                },
+                { name: 'PBG & SLF Terbit', type: 'line', data: [] },
+                { name: 'Jumlah Pengajuan', type: 'line', data: [] },
             ],
-            xaxis: {
-                categories: [2021,2022,2023,2024],
-            },
-            chart: {
-                height: 350,
-                type: 'line',
-                stacked: false
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                width: [7, 7, 20]
-            },
-            yaxis: [
-                {
-                    seriesName: 'PBG & SLF Terbit',
-                    axisTicks: {
-                        show: true,
-                    },
-                    axisBorder: {
-                        show: true,
-                        color: '#8979FF'
-                    },
-                    labels: {
-                        style: {
-                        colors: '#8979FF',
-                        }
-                    },
-                    title: {
-                        text: "PBG & SLF Terbit",
-                        style: {
-                            color: '#8979FF',
-                        }
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                },
-                {
-                    seriesName: 'Jumlah Pengajuan',
-                    opposite: true,
-                    axisTicks: {
-                        show: true,
-                    },
-                    axisBorder: {
-                        show: true,
-                        color: '#FF928A'
-                    },
-                    labels: {
-                        style: {
-                        colors: '#FF928A',
-                        }
-                    },
-                    title: {
-                        text: "Jumlah Pengajuan",
-                        style: {
-                        color: '#FF928A',
-                        }
-                    },
-                },
-            ],
-            tooltip: {
-                fixed: {
-                enabled: true,
-                position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
-                offsetY: 30,
-                offsetX: 60
-                },
-            },
-            legend: {
-                horizontalAlign: 'left',
-                offsetX: 40
-            }
-        };
-        const chartRekap = new ApexCharts(document.querySelector("#chart"), options);
+            xaxis: { categories: [] },
+            chart: { height: 350, type: 'line', stacked: false },
+            dataLabels: { enabled: false },
+        });
         chartRekap.render();
 
-        const donutOptions = {
-            series: [93, 80, 40, 32, 31],
-            labels: ['Hunian', 'Usaha', 'Sosial Budaya', 'Keagamaan', 'Khusus'],
-            chart: {
-                type: 'donut',
-                height: 400,
-            },
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            total: {
-                                show: true,
-                                label: 'Total',
-                                formatter: () => '876' // Total ditengah
-                            }
-                        }
-                    }
-                }
-            },
-            dataLabels: {
-                enabled: true,
-                formatter: (val, opts) => {
-                    const value = opts.w.config.series[opts.seriesIndex];
-                    const total = opts.w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                    const percent = ((value / total) * 100).toFixed(2);
-                    return `${value} (${percent}%)`;
-                }
-            },
-            legend: {
-                position: 'bottom'
-            },
-            tooltip: {
-                y: {
-                    formatter: (value) => `${value}`
-                }
-            }
-        };
-        const chartJenis = new ApexCharts(document.querySelector("#donut-chart"), donutOptions);
+        const chartJenis = new ApexCharts(document.querySelector("#donut-chart"), {
+            series: [],
+            labels: [],
+            chart: { type: 'donut', height: 400 }
+        });
         chartJenis.render();
 
-        const barOptions = {
-            series: [{
-                name: 'Jumlah Pengajuan',
-                data: [83, 75, 68, 72, 90, 55, 60, 48, 95] // <-- Ganti sesuai data real nanti
-            }],
-            chart: {
-                type: 'bar',
-                height: 380,
-                toolbar: { show: false }
-            },
-            plotOptions: {
-                bar: {
-                    borderRadius: 6,
-                    columnWidth: '45%',
-                    distributed: true // <-- bikin warna tiap bar beda otomatis
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            grid: {
-                strokeDashArray: 4,
-                borderColor: '#e5e7eb'
-            },
-            xaxis: {
-                categories: [
-                    'Sungai Raya',
-                    'Rasau Jaya',
-                    'Sungai Ambawang',
-                    'Kuala Mandor B',
-                    'Batu Ampar',
-                    'Terentang',
-                    'Kubu',
-                    'Teluk Pakedai',
-                    'Sungai Kakap'
-                ],
-                labels: {
-                    style: {
-                        fontSize: '12px'
-                    }
-                }
-            },
-            yaxis: {
-                max: 100, // <-- Bisa diubah jadi auto: remove line ini
-                tickAmount: 5,
-                labels: {
-                    formatter: (val) => val.toFixed(0)
-                }
-            },
-            colors: [
-                '#6366F1', // Ungu
-                '#22C55E', // Hijau
-                '#F59E0B', // Kuning
-                '#EF4444', // Merah
-                '#3B82F6', // Biru
-                '#8B5CF6', // Violet
-                '#EC4899', // Pink
-                '#14B8A6', // Aqua
-                '#542e04'
-            ],
-            tooltip: {
-                theme: 'light',
-                y: {
-                    formatter: (val) => `${val} Pengajuan`
-                }
-            },
-            legend: {
-                show: false
-            }
-        };
-
-        const chartBar = new ApexCharts(document.querySelector("#bar-chart"), barOptions);
+        const chartBar = new ApexCharts(document.querySelector("#bar-chart"), {
+            series: [{ name: 'Jumlah Pengajuan', data: [] }],
+            xaxis: { categories: [] },
+            chart: { type: 'bar', height: 380 }
+        });
         chartBar.render();
 
-
-
-    </script>
-    {{-- <script>
-        $(document).ready(function(){
-            getDataDashboard();
+        // ✅ Fetch Data Once
+        $(document).ready(function () {
+            loadDashboardData();
         });
 
-        const getDataDashboard = () => {
+        function loadDashboardData() {
             $.ajax({
-                url:"{{route('pejantan.home')}}",
-                beforeSend:() => {
-                    $('.total_murid').html('<i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>');
-                },
-                success: response => {
-                    console.log("response",response)
-                    if(!response.status) return;
-                    const {data} = response;
-                    $(".total_jalan").html(data.jalan);
-                    $(".total_jembatan").html(data.jembatan);
+                url: "{{ route('ciptakarya.dashboard') }}",
+                method: "GET",
+                success: function (res) {
+                    if (res.status) {
+                        const data = res.data;
+
+                        // ✅ Remove skeleton
+                        $('.total_terbit, .total_pengajuan, .total_retribusi').removeClass('skeleton');
+                        console.log("data.total_terbit",data.total_terbit);
+                        $('.total_terbit').text(data.total_terbit);
+                        $('.total_pengajuan').text(data.total_pengajuan);
+                        $('.total_retribusi').text(formatRupiah(data.total_retribusi));
+
+                        // ✅ Update Line Chart
+                        chartRekap.updateOptions({ xaxis: { categories: data.grafik_trend.tahun }});
+                        chartRekap.updateSeries([
+                            { name: 'PBG & SLF Terbit', data: data.grafik_trend.terbit },
+                            { name: 'Jumlah Pengajuan', data: data.grafik_trend.pengajuan }
+                        ]);
+
+                        // ✅ Update Donut Chart
+                        chartJenis.updateSeries(data.jenis_izin.map(i => i.total));
+                        chartJenis.updateOptions({ labels: data.jenis_izin.map(i => i.fungsi_bangunan || 'Tidak diketahui') });
+
+                        // ✅ Update Bar Chart
+                        chartBar.updateOptions({ xaxis: { categories: data.wilayah.map(w => w.lokasi_bangunan || 'Tidak diketahui') }});
+                        chartBar.updateSeries([{ data: data.wilayah.map(w => w.total) }]);
+                    }
                 }
-            })
+            });
         }
-    </script> --}}
+
+        // ✅ Format Rupiah
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(angka);
+        }
+    </script>
 @endsection
 

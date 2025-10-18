@@ -13,6 +13,8 @@ Route::group([
     'prefix'=>'ciptakarya',
     'middleware'=>['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin']
 ],function(){
+    Route::get('dashboard', 'CiptaKarya\DataController@dashboard')->name('ciptakarya.dashboard');
+
     Route::get('list-data-pbg', 'CiptaKarya\DataController@list_index')->name('ciptakarya.list_data_pbg');
     Route::get('list-data-pbg/{id}/detail', 'CiptaKarya\DataController@show_pbg')->name('ciptakarya.pbg.show');
     Route::get('list-data-pbg/data', 'CiptaKarya\DataController@list_data_pbg')->name('ciptakarya.list_data_pbg_datatables');

@@ -27,6 +27,8 @@ class PengajuanPBG extends Model
         'kdh_min',
         'kdb_max',
         'uploaded_files', // simpan JSON dropzone
+        'status',
+        'nilai_retribusi'
     ];
 
     // Agar kolom JSON otomatis array saat diakses

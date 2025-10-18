@@ -8,6 +8,7 @@ use App\Models\CiptaKarya\PengajuanPBG;
 use App\Models\CiptaKarya\PetugasLapangan;
 use Validator;
 use DataTables;
+use DB;
 
 class DataController extends Controller
 {
@@ -229,5 +230,49 @@ class DataController extends Controller
 
         return response()->json(['status' => false, 'message' => 'Tidak ada aksi yang dipilih']);
 
+    }
+
+    public function dashboard() {
+        $totalTerbit = PengajuanPBG::where('status', 'approved')->count();
+        $totalPengajuan = PengajuanPBG::count();
+        $totalRetribusi = PengajuanPBG::sum('nilai_retribusi'); // kalau ada field ini
+
+        // Grafik 5 tahun terakhir
+        $years = range(now()->year - 4, now()->year);
+        $grafikTerbit = [];
+        $grafikPengajuan = [];
+
+        foreach ($years as $year) {
+            $grafikTerbit[] = PengajuanPBG::whereYear('created_at', $year)->where('status', 'approved')->count();
+            $grafikPengajuan[] = PengajuanPBG::whereYear('created_at', $year)->count();
+        }
+
+        // Jenis izin (Donut)
+        $jenisIzin = PengajuanPBG::select('fungsi_bangunan', DB::raw('count(*) as total'))
+            ->groupBy('fungsi_bangunan')
+            ->get();
+
+        // Wilayah terbanyak (Bar chart)
+        $wilayah = PengajuanPBG::select('lokasi_bangunan', DB::raw('count(*) as total'))
+            ->groupBy('lokasi_bangunan')
+            ->orderByDesc('total')
+            ->take(9)
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'total_terbit' => $totalTerbit,
+                'total_pengajuan' => $totalPengajuan,
+                'total_retribusi' => $totalRetribusi,
+                'grafik_trend' => [
+                    'tahun' => $years,
+                    'terbit' => $grafikTerbit,
+                    'pengajuan' => $grafikPengajuan,
+                ],
+                'jenis_izin' => $jenisIzin,
+                'wilayah' => $wilayah,
+            ]
+        ]);
     }
 }

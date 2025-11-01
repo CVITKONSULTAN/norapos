@@ -56,6 +56,8 @@
                         <th>@lang('lang_v1.sell_due')</th>
                         <th>@lang('lang_v1.sell_return_due')</th>
                         <th>Status</th>
+                        <th>Durasi</th>
+                        <th>Booking ID</th>
                         <th>Deposit</th>
                         <th>OTA</th>
                         <th>@lang('lang_v1.total_items')</th>
@@ -175,6 +177,24 @@ $(document).ready( function(){
                 @if(auth()->user()->business->id == 11) "visible":false @endif
             },
             { data: 'shipping_status', name: 'shipping_status'},
+            @if(auth()->user()->business->id == 11)
+            { 
+                data: 'deposit', 
+                name: 'checkout',
+                render: function (data, type, row) {
+                    const start = moment(row.created_at);
+                    const end = moment(row.updated_at);
+
+                    // hitung selisih dalam milidetik
+                    const diff = moment.duration(end.diff(start)).asMinutes().toFixed(2);
+                    return `${diff} menit`;
+                }
+            },
+            { 
+                data: 'booking_id', 
+                name: 'booking_id'
+            },
+            @endif
             { data: 'deposit', name: 'deposit'},
             { data: 'OTA', name: 'OTA'},
             { data: 'total_items', name: 'total_items', "searchable": false,

@@ -4232,6 +4232,7 @@ class TransactionUtil extends Util
                     'transactions.service_custom_field_1',
                     'transactions.service_custom_field_2',
                     'transactions.service_custom_field_3',
+                    'transactions.service_custom_field_4',
                     DB::raw('COUNT( DISTINCT tsl.id) as total_items'),
                     DB::raw("CONCAT(COALESCE(ss.surname, ''),' ',COALESCE(ss.first_name, ''),' ',COALESCE(ss.last_name,'')) as waiter"),
                     'tables.name as table_name'

@@ -4193,6 +4193,8 @@ class TransactionUtil extends Util
                 ->where('transactions.status', 'final')
                 ->select(
                     'transactions.id',
+                    'transactions.created_at',
+                    'transactions.updated_at',
                     'transactions.transaction_date',
                     'transactions.is_direct_sale',
                     'transactions.invoice_no',

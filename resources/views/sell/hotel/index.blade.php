@@ -193,7 +193,10 @@ $(document).ready( function(){
             },
             { 
                 data: 'updated_at', 
-                name: 'updated_at'
+                name: 'updated_at',
+                render: function (data, type, row) {
+                    return row.shipping_status != "" ? data : "";
+                }
             },
             { 
                 data: 'booking_id', 

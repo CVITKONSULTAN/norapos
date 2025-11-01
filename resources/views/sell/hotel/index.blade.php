@@ -57,6 +57,7 @@
                         <th>@lang('lang_v1.sell_return_due')</th>
                         <th>Status</th>
                         <th>Durasi</th>
+                        <th>Waktu Checkout</th>
                         <th>Booking ID</th>
                         <th>Deposit</th>
                         <th>OTA</th>
@@ -187,8 +188,12 @@ $(document).ready( function(){
 
                     // hitung selisih dalam milidetik
                     const diff = moment.duration(end.diff(start)).asMinutes().toFixed(2);
-                    return `${diff} menit<br/>Waktu CO : ${row.updated_at}`;
+                    return `${diff} menit`;
                 }
+            },
+            { 
+                data: 'updated_at', 
+                name: 'updated_at'
             },
             { 
                 data: 'booking_id', 

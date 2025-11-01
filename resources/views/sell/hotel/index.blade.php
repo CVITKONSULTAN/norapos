@@ -187,7 +187,7 @@ $(document).ready( function(){
 
                     // hitung selisih dalam milidetik
                     const diff = moment.duration(end.diff(start)).asMinutes().toFixed(2);
-                    return `${diff} menit`;
+                    return `${diff} menit<br/>Waktu CO : ${row.updated_at}`;
                 }
             },
             { 

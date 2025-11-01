@@ -362,12 +362,6 @@ class SellController extends Controller
                 ->addColumn('booking_id',function($row){
                     return $row->service_custom_field_4;
                 })
-                // ->addColumn('created_at',function($row){
-                //     return $row->service_custom_field_4;
-                // })
-                // ->addColumn('updated_at',function($row){
-                //     return $row->service_custom_field_4;
-                // })
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',

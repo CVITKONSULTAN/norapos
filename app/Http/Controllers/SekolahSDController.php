@@ -1391,7 +1391,11 @@ class SekolahSDController extends Controller
     }
 
     function ppdb(Request $request){
-        return view('compro.koneksiedu.ppdb');
+        $data['close_ppdb'] = false;
+        $data['tgl_penerimaan'] = "2026-01-01";
+        $data['min_bulan'] = 6;
+        $data['min_tahun'] = 5;
+        return view('compro.koneksiedu.ppdb',$data);
     }
 
     function ppdb_store(Request $request){

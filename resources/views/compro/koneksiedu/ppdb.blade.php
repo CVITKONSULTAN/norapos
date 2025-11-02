@@ -101,6 +101,31 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
       }
 
+      #popupUploadBukti .modal-content,
+      #popupMenungguValidasi .modal-content {
+        background-color: #fafafa;
+        border-radius: 1.25rem;
+      }
+
+      #popupMenungguValidasi img {
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+      }
+
+      #popupMenungguValidasi h5 {
+        line-height: 1.5;
+      }
+
+      #popupMenungguValidasi .btn-secondary {
+        background-color: #e5e5e5;
+        border: none;
+        color: #555;
+        font-weight: 600;
+      }
+
+      #popupUploadBukti input[type="file"] {
+        background-color: #fff;
+      }
+
     </style>
   </head>
   <body>
@@ -159,8 +184,20 @@
                 </p>
               </div>
 
-              <button id="btnUploadBayar" class="btn btn-success btn-lg px-4 py-2 rounded-pill shadow-sm">
+              {{-- <button id="btnUploadBayar" class="btn btn-success btn-lg px-4 py-2 rounded-pill shadow-sm">
                 <i class="bi bi-upload me-2"></i> Upload Bukti Pembayaran
+              </button> --}}
+
+              <p class="text-muted mb-4">
+                Silakan upload bukti pembayaran formulir pendaftaran anda di bawah ini.
+              </p>
+
+              <div class="border rounded-4 p-4 bg-light mb-3">
+                <input type="file" id="buktiPembayaranFile" class="form-control" accept="image/*,application/pdf">
+              </div>
+
+              <button id="btnSubmitBukti" class="btn btn-success px-4 rounded-pill">
+                <i class="bi bi-upload me-2"></i> Upload Sekarang
               </button>
 
             </div>
@@ -168,6 +205,33 @@
         </div>
       </div>
 
+      <!-- Modal 2: Menunggu Validasi -->
+      <div class="modal fade" id="popupMenungguValidasi" tabindex="-1" aria-labelledby="popupMenungguValidasiLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-body text-center p-5">
+              <h5 class="fw-bold mb-3">
+                Penerimaan Peserta Didik Baru (PPDB)<br>
+                SD Muhammadiyah 2 Pontianak, Tahun Ajaran <span id="tahunAjaranValidasi">2025/2026</span>
+              </h5>
+
+              <p class="text-danger fw-semibold mb-4">
+                Mohon menunggu proses admin memvalidasi pembayaran anda.
+              </p>
+
+              <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2" width="180" class="mb-4">
+
+              <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2" disabled>
+                Cetak Kartu Nomor Test Siswa
+              </button>
+
+              <p class="mt-3 text-muted fst-italic small">
+                Anda dapat menekan tombol cetak kartu test siswa saat proses validasi pembayaran berhasil.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="card mx-auto" style="max-width: 720px;">
         <div class="card-body p-4">
@@ -710,6 +774,8 @@
         Saturday: "Sabtu"
       };
 
+      let modal;
+
       function showPopupPembayaran({ 
         nominal = 350000, 
         rekening = "1234567890112233", 
@@ -718,7 +784,7 @@
       }) {
         // Hitung batas waktu pembayaran (1 jam dari sekarang)
         const deadline = moment().add(1, 'hours');
-        
+
         const hariEnglish = deadline.format('dddd');
         const hari = hariMap[hariEnglish] || hariEnglish;
 
@@ -776,23 +842,44 @@
 
         // ✅ Tampilkan modal dengan Bootstrap API
         const modalEl = document.getElementById("popupPembayaranPPDB");
-        const modal = new bootstrap.Modal(modalEl);
+        modal = new bootstrap.Modal(modalEl);
         modal.show();
 
-        // Aksi tombol upload
-        document.getElementById("btnUploadBayar").onclick = () => {
-          modal.hide();
-          clearInterval(window.ppdbCountdownInterval);
-          Swal.fire({
-            title: "Upload Bukti Pembayaran",
-            text: "Fitur upload akan diarahkan ke halaman upload bukti pembayaran.",
-            icon: "info",
-            confirmButtonText: "Lanjutkan",
-          }).then(() => {
-            window.location.href = "/upload-bukti-pembayaran";
-          });
-        };
       }
+
+      // Tombol "Upload Sekarang"
+      document.getElementById("btnSubmitBukti").addEventListener("click", async () => {
+        const fileInput = document.getElementById("buktiPembayaranFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          Swal.fire("Peringatan", "Silakan pilih file bukti pembayaran terlebih dahulu!", "warning");
+          return;
+        }
+
+        // Simulasi proses upload
+        Swal.fire({
+          title: "Mengunggah...",
+          text: "Mohon tunggu sebentar.",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+
+        // Simulasikan upload (ganti dengan API upload asli)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        Swal.close();
+
+        // Tampilkan popup menunggu validasi (tidak bisa ditutup)
+        const modalValidasiEl = document.getElementById("popupMenungguValidasi");
+        const modalValidasi = new bootstrap.Modal(modalValidasiEl, {
+          backdrop: 'static',
+          keyboard: false
+        });
+        modal.hide();
+        modalValidasi.show();
+
+      });
 
       $("#button-test").click(()=>{
         showPopupPembayaran({

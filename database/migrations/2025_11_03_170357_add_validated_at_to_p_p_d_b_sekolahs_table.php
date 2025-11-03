@@ -14,7 +14,7 @@ class AddValidatedAtToPPDBSekolahsTable extends Migration
     public function up(): void
     {
         Schema::table('p_p_d_b_sekolahs', function (Blueprint $table) {
-            $table->unsignedBigInteger('validated_by')->nullable()->after('status_bayar');
+            $table->unsignedInteger('validated_by')->nullable()->after('status_bayar');
             $table->foreign('validated_by')->references('id')->on('users')->nullOnDelete();
             $table->timestamp('validated_at')->nullable()->after('validated_by');
         });

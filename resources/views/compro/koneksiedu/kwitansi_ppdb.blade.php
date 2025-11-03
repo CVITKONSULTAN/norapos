@@ -12,6 +12,7 @@
       color: #333;
     }
     .kwitansi-container {
+      position: relative;
       border: 1px solid #aaa;
       border-radius: 8px;
       padding: 24px 32px;
@@ -67,6 +68,11 @@
       padding-top: 4px;
       font-size: 13px;
     }
+    .qrcode {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
     @media print {
       .no-print { display: none; }
       body { margin: 0; }
@@ -75,13 +81,19 @@
 </head>
 <body>
   <div class="kwitansi-container">
+
+    <button class="no-print" onclick="window.print()">🖨 Cetak Kwitansi</button>
+
+    <!-- Tempat QR Code -->
+    <div id="qrcode" class="qrcode"></div>
+
     <h2>Kwitansi Pendaftaran PPDB</h2>
     <div class="subtitle">Tahun Ajaran 2025 / 2026</div>
 
     <table>
       <tr>
         <td class="label">Kode Bayar</td>
-        <td>: <strong>PPDB-AB1234</strong></td>
+        <td>: <strong id="kodeBayar">PPDB-AB1234</strong></td>
       </tr>
       <tr>
         <td class="label">Nama Calon Siswa</td>
@@ -97,7 +109,7 @@
       </tr>
       <tr>
         <td class="label">Total Pembayaran</td>
-        <td>: Rp 350.000,-</td>
+        <td>: Rp 350.127,-</td>
       </tr>
       <tr>
         <td class="label">Status Pembayaran</td>
@@ -112,18 +124,47 @@
       Setelah transfer, silakan unggah bukti pembayaran melalui portal pendaftaran.
     </p>
 
-    <div class="footer">
-      <div>
-        <p>Pontianak, 03 November 2025</p>
-        <div class="sign-box">Petugas PPDB</div>
-      </div>
-      <div>
-        <p>Calon Siswa</p>
-        <div class="sign-box">Muhammad Fadlan</div>
-      </div>
-    </div>
+    <table style="width:100%; margin-top:40px; text-align:center;">
+        <tr>
+            <td style="width:50%; vertical-align:bottom;">
+            Pontianak, 03 November 2025
+            </td>
+            <td style="width:50%; vertical-align:bottom;">
+            Calon Siswa
+            </td>
+        </tr>
+        <tr><td colspan="2" style="height:60px;"></td></tr>
+        <tr>
+            <td style="text-align:center;">
+            <span style="border-top:1px solid #555; padding-top:4px; display:inline-block; width:200px;">
+                Petugas PPDB
+            </span>
+            </td>
+            <td style="text-align:center;">
+            <span style="border-top:1px solid #555; padding-top:4px; display:inline-block; width:200px;">
+                Muhammad Fadlan
+            </span>
+            </td>
+        </tr>
+    </table>
 
-    <button class="no-print" onclick="window.print()">🖨 Cetak Kwitansi</button>
-  </div>
+  <!-- CDN qrcode.js -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Ambil kode bayar dari DOM
+      const kodeBayar = document.getElementById("kodeBayar").textContent.trim();
+
+      // Generate QR Code dari kode bayar
+      new QRCode(document.getElementById("qrcode"), {
+        text: kodeBayar,
+        width: 90,
+        height: 90,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    });
+  </script>
 </body>
 </html>

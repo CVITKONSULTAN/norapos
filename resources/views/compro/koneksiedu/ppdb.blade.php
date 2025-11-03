@@ -155,6 +155,16 @@
                 <b id="nominal-pembayaran" class="text-dark">Rp {{ number_format($jumlah_tagihan,0,',','.') }},-</b>
               </p>
 
+              <!-- Tombol Lihat Kwitansi -->
+              <a
+                id="btnLihatKwitansi"
+                href="#"
+                target="_blank"
+                class="btn btn-outline-primary px-4 rounded-pill mb-3"
+              >
+                <i class="bi bi-receipt-cutoff me-2"></i> Lihat Kwitansi Pembayaran
+              </a>
+
               <div class="bg-light rounded-4 py-3 px-4 mb-4 shadow-sm border-start border-4 border-danger">
                 <p class="text-danger fw-semibold mb-1 fs-6 text-uppercase letter-spacing-1">
                   Batas Pembayaran Terakhir
@@ -188,13 +198,22 @@
                 Silakan upload bukti pembayaran formulir pendaftaran anda di bawah ini.
               </p>
 
-              <div class="border rounded-4 p-4 bg-light mb-3">
-                <input type="file" id="buktiPembayaranFile" class="form-control" accept="image/*,application/pdf">
-              </div>
+              <div class="border rounded-4 p-4 bg-light mb-3 text-center">
+                <input type="file" id="buktiPembayaranFile" class="form-control mb-3" accept="image/*,application/pdf">
+                
+                <!-- Indikator upload -->
+                <div id="loader-bukti" style="display: none;">
+                  <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                  <span class="ms-2 fw-semibold text-success">Sedang mengupload bukti pembayaran...</span>
+                </div>
 
-              <button id="btnSubmitBukti" class="btn btn-success px-4 rounded-pill">
-                <i class="bi bi-upload me-2"></i> Upload Sekarang
-              </button>
+                <!-- Preview -->
+                <div class="mt-3" id="preview-bukti-container" style="display: none;">
+                  <p class="fw-semibold text-dark mb-2">Preview Bukti Pembayaran:</p>
+                  <img id="preview-bukti" class="img-thumbnail" style="max-width: 250px; border-radius: 8px;">
+                  <div id="upload-success" class="text-success mt-2 fw-semibold d-none">✅ Bukti pembayaran berhasil diupload</div>
+                </div>
+              </div>
 
             </div>
           </div>
@@ -412,9 +431,6 @@
             <div class="d-grid">
               <button id="button-submit" type="submit" class="btn btn-submit py-2">
                 <i class="bi bi-upload"></i> Upload dan Kirim Pendaftaran
-              </button>
-              <button id="button-test" type="button" class="btn btn-submit py-2">
-                <i class="bi bi-upload"></i> Test
               </button>
             </div>
           </form>
@@ -743,6 +759,7 @@
 
 
             showPopupPembayaran({
+              kode_bayar: res.data.data.kode_bayar,
               biaya_dasar: res.data.data.biaya_dasar,
               nominal: res.data.data.total_bayar,
               kodeAkhir: res.data.data.kode_unik,
@@ -772,6 +789,7 @@
       let modal;
 
       function showPopupPembayaran({ 
+        kode_bayar = "",
         biaya_dasar = 350000,
         nominal = 350000,
         kodeAkhir = 0,
@@ -788,6 +806,9 @@
         // Format nominal + contoh transfer
         const nominalStr = `Rp${biaya_dasar.toLocaleString('id-ID')},-`;
         const contohTransfer = `Rp${(nominal).toLocaleString('id-ID')}`;
+
+        const url = `/kwitansi-ppdb-simuda?kode_bayar=${kode_bayar}`
+        $("#btnLihatKwitansi").attr('href',url);
 
         // Isi data ke elemen
         document.getElementById("nominal-pembayaran").textContent = nominalStr;
@@ -840,48 +861,100 @@
 
       }
 
-      // Tombol "Upload Sekarang"
-      document.getElementById("btnSubmitBukti").addEventListener("click", async () => {
-        const fileInput = document.getElementById("buktiPembayaranFile");
-        const file = fileInput.files[0];
+      if (typeof linkBerkasPPDB === "undefined") {
+        window.linkBerkasPPDB = {};
+      }
 
-        if (!file) {
-          Swal.fire("Peringatan", "Silakan pilih file bukti pembayaran terlebih dahulu!", "warning");
-          return;
+      const buktiFileInput = document.getElementById("buktiPembayaranFile");
+      const loader = document.getElementById("loader-bukti");
+      const previewContainer = document.getElementById("preview-bukti-container");
+      const previewImage = document.getElementById("preview-bukti");
+      const uploadSuccess = document.getElementById("upload-success");
+
+      // ✅ Event utama: otomatis upload saat file diganti
+      buktiFileInput.addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        loader.style.display = "block";
+        uploadSuccess.classList.add("d-none");
+        previewContainer.style.display = "none";
+
+        try {
+          let uploadFile = file;
+
+          // Kompres gambar jika formatnya image/*
+          if (file.type.startsWith("image/")) {
+            const options = {
+              maxSizeMB: 0.45,         // target 450KB
+              maxWidthOrHeight: 1280,  // resize jika besar
+              useWebWorker: true,
+            };
+            uploadFile = await imageCompression(file, options);
+            console.log(
+              `Kompresi Bukti: ${(file.size / 1024).toFixed(1)}KB → ${(uploadFile.size / 1024).toFixed(1)}KB`
+            );
+          }
+
+          // Validasi ukuran setelah kompres
+          if (uploadFile.size > 524288) {
+            loader.style.display = "none";
+            Swal.fire("File Terlalu Besar", "Ukuran file melebihi 500KB setelah kompresi.", "error");
+            return;
+          }
+
+          // Upload ke server
+          const formData = new FormData();
+          formData.append("file_data", uploadFile);
+
+          const response = await axios.post(`${baseURL}/api/sekolah_sd/upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: (progressEvent) => {
+              const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+              loader.querySelector("span").innerText = `Mengupload... ${percent}%`;
+            },
+          });
+
+          loader.style.display = "none";
+
+          if (response.data.status) {
+            const data = response.data.data;
+            linkBerkasPPDB.link_pembayaran_ppdb = data;
+
+            // Preview file
+            if (file.type.startsWith("image/")) {
+              previewImage.src = URL.createObjectURL(uploadFile);
+              previewContainer.style.display = "block";
+              previewImage.classList.remove("d-none");
+            } else {
+              previewContainer.innerHTML = `
+                <div class="alert alert-success fw-semibold">
+                  ✅ File bukti pembayaran (PDF) berhasil diupload
+                </div>`;
+              previewContainer.style.display = "block";
+            }
+
+            uploadSuccess.classList.remove("d-none");
+
+            Swal.fire({
+              title: "Upload Berhasil",
+              text: "Bukti pembayaran berhasil diupload.",
+              icon: "success",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          } else {
+            Swal.fire("Gagal", response.data.message || "Upload gagal.", "error");
+          }
+        } catch (error) {
+          loader.style.display = "none";
+          btnUpload.disabled = false;
+          btnUpload.innerHTML = `<i class="bi bi-upload me-2"></i> Upload Gagal`;
+          console.error("Upload Error:", error);
+          Swal.fire("Error", error.response?.data?.message || error.message, "error");
         }
-
-        // Simulasi proses upload
-        Swal.fire({
-          title: "Mengunggah...",
-          text: "Mohon tunggu sebentar.",
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-        });
-
-        // Simulasikan upload (ganti dengan API upload asli)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        Swal.close();
-
-        // Tampilkan popup menunggu validasi (tidak bisa ditutup)
-        const modalValidasiEl = document.getElementById("popupMenungguValidasi");
-        const modalValidasi = new bootstrap.Modal(modalValidasiEl, {
-          backdrop: 'static',
-          keyboard: false
-        });
-        modal.hide();
-        modalValidasi.show();
-
       });
-
-      $("#button-test").click(()=>{
-        showPopupPembayaran({
-          nominal: 350000,
-          rekening: "1234567890112233",
-          kodeAkhir: "111",
-          tahunAjaran: "2025/2026"
-        });
-      })
+      
 
     </script>
 

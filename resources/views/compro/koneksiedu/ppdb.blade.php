@@ -829,7 +829,7 @@
           buttonSubmit.disabled = false;
           buttonSubmit.innerHTML = originalButtonText;
         }
-        
+
       }
 
 
@@ -1016,7 +1016,82 @@
           Swal.fire("Error", error.response?.data?.message || error.message, "error");
         }
       });
-      
+
+      // 🔍 Fungsi bantu untuk ambil parameter dari URL
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const isUploadPembayaran = getQueryParam("upload_pembayaran");
+        const kodeBayar = getQueryParam("kode_bayar");
+
+        if (isUploadPembayaran && kodeBayar) {
+          try {
+            Swal.fire({
+              title: "Memuat Data...",
+              text: "Mohon tunggu sebentar.",
+              allowOutsideClick: false,
+              didOpen: () => Swal.showLoading(),
+            });
+
+            // 🔁 Ambil data PPDB berdasarkan kode bayar
+            const response = await axios.get(`${baseURL}/ppdb-show/${kodeBayar}`);
+            Swal.close();
+
+            if (response.data.status) {
+              const data = response.data.data;
+
+              // Format nominal total bayar
+              const nominal = data?.detail?.total_bayar || 0;
+              const kodeUnik = data?.detail?.kode_unik || 0;
+              const biayaDasar = nominal - kodeUnik;
+
+              // 🧾 Tampilkan modal pembayaran
+              showPopupPembayaran({
+                kode_bayar: kodeBayar,
+                biaya_dasar: biayaDasar,
+                nominal: nominal,
+                kodeAkhir: kodeUnik,
+              });
+
+              // 💳 Isi elemen lain dari data
+              if (data?.bank_pembayaran) {
+                const { nama_bank, no_rek } = data.bank_pembayaran;
+                document.querySelector("#kode-bayar").textContent = no_rek;
+                document.querySelector(".fw-semibold.text-secondary").textContent =
+                  `Nomor Kode Bayar / Rekening (${nama_bank})`;
+              }
+
+              // 🔗 Jika sudah pernah upload bukti, tampilkan preview
+              if (data.detail?.link_pembayaran_ppdb) {
+                const previewContainer = document.getElementById("preview-bukti-container");
+                const previewImage = document.getElementById("preview-bukti");
+                previewContainer.style.display = "block";
+
+                if (data.detail.link_pembayaran_ppdb.endsWith(".pdf")) {
+                  previewContainer.innerHTML = `
+                    <div class="alert alert-success fw-semibold">
+                      ✅ Bukti pembayaran (PDF) sudah diupload
+                    </div>`;
+                } else {
+                  previewImage.src = data.detail.link_pembayaran_ppdb;
+                  previewImage.classList.remove("d-none");
+                }
+
+                document.getElementById("upload-success").classList.remove("d-none");
+              }
+            } else {
+              Swal.fire("Data Tidak Ditemukan", "Kode bayar tidak valid.", "error");
+            }
+          } catch (err) {
+            console.error(err);
+            Swal.fire("Error", "Gagal memuat data pendaftaran.", "error");
+          }
+        }
+        
+      });
 
     </script>
 

@@ -24,6 +24,7 @@ use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
 use DB;
 use Log;
+use Str;
 use DataTables;
 use Storage;;
 use Maatwebsite\Excel\Facades\Excel;
@@ -1395,7 +1396,26 @@ class SekolahSDController extends Controller
         $data['tgl_penerimaan'] = "2026-01-01";
         $data['min_bulan'] = 6;
         $data['min_tahun'] = 5;
+        $data['tahun_ajaran'] = "2025/2026";
+
+        $data['jumlah_tagihan'] = 350000;
+        $data['nama_bank'] = "Bank Kalbar";
+        $data['no_rek'] = "00000";
+        $data['atas_nama'] = "SD Muhammadiyah 2";
+
         return view('compro.koneksiedu.ppdb',$data);
+    }
+
+    function kwitansi_ppdb(Request $request){
+
+        $data['ppdb'] = PPDBSekolah::where('kode_bayar',$request->kode_bayar ?? '')->firstorfail();
+
+        $data['jumlah_tagihan'] = 350000;
+        $data['nama_bank'] = "Bank Kalbar";
+        $data['no_rek'] = "00000";
+        $data['atas_nama'] = "SD Muhammadiyah 2";
+
+        return view('compro.koneksiedu.kwitansi_ppdb',$data);
     }
 
     function ppdb_store(Request $request){
@@ -1406,15 +1426,37 @@ class SekolahSDController extends Controller
             if($request->nama_lengkap){
                 $nama = $request->nama_lengkap;
             }
-            PPDBSekolah::create([
+
+            // Tentukan biaya dasar pendaftaran
+            $biayaDasar = 350000;
+
+            // Generate 3 angka unik (antara 001 - 999)
+            $kodeUnik = random_int(1, 999);
+            $kodeUnikStr = str_pad($kodeUnik, 3, '0', STR_PAD_LEFT);
+
+            // Total yang harus dibayar
+            $totalBayar = $biayaDasar + $kodeUnik;
+
+            $input['total_bayar'] = $totalBayar;
+            $input['kode_unik'] = $kodeUnik;
+
+            $qry = [
                 'nama'=>$nama,
-                'detail'=>$input
-            ]);
+                'kode_bayar' => 'PPDB-' . strtoupper(Str::random(2)) . $kodeUnikStr,
+                'status_bayar' => 'belum',
+                'biaya_dasar' => $biayaDasar,
+                'total_bayar' => $totalBayar,
+                'kode_unik' => $kodeUnik,
+            ];
+
+            $in = $qry;
+            $in['detail'] = $input;
+            $data = PPDBSekolah::create($in);
 
             return [
                 "status" => true,
                 "message" =>"Data berhasil disimpan terimakasih...",
-                "data" => null
+                "data" => $qry
             ];
 
         } catch (\Throwable $th) {

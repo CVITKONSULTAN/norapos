@@ -10,11 +10,16 @@ class PPDBSekolah extends Model
         'nama',
         'detail',
         'status_siswa',
-        'keterangan'
+        'keterangan',
+        'status_bayar',
+        'bank_pembayaran',
+        'bukti_pembayaran',
+        'kode_bayar'
     ];
 
     protected $casts = [
         'detail' => 'array',
+        'bukti_pembayaran' => 'array',
     ];
     
 }

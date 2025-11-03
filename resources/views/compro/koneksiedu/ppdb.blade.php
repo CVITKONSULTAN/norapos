@@ -151,8 +151,8 @@
 
               <p class="text-muted mb-4">
                 Penerimaan Peserta Didik Baru (PPDB) <b>SD Muhammadiyah 2 Pontianak</b>,<br>
-                Tahun Ajaran <span id="tahun-ajaran">2025/2026</span> sebesar 
-                <b id="nominal-pembayaran" class="text-dark">Rp350.000,-</b>
+                Tahun Ajaran <span id="tahun-ajaran">{{$tahun_ajaran}}</span> sebesar 
+                <b id="nominal-pembayaran" class="text-dark">Rp {{ number_format($jumlah_tagihan,0,',','.') }},-</b>
               </p>
 
               <div class="bg-light rounded-4 py-3 px-4 mb-4 shadow-sm border-start border-4 border-danger">
@@ -163,30 +163,26 @@
                 <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
                   <div class="bg-white shadow-sm rounded-pill px-4 py-2">
                     <span class="text-dark fw-semibold">
-                      Sisa waktu: <span id="countdown-value" class="text-danger fw-bold">01:00:00</span>
+                      Sisa waktu: <span id="countdown-value" class="text-danger fw-bold">00:00:00</span>
                     </span>
                   </div>
                 </div>
 
                 <p class="fw-bold text-danger fs-5 mt-3 mb-0">
-                  <span id="hari-batas">Sunday</span>,
-                  <span id="tanggal-batas">02/11/2025</span> &nbsp;
-                  Waktu: <span id="waktu-batas">19:55</span> WIB
+                  <span id="hari-batas">-</span>,
+                  <span id="tanggal-batas">00/00/0000</span> &nbsp;
+                  Waktu: <span id="waktu-batas">00:00</span> WIB
                 </p>
               </div>
 
               <div class="bg-white border rounded-4 p-4 shadow-sm mb-4">
-                <p class="mb-2 fw-semibold text-secondary">Nomor Kode Bayar / Rekening (Bank ABC)</p>
-                <h2 class="fw-bold text-dark mb-3" id="kode-bayar">1234567890112233</h2>
+                <p class="mb-2 fw-semibold text-secondary">Nomor Kode Bayar / Rekening ({{$nama_bank}})</p>
+                <h2 class="fw-bold text-dark mb-3" id="kode-bayar">{{ $no_rek }}</h2>
                 <p class="small text-muted mb-0">
-                  Pembayaran dilakukan ke bank ABC dengan kode akhir nominal <b class="text-dark">111</b>.<br>
-                  Contoh transfer: <b id="contoh-transfer" class="text-dark">Rp350.111</b>
+                  Pembayaran dilakukan ke bank ABC dengan kode akhir nominal <b class="text-dark" id="kode_unik">0</b>.<br>
+                  Contoh transfer: <b id="contoh-transfer" class="text-dark">Rp 0,-</b>
                 </p>
               </div>
-
-              {{-- <button id="btnUploadBayar" class="btn btn-success btn-lg px-4 py-2 rounded-pill shadow-sm">
-                <i class="bi bi-upload me-2"></i> Upload Bukti Pembayaran
-              </button> --}}
 
               <p class="text-muted mb-4">
                 Silakan upload bukti pembayaran formulir pendaftaran anda di bawah ini.
@@ -212,18 +208,25 @@
             <div class="modal-body text-center p-5">
               <h5 class="fw-bold mb-3">
                 Penerimaan Peserta Didik Baru (PPDB)<br>
-                SD Muhammadiyah 2 Pontianak, Tahun Ajaran <span id="tahunAjaranValidasi">2025/2026</span>
+                SD Muhammadiyah 2 Pontianak, Tahun Ajaran <span id="tahunAjaranValidasi">{{ $tahun_ajaran }}</span>
               </h5>
 
               <p class="text-danger fw-semibold mb-4">
                 Mohon menunggu proses admin memvalidasi pembayaran anda.
               </p>
 
-              <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2" width="180" class="mb-4">
+              <div class="row">
+                <div class="col-md-12">
+                  <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2" width="180" class="mb-4">
+                </div>
+                <div class="col-md-12">
+                  <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2">
+                    Cetak Kartu Nomor Test Siswa
+                  </button>
+                </div>
+              </div>
 
-              <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2" disabled>
-                Cetak Kartu Nomor Test Siswa
-              </button>
+
 
               <p class="mt-3 text-muted fst-italic small">
                 Anda dapat menekan tombol cetak kartu test siswa saat proses validasi pembayaran berhasil.
@@ -737,22 +740,14 @@
           const res = await axios.post(`${baseURL}/api/sekolah_sd/ppdb/store`, payload);
 
           if (res.data.status) {
-            // Swal.fire({
-            //   title: "Berhasil!",
-            //   text: res.data.message,
-            //   icon: "success",
-            // }).then(() => {
-            //   // Redirect atau reset form
-            //   event.target.reset();
-            //   document.querySelectorAll("img[id^='preview-']").forEach(el => el.classList.add("d-none"));
-            // });
+
 
             showPopupPembayaran({
-              nominal: 350000,
-              rekening: "1234567890112233",
-              kodeAkhir: "111",
-              tahunAjaran: "2025/2026"
+              biaya_dasar: res.data.data.biaya_dasar,
+              nominal: res.data.data.total_bayar,
+              kodeAkhir: res.data.data.kode_unik,
             });
+
           } else {
             Swal.fire("Gagal", res.data.message || "Terjadi kesalahan saat menyimpan.", "error");
           }
@@ -777,10 +772,9 @@
       let modal;
 
       function showPopupPembayaran({ 
-        nominal = 350000, 
-        rekening = "1234567890112233", 
-        kodeAkhir = "111", 
-        tahunAjaran = "2025/2026" 
+        biaya_dasar = 350000,
+        nominal = 350000,
+        kodeAkhir = 0,
       }) {
         // Hitung batas waktu pembayaran (1 jam dari sekarang)
         const deadline = moment().add(1, 'hours');
@@ -792,17 +786,16 @@
         const waktu = deadline.format('HH:mm');
 
         // Format nominal + contoh transfer
-        const nominalStr = `Rp${nominal.toLocaleString('id-ID')},-`;
-        const contohTransfer = `Rp${(nominal + parseInt(kodeAkhir)).toLocaleString('id-ID')}`;
+        const nominalStr = `Rp${biaya_dasar.toLocaleString('id-ID')},-`;
+        const contohTransfer = `Rp${(nominal).toLocaleString('id-ID')}`;
 
         // Isi data ke elemen
-        document.getElementById("tahun-ajaran").textContent = tahunAjaran;
         document.getElementById("nominal-pembayaran").textContent = nominalStr;
         document.getElementById("hari-batas").textContent = hari;
         document.getElementById("tanggal-batas").textContent = tanggal;
         document.getElementById("waktu-batas").textContent = waktu;
-        document.getElementById("kode-bayar").textContent = rekening;
         document.getElementById("contoh-transfer").textContent = contohTransfer;
+        document.getElementById("kode_unik").textContent = kodeAkhir;
 
         // ✅ Countdown timer setup
         const countdownValue = document.getElementById("countdown-value");

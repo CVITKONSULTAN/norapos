@@ -18,6 +18,7 @@ use \App\Models\Sekolah\RaporProjek;
 use \App\Models\Sekolah\DimensiProjek;
 use \App\Models\Sekolah\DataDimensiID;
 use \App\Models\Sekolah\PPDBSekolah;
+use \App\Models\Sekolah\PPDBSetting;
 use \App\User;
 
 use Spatie\Permission\Models\Role;
@@ -1392,18 +1393,75 @@ class SekolahSDController extends Controller
     }
 
     function ppdb(Request $request){
-        $data['close_ppdb'] = false;
-        $data['tgl_penerimaan'] = "2026-01-01";
-        $data['min_bulan'] = 6;
-        $data['min_tahun'] = 5;
-        $data['tahun_ajaran'] = "2025/2026";
 
-        $data['jumlah_tagihan'] = 350000;
-        $data['nama_bank'] = "Bank Kalbar";
-        $data['no_rek'] = "00000";
-        $data['atas_nama'] = "SD Muhammadiyah 2";
+        // Ambil pengaturan pertama (biasanya cuma ada 1)
+        $setting = PPDBSetting::first();
 
-        return view('compro.koneksiedu.ppdb',$data);
+        // Jika belum ada di database, isi default
+        if (!$setting) {
+            $setting = new PPDBSetting([
+                'close_ppdb' => false,
+                'tgl_penerimaan' => '2026-01-01',
+                'min_bulan' => 6,
+                'min_tahun' => 5,
+                'tahun_ajaran' => '2025/2026',
+                'jumlah_tagihan' => 350000,
+                'nama_bank' => 'Bank Kalbar',
+                'no_rek' => '00000',
+                'atas_nama' => 'SD Muhammadiyah 2',
+            ]);
+        }
+
+        // Kirim data ke view (dengan key yang sama seperti sebelumnya)
+        $data = [
+            'close_ppdb' => $setting->close_ppdb,
+            'tgl_penerimaan' => $setting->tgl_penerimaan,
+            'min_bulan' => $setting->min_bulan,
+            'min_tahun' => $setting->min_tahun,
+            'tahun_ajaran' => $setting->tahun_ajaran,
+            'jumlah_tagihan' => $setting->jumlah_tagihan,
+            'nama_bank' => $setting->nama_bank,
+            'no_rek' => $setting->no_rek,
+            'atas_nama' => $setting->atas_nama,
+        ];
+
+        return view('compro.koneksiedu.ppdb', $data);
+    }
+
+    public function validasiBayar($id)
+    {
+        $data = PPDBSekolah::find($id);
+        if (!$data) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+
+        if ($data->status_bayar === 'sudah') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Pembayaran sudah divalidasi sebelumnya.'
+            ]);
+        }
+
+        $data->update([
+            'status_bayar' => 'sudah',
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+            'keterangan' => 'Pembayaran divalidasi oleh ' . (auth()->user()->name ?? 'Admin') . ' pada ' . now()->translatedFormat('d F Y H:i'),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Pembayaran berhasil divalidasi.'
+        ]);
+    }
+
+
+    function peserta_didik_baru(Request $request){
+        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',false)->latest()->first();
+        return view('sekolah_sd.peserta_didik_baru',$data);
     }
 
     function kwitansi_ppdb(Request $request){
@@ -1439,6 +1497,7 @@ class SekolahSDController extends Controller
 
             $input['total_bayar'] = $totalBayar;
             $input['kode_unik'] = $kodeUnik;
+            $input['kode_unik'] = $kodeUnik;
 
             $qry = [
                 'nama'=>$nama,
@@ -1447,6 +1506,8 @@ class SekolahSDController extends Controller
                 'biaya_dasar' => $biayaDasar,
                 'total_bayar' => $totalBayar,
                 'kode_unik' => $kodeUnik,
+                'bank_pembayaran' =>$input['bank_pembayaran']
+                // 'bank_pembayaran' => json_encode($input['bank_pembayaran'])
             ];
 
             $in = $qry;
@@ -1472,13 +1533,14 @@ class SekolahSDController extends Controller
 
             // Validasi file upload
             $validated = $request->validate([
-                'file_data' => 'required|image|max:512', // ukuran dalam kilobyte (500KB)
+                // 'file_data' => 'required|image|max:512', // ukuran dalam kilobyte (500KB)
+                'file_data' => 'required|mimes:jpeg,jpg,png|max:600', // 600 KB aman
             ]);
 
             if (!$request->hasFile('file_data') || !$request->file('file_data')->isValid()) {
                 return [
                     "status"=>false,
-                    'message' => "Format data hanya boleh image, dan maksimal ukuran 500KB"
+                    'message' => "Format data hanya boleh image, dan maksimal ukuran 600KB"
                 ];
             }
 
@@ -1501,7 +1563,8 @@ class SekolahSDController extends Controller
     function ppdb_data(Request $request){
         $query = PPDBSekolah::orderBy('id','desc');
         return DataTables::of($query)
-        ->make(true);
+            ->addColumn('detail', fn($row) => $row->detail ?? [])
+            ->make(true);
     }
 
     function ppdb_data_show($id){

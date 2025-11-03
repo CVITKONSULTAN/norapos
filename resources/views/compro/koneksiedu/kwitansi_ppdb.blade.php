@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kwitansi PPDB - Belum Bayar</title>
+  <title>Kwitansi PPDB - {{ $ppdb->status_bayar == 'paid' ? 'Lunas' : 'Belum Bayar' }}</title>
   <style>
     body {
       font-family: "Times New Roman", serif;
@@ -53,6 +53,11 @@
       border-radius: 6px;
       background-color: #fff6f6;
     }
+    .status.lunas {
+      border-color: #1b873f;
+      color: #1b873f;
+      background-color: #f4fff6;
+    }
     .footer {
       margin-top: 40px;
       display: flex;
@@ -82,88 +87,113 @@
 <body>
   <div class="kwitansi-container">
 
+    <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2 Pontianak"> <br />
     <button class="no-print" onclick="window.print()">🖨 Cetak Kwitansi</button>
-
-    <!-- Tempat QR Code -->
+    <!-- QR Code -->
     <div id="qrcode" class="qrcode"></div>
 
     <h2>Kwitansi Pendaftaran PPDB</h2>
     <div class="subtitle">Tahun Ajaran 2025 / 2026</div>
 
+    @php
+      $detail = $ppdb->detail ?? [];
+      $status = $ppdb->status_bayar ?? 'pending';
+    @endphp
+
     <table>
       <tr>
         <td class="label">Kode Bayar</td>
-        <td>: <strong id="kodeBayar">PPDB-AB1234</strong></td>
+        <td>: <strong id="kodeBayar">{{ $ppdb->kode_bayar }}</strong></td>
       </tr>
       <tr>
         <td class="label">Nama Calon Siswa</td>
-        <td>: Muhammad Fadlan</td>
+        <td>: {{ $detail['nama'] ?? '-' }}</td>
       </tr>
       <tr>
-        <td class="label">Asal Sekolah</td>
-        <td>: SD Negeri 12 Pontianak</td>
+        <td class="label">Jenis Kelamin</td>
+        <td>: {{ $detail['jenis-kelamin'] ?? '-' }}</td>
+      </tr>
+      <tr>
+        <td class="label">Tempat, Tanggal Lahir</td>
+        <td>: {{ $detail['tempat-lahir'] ?? '-' }}, 
+          {{ \Carbon\Carbon::parse($detail['tanggal-lahir'])->translatedFormat('d F Y') ?? '-' }}</td>
       </tr>
       <tr>
         <td class="label">Tanggal Daftar</td>
-        <td>: 03 November 2025</td>
+        <td>: {{ \Carbon\Carbon::parse($ppdb->created_at)->translatedFormat('d F Y') }}</td>
       </tr>
       <tr>
         <td class="label">Total Pembayaran</td>
-        <td>: Rp 350.127,-</td>
+        <td>: Rp {{ number_format($detail['total_bayar'] ?? 0, 0, ',', '.') }},-</td>
       </tr>
       <tr>
         <td class="label">Status Pembayaran</td>
-        <td><div class="status">BELUM DIBAYAR</div></td>
+        <td>
+          <div class="status {{ $status == 'paid' ? 'lunas' : '' }}">
+            {{ $status == 'paid' ? 'LUNAS' : 'BELUM DIBAYAR' }}
+          </div>
+        </td>
       </tr>
     </table>
 
-    <p>
-      Mohon segera melakukan pembayaran biaya pendaftaran ke rekening berikut:<br>
-      <strong>Bank BRI</strong> – No. Rekening <strong>1234 5678 9012</strong><br>
-      a.n. <strong>SMK HN Corporation</strong><br>
-      Setelah transfer, silakan unggah bukti pembayaran melalui portal pendaftaran.
-    </p>
+    @if($ppdb->status_bayar == 'belum')
+      <p>
+        Mohon segera melakukan pembayaran biaya pendaftaran ke rekening berikut:<br>
+        <strong>{{ $ppdb->bank_pembayaran['nama_bank'] ?? "-" }}</strong> – No. Rekening <strong>{{ $ppdb->bank_pembayaran['no_rek'] ?? "-" }}</strong><br>
+        a.n. <strong>{{ $ppdb->bank_pembayaran['atas_nama'] ?? "-" }}</strong><br>
+        Setelah transfer, silakan unggah bukti pembayaran melalui portal pendaftaran.
+      </p>
+    @else
+      <p style="color:#1b873f;">
+        Terima kasih, pembayaran Anda telah kami terima.  
+        Mohon simpan kwitansi ini sebagai bukti sah pendaftaran PPDB SD Muhammadiyah 2 Pontianak.
+      </p>
+    @endif
 
     <table style="width:100%; margin-top:40px; text-align:center;">
-        <tr>
-            <td style="width:50%; vertical-align:bottom;">
-            Pontianak, 03 November 2025
-            </td>
-            <td style="width:50%; vertical-align:bottom;">
-            Calon Siswa
-            </td>
-        </tr>
-        <tr><td colspan="2" style="height:60px;"></td></tr>
-        <tr>
-            <td style="text-align:center;">
-            <span style="border-top:1px solid #555; padding-top:4px; display:inline-block; width:200px;">
-                Petugas PPDB
-            </span>
-            </td>
-            <td style="text-align:center;">
-            <span style="border-top:1px solid #555; padding-top:4px; display:inline-block; width:200px;">
-                Muhammad Fadlan
-            </span>
-            </td>
-        </tr>
+      <tr>
+        <td style="width:50%; vertical-align:bottom;">
+          Pontianak, {{ \Carbon\Carbon::parse($ppdb->updated_at)->translatedFormat('d F Y') }}
+        </td>
+        <td style="width:50%; vertical-align:bottom;">
+          Calon Siswa
+        </td>
+      </tr>
+      <tr><td colspan="2" style="height:60px;"></td></tr>
+      <tr>
+        <td style="text-align:center;">
+          <span style="border-top:1px solid #555; padding-top:4px; display:inline-block; width:200px;">
+            ...
+          </span>
+        </td>
+        <td style="text-align:center;">
+          <span style="border-top:1px solid #555; padding-top:4px; display:inline-block; width:200px;">
+            {{ $detail['nama'] ?? '-' }}
+          </span>
+        </td>
+      </tr>
     </table>
 
-  <!-- CDN qrcode.js -->
+  </div>
+
+  <!-- QR Code Generator -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Ambil kode bayar dari DOM
       const kodeBayar = document.getElementById("kodeBayar").textContent.trim();
 
-      // Generate QR Code dari kode bayar
+      // Generate QR Code ke link kwitansi online
       new QRCode(document.getElementById("qrcode"), {
-        text: kodeBayar,
+        text: "{{ route('sekolah.kwitansi_ppdb', ['kode_bayar' => $ppdb->kode_bayar]) }}",
         width: 90,
         height: 90,
         colorDark: "#000000",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
       });
+
+      // 🖨 Auto print saat halaman dibuka
+      setTimeout(() => window.print(), 600);
     });
   </script>
 </body>

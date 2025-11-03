@@ -157,10 +157,9 @@
 
               <!-- Tombol Lihat Kwitansi -->
               <a
-                id="btnLihatKwitansi"
                 href="#"
                 target="_blank"
-                class="btn btn-outline-primary px-4 rounded-pill mb-3"
+                class="btn btn-outline-primary px-4 rounded-pill mb-3 btnLihatKwitansi"
               >
                 <i class="bi bi-receipt-cutoff me-2"></i> Lihat Kwitansi Pembayaran
               </a>
@@ -233,6 +232,14 @@
               <p class="text-danger fw-semibold mb-4">
                 Mohon menunggu proses admin memvalidasi pembayaran anda.
               </p>
+
+              <a
+                href="#"
+                target="_blank"
+                class="btn btn-outline-primary px-4 rounded-pill mb-3 btnLihatKwitansi"
+              >
+                <i class="bi bi-receipt-cutoff me-2"></i> Lihat Kwitansi Pembayaran
+              </a>
 
               <div class="row">
                 <div class="col-md-12">
@@ -613,19 +620,22 @@
             useWebWorker: true,
           };
 
-          // Kompres
-          const compressedFile = await imageCompression(file, options);
+          // Kompres file
+          const compressedBlob = await imageCompression(file, options);
+          const compressedFile = new File([compressedBlob], file.name, { type: file.type });
+
           console.log(
             `Asli: ${(file.size / 1024).toFixed(1)}KB → Kompres: ${(compressedFile.size / 1024).toFixed(1)}KB`
           );
 
+          // Validasi ukuran setelah kompres
           if (compressedFile.size > 524288) {
             loader.style.display = "none";
             Swal.fire("File Terlalu Besar", "Setelah kompres masih > 500KB. Gunakan gambar lain.", "error");
             return;
           }
 
-          // Upload
+          // Upload file yang sudah dikonversi ulang ke File (bukan Blob)
           await uploadFileToServer(compressedFile, previewId, previewElement, loader, success);
 
         } catch (err) {
@@ -706,6 +716,12 @@
           payload.link_kartu_keluarga = linkBerkasPPDB.link_kartu_keluarga;
           payload.link_akta_lahir = linkBerkasPPDB.link_akta_lahir;
           payload.link_kartu_anak = linkBerkasPPDB.link_kartu_anak;
+          payload.link_kartu_anak = linkBerkasPPDB.link_kartu_anak;
+          payload.bank_pembayaran = {
+            nama_bank:"{{$nama_bank}}",
+            no_rek:"{{$no_rek}}",
+            atas_nama:"{{$atas_nama}}"
+          }
 
           // Jika ada field kosong yang wajib
           if (!payload.nama) {
@@ -808,7 +824,7 @@
         const contohTransfer = `Rp${(nominal).toLocaleString('id-ID')}`;
 
         const url = `/kwitansi-ppdb-simuda?kode_bayar=${kode_bayar}`
-        $("#btnLihatKwitansi").attr('href',url);
+        $(".btnLihatKwitansi").attr('href',url);
 
         // Isi data ke elemen
         document.getElementById("nominal-pembayaran").textContent = nominalStr;
@@ -890,7 +906,9 @@
               maxWidthOrHeight: 1280,  // resize jika besar
               useWebWorker: true,
             };
-            uploadFile = await imageCompression(file, options);
+            // uploadFile = await imageCompression(file, options);
+            const compressedBlob = await imageCompression(file, options);
+            uploadFile = new File([compressedBlob], file.name, { type: file.type });
             console.log(
               `Kompresi Bukti: ${(file.size / 1024).toFixed(1)}KB → ${(uploadFile.size / 1024).toFixed(1)}KB`
             );
@@ -943,6 +961,8 @@
               timer: 1500,
               showConfirmButton: false,
             });
+
+
           } else {
             Swal.fire("Gagal", response.data.message || "Upload gagal.", "error");
           }

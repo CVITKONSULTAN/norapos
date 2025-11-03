@@ -49,8 +49,12 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
 });
 
 Route::get('/hotel/available', "HotelController@avail_display")->name("hotel.avail.display");
+
+Route::get('/test_email', "SekolahSDController@test_email");
+
 Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
 Route::get('/kwitansi-ppdb-simuda', "SekolahSDController@kwitansi_ppdb")->name("sekolah.kwitansi_ppdb");
+Route::get('/ppdb-show/{id}','SekolahSDController@ppdb_data_show');
 
 Route::get('/ppdb-simuda/print/{id}', "SekolahSDController@ppdb_print")->name("sekolah.ppdb_print");
 

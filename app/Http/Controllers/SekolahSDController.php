@@ -27,7 +27,9 @@ use DB;
 use Log;
 use Str;
 use DataTables;
-use Storage;;
+use Storage;
+use Mail;
+
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PPDBExport;
 use Illuminate\Support\Facades\Password;
@@ -1507,12 +1509,21 @@ class SekolahSDController extends Controller
                 'total_bayar' => $totalBayar,
                 'kode_unik' => $kodeUnik,
                 'bank_pembayaran' =>$input['bank_pembayaran']
-                // 'bank_pembayaran' => json_encode($input['bank_pembayaran'])
             ];
+            
 
             $in = $qry;
             $in['detail'] = $input;
             $data = PPDBSekolah::create($in);
+
+
+            // send to orang tua pendaftar email
+            if(isset($input['email'])){
+                Mail::to($input['email'])->send(new \App\Mail\NewPPDBNotification($data));
+            }
+
+            // send to admin sekolah
+            Mail::to("itkonsultanindonesia@gmail.com")->send(new \App\Mail\AdminNewPPDBNotification($data));
 
             return [
                 "status" => true,
@@ -1566,9 +1577,13 @@ class SekolahSDController extends Controller
             ->addColumn('detail', fn($row) => $row->detail ?? [])
             ->make(true);
     }
-
+    
     function ppdb_data_show($id){
         $data = PPDBSekolah::find($id);
+        if(empty($data)){
+            $data = PPDBSekolah::where('kode_bayar',$id)->first();
+        }
+        
         if(empty($data)){
             return [
                 'status'=>false,
@@ -1680,6 +1695,25 @@ class SekolahSDController extends Controller
             return ['status'=>false,'message'=>$e->getMessage()];
         }
 
+    }
+
+    function test_email() {
+        // Cek apakah ada 1 data PPDB untuk contoh
+        $ppdb = \App\Models\Sekolah\PPDBSekolah::latest()->first();
+
+        if (!$ppdb) {
+            return '❌ Belum ada data PPDB di database. Isi dulu minimal 1 data pendaftar.';
+        }
+
+        // Ganti dengan email admin kamu
+        $emailTujuan = "itkonsultanindonesia@gmail.com";
+
+        try {
+            Mail::to($emailTujuan)->send(new \App\Mail\NewPPDBNotification($ppdb));
+            return '✅ Test email PPDB berhasil dikirim ke ' . $emailTujuan;
+        } catch (Exception $e) {
+            return '❌ Gagal kirim email: ' . $e->getMessage();
+        }
     }
     
 }

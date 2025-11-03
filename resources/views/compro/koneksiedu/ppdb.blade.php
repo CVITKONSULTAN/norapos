@@ -707,7 +707,34 @@
       async function submitPPDB(event) {
         event.preventDefault();
 
+        const buttonSubmit = document.getElementById("button-submit");
+        const originalButtonText = buttonSubmit.innerHTML;
+
         try {
+          // 📨 Tampilkan input email via SweetAlert
+          const { value: email } = await Swal.fire({
+            title: "Masukkan Email Anda",
+            input: "email",
+            inputPlaceholder: "contoh: nama@email.com",
+            confirmButtonText: "Lanjutkan",
+            showCancelButton: true,
+            cancelButtonText: "Batal",
+            inputValidator: (value) => {
+              if (!value) return "Email wajib diisi.";
+              const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!regex.test(value)) return "Format email tidak valid.";
+            },
+          });
+
+          if (!email) return; // jika user batal
+
+          // 🌀 Aktifkan animasi loading
+          buttonSubmit.disabled = true;
+          buttonSubmit.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Menyimpan data...
+          `;
+
           // Ambil semua input dari form
           const formData = new FormData(event.target);
           const payload = Object.fromEntries(formData.entries());
@@ -716,20 +743,23 @@
           payload.link_kartu_keluarga = linkBerkasPPDB.link_kartu_keluarga;
           payload.link_akta_lahir = linkBerkasPPDB.link_akta_lahir;
           payload.link_kartu_anak = linkBerkasPPDB.link_kartu_anak;
-          payload.link_kartu_anak = linkBerkasPPDB.link_kartu_anak;
-          payload.bank_pembayaran = {
-            nama_bank:"{{$nama_bank}}",
-            no_rek:"{{$no_rek}}",
-            atas_nama:"{{$atas_nama}}"
-          }
 
-          // Jika ada field kosong yang wajib
+          // Tambahkan data bank pembayaran
+          payload.bank_pembayaran = {
+            nama_bank: "{{$nama_bank}}",
+            no_rek: "{{$no_rek}}",
+            atas_nama: "{{$atas_nama}}"
+          };
+
+          // Tambahkan email dari input Swal
+          payload.email = email;
+
+          // ✅ Validasi field wajib
           if (!payload.nama) {
             Swal.fire("Peringatan", "Nama Lengkap wajib diisi!", "warning");
             return;
           }
 
-          // ✅ Validasi file wajib (Kartu Keluarga & Akta Lahir)
           if (!payload.link_kartu_keluarga) {
             Swal.fire({
               title: "Peringatan",
@@ -752,7 +782,7 @@
             return;
           }
 
-          // ✅ Validasi checkbox pernyataan (tanpa hitung umur)
+          // ✅ Validasi checkbox
           const checkIdentitas = document.getElementById("check-identitas").checked;
           const checkUsia = document.getElementById("check-usia").checked;
           const checkTanggungjawab = document.getElementById("check-tanggungjawab").checked;
@@ -768,11 +798,17 @@
             return;
           }
 
-          // Kirim ke server
+          // 🚀 Kirim ke server
           const res = await axios.post(`${baseURL}/api/sekolah_sd/ppdb/store`, payload);
 
           if (res.data.status) {
-
+            Swal.fire({
+              title: "Berhasil!",
+              text: "Data berhasil disimpan, silakan lanjut ke pembayaran.",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500,
+            });
 
             showPopupPembayaran({
               kode_bayar: res.data.data.kode_bayar,
@@ -788,8 +824,14 @@
         } catch (err) {
           console.error(err);
           Swal.fire("Error", err.response?.data?.message || err.message, "error");
+        } finally {
+          // 🔁 Kembalikan tombol ke keadaan semula
+          buttonSubmit.disabled = false;
+          buttonSubmit.innerHTML = originalButtonText;
         }
+        
       }
+
 
       // Mapping hari agar "Sunday" jadi "Ahad"
       const hariMap = {

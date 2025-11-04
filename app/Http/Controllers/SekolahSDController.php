@@ -1590,7 +1590,8 @@ class SekolahSDController extends Controller
     }
 
     function ppdb_data(Request $request){
-        $query = PPDBSekolah::orderBy('id','desc');
+        $status_bayar = $request->status_bayar ?? 'upload';
+        $query = PPDBSekolah::orderBy('id','desc')->where('status_bayar',$status_bayar);
         return DataTables::of($query)
             ->addColumn('detail', fn($row) => $row->detail ?? [])
             ->make(true);

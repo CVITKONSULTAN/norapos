@@ -266,7 +266,7 @@
                     data:'id',
                     className:"text-center",
                     render:(data,type,row)=>{
-                        const validBtn = row.status_bayar === 'belum'
+                        const validBtn = row.status_bayar === 'upload'
                             ? `<button class="btn btn-success btn-xs" onclick="validasiBayar(${data})">Validasi</button>`
                             : '';
                         return `

@@ -1488,6 +1488,10 @@ class SekolahSDController extends Controller
                 $data->status_bayar = 'upload';
                 $data->save();
 
+                // kirim ke admin sekolah
+                Mail::to("itkonsultanindonesia@gmail.com")->send(new \App\Mail\AdminUploadBuktiNotification($data));
+
+
                 return [
                     'status'=>true,
                     'message'=>"OK",
@@ -1536,8 +1540,8 @@ class SekolahSDController extends Controller
                 Mail::to($input['email'])->send(new \App\Mail\NewPPDBNotification($data));
             }
 
-            // send to admin sekolah
-            Mail::to("itkonsultanindonesia@gmail.com")->send(new \App\Mail\AdminNewPPDBNotification($data));
+            // // send to admin sekolah
+            // Mail::to("itkonsultanindonesia@gmail.com")->send(new \App\Mail\AdminNewPPDBNotification($data));
 
             return [
                 "status" => true,

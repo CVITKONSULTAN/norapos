@@ -239,14 +239,6 @@
                 Mohon menunggu proses admin memvalidasi pembayaran anda.
               </p>
 
-              <a
-                href="#"
-                target="_blank"
-                class="btn btn-outline-primary px-4 rounded-pill mb-3 btnLihatKwitansi"
-              >
-                <i class="bi bi-receipt-cutoff me-2"></i> Lihat Kwitansi Pembayaran
-              </a>
-
               <div class="row">
                 <div class="col-md-12">
                   <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2" width="180" class="mb-4">
@@ -255,6 +247,15 @@
                   <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2">
                     Cetak Kartu Nomor Test Siswa
                   </button>
+                </div>
+                <div class="col-md-12">
+                  <a
+                    href="#"
+                    target="_blank"
+                    class="btn btn-warning px-4 rounded-pill mt-3 btnLihatKwitansi"
+                  >
+                    <i class="bi bi-receipt-cutoff me-2"></i> Cetak Kwitansi Bukti Pembayaran Saya
+                  </a>
                 </div>
               </div>
 
@@ -446,6 +447,11 @@
                 <i class="bi bi-upload"></i> Upload dan Kirim Pendaftaran
               </button>
             </div>
+            {{-- <div class="d-grid">
+              <button onclick="check()" type="button" class="btn btn-submit py-2">
+                <i class="bi bi-upload"></i> test
+              </button>
+            </div> --}}
           </form>
 
         </div>
@@ -711,6 +717,7 @@
       document.getElementById("kartu-anak").addEventListener("change", (e) => handleFileInput(e, "kartu-anak"));
 
       let kode_bayar;
+      let emailGlobal;
 
       async function submitPPDB(event) {
         event.preventDefault();
@@ -735,6 +742,8 @@
           });
 
           if (!email) return; // jika user batal
+
+          emailGlobal = email;
 
           // 🌀 Aktifkan animasi loading
           buttonSubmit.disabled = true;
@@ -1167,6 +1176,20 @@
         }
         
       });
+
+      const check = () => {
+        // ✅ Tampilkan popup menunggu validasi
+        const modalEl = document.getElementById("popupMenungguValidasi");
+
+        // Cegah user menutup modal dengan klik luar atau tombol ESC
+        const menungguModal = new bootstrap.Modal(modalEl, {
+          backdrop: "static",
+          keyboard: false
+        });
+
+        // Tampilkan modal
+        menungguModal.show();
+      }
 
     </script>
 

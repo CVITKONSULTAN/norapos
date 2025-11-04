@@ -15,7 +15,7 @@ class AddPaymentFieldsToPPDBSekolahsTable extends Migration
     {
         Schema::table('p_p_d_b_sekolahs', function (Blueprint $table) {
             $table->string('kode_bayar')->nullable()->after('nama');
-            $table->enum('status_bayar', ['belum', 'sudah'])->default('belum')->after('kode_bayar');
+            $table->enum('status_bayar', ['belum', 'sudah','upload'])->default('belum')->after('kode_bayar');
             $table->string('bank_pembayaran')->nullable()->after('status_bayar');
             $table->json('bukti_pembayaran')->nullable()->after('bank_pembayaran');
         });

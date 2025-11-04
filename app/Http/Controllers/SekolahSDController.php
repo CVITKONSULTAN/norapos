@@ -1481,6 +1481,20 @@ class SekolahSDController extends Controller
     function ppdb_store(Request $request){
         try{
 
+            if($request->update_bukti && $request->kode_bayar){
+                
+                $data = PPDBSekolah::where('kode_bayar',$request->kode_bayar)->firstorfail();
+                $data->bukti_pembayaran = $request->bukti_pembayaran ?? null;
+                $data->status_bayar = 'upload';
+                $data->save();
+
+                return [
+                    'status'=>true,
+                    'message'=>"OK",
+                    "data"=>$data
+                ];
+            }
+
             $input = $request->all();
             $nama = $request->nama ?? "";
             if($request->nama_lengkap){

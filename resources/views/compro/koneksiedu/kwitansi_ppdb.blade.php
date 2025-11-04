@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kwitansi PPDB - {{ $ppdb->status_bayar == 'paid' ? 'Lunas' : 'Belum Bayar' }}</title>
+  <title>Kwitansi PPDB - {{ $ppdb->status_bayar }}</title>
   <style>
     body {
       font-family: "Times New Roman", serif;
@@ -58,6 +58,11 @@
       color: #1b873f;
       background-color: #f4fff6;
     }
+    .status.upload {
+      border-color: #1b5387;
+      color: #1b5387;
+      background-color: #f4fff6;
+    }
     .footer {
       margin-top: 40px;
       display: flex;
@@ -97,7 +102,6 @@
 
     @php
       $detail = $ppdb->detail ?? [];
-      $status = $ppdb->status_bayar ?? 'pending';
     @endphp
 
     <table>
@@ -129,8 +133,8 @@
       <tr>
         <td class="label">Status Pembayaran</td>
         <td>
-          <div class="status {{ $status == 'paid' ? 'lunas' : '' }}">
-            {{ $status == 'paid' ? 'LUNAS' : 'BELUM DIBAYAR' }}
+          <div class="status {{ $ppdb->status_bayar == 'sudah' ? 'lunas' : '' }} {{ $ppdb->status_bayar }}">
+            {{ strtoupper($ppdb->status_bayar) }}
           </div>
         </td>
       </tr>
@@ -143,7 +147,15 @@
         a.n. <strong>{{ $ppdb->bank_pembayaran['atas_nama'] ?? "-" }}</strong><br>
         Setelah transfer, silakan unggah bukti pembayaran melalui portal pendaftaran.
       </p>
-    @else
+    @endif
+    @if($ppdb->status_bayar == 'upload')
+      <p>
+        Pembayaran anda pada nomor rekening dibawah sedang <b>menunggu proses verifikasi Admin </b> :<br>
+        <strong>{{ $ppdb->bank_pembayaran['nama_bank'] ?? "-" }}</strong> – No. Rekening <strong>{{ $ppdb->bank_pembayaran['no_rek'] ?? "-" }}</strong><br>
+        a.n. <strong>{{ $ppdb->bank_pembayaran['atas_nama'] ?? "-" }}</strong><br>
+      </p>
+    @endif
+    @if($ppdb->status_bayar == 'sudah')
       <p style="color:#1b873f;">
         Terima kasih, pembayaran Anda telah kami terima.  
         Mohon simpan kwitansi ini sebagai bukti sah pendaftaran PPDB SD Muhammadiyah 2 Pontianak.

@@ -214,6 +214,12 @@
                 </div>
               </div>
 
+              <div class="d-grid">
+                <button id="button-submit-bukti" class="btn btn-submit py-2">
+                  <i class="bi bi-upload"></i> Kirim & Upload Bukti Bayar
+                </button>
+              </div>
+
             </div>
           </div>
         </div>
@@ -704,6 +710,8 @@
       document.getElementById("akta-lahir").addEventListener("change", (e) => handleFileInput(e, "akta-lahir"));
       document.getElementById("kartu-anak").addEventListener("change", (e) => handleFileInput(e, "kartu-anak"));
 
+      let kode_bayar;
+
       async function submitPPDB(event) {
         event.preventDefault();
 
@@ -809,6 +817,8 @@
               showConfirmButton: false,
               timer: 1500,
             });
+
+            kode_bayar = res.data.data.kode_bayar;
 
             showPopupPembayaran({
               kode_bayar: res.data.data.kode_bayar,
@@ -996,14 +1006,6 @@
 
             uploadSuccess.classList.remove("d-none");
 
-            Swal.fire({
-              title: "Upload Berhasil",
-              text: "Bukti pembayaran berhasil diupload.",
-              icon: "success",
-              timer: 1500,
-              showConfirmButton: false,
-            });
-
 
           } else {
             Swal.fire("Gagal", response.data.message || "Upload gagal.", "error");
@@ -1017,6 +1019,78 @@
         }
       });
 
+      // 🧾 Trigger kirim bukti pembayaran ke database (setelah file sudah terupload)
+      const btnSubmitBukti = document.getElementById("button-submit-bukti");
+
+      btnSubmitBukti.addEventListener("click", async () => {
+        const kodeBayar = kode_bayar;
+        const buktiUrl = linkBerkasPPDB.link_pembayaran_ppdb;
+
+        if (!kodeBayar) {
+          Swal.fire("Error", "Kode bayar tidak ditemukan di halaman.", "error");
+          return;
+        }
+
+        if (!buktiUrl) {
+          Swal.fire("Belum Ada File", "Silakan upload file bukti pembayaran terlebih dahulu.", "warning");
+          return;
+        }
+
+        // 🔁 Update data ke database
+        btnSubmitBukti.disabled = true;
+        btnSubmitBukti.innerHTML = `
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          Mengirim data...
+        `;
+
+        try {
+          const payload = {
+            update_bukti: 1,
+            kode_bayar: kodeBayar,
+            bukti_pembayaran: buktiUrl
+          };
+
+          const res = await axios.post(`${baseURL}/api/sekolah_sd/ppdb/store`, payload);
+
+          if (res.data.status) {
+            Swal.fire({
+              title: "Berhasil!",
+              text: "Bukti pembayaran berhasil disimpan ke database.",
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+
+            // ✅ Tutup modal pembayaran jika masih terbuka
+            const modalPembayaranEl = document.getElementById("popupPembayaranPPDB");
+            const modalPembayaran = bootstrap.Modal.getInstance(modalPembayaranEl);
+            if (modalPembayaran) modalPembayaran.hide();
+
+            // ✅ Tampilkan popup menunggu validasi
+            const modalEl = document.getElementById("popupMenungguValidasi");
+
+            // Cegah user menutup modal dengan klik luar atau tombol ESC
+            const menungguModal = new bootstrap.Modal(modalEl, {
+              backdrop: "static",
+              keyboard: false
+            });
+
+            // Tampilkan modal
+            menungguModal.show();
+
+          } else {
+            Swal.fire("Gagal", res.data.message || "Gagal menyimpan ke database.", "error");
+          }
+        } catch (err) {
+          console.error("Update Error:", err);
+          Swal.fire("Error", err.response?.data?.message || err.message, "error");
+        } finally {
+          btnSubmitBukti.disabled = false;
+          btnSubmitBukti.innerHTML = `<i class="bi bi-upload me-2"></i> Upload Sekarang`;
+        }
+      });
+
+
       // 🔍 Fungsi bantu untuk ambil parameter dari URL
       function getQueryParam(param) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1026,6 +1100,7 @@
       document.addEventListener("DOMContentLoaded", async () => {
         const isUploadPembayaran = getQueryParam("upload_pembayaran");
         const kodeBayar = getQueryParam("kode_bayar");
+        kode_bayar = kodeBayar;
 
         if (isUploadPembayaran && kodeBayar) {
           try {

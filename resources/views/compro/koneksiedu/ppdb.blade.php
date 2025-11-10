@@ -147,7 +147,7 @@
               Silakan pantau informasi pembukaan PPDB selanjutnya melalui website resmi atau media sosial sekolah.
             </div>
 
-            <a href="https://sdmuh2pontianak.sch.id" class="btn btn-outline-success px-4 mt-3 rounded-pill">
+            <a href="/" class="btn btn-outline-success px-4 mt-3 rounded-pill">
               <i class="bi bi-house-door me-2"></i> Kembali ke Beranda
             </a>
 

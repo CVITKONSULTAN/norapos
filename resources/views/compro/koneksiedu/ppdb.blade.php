@@ -185,10 +185,10 @@
               </div>
 
               <div class="bg-white border rounded-4 p-4 shadow-sm mb-4">
-                <p class="mb-2 fw-semibold text-secondary">Nomor Kode Bayar / Rekening ({{$nama_bank}})</p>
+                <p class="mb-2 fw-semibold text-secondary">Nomor Kode Bayar / Rekening {{$nama_bank}}</p>
                 <h2 class="fw-bold text-dark mb-3" id="kode-bayar">{{ $no_rek }}</h2>
                 <p class="small text-muted mb-0">
-                  Pembayaran dilakukan ke bank ABC dengan kode akhir nominal <b class="text-dark" id="kode_unik">0</b>.<br>
+                  Pembayaran dilakukan ke {{$nama_bank}} dengan kode akhir nominal <b class="text-dark" id="kode_unik">0</b>.<br>
                   Contoh transfer: <b id="contoh-transfer" class="text-dark">Rp 0,-</b>
                 </p>
               </div>

@@ -52,9 +52,15 @@
     <div class="box box-primary">
         <div class="box-header with-border d-flex justify-content-between align-items-center">
             <div class="form-inline">
+                <label for="filter_lvl_kelas" class="mr-2 font-weight-bold">Level Kelas:</label>
+                <select id="filter_lvl_kelas" class="form-control" style="width:150px; margin-right:10px;">
+                    @foreach($level_kelas ?? [] as $ta)
+                        <option value="{{ $ta }}">{{ $ta }}</option>
+                    @endforeach
+                </select>
+
                 <label for="filter_tahun" class="mr-2 font-weight-bold">Tahun Ajaran:</label>
                 <select id="filter_tahun" class="form-control" style="width:150px; margin-right:10px;">
-                    <option value="">Semua</option>
                     @foreach($tahun_ajaran ?? [] as $ta)
                         <option value="{{ $ta }}">{{ $ta }}</option>
                     @endforeach
@@ -62,7 +68,6 @@
 
                 <label for="filter_semester" class="mr-2 font-weight-bold">Semester:</label>
                 <select id="filter_semester" class="form-control" style="width:120px;">
-                    <option value="">Semua</option>
                     @foreach($semester ?? [] as $sem)
                         <option value="{{ $sem }}">{{ ucfirst($sem) }}</option>
                     @endforeach
@@ -72,6 +77,9 @@
             <div class="text-right">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#modal_tema">
                     <i class="fa fa-plus"></i> Tambah Tema
+                </button>
+                <button class="btn btn-success" onclick="applyTema()">
+                    <i class="fa fa-check"></i> Apply Tema
                 </button>
             </div>
         </div>
@@ -233,6 +241,7 @@ $(document).ready(function(){
         ajax: {
             url: "{{ route('kokurikuler.tema.data') }}",
             data: d => {
+                d.lvl_kelas = $('#filter_lvl_kelas').val();
                 d.tahun_ajaran = $('#filter_tahun').val();
                 d.semester = $('#filter_semester').val();
             }
@@ -259,10 +268,6 @@ $(document).ready(function(){
             {
                 data: 'id',
                 render: (id, _, row) => `
-                    <button class="btn btn-success btn-xs" data-toggle="tooltip" title="Apply Tema ke Kelas"
-                        onclick="applyTema(${id}, '${row.tema}','${row.kelas}','${row.tahun_ajaran}','${row.semester}')">
-                        <i class="fa fa-check"></i>
-                    </button>
                     <button class="btn btn-secondary btn-xs" data-toggle="tooltip" title="Lihat Riwayat Apply"
                         onclick="lihatHistory(${id})">
                         <i class="fa fa-history"></i>
@@ -324,10 +329,18 @@ $('[data-target="#modal_tema"]').on('click', function(){
 });
 
 // 🔹 Apply Tema
-function applyTema(id, nama,kelas,tahun,semester) {
-    currentApplyId = id;
+function applyTema() {
+    const kelas = $('#filter_lvl_kelas').val();
+    const tahun = $('#filter_tahun').val();
+    const semester = $('#filter_semester').val();
+
+    currentApplyId = {
+        kelas:kelas,
+        tahun:tahun,
+        semester:semester,
+    };
     $('#apply_message').html(`
-        Apakah Anda yakin ingin <strong>menerapkan tema "${nama}"</strong><br>
+        Apakah Anda yakin ingin <strong>menerapkan semua tema yang ada pada tabel</strong><br>
         untuk <strong> Kelas ${kelas} (${tahun} Semester ${semester})</strong>?
     `);
     $('#modal_apply').modal('show');
@@ -337,7 +350,10 @@ $('#btn_confirm_apply').on('click', function(){
     if (!currentApplyId) return;
     const btn = $(this);
     btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Memproses...');
-    $.post(`/sekolah_sd/kokurikuler/tema/${currentApplyId}/apply`, { _token: '{{ csrf_token() }}' })
+    $.post(`/sekolah_sd/kokurikuler/tema/apply`, { 
+        _token: '{{ csrf_token() }}',
+        ...currentApplyId
+    })
         .done(res => {
             if (res.status) {
                 toastr.success(res.message);

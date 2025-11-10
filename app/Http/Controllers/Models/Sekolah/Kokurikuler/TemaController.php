@@ -42,7 +42,19 @@ class TemaController extends Controller
      */
     public function data(Request $request)
     {
-        $data = TemaKokurikuler::orderByDesc('id')->get();
+        $data = TemaKokurikuler::orderByDesc('id');
+        if($request->lvl_kelas){
+            $data = $data->where('kelas',$request->lvl_kelas);
+        }
+        if($request->lvl_kelas){
+            $data = $data->where('kelas',$request->lvl_kelas);
+        }
+        if($request->tahun_ajaran){
+            $data = $data->where('tahun_ajaran',$request->tahun_ajaran);
+        }
+        if($request->semester){
+            $data = $data->where('semester',$request->semester);
+        }
         return DataTables::of($data)->make(true);
     }
 
@@ -151,17 +163,22 @@ class TemaController extends Controller
     }
 
 
-    public function apply(Request $request, $id)
+    public function apply(Request $request)
     {
-        $tema = TemaKokurikuler::find($id);
-        if (!$tema) {
+        $tema = TemaKokurikuler::where([
+            'kelas' => $request->kelas,
+            'tahun_ajaran' => $request->tahun,    
+            'semester' => $request->semester,
+        ])->get();
+
+        if ($tema->isEmpty()) {
             return response()->json(['status' => false, 'message' => 'Tema tidak ditemukan.']);
         }
 
         $kelasList = Kelas::where([
-            'tahun_ajaran' => $tema->tahun_ajaran,
-            'kelas' => $tema->kelas,
-            'semester' => $tema->semester,
+            'tahun_ajaran' => $request->tahun,
+            'kelas' => $request->kelas,
+            'semester' => $request->semester,
         ])->get();
 
         if ($kelasList->isEmpty()) {
@@ -184,9 +201,10 @@ class TemaController extends Controller
                 $kelas->tema_kokurikuler = $tema->toArray();
                 $kelas->save();
             }
-
-            $tema->history_apply = array_merge($tema->history_apply ?? [], [$newHistory]);
-            $tema->save();
+            foreach ($tema as $key => $val) {
+                $val->history_apply = array_merge($val->history_apply ?? [], [$newHistory]);
+                $val->save();
+            }
 
             DB::commit();
             return response()->json(['status' => true, 'message' => 'Tema berhasil dikaitkan ke kelas.']);

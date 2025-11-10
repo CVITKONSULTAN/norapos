@@ -366,7 +366,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             Route::post('/store', [TemaController::class, 'store'])->name('kokurikuler.tema.store');
             Route::put('/{id}', [TemaController::class, 'update'])->name('kokurikuler.tema.update');
             Route::delete('/{id}', [TemaController::class, 'destroy'])->name('kokurikuler.tema.delete');
-            Route::post('/{id}/apply', [TemaController::class, 'apply'])->name('kokurikuler.tema.apply');
+            Route::post('/apply', [TemaController::class, 'apply'])->name('kokurikuler.tema.apply');
         });
 
         Route::prefix('kokurikuler/dimensi')->group(function() {

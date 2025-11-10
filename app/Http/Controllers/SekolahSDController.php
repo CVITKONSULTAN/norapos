@@ -411,6 +411,21 @@ class SekolahSDController extends Controller
         $data['index_projek'] = $request->index_projek ?? 0;
         return view('sekolah_sd.project',$data);
     }
+
+    function kokurikuler_index(Request $request){
+        $kelas = Kelas::find($request->kelas_id);
+        $data['level_kelas'] = $this->level_kelas;
+        $data['kelas'] = $kelas;
+        $data['dimensi_list'] = [];
+        if(!empty($kelas) && $request->has('index_projek')){
+            $data['dimensi_list'] = $kelas->dimensi_list[$request->index_projek];
+        }
+        $data['kelas_siswa'] = KelasSiswa::where('kelas_id',$request->kelas_id)
+        ->get();
+        $data['index_projek'] = $request->index_projek ?? 0;
+        return view('sekolah_sd.project',$data);
+    }
+
     function project_create(Request $request){
         return view('sekolah_sd.input.project.create');
     }

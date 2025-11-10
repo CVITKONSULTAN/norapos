@@ -134,7 +134,7 @@
 
   <div class="card">
     <div class="qr">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=SDMUH2-2025-001" alt="QR">
+      <img id="qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=SDMUH2-2025-001" alt="QR">
     </div>
 
     <div class="header">
@@ -192,5 +192,13 @@
       </div>
     </div>
   </div>
+  <!-- QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    window.onload = function() {
+      // pastikan QR selesai dibuat sebelum print
+      setTimeout(() => window.print(), 800);
+    };
+  </script>
 </body>
 </html>

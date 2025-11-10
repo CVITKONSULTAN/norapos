@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Sekolah\TemaKokurikuler;
 use App\Models\Sekolah\Kelas;
+use App\Models\Sekolah\KelasSiswa;
 use DataTables;
 use Illuminate\Support\Facades\DB;
 
@@ -212,6 +213,38 @@ class TemaController extends Controller
             DB::rollBack();
             return response()->json(['status' => false, 'message' => 'Gagal mengaitkan tema.', 'error' => $e->getMessage()]);
         }
+    }
+
+    function storeNilai(Request $request){
+        $dimensi = $request->dimensi ?? [];
+        $projek = [
+            'kokurikuler_id'=>$request->kokurikuler_id,
+            'kokurikuler_tema'=>$request->kokurikuler_tema,
+            'dimensi'=>$dimensi
+        ];
+        $kelas = KelasSiswa::findorfail($request->kelas_siswa_id);
+        $nilai_kokurikuler = $kelas->nilai_kokurikuler ?? [];
+
+        if(count($nilai_kokurikuler) > 0){
+            $found = null;
+            foreach($nilai_kokurikuler as $k => $item){
+                if($item['kokurikuler_id'] == $projek['kokurikuler_id']){
+                    $nilai_kokurikuler[$k] = $projek;
+                    $found = true;
+                    break;
+                }
+            }
+            if(empty($found)){
+                $nilai_kokurikuler[] = $projek;
+            }
+        } else {
+            $nilai_kokurikuler[] = $projek;
+        }
+        $kelas->nilai_kokurikuler = $nilai_kokurikuler;
+        $kelas->save();
+        
+        return redirect()->back()
+                ->with(['success'=>true,'Data berhasil dikaitkan']);
     }
 
 }

@@ -228,11 +228,11 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ]
                 );
                 $sub->url(
-                    action('SekolahSDController@project_index'),
+                    route('kokurikuler.index'),
                     "Penilaian Kokurikuler",
                     ['icon' => 'fa fas fa-user', 'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
-                    request()->segment(2) == 'project' 
+                    request()->segment(2) == 'kokurikuler' 
                     ]
                 );
             },

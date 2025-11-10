@@ -359,6 +359,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             Route::delete('/{id}', [PPDBSettingController::class, 'destroy']);
         });
 
+        Route::get('/kokurikuler', "SekolahSDController@kokurikuler_index")->name('kokurikuler.index');
+        Route::post('/kokurikuler/store', [TemaController::class, 'storeNilai'])->name('kokurikuler.storeNilai');
+        
         Route::prefix('kokurikuler/tema')->group(function() {
             Route::get('/', [TemaController::class, 'index'])->name('kokurikuler.tema.index');
             Route::get('/data', [TemaController::class, 'data'])->name('kokurikuler.tema.data');

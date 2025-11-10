@@ -207,6 +207,38 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             ['icon' => 'fa fas fa-address-book']
         )->order(1);
         $menu->dropdown(
+            "Kokurikuler",
+            function ($sub) {
+                $sub->url(
+                    route('kokurikuler.dimensi.index'),
+                    "Dimensi",
+                    ['icon' => 'fa fas fa-user', 'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'tema'
+                    ]
+                );
+                $sub->url(
+                    route('kokurikuler.tema.index'),
+                    "Tema",
+                    ['icon' => 'fa fas fa-user', 'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'dimensi'
+                    ]
+                );
+                $sub->url(
+                    action('SekolahSDController@project_index'),
+                    "Penilaian Kokurikuler",
+                    ['icon' => 'fa fas fa-user', 'active' => 
+                    request()->segment(1) == 'sekolah_sd' &&
+                    request()->segment(2) == 'project' 
+                    ]
+                );
+            },
+            ['icon' => 'fa fas fa-star']
+        )->order(1);
+        $menu->dropdown(
             "Projek Siswa",
             function ($sub) {
                 $sub->url(

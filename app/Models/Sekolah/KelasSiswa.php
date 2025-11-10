@@ -25,13 +25,15 @@ class KelasSiswa extends Model
         'tanpa_keterangan',
         'project_id_list',
         'nilai_projek',
-        'hitungan_sistem'
+        'hitungan_sistem',
+        'nilai_kokurikuler'
     ];
 
     protected $casts = [
         'project_id_list'=>'array',
         'nilai_projek'=>'array',
         'hitungan_sistem'=>'array',
+        'nilai_kokurikuler'=>'array',
     ];
 
 

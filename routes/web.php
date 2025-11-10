@@ -11,6 +11,8 @@
 |
 */
 use App\Http\Controllers\Sekolah\PPDBSettingController;
+use App\Http\Controllers\Models\Sekolah\Kokurikuler\TemaController;
+use App\Http\Controllers\Models\Sekolah\Kokurikuler\DimensiController;
 
 include_once('ciptakarya.php');
 include_once('install_r.php');
@@ -355,6 +357,24 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             Route::post('/store_data', [PPDBSettingController::class, 'store'])->name('sekolah_sd.ppdb.setting.store');
             Route::post('/toggle', [PPDBSettingController::class, 'toggle'])->name('sekolah_sd.ppdb.setting.toggle');
             Route::delete('/{id}', [PPDBSettingController::class, 'destroy']);
+        });
+
+        Route::prefix('kokurikuler/tema')->group(function() {
+            Route::get('/', [TemaController::class, 'index'])->name('kokurikuler.tema.index');
+            Route::get('/data', [TemaController::class, 'data'])->name('kokurikuler.tema.data');
+            Route::get('/{id}', [TemaController::class, 'show'])->name('kokurikuler.tema.show');
+            Route::post('/store', [TemaController::class, 'store'])->name('kokurikuler.tema.store');
+            Route::put('/{id}', [TemaController::class, 'update'])->name('kokurikuler.tema.update');
+            Route::delete('/{id}', [TemaController::class, 'destroy'])->name('kokurikuler.tema.delete');
+        });
+
+        Route::prefix('kokurikuler/dimensi')->group(function() {
+            Route::get('/', [DimensiController::class, 'index'])->name('kokurikuler.dimensi.index');
+            Route::get('/data', [DimensiController::class, 'data'])->name('kokurikuler.dimensi.data');
+            Route::get('/{id}', [DimensiController::class, 'show'])->name('kokurikuler.dimensi.show');
+            Route::post('/store', [DimensiController::class, 'store'])->name('kokurikuler.dimensi.store');
+            Route::put('/{id}', [DimensiController::class, 'update'])->name('kokurikuler.dimensi.update');
+            Route::delete('/{id}', [DimensiController::class, 'destroy'])->name('kokurikuler.dimensi.delete');
         });
 
         

@@ -1590,8 +1590,10 @@ class SekolahSDController extends Controller
     }
 
     function ppdb_data(Request $request){
-        $status_bayar = $request->status_bayar ?? 'upload';
-        $query = PPDBSekolah::orderBy('id','desc')->where('status_bayar',$status_bayar);
+        $query = PPDBSekolah::orderBy('id','desc');
+        if($request->status_bayar){
+            $query = $query->where('status_bayar',$request->status_bayar);
+        }
         return DataTables::of($query)
             ->addColumn('detail', fn($row) => $row->detail ?? [])
             ->make(true);
@@ -1658,6 +1660,33 @@ class SekolahSDController extends Controller
             ];
         }
 
+        // 🔸 Validasi pembayaran (Sesuai)
+        if ($request->has('validasi')) {
+            $data->status_bayar = 'sudah';
+            $data->validated_by = auth()->id();
+            $data->validated_at = now();
+            $data->keterangan = null;
+            $data->save();
+
+            return ['status' => true, 'message' => 'Pembayaran divalidasi'];
+        }
+
+        // 🔸 Tanggapan jika Tidak Sesuai
+        if ($request->has('tanggapan')) {
+            $alasan = trim($request->input('alasan', ''));
+            if ($alasan == '') {
+                return ['status' => false, 'message' => 'Alasan wajib diisi'];
+            }
+
+            $data->status_bayar = 'tidak sesuai';
+            $data->keterangan = $alasan;
+            $data->validated_by = auth()->id();
+            $data->validated_at = now();
+            $data->save();
+
+            return ['status' => true, 'message' => 'Tanggapan berhasil disimpan'];
+        }
+
         return ['status'=>false];
     }
 
@@ -1680,8 +1709,8 @@ class SekolahSDController extends Controller
 
     function ppdb_print(Request $request,$id){
         $data['data'] = PPDBSekolah::findorfail($id);
-        // $data['kolom'] = array_keys($data['data']->detail);
-        return view('sekolah_sd.prints.ppdb_print',$data);
+        // return view('sekolah_sd.prints.cetak_ppdb',$data);
+        return view('compro.koneksiedu.cetak_detail_ppdb',$data);
     }
 
     function simudaPrivacy(Request $request){

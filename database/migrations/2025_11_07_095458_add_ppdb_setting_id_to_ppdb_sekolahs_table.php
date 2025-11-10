@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddPaymentFieldsToPPDBSekolahsTable extends Migration
+class AddPpdbSettingIdToPpdbSekolahsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,10 +14,13 @@ class AddPaymentFieldsToPPDBSekolahsTable extends Migration
     public function up()
     {
         Schema::table('p_p_d_b_sekolahs', function (Blueprint $table) {
-            $table->string('kode_bayar')->nullable()->after('nama');
-            $table->enum('status_bayar', ['belum', 'sudah','upload','tidak sesuai'])->default('belum')->after('kode_bayar');
-            $table->string('bank_pembayaran')->nullable()->after('status_bayar');
-            $table->json('bukti_pembayaran')->nullable()->after('bank_pembayaran');
+             // Tambahkan kolom relasi ke PPDBSetting
+            $table->unsignedBigInteger('ppdb_setting_id')->nullable()->after('id');
+
+            // Optional: jika kamu mau buat foreign key-nya
+            $table->foreign('ppdb_setting_id')
+                ->references('id')->on('ppdb_settings')
+                ->onDelete('set null');
         });
     }
 
@@ -29,7 +32,8 @@ class AddPaymentFieldsToPPDBSekolahsTable extends Migration
     public function down()
     {
         Schema::table('p_p_d_b_sekolahs', function (Blueprint $table) {
-            $table->dropColumn(['kode_bayar', 'status_bayar', 'bank_pembayaran', 'bukti_pembayaran']);
+            $table->dropForeign(['ppdb_setting_id']);
+            $table->dropColumn('ppdb_setting_id');
         });
     }
 }

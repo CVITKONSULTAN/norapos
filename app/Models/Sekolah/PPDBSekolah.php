@@ -17,6 +17,7 @@ class PPDBSekolah extends Model
         'kode_bayar',
         'validated_by',
         'validated_at',
+        'ppdb_setting_id',
     ];
 
     protected $casts = [
@@ -29,6 +30,11 @@ class PPDBSekolah extends Model
     public function validator()
     {
         return $this->belongsTo(\App\User::class, 'validated_by');
+    }
+
+     public function ppdb_setting()
+    {
+        return $this->belongsTo(\App\Models\Sekolah\PPDBSetting::class);
     }
     
 }

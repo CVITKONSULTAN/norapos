@@ -11,5 +11,6 @@ class Visitor extends Model
         'user_agent',
         'page',
         'visited_date',
+        'domain',
     ];
 }

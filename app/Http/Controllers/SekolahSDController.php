@@ -20,6 +20,7 @@ use \App\Models\Sekolah\DataDimensiID;
 use \App\Models\Sekolah\PPDBSekolah;
 use \App\Models\Sekolah\PPDBSetting;
 use \App\User;
+use \App\Visitor;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
@@ -29,6 +30,7 @@ use Str;
 use DataTables;
 use Storage;
 use Mail;
+use Carbon;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PPDBExport;
@@ -1549,11 +1551,22 @@ class SekolahSDController extends Controller
 
 
     function peserta_didik_baru(Request $request){
-        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',false)->latest()->first();
+        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',0)->latest()->first();
+        $startDate = Carbon::now()->subDays(30);
+        $endDate = Carbon::now();
+
+        // 🔹 Hitung kunjungan ke halaman PPDB (selama 30 hari)
+        $data['visitorCount'] = Visitor::where('page', 'ppdb-simuda')
+            ->whereBetween('visited_date', [$startDate, $endDate])
+            ->count();
+
+        // 🔹 Hitung jumlah pendaftar baru (30 hari terakhir)
+        $data['pendaftarCount'] = PPDBSekolah::whereBetween('created_at', [$startDate, $endDate])->count();
+
         return view('sekolah_sd.peserta_didik_baru',$data);
     }
     function peserta_didik_baru_config(Request $request){
-        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',false)->latest()->first();
+        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',0)->latest()->first();
         return view('sekolah_sd.peserta_didik_baru_config',$data);
     }
 

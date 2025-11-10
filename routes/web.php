@@ -11,6 +11,7 @@
 |
 */
 use App\Http\Controllers\Sekolah\PPDBSettingController;
+use App\Http\Controllers\Sekolah\VisitorController;
 use App\Http\Controllers\Models\Sekolah\Kokurikuler\TemaController;
 use App\Http\Controllers\Models\Sekolah\Kokurikuler\DimensiController;
 
@@ -393,6 +394,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             Route::put('/{id}', [DimensiController::class, 'update'])->name('kokurikuler.dimensi.update');
             Route::delete('/{id}', [DimensiController::class, 'destroy'])->name('kokurikuler.dimensi.delete');
         });
+
+        Route::get('/statistik-pengunjung', [VisitorController::class, 'index'])->name('admin.visitor.index');
+        Route::get('/statistik-pengunjung/data', [VisitorController::class, 'data'])->name('admin.visitor.data');
 
         
         Route::get('dashboard/api',"SekolahSDController@dashboard_api")

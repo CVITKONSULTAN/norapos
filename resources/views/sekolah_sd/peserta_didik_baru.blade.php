@@ -96,6 +96,33 @@
     </div>
     @endif
 
+     {{-- 🔹 Statistik PPDB --}}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ $visitorCount }}</h3>
+                    <p>Kunjungan ke Halaman PPDB (30 Hari Terakhir)</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-eye"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $pendaftarCount }}</h3>
+                    <p>Pendaftar Baru (30 Hari Terakhir)</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-user-plus"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- 🔹 Modal Detail Data --}}
     <div id="detail_ppdb_popup" class="modal fade">
         <div class="modal-dialog">

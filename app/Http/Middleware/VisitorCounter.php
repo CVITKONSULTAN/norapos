@@ -22,6 +22,7 @@ class VisitorCounter
         $ip = $request->ip();
         $userAgent = $request->header('User-Agent');
         $page = $request->path();
+        $domain = $request->getHost(); // <--- ini baris penting
         $today = Carbon::today()->toDateString();
 
         // Cek apakah IP sudah tercatat hari ini
@@ -35,6 +36,7 @@ class VisitorCounter
                 'user_agent' => $userAgent,
                 'page' => $page,
                 'visited_date' => $today,
+                'domain' => $domain,
             ]);
         }
 

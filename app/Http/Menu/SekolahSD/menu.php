@@ -268,6 +268,16 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             },
             ['icon' => 'fa fas fa-archive']
         )->order(1);
+        $menu->url(
+            route('admin.visitor.index',['domain'=>['koneksiedu.com','si-muda.com']]),
+            "Statistik Pengunjung",
+            [
+                'icon' => 'fa fas fa-circle', 
+                'active' => 
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'statistik-pengunjung' 
+            ]
+        )->order(1);
     }
 
     if($user->checkGuruMapel()){

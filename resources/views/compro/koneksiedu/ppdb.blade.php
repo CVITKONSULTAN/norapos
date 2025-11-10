@@ -131,331 +131,361 @@
   <body>
 
     <div class="container py-5">
+      @if($close_ppdb)
+         <div class="d-flex align-items-center justify-content-center vh-100">
+          <div class="text-center p-5 bg-white rounded-4 shadow" style="max-width: 480px;">
+            <div style="font-size: 64px; color: #e63946;">🚫</div>
+            <h3 class="fw-bold mt-3 mb-2 text-danger">Pendaftaran PPDB Telah Ditutup</h3>
+            <p class="text-muted mb-4">
+              Terima kasih atas antusiasme dan partisipasi Anda.<br>
+              Pendaftaran peserta didik baru untuk tahun ajaran 
+              <b>{{ $tahun_ajaran }}</b> telah <span class="text-danger fw-semibold">ditutup</span>.
+            </p>
 
-      <div class="ppdb-header mb-4">
-        <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2 Pontianak">
-        <h5>
-          PENERIMAAN PESERTA DIDIK BARU<br>
-          SD MUHAMMADIYAH 2 PONTIANAK<br>
-          TAHUN AJARAN 2026/2026
-        </h5>
-      </div>
+            <div class="alert alert-warning text-start shadow-sm border-0">
+              <i class="bi bi-info-circle me-2"></i>
+              Silakan pantau informasi pembukaan PPDB selanjutnya melalui website resmi atau media sosial sekolah.
+            </div>
 
-      <!-- Modal Pembayaran PPDB -->
-      <div class="modal fade" id="popupPembayaranPPDB" tabindex="-1" aria-labelledby="popupPembayaranLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-body text-center p-5">
+            <a href="https://sdmuh2pontianak.sch.id" class="btn btn-outline-success px-4 mt-3 rounded-pill">
+              <i class="bi bi-house-door me-2"></i> Kembali ke Beranda
+            </a>
 
-              <h4 class="fw-bold text-dark mb-3">PEMBAYARAN FORMULIR PENDAFTARAN</h4>
+            <div class="mt-4 text-secondary small">
+              © {{ date('Y') }} SD Muhammadiyah 2 Pontianak<br>
+              Panitia PPDB
+            </div>
+          </div>
+        </div>
+      @else
 
-              <p class="text-muted mb-4">
-                Penerimaan Peserta Didik Baru (PPDB) <b>SD Muhammadiyah 2 Pontianak</b>,<br>
-                Tahun Ajaran <span id="tahun-ajaran">{{$tahun_ajaran}}</span> sebesar 
-                <b id="nominal-pembayaran" class="text-dark">Rp {{ number_format($jumlah_tagihan,0,',','.') }},-</b>
-              </p>
+        <div class="ppdb-header mb-4">
+          <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2 Pontianak">
+          <h5>
+            PENERIMAAN PESERTA DIDIK BARU<br>
+            SD MUHAMMADIYAH 2 PONTIANAK<br>
+            TAHUN AJARAN {{$tahun_ajaran}}
+          </h5>
+        </div>
 
-              <!-- Tombol Lihat Kwitansi -->
-              <a
-                href="#"
-                target="_blank"
-                class="btn btn-outline-primary px-4 rounded-pill mb-3 btnLihatKwitansi"
-              >
-                <i class="bi bi-receipt-cutoff me-2"></i> Lihat Kwitansi Pembayaran
-              </a>
+        <!-- Modal Pembayaran PPDB -->
+        <div class="modal fade" id="popupPembayaranPPDB" tabindex="-1" aria-labelledby="popupPembayaranLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+              <div class="modal-body text-center p-5">
 
-              <div class="bg-light rounded-4 py-3 px-4 mb-4 shadow-sm border-start border-4 border-danger">
-                <p class="text-danger fw-semibold mb-1 fs-6 text-uppercase letter-spacing-1">
-                  Batas Pembayaran Terakhir
+                <h4 class="fw-bold text-dark mb-3">PEMBAYARAN FORMULIR PENDAFTARAN</h4>
+
+                <p class="text-muted mb-4">
+                  Penerimaan Peserta Didik Baru (PPDB) <b>SD Muhammadiyah 2 Pontianak</b>,<br>
+                  Tahun Ajaran <span id="tahun-ajaran">{{$tahun_ajaran}}</span> sebesar 
+                  <b id="nominal-pembayaran" class="text-dark">Rp {{ number_format($jumlah_tagihan,0,',','.') }},-</b>
                 </p>
 
-                <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
-                  <div class="bg-white shadow-sm rounded-pill px-4 py-2">
-                    <span class="text-dark fw-semibold">
-                      Sisa waktu: <span id="countdown-value" class="text-danger fw-bold">00:00:00</span>
-                    </span>
+                <!-- Tombol Lihat Kwitansi -->
+                <a
+                  href="#"
+                  target="_blank"
+                  class="btn btn-outline-primary px-4 rounded-pill mb-3 btnLihatKwitansi"
+                >
+                  <i class="bi bi-receipt-cutoff me-2"></i> Lihat Kwitansi Pembayaran
+                </a>
+
+                <div class="bg-light rounded-4 py-3 px-4 mb-4 shadow-sm border-start border-4 border-danger">
+                  <p class="text-danger fw-semibold mb-1 fs-6 text-uppercase letter-spacing-1">
+                    Batas Pembayaran Terakhir
+                  </p>
+
+                  <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                    <div class="bg-white shadow-sm rounded-pill px-4 py-2">
+                      <span class="text-dark fw-semibold">
+                        Sisa waktu: <span id="countdown-value" class="text-danger fw-bold">00:00:00</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <p class="fw-bold text-danger fs-5 mt-3 mb-0">
+                    <span id="hari-batas">-</span>,
+                    <span id="tanggal-batas">00/00/0000</span> &nbsp;
+                    Waktu: <span id="waktu-batas">00:00</span> WIB
+                  </p>
+                </div>
+
+                <div class="bg-white border rounded-4 p-4 shadow-sm mb-4">
+                  <p class="mb-2 fw-semibold text-secondary">Nomor Kode Bayar / Rekening {{$nama_bank}}</p>
+                  <h2 class="fw-bold text-dark mb-3" id="kode-bayar">{{ $no_rek }}</h2>
+                  <p class="small text-muted mb-0">
+                    Pembayaran dilakukan ke {{$nama_bank}} dengan kode akhir nominal <b class="text-dark" id="kode_unik">0</b>.<br>
+                    Contoh transfer: <b id="contoh-transfer" class="text-dark">Rp 0,-</b>
+                  </p>
+                </div>
+
+                <p class="text-muted mb-4">
+                  Silakan upload bukti pembayaran formulir pendaftaran anda di bawah ini.
+                </p>
+
+                <div class="border rounded-4 p-4 bg-light mb-3 text-center">
+                  <input type="file" id="buktiPembayaranFile" class="form-control mb-3" accept="image/*,application/pdf">
+                  
+                  <!-- Indikator upload -->
+                  <div id="loader-bukti" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2 fw-semibold text-success">Sedang mengupload bukti pembayaran...</span>
+                  </div>
+
+                  <!-- Preview -->
+                  <div class="mt-3" id="preview-bukti-container" style="display: none;">
+                    <p class="fw-semibold text-dark mb-2">Preview Bukti Pembayaran:</p>
+                    <img id="preview-bukti" class="img-thumbnail" style="max-width: 250px; border-radius: 8px;">
+                    <div id="upload-success" class="text-success mt-2 fw-semibold d-none">✅ Bukti pembayaran berhasil diupload</div>
                   </div>
                 </div>
 
-                <p class="fw-bold text-danger fs-5 mt-3 mb-0">
-                  <span id="hari-batas">-</span>,
-                  <span id="tanggal-batas">00/00/0000</span> &nbsp;
-                  Waktu: <span id="waktu-batas">00:00</span> WIB
-                </p>
-              </div>
-
-              <div class="bg-white border rounded-4 p-4 shadow-sm mb-4">
-                <p class="mb-2 fw-semibold text-secondary">Nomor Kode Bayar / Rekening {{$nama_bank}}</p>
-                <h2 class="fw-bold text-dark mb-3" id="kode-bayar">{{ $no_rek }}</h2>
-                <p class="small text-muted mb-0">
-                  Pembayaran dilakukan ke {{$nama_bank}} dengan kode akhir nominal <b class="text-dark" id="kode_unik">0</b>.<br>
-                  Contoh transfer: <b id="contoh-transfer" class="text-dark">Rp 0,-</b>
-                </p>
-              </div>
-
-              <p class="text-muted mb-4">
-                Silakan upload bukti pembayaran formulir pendaftaran anda di bawah ini.
-              </p>
-
-              <div class="border rounded-4 p-4 bg-light mb-3 text-center">
-                <input type="file" id="buktiPembayaranFile" class="form-control mb-3" accept="image/*,application/pdf">
-                
-                <!-- Indikator upload -->
-                <div id="loader-bukti" style="display: none;">
-                  <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
-                  <span class="ms-2 fw-semibold text-success">Sedang mengupload bukti pembayaran...</span>
+                <div class="d-grid">
+                  <button id="button-submit-bukti" class="btn btn-submit py-2">
+                    <i class="bi bi-upload"></i> Kirim & Upload Bukti Bayar
+                  </button>
                 </div>
 
-                <!-- Preview -->
-                <div class="mt-3" id="preview-bukti-container" style="display: none;">
-                  <p class="fw-semibold text-dark mb-2">Preview Bukti Pembayaran:</p>
-                  <img id="preview-bukti" class="img-thumbnail" style="max-width: 250px; border-radius: 8px;">
-                  <div id="upload-success" class="text-success mt-2 fw-semibold d-none">✅ Bukti pembayaran berhasil diupload</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal 2: Menunggu Validasi -->
+        <div class="modal fade" id="popupMenungguValidasi" tabindex="-1" aria-labelledby="popupMenungguValidasiLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+              <div class="modal-body text-center p-5">
+                <h5 class="fw-bold mb-3">
+                  Penerimaan Peserta Didik Baru (PPDB)<br>
+                  SD Muhammadiyah 2 Pontianak, Tahun Ajaran <span id="tahunAjaranValidasi">{{ $tahun_ajaran }}</span>
+                </h5>
+
+                <p class="text-danger fw-semibold mb-4">
+                  Mohon menunggu proses admin memvalidasi pembayaran anda.
+                </p>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2" width="180" class="mb-4">
+                  </div>
+                  <div class="col-md-12">
+                    <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2">
+                      Cetak Kartu Nomor Test Siswa
+                    </button>
+                  </div>
+                  <div class="col-md-12">
+                    <a
+                      href="#"
+                      target="_blank"
+                      class="btn btn-warning px-4 rounded-pill mt-3 btnLihatKwitansi"
+                    >
+                      <i class="bi bi-receipt-cutoff me-2"></i> Cetak Kwitansi Bukti Pembayaran Saya
+                    </a>
+                  </div>
+                </div>
+
+
+
+                <p class="mt-3 text-muted fst-italic small">
+                  Anda dapat menekan tombol cetak kartu test siswa saat proses validasi pembayaran berhasil.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mx-auto" style="max-width: 720px;">
+          <div class="card-body p-4">
+
+            <h5 class="text-center fw-bold mb-4 text-success">Data Calon Siswa</h5>
+
+            <form onsubmit="submitPPDB(event)">
+              {{-- Nama --}}
+              <div class="mb-3">
+                <label for="nama-lengkap" class="form-label required">Nama Lengkap</label>
+                <input name="nama" type="text" id="nama-lengkap" class="form-control" placeholder="Nama Lengkap" required>
+              </div>
+
+              {{-- Jenis Kelamin --}}
+              <div class="mb-3">
+                <label class="form-label required">Jenis Kelamin</label>
+                <select name="jenis-kelamin" id="jenis-kelamin" class="form-select" required>
+                  <option value="">Pilih jenis kelamin</option>
+                  <option value="Laki-Laki">Laki-Laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+
+              {{-- Tempat dan Tanggal Lahir --}}
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="tempat-lahir" class="form-label required">Tempat Lahir</label>
+                  <input name="tempat-lahir" type="text" id="tempat-lahir" class="form-control" placeholder="Tempat Lahir" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label required">Tanggal Lahir</label>
+                  <div class="d-flex gap-2">
+                    <select id="tanggal-lahir-day" class="form-select" style="width:100px;">
+                      <option value="">Tgl</option>
+                    </select>
+
+                    <select id="tanggal-lahir-month" class="form-select" style="width:140px;">
+                      <option value="">Bulan</option>
+                      <option value="01">Januari</option>
+                      <option value="02">Februari</option>
+                      <option value="03">Maret</option>
+                      <option value="04">April</option>
+                      <option value="05">Mei</option>
+                      <option value="06">Juni</option>
+                      <option value="07">Juli</option>
+                      <option value="08">Agustus</option>
+                      <option value="09">September</option>
+                      <option value="10">Oktober</option>
+                      <option value="11">Nopember</option>
+                      <option value="12">Desember</option>
+                    </select>
+
+                    <select id="tanggal-lahir-year" class="form-select" style="width:140px;">
+                      <option value="">Tahun</option>
+                    </select>
+                  </div>
+
+                  <!-- Hidden input untuk menjaga kompatibilitas dengan script lama -->
+                  <input type="hidden" id="tanggal-lahir" name="tanggal-lahir" />
+                </div>
+              </div>
+
+              {{-- Agama --}}
+              <div class="mb-3">
+                <label for="agama" class="form-label required">Agama</label>
+                <select id="agama" class="form-select" required>
+                  <option value="Islam">Islam</option>
+                  <option value="Kristen">Kristen</option>
+                  <option value="Hindu">Hindu</option>
+                  <option value="Buddha">Buddha</option>
+                  <option value="Konghucu">Konghucu</option>
+                </select>
+              </div>
+
+              {{-- Alamat --}}
+              <div class="mb-3">
+                <label for="alamat" class="form-label required">Alamat Lengkap</label>
+                <textarea id="alamat" rows="2" class="form-control" 
+                {{-- placeholder="Jl. Ahmad Yani No. 01, Kota Pontianak"  --}}
+                required></textarea>
+              </div>
+
+              {{-- No HP --}}
+              <div class="mb-3">
+                <label for="telpon-hape" class="form-label required">No. HP / WhatsApp</label>
+                <input name="no_hp" type="text" id="telpon-hape" class="form-control" 
+                {{-- placeholder="081122334455"  --}}
+                required>
+              </div>
+
+              {{-- Upload Berkas --}}
+              <h6 class="form-section-title mt-4">Upload Berkas Pendukung</h6>
+              <div class="p-3 border rounded-bottom bg-light mb-4">
+
+                {{-- KK --}}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">Scan / Foto Kartu Keluarga (KK)</label>
+                  <input type="file" id="kartu-keluarga" class="form-control" accept=".jpeg, .jpg, .png">
+                  <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
+
+                  <div class="mt-3 text-center" id="loader-kartu-keluarga" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2">Sedang memproses dan mengupload...</span>
+                  </div>
+
+                  <div class="mt-3 text-center">
+                    <img id="preview-kartu-keluarga" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
+                    <div id="success-kartu-keluarga" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
+                  </div>
+                </div>
+
+                {{-- Akta Lahir --}}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">Scan / Foto Akta Lahir Calon Siswa</label>
+                  <input type="file" id="akta-lahir" class="form-control" accept=".jpeg, .jpg, .png">
+                  <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
+
+                  <div class="mt-3 text-center" id="loader-akta-lahir" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2">Sedang memproses dan mengupload...</span>
+                  </div>
+
+                  <div class="mt-3 text-center">
+                    <img id="preview-akta-lahir" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
+                    <div id="success-akta-lahir" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
+                  </div>
+                </div>
+
+                {{-- KIA --}}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">
+                    Scan / Foto Kartu Identitas Anak (KIA)
+                    <span class="text-muted">(opsional)</span>
+                  </label>
+                  <input type="file" id="kartu-anak" class="form-control" accept=".jpeg, .jpg, .png">
+                  <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
+
+                  <div class="mt-3 text-center" id="loader-kartu-anak" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2">Sedang memproses dan mengupload...</span>
+                  </div>
+
+                  <div class="mt-3 text-center">
+                    <img id="preview-kartu-anak" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
+                    <div id="success-kartu-anak" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
+                  </div>
+                </div>
+
+              </div>
+
+
+              {{-- Persetujuan --}}
+              <h6 class="form-section-title">Pernyataan dan Persetujuan</h6>
+              <div class="p-3 border rounded-bottom bg-light mb-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="check-identitas">
+                  <label class="form-check-label" for="check-identitas">
+                    Identitas anak di atas adalah benar.
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="check-usia">
+                  <label class="form-check-label" for="check-usia">
+                    Usia anak tidak kurang dari usia yang dipersyaratkan (minimal 5 tahun 6 bulan).
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="check-tanggungjawab">
+                  <label class="form-check-label" for="check-tanggungjawab">
+                    Saya menyetujui bahwa segala kesalahan penginputan data menjadi tanggung jawab saya pribadi, dan pihak sekolah berhak mengambil tindakan sesuai kebijakan.
+                  </label>
                 </div>
               </div>
 
               <div class="d-grid">
-                <button id="button-submit-bukti" class="btn btn-submit py-2">
-                  <i class="bi bi-upload"></i> Kirim & Upload Bukti Bayar
+                <button id="button-submit" type="submit" class="btn btn-submit py-2">
+                  <i class="bi bi-upload"></i> Upload dan Kirim Pendaftaran
                 </button>
               </div>
+              {{-- <div class="d-grid">
+                <button onclick="check()" type="button" class="btn btn-submit py-2">
+                  <i class="bi bi-upload"></i> test
+                </button>
+              </div> --}}
+            </form>
 
-            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Modal 2: Menunggu Validasi -->
-      <div class="modal fade" id="popupMenungguValidasi" tabindex="-1" aria-labelledby="popupMenungguValidasiLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-body text-center p-5">
-              <h5 class="fw-bold mb-3">
-                Penerimaan Peserta Didik Baru (PPDB)<br>
-                SD Muhammadiyah 2 Pontianak, Tahun Ajaran <span id="tahunAjaranValidasi">{{ $tahun_ajaran }}</span>
-              </h5>
+      @endif
 
-              <p class="text-danger fw-semibold mb-4">
-                Mohon menunggu proses admin memvalidasi pembayaran anda.
-              </p>
-
-              <div class="row">
-                <div class="col-md-12">
-                  <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2" width="180" class="mb-4">
-                </div>
-                <div class="col-md-12">
-                  <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2">
-                    Cetak Kartu Nomor Test Siswa
-                  </button>
-                </div>
-                <div class="col-md-12">
-                  <a
-                    href="#"
-                    target="_blank"
-                    class="btn btn-warning px-4 rounded-pill mt-3 btnLihatKwitansi"
-                  >
-                    <i class="bi bi-receipt-cutoff me-2"></i> Cetak Kwitansi Bukti Pembayaran Saya
-                  </a>
-                </div>
-              </div>
-
-
-
-              <p class="mt-3 text-muted fst-italic small">
-                Anda dapat menekan tombol cetak kartu test siswa saat proses validasi pembayaran berhasil.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mx-auto" style="max-width: 720px;">
-        <div class="card-body p-4">
-
-          <h5 class="text-center fw-bold mb-4 text-success">Data Calon Siswa</h5>
-
-          <form onsubmit="submitPPDB(event)">
-            {{-- Nama --}}
-            <div class="mb-3">
-              <label for="nama-lengkap" class="form-label required">Nama Lengkap</label>
-              <input name="nama" type="text" id="nama-lengkap" class="form-control" placeholder="Nama Lengkap" required>
-            </div>
-
-            {{-- Jenis Kelamin --}}
-            <div class="mb-3">
-              <label class="form-label required">Jenis Kelamin</label>
-              <select name="jenis-kelamin" id="jenis-kelamin" class="form-select" required>
-                <option value="">Pilih jenis kelamin</option>
-                <option value="Laki-Laki">Laki-Laki</option>
-                <option value="Perempuan">Perempuan</option>
-              </select>
-            </div>
-
-            {{-- Tempat dan Tanggal Lahir --}}
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label for="tempat-lahir" class="form-label required">Tempat Lahir</label>
-                <input name="tempat-lahir" type="text" id="tempat-lahir" class="form-control" placeholder="Tempat Lahir" required>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label required">Tanggal Lahir</label>
-                <div class="d-flex gap-2">
-                  <select id="tanggal-lahir-day" class="form-select" style="width:100px;">
-                    <option value="">Tgl</option>
-                  </select>
-
-                  <select id="tanggal-lahir-month" class="form-select" style="width:140px;">
-                    <option value="">Bulan</option>
-                    <option value="01">Januari</option>
-                    <option value="02">Februari</option>
-                    <option value="03">Maret</option>
-                    <option value="04">April</option>
-                    <option value="05">Mei</option>
-                    <option value="06">Juni</option>
-                    <option value="07">Juli</option>
-                    <option value="08">Agustus</option>
-                    <option value="09">September</option>
-                    <option value="10">Oktober</option>
-                    <option value="11">Nopember</option>
-                    <option value="12">Desember</option>
-                  </select>
-
-                  <select id="tanggal-lahir-year" class="form-select" style="width:140px;">
-                    <option value="">Tahun</option>
-                  </select>
-                </div>
-
-                <!-- Hidden input untuk menjaga kompatibilitas dengan script lama -->
-                <input type="hidden" id="tanggal-lahir" name="tanggal-lahir" />
-              </div>
-            </div>
-
-            {{-- Agama --}}
-            <div class="mb-3">
-              <label for="agama" class="form-label required">Agama</label>
-              <select id="agama" class="form-select" required>
-                <option value="Islam">Islam</option>
-                <option value="Kristen">Kristen</option>
-                <option value="Hindu">Hindu</option>
-                <option value="Buddha">Buddha</option>
-                <option value="Konghucu">Konghucu</option>
-              </select>
-            </div>
-
-            {{-- Alamat --}}
-            <div class="mb-3">
-              <label for="alamat" class="form-label required">Alamat Lengkap</label>
-              <textarea id="alamat" rows="2" class="form-control" 
-              {{-- placeholder="Jl. Ahmad Yani No. 01, Kota Pontianak"  --}}
-              required></textarea>
-            </div>
-
-            {{-- No HP --}}
-            <div class="mb-3">
-              <label for="telpon-hape" class="form-label required">No. HP / WhatsApp</label>
-              <input name="no_hp" type="text" id="telpon-hape" class="form-control" 
-              {{-- placeholder="081122334455"  --}}
-              required>
-            </div>
-
-            {{-- Upload Berkas --}}
-            <h6 class="form-section-title mt-4">Upload Berkas Pendukung</h6>
-            <div class="p-3 border rounded-bottom bg-light mb-4">
-
-              {{-- KK --}}
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Scan / Foto Kartu Keluarga (KK)</label>
-                <input type="file" id="kartu-keluarga" class="form-control" accept=".jpeg, .jpg, .png">
-                <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
-
-                <div class="mt-3 text-center" id="loader-kartu-keluarga" style="display: none;">
-                  <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
-                  <span class="ms-2">Sedang memproses dan mengupload...</span>
-                </div>
-
-                <div class="mt-3 text-center">
-                  <img id="preview-kartu-keluarga" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
-                  <div id="success-kartu-keluarga" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
-                </div>
-              </div>
-
-              {{-- Akta Lahir --}}
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Scan / Foto Akta Lahir Calon Siswa</label>
-                <input type="file" id="akta-lahir" class="form-control" accept=".jpeg, .jpg, .png">
-                <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
-
-                <div class="mt-3 text-center" id="loader-akta-lahir" style="display: none;">
-                  <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
-                  <span class="ms-2">Sedang memproses dan mengupload...</span>
-                </div>
-
-                <div class="mt-3 text-center">
-                  <img id="preview-akta-lahir" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
-                  <div id="success-akta-lahir" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
-                </div>
-              </div>
-
-              {{-- KIA --}}
-              <div class="mb-4">
-                <label class="form-label fw-semibold">
-                  Scan / Foto Kartu Identitas Anak (KIA)
-                  <span class="text-muted">(opsional)</span>
-                </label>
-                <input type="file" id="kartu-anak" class="form-control" accept=".jpeg, .jpg, .png">
-                <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
-
-                <div class="mt-3 text-center" id="loader-kartu-anak" style="display: none;">
-                  <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
-                  <span class="ms-2">Sedang memproses dan mengupload...</span>
-                </div>
-
-                <div class="mt-3 text-center">
-                  <img id="preview-kartu-anak" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
-                  <div id="success-kartu-anak" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
-                </div>
-              </div>
-
-            </div>
-
-
-            {{-- Persetujuan --}}
-            <h6 class="form-section-title">Pernyataan dan Persetujuan</h6>
-            <div class="p-3 border rounded-bottom bg-light mb-4">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="check-identitas">
-                <label class="form-check-label" for="check-identitas">
-                  Identitas anak di atas adalah benar.
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="check-usia">
-                <label class="form-check-label" for="check-usia">
-                  Usia anak tidak kurang dari usia yang dipersyaratkan (minimal 5 tahun 6 bulan).
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="check-tanggungjawab">
-                <label class="form-check-label" for="check-tanggungjawab">
-                  Saya menyetujui bahwa segala kesalahan penginputan data menjadi tanggung jawab saya pribadi, dan pihak sekolah berhak mengambil tindakan sesuai kebijakan.
-                </label>
-              </div>
-            </div>
-
-            <div class="d-grid">
-              <button id="button-submit" type="submit" class="btn btn-submit py-2">
-                <i class="bi bi-upload"></i> Upload dan Kirim Pendaftaran
-              </button>
-            </div>
-            {{-- <div class="d-grid">
-              <button onclick="check()" type="button" class="btn btn-submit py-2">
-                <i class="bi bi-upload"></i> test
-              </button>
-            </div> --}}
-          </form>
-
-        </div>
-      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>

@@ -1402,7 +1402,7 @@ class SekolahSDController extends Controller
         // Jika belum ada di database, isi default
         if (!$setting) {
             $setting = new PPDBSetting([
-                'close_ppdb' => false,
+                'close_ppdb' => true,
                 'tgl_penerimaan' => '2026-01-01',
                 'min_bulan' => 6,
                 'min_tahun' => 5,

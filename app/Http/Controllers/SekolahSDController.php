@@ -1668,6 +1668,16 @@ class SekolahSDController extends Controller
             $data->keterangan = null;
             $data->save();
 
+            // 🔔 Kirim email ke pendaftar
+            try {
+                $emailTujuan = $data->detail['email'] ?? null;
+                if ($emailTujuan) {
+                    Mail::to($emailTujuan)->send(new \App\Mail\PPDBPaymentValidated($data));
+                }
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim email validasi PPDB: " . $e->getMessage());
+            }
+
             return ['status' => true, 'message' => 'Pembayaran divalidasi'];
         }
 

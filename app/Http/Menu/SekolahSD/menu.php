@@ -97,15 +97,29 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                 request()->segment(2) == 'data-siswa' 
             ]
         );
-        $menu->url(
-            route('sekolah_sd.peserta_didik_baru'),
+        $menu->dropdown(
             "Peserta Didik Baru",
-            [
-                'icon' => 'fa fas fa-user-plus', 
-                'active' => 
-                request()->segment(1) == 'sekolah_sd' &&
-                request()->segment(2) == 'peserta-didik-baru' 
-            ]
+            function ($sub) {
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru'),
+                    "Daftar Data",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru.config'),
+                    "Pengaturan Penerimaan",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru-config'
+                    ]
+                );
+            },
+            ['icon' => 'fa fas fa-user-plus']
         );
         if($user->checkAdmin()){
             $menu->url(

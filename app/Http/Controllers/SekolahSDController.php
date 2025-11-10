@@ -1397,7 +1397,7 @@ class SekolahSDController extends Controller
     function ppdb(Request $request){
 
         // Ambil pengaturan pertama (biasanya cuma ada 1)
-        $setting = PPDBSetting::first();
+        $setting = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
 
         // Jika belum ada di database, isi default
         if (!$setting) {
@@ -1465,13 +1465,17 @@ class SekolahSDController extends Controller
         $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',false)->latest()->first();
         return view('sekolah_sd.peserta_didik_baru',$data);
     }
+    function peserta_didik_baru_config(Request $request){
+        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',false)->latest()->first();
+        return view('sekolah_sd.peserta_didik_baru_config',$data);
+    }
 
     function kwitansi_ppdb(Request $request){
 
         $data['ppdb'] = PPDBSekolah::where('kode_bayar',$request->kode_bayar ?? '')->firstorfail();
 
         // Ambil pengaturan pertama (biasanya cuma ada 1)
-        $setting = PPDBSetting::first();
+        $setting = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
 
         // Jika belum ada di database, isi default
         if (!$setting) {
@@ -1499,7 +1503,7 @@ class SekolahSDController extends Controller
     function cetak_kartutes_ppdb(Request $request){
 
         $data['ppdb'] = PPDBSekolah::where('kode_bayar',$request->kode_bayar ?? '')->firstorfail();
-        $data['setting'] = PPDBSetting::first();
+        $data['setting'] = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
 
         return view('compro.koneksiedu.cetak_kartu_ppdb',$data);
     }

@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\Sekolah\PPDBSettingController;
 
 include_once('ciptakarya.php');
 include_once('install_r.php');
@@ -345,6 +346,17 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('peserta-didik-baru/cetak',"SekolahSDController@export_cetak")->name('sekolah_sd.ppdb.cetak');
 
         Route::get('peserta-didik-baru',"SekolahSDController@peserta_didik_baru")->name('sekolah_sd.peserta_didik_baru');
+        Route::get('peserta-didik-baru-config',"SekolahSDController@peserta_didik_baru_config")->name('sekolah_sd.peserta_didik_baru.config');
+
+        Route::prefix('ppdb/setting')->group(function() {
+            Route::get('/', [PPDBSettingController::class, 'index'])->name('sekolah_sd.ppdb.setting.index');
+            Route::get('/data', [PPDBSettingController::class, 'data'])->name('sekolah_sd.ppdb.setting.data');
+            Route::get('/{id}', [PPDBSettingController::class, 'show']);
+            Route::post('/store_data', [PPDBSettingController::class, 'store'])->name('sekolah_sd.ppdb.setting.store');
+            Route::post('/toggle', [PPDBSettingController::class, 'toggle'])->name('sekolah_sd.ppdb.setting.toggle');
+            Route::delete('/{id}', [PPDBSettingController::class, 'destroy']);
+        });
+
         
         Route::get('dashboard/api',"SekolahSDController@dashboard_api")
         ->name('sekolah_sd.dashboard.api');

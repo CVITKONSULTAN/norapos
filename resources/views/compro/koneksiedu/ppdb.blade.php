@@ -353,7 +353,7 @@
             {{-- No HP --}}
             <div class="mb-3">
               <label for="telpon-hape" class="form-label required">No. HP / WhatsApp</label>
-              <input type="text" id="telpon-hape" class="form-control" 
+              <input name="no_hp" type="text" id="telpon-hape" class="form-control" 
               {{-- placeholder="081122334455"  --}}
               required>
             </div>

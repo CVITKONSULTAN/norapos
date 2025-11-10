@@ -18,6 +18,8 @@ class PPDBSetting extends Model
         'nama_bank',
         'no_rek',
         'atas_nama',
+        'tanggal_tes',
+        'tempat_tes'
     ];
 
     protected $casts = [

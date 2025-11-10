@@ -1470,12 +1470,38 @@ class SekolahSDController extends Controller
 
         $data['ppdb'] = PPDBSekolah::where('kode_bayar',$request->kode_bayar ?? '')->firstorfail();
 
-        $data['jumlah_tagihan'] = 350000;
-        $data['nama_bank'] = "Bank Kalbar";
-        $data['no_rek'] = "00000";
-        $data['atas_nama'] = "SD Muhammadiyah 2";
+        // Ambil pengaturan pertama (biasanya cuma ada 1)
+        $setting = PPDBSetting::first();
+
+        // Jika belum ada di database, isi default
+        if (!$setting) {
+            $setting = new PPDBSetting([
+                'close_ppdb' => false,
+                'tgl_penerimaan' => '2026-01-01',
+                'min_bulan' => 6,
+                'min_tahun' => 5,
+                'tahun_ajaran' => '2025/2026',
+                'jumlah_tagihan' => 350000,
+                'nama_bank' => 'Bank Kalbar',
+                'no_rek' => '00000',
+                'atas_nama' => 'SD Muhammadiyah 2',
+            ]);
+        }
+
+        $data['jumlah_tagihan'] = $setting->jumlah_tagihan;
+        $data['nama_bank'] = $setting->nama_bank;
+        $data['no_rek'] = $setting->no_rek;
+        $data['atas_nama'] = $setting->atas_nama;
 
         return view('compro.koneksiedu.kwitansi_ppdb',$data);
+    }
+
+    function cetak_kartutes_ppdb(Request $request){
+
+        $data['ppdb'] = PPDBSekolah::where('kode_bayar',$request->kode_bayar ?? '')->firstorfail();
+        $data['setting'] = PPDBSetting::first();
+
+        return view('compro.koneksiedu.cetak_kartu_ppdb',$data);
     }
 
     function ppdb_store(Request $request){

@@ -146,6 +146,25 @@
             {{-- @endfor --}}
         </tbody>
     </table>
+    
+    @if( count($nilai_kokurikuler) > 0)
+    <table class="tabel_penilaian">
+        <thead>
+            <tr>
+                <th>Kokurikuler</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                    <td>
+                        @foreach ($nilai_kokurikuler as $item)    
+                            <p>{{ $item['kokurikuler_desc'] ?? "" }}</p>
+                        @endforeach
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    @endif
 
     <table class="tabel_penilaian">
         <thead>

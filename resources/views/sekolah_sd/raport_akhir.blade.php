@@ -237,6 +237,24 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+
+                                <table class="tabel_penilaian">
+                                    <thead>
+                                        <tr>
+                                            <th>Kokurikuler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>
+                                                    @foreach ($nilai_kokurikuler as $item)    
+                                                        <p>{{ $item['kokurikuler_desc'] ?? "" }}</p>
+                                                    @endforeach
+                                                </td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+
                                 <div class="text-right" style="margin-top: 10px;">
                                     <button onclick="tambahEkskul()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Ekskul</button>
                                 </div>

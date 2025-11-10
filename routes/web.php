@@ -45,9 +45,15 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
             $host == 'si-muda.com'
         ){
             Route::get('/login', "MultiDomainController@login")->name("multi.login");
-            Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
-            Route::get('/kwitansi-ppdb-simuda', "SekolahSDController@kwitansi_ppdb")->name("sekolah.kwitansi_ppdb");
-            Route::get('/cetak-karu-simuda', "SekolahSDController@cetak_kartutes_ppdb")->name("sekolah.cetak_kartutes_ppdb");
+            Route::get('/ppdb-simuda', "SekolahSDController@ppdb")
+            ->middleware('visitor.counter')
+            ->name("sekolah.ppdb");
+            Route::get('/kwitansi-ppdb-simuda', "SekolahSDController@kwitansi_ppdb")
+            ->middleware('visitor.counter')
+            ->name("sekolah.kwitansi_ppdb");
+            Route::get('/cetak-karu-simuda', "SekolahSDController@cetak_kartutes_ppdb")
+            ->middleware('visitor.counter')
+            ->name("sekolah.cetak_kartutes_ppdb");
         }
     }
 });
@@ -56,9 +62,16 @@ Route::get('/hotel/available', "HotelController@avail_display")->name("hotel.ava
 
 Route::get('/test_email', "SekolahSDController@test_email");
 
-Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
-Route::get('/kwitansi-ppdb-simuda', "SekolahSDController@kwitansi_ppdb")->name("sekolah.kwitansi_ppdb");
-Route::get('/cetak-karu-simuda', "SekolahSDController@cetak_kartutes_ppdb")->name("sekolah.cetak_kartutes_ppdb");
+Route::get('/ppdb-simuda', "SekolahSDController@ppdb")
+->middleware('visitor.counter')
+->name("sekolah.ppdb");
+Route::get('/kwitansi-ppdb-simuda', "SekolahSDController@kwitansi_ppdb")
+->middleware('visitor.counter')
+->name("sekolah.kwitansi_ppdb");
+Route::get('/cetak-karu-simuda', "SekolahSDController@cetak_kartutes_ppdb")
+->middleware('visitor.counter')
+->name("sekolah.cetak_kartutes_ppdb");
+
 Route::get('/ppdb-show/{id}','SekolahSDController@ppdb_data_show');
 
 Route::get('/ppdb-simuda/print/{id}', "SekolahSDController@ppdb_print")->name("sekolah.ppdb_print");

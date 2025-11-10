@@ -1518,6 +1518,11 @@ class SekolahSDController extends Controller
             'atas_nama' => $setting->atas_nama,
         ];
 
+        $today = Carbon::today();
+        $data['statistik']['hari_ini'] = Visitor::whereDate('created_at', $today)->count();
+        $data['statistik']['bulan_ini'] = Visitor::whereMonth('created_at', $today->month)->count();
+        $data['statistik']['total'] = Visitor::count();
+
         return view('compro.koneksiedu.ppdb', $data);
     }
 

@@ -485,6 +485,35 @@
         </div>
 
       @endif
+      
+      <h1 class="text-center mt-5">Statistik Kunjungan</h1>
+      <div class="row text-center mb-4">
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h6 class="text-muted mb-1">Hari Ini</h6>
+              <h4 class="fw-bold text-success">{{ $statistik['hari_ini'] }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h6 class="text-muted mb-1">Bulan Ini</h6>
+              <h4 class="fw-bold text-success">{{ $statistik['bulan_ini'] }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h6 class="text-muted mb-1">Total Kunjungan</h6>
+              <h4 class="fw-bold text-success">{{ $statistik['total'] }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
     </div>
 

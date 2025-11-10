@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Sekolah\TemaKokurikuler;
 use App\Models\Sekolah\Kelas;
 use DataTables;
+use Illuminate\Support\Facades\DB;
 
 class TemaController extends Controller
 {
@@ -148,4 +149,51 @@ class TemaController extends Controller
         $data->delete();
         return response()->json(['status' => true, 'message' => 'Tema berhasil dihapus']);
     }
+
+
+    public function apply(Request $request, $id)
+    {
+        $tema = TemaKokurikuler::find($id);
+        if (!$tema) {
+            return response()->json(['status' => false, 'message' => 'Tema tidak ditemukan.']);
+        }
+
+        $kelasList = Kelas::where([
+            'tahun_ajaran' => $tema->tahun_ajaran,
+            'kelas' => $tema->kelas,
+            'semester' => $tema->semester,
+        ])->get();
+
+        if ($kelasList->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ditemukan kelas yang cocok untuk tema ini.'
+            ]);
+        }
+
+        $user = auth()->user();
+        $newHistory = [
+            'user_id'   => $user->id ?? 0,
+            'nama_user' => $user->first_name.' '.$user->last_name ?? 'System',
+            'datetime'  => now()->format('Y-m-d H:i:s'),
+        ];
+
+        DB::beginTransaction();
+        try {
+            foreach ($kelasList as $kelas) {
+                $kelas->tema_kokurikuler = $tema->toArray();
+                $kelas->save();
+            }
+
+            $tema->history_apply = array_merge($tema->history_apply ?? [], [$newHistory]);
+            $tema->save();
+
+            DB::commit();
+            return response()->json(['status' => true, 'message' => 'Tema berhasil dikaitkan ke kelas.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => false, 'message' => 'Gagal mengaitkan tema.', 'error' => $e->getMessage()]);
+        }
+    }
+
 }

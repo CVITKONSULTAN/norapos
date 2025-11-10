@@ -21,6 +21,7 @@ class CreateTemaKokurikulersTable extends Migration
             $table->string('kelas');
             $table->string('tahun_ajaran');
             $table->string('semester');
+            $table->json('history_apply')->nullable();
             $table->timestamps();
         });
     }

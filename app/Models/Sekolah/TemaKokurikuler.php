@@ -13,5 +13,11 @@ class TemaKokurikuler extends Model
         'kelas',
         'tahun_ajaran',
         'semester',
+        'history_apply',
+    ];
+
+    protected $casts = [
+        'dimensi_list'=>'array',
+        'history_apply'=>'array'
     ];
 }

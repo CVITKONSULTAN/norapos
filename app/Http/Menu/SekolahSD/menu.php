@@ -215,7 +215,7 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'kokurikuler' &&
-                        request()->segment(3) == 'tema'
+                        request()->segment(3) == 'dimensi'
                     ]
                 );
                 $sub->url(
@@ -224,7 +224,7 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'kokurikuler' &&
-                        request()->segment(3) == 'dimensi'
+                        request()->segment(3) == 'tema'
                     ]
                 );
                 $sub->url(
@@ -354,7 +354,7 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'kokurikuler' &&
-                        request()->segment(3) == 'tema'
+                        request()->segment(3) == 'dimensi'
                     ]
                 );
                 $sub->url(
@@ -363,7 +363,7 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'kokurikuler' &&
-                        request()->segment(3) == 'dimensi'
+                        request()->segment(3) == 'tema'
                     ]
                 );
                 $sub->url(
@@ -536,7 +536,7 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'kokurikuler' &&
-                        request()->segment(3) == 'tema'
+                        request()->segment(3) == 'dimensi'
                     ]
                 );
                 $sub->url(
@@ -545,7 +545,7 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
                         request()->segment(2) == 'kokurikuler' &&
-                        request()->segment(3) == 'dimensi'
+                        request()->segment(3) == 'tema'
                     ]
                 );
                 $sub->url(

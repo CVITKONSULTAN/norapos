@@ -17,6 +17,8 @@ use DB;
 use Illuminate\Http\Request;
 use App\Utils\Util;
 
+use \App\Models\Sekolah\Kelas;
+
 class HomeController extends Controller
 {
     /**
@@ -226,8 +228,9 @@ class HomeController extends Controller
         if (
             auth()->user()->business->business_category == "sekolah_sd"
         ) {
-            return view('sekolah_sd.dashboard',
-            compact('date_filters', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations'));
+            $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+            $data['semester'] = Kelas::getGroupBy('semester');
+            return view('sekolah_sd.dashboard',$data);
         }
 
         return view('home.index', compact('date_filters', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations'));

@@ -56,7 +56,9 @@ class SekolahSDController extends Controller
     ];
 
     function dashboard(Request $request){
-        return view('sekolah_sd.dashboard');
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
+        return view('sekolah_sd.dashboard',$data);
     }
     
     function kelas_index(Request $request){
@@ -889,8 +891,8 @@ class SekolahSDController extends Controller
         200); 
     }
 
-    private function getDataTahunanSiswa() {
-        $tahun = [2024];
+    private function getDataTahunanSiswa($year) {
+        $tahun = [$year];
         $data['list_tahun_interval'] = [];
         foreach ($tahun as $key => $value) {
             $period_tahun = [];
@@ -949,8 +951,8 @@ class SekolahSDController extends Controller
         $data['total_siswa'] = Siswa::count();
         $data['total_tendik'] = TenagaPendidik::count();
 
-        $data['list_jumlah_siswa_perkelas'] = $this->getKelasSiswaTahunan("2023/2024");
-        $data['list_tahun_interval'] = $this->getDataTahunanSiswa();
+        $data['list_jumlah_siswa_perkelas'] = $this->getKelasSiswaTahunan($request->tahun_ajaran ?? "2023/2024");
+        $data['list_tahun_interval'] = $this->getDataTahunanSiswa($request->tahun ?? 2024);
 
         return response()->json(
             Helper::DataReturn(true,"OK",$data), 

@@ -564,10 +564,10 @@ class SekolahSDController extends Controller
             $nilai_kokurikuler[$key]['kokurikuler_desc'] = "";
 
             if( count($value['dimensi']) == 1){
-                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam $max pada tema $tema";
+                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
             }
             if( count($value['dimensi']) > 1){
-                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam $max serta $min_desc dalam $min pada tema $tema";
+                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
             }
         }
 

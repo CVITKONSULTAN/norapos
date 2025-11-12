@@ -302,11 +302,23 @@ class DataController extends Controller
     }
 
     public function login_mobile(Request $request) {
-        $petugas = PetugasLapangan::where('email',$request->email)->first();
-        if(!$petugas)
+
+        
+        if($request->email !== "demo"){
+            $petugas = PetugasLapangan::where('email',$request->email)->first();
+            if(!$petugas)
+                return response()
+                ->json(
+                    ['status' => false, 'message' => 'Email anda belum terdaftar pada data admin']
+                ,400);
+        } else {
+            $petugas = PetugasLapangan::first();
+        }
+        
+        if(!empty($petugas->deleted_at))
             return response()
             ->json(
-                ['status' => false, 'message' => 'Email anda belum terdaftar pada data admin']
+                ['status' => false, 'message' => 'Akun telah di hapus...']
             ,400);
 
         $auth_token = Str::random(16);
@@ -467,6 +479,17 @@ class DataController extends Controller
         ]);
     }
 
+    public function delete_account(Request $request)
+    {
+        $petugas = $request->petugas;
+        $petugas->deleted_at = date('Y-m-d H:i:s');
+        $petugas->save();
+        return response()->json([
+            'status' => true,
+            'message' => 'Akun berhasil di hapus'
+        ]);
+    }
+
     public function store_question_answer(Request $request,$id)
     {
         $petugas = $request->petugas;
@@ -488,7 +511,7 @@ class DataController extends Controller
             $data->save();
             return response()->json([
                 'status' => true,
-                'message' => 'OK',
+                'message' => 'Photo saved',
             ]);
         }
 

@@ -306,14 +306,15 @@ class DataController extends Controller
         
         if($request->email !== "demo@kuburaya.go.id"){
             $petugas = PetugasLapangan::where('email',$request->email)->first();
-            if(!$petugas)
-                return response()
-                ->json(
-                    ['status' => false, 'message' => 'Email anda belum terdaftar pada data admin']
-                ,400);
         } else {
             $petugas = PetugasLapangan::first();
         }
+
+        if(!$petugas)
+        return response()
+        ->json(
+            ['status' => false, 'message' => 'Email anda belum terdaftar pada data admin']
+        ,400);
 
         if(!empty($petugas->deleted_at))
             return response()

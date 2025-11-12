@@ -147,6 +147,12 @@ Route::group(['prefix'=>'itkonsultan'],function(){
 
 Route::group(['prefix'=>'ciptakarya'],function(){
     Route::post('login','CiptaKarya\DataController@login_mobile');
+    Route::group(['middleware'=>'ciptakarya.mobile'],function(){
+        Route::get('statistic','CiptaKarya\DataController@statistic_mobile');
+        Route::get('pengajuan', 'CiptaKarya\DataController@list_pengajuan');
+        Route::get('pengajuan/{id}', 'CiptaKarya\DataController@show_pengajuan');
+        Route::post('answer/{id}', 'CiptaKarya\DataController@store_question_answer');
+    });
 });
 
 // Route::get('test',function(){

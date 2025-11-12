@@ -14,7 +14,8 @@ class PetugasLapangan extends Model
         'nip',
         'nik',
         'google_data',
-        'fcm_token'
+        'fcm_token',
+        'auth_token',
     ];
 
     protected $casts = ['google_data'=>'array'];

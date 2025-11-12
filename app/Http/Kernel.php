@@ -71,6 +71,7 @@ class Kernel extends HttpKernel
         'CheckUserLogin' => \App\Http\Middleware\CheckUserLogin::class,        
         'Cors' => \App\Http\Middleware\Cors::class,
         'visitor.counter' => \App\Http\Middleware\VisitorCounter::class,
+        'ciptakarya.mobile' => \App\Http\Middleware\CiptakaryaAuth::class,
     ];
     /**
      * The priority-sorted list of middleware.

@@ -9,6 +9,8 @@ use App\Models\CiptaKarya\PetugasLapangan;
 use Validator;
 use DataTables;
 use DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 
 class DataController extends Controller
 {
@@ -306,14 +308,21 @@ class DataController extends Controller
             ->json(
                 ['status' => false, 'message' => 'Email anda belum terdaftar pada data admin']
             ,400);
+
+        $auth_token = Str::random(16);
         
         $petugas->google_data = $request->google_data;
+        $petugas->auth_token = $auth_token;
+
+        $token = [
+                    "auth_token" => $auth_token,
+                    "created_at" => date('Y-m-d H:i:s')
+        ];
 
         $petugas->save();
         return response()
             ->json(['status' => true, 'message' => 'OK','data'=>[
-                'user_id'=>$petugas->id,
-                'email'=>$petugas->email,
+                'token'=> Crypt::encrypt( json_encode($token) )
             ]]);
     }
 
@@ -362,8 +371,120 @@ class DataController extends Controller
         return response()->json(['results' => $results]);
     }
 
+    public function statistic_mobile(Request $request)
+    {
+        $petugas = $request->petugas;
 
+        $proses = PengajuanPBG::where([
+            'status'=>'pending',
+            'petugas_id' => $petugas->id
+        ])->count();
+        $terbit = PengajuanPBG::where([
+            'status'=>'terbit',
+            'petugas_id' => $petugas->id
+        ])->count();
+        $gagal = PengajuanPBG::where([
+            'status'=>'gagal',
+            'petugas_id' => $petugas->id
+        ])->count();
+        
 
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil',
+            'petugas' => $petugas->nama,
+            'data' => [
+                'proses' => $proses,
+                'izin_terbit' => $terbit,
+                'gagal' => $gagal
+            ]
+        ]);
+    }
+
+    public function list_pengajuan(Request $request)
+    {
+        $petugas = $request->petugas;
+
+        // ambil filter status (opsional)
+        $status = $request->input('status');
+        $perPage = $request->input('per_page', 10);
+
+        // query data berdasarkan petugas login
+        $query = PengajuanPBG::where('petugas_id', $petugas->id)
+            ->orderBy('created_at', 'desc');
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $data = $query->paginate($perPage);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil mengambil data pengajuan',
+            'petugas' => $petugas->nama,
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'last_page' => $data->lastPage(),
+                'per_page' => $data->perPage(),
+                'total' => $data->total(),
+            ],
+            'data' => $data->items()
+        ]);
+    }
+
+    public function show_pengajuan(Request $request,$id)
+    {
+        $petugas = $request->petugas;
+
+        // query data berdasarkan petugas login
+        $data = PengajuanPBG::where([
+            'petugas_id'=>$petugas->id,
+            'id'=>$id
+        ])->first();
+
+        if(empty($data))
+            return response()->json([
+                'status' => false,
+                'message' => "data not found"
+            ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OK',
+            'data'=>$data
+        ]);
+    }
+
+    public function store_question_answer(Request $request,$id)
+    {
+        $petugas = $request->petugas;
+
+        // query data berdasarkan petugas login
+        $data = PengajuanPBG::where([
+            'petugas_id'=>$petugas->id,
+            'id'=>$id
+        ])->first();
+
+        if(empty($data))
+            return response()->json([
+                'status' => false,
+                'message' => "data not found"
+            ]);
+
+        // $data->update([
+        //     'answers'=>$request->answers,
+        //     'questions'=>$request->questions,
+        // ]);
+        $data->answers = json_encode($request->answers);
+        $data->questions = json_encode($request->questions);
+        $data->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OK',
+        ]);
+    }
     
 
 }

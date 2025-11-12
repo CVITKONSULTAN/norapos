@@ -145,6 +145,10 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     
 });
 
+Route::group(['prefix'=>'ciptakarya'],function(){
+    Route::post('login','CiptaKarya\DataController@login_mobile');
+});
+
 // Route::get('test',function(){
 //     $user = \App\User::where('username','kartika')->first();
 //     $user->password = bcrypt('Kartika123456');

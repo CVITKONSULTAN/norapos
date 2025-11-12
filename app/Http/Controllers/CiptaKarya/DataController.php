@@ -298,4 +298,20 @@ class DataController extends Controller
             ]
         ]);
     }
+
+    public function login_mobile(Request $request) {
+        $petugas = PetugasLapangan::where('email',$request->email)->first();
+        if(!$petugas)
+            return response()
+            ->json(
+                ['status' => false, 'message' => 'Email anda belum terdaftar pada data admin']
+            ,400);
+        
+        $petugas->google_data = $request->google_data;
+
+        $petugas->save();
+        return response()
+            ->json(['status' => true, 'message' => 'OK']);
+    }
+
 }

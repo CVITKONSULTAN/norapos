@@ -12,6 +12,10 @@ class PetugasLapangan extends Model
         'bidang',
         'jabatan',
         'nip',
-        'nik'
+        'nik',
+        'google_data',
+        'fcm_token'
     ];
+
+    protected $casts = ['google_data'=>'array'];
 }

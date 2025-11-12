@@ -377,6 +377,7 @@
                     searchable: false,
                     render: (data, type, row) => {
                         return `
+                            <a href="print/${data}" class="btn btn-sm btn-success"><i class="fa fa-print"></i> Cetak</a>
                             <button data-id="${data}" class="btn btn-sm btn-primary"><i class="fa fa-history"></i> Riwayat</button>
                             <a href="detail/${data}" class="btn btn-sm btn-primary"><i class="fa fa-list"></i> Detail</a>
                             <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas"><i class="fa fa-user"></i> Petugas</button>

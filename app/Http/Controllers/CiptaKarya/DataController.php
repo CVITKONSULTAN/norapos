@@ -557,6 +557,10 @@ class DataController extends Controller
             ];
         }
     }
+
+    function print_data(Request $request,$id){
+        return view('ciptakarya.cetak_list_pbg');
+    }
     
 
 }

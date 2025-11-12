@@ -304,7 +304,7 @@ class DataController extends Controller
     public function login_mobile(Request $request) {
 
         
-        if($request->email !== "demo"){
+        if($request->email !== "demo@kuburaya.go.id"){
             $petugas = PetugasLapangan::where('email',$request->email)->first();
             if(!$petugas)
                 return response()
@@ -314,7 +314,7 @@ class DataController extends Controller
         } else {
             $petugas = PetugasLapangan::first();
         }
-        
+
         if(!empty($petugas->deleted_at))
             return response()
             ->json(

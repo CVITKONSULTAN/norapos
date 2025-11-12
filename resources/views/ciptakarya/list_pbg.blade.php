@@ -3,6 +3,7 @@
 
 @section('css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" referrerpolicy="no-referrer" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css" rel="stylesheet" />
 <style>
     #dropzone_pengajuan .dz-message {
         display: block !important;
@@ -20,6 +21,28 @@
 <section class="content-header">
     <h1>Data Pemohon / Pengajuan</h1>
 </section>
+
+<div id="modal_pilih_petugas" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Pilih Petugas Lapangan</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pengajuan_id_target" value="">
+                <div class="form-group">
+                    <label>Pilih Petugas:</label>
+                    <select id="select_petugas" class="form-control" style="width:100%"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn_simpan_petugas">Simpan</button>
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div id="editor_modal_pengajuan" class="modal fade">
     <div class="modal-dialog modal-lg">
@@ -294,6 +317,7 @@
 
 @section('javascript')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script>
 
     <!-- Localization HARUS ditaruh SETELAH jquery.validate.min.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/localization/messages_id.min.js"></script>
@@ -351,6 +375,7 @@
                     searchable: false,
                     render: (data, type, row) => {
                         return `
+                            <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas">Petugas</button>
                             <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">Edit</button>
                             <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan">Hapus</button>
                         `;
@@ -632,6 +657,65 @@
             }
         });
 
+        // ===================== PILIH PETUGAS =====================
+        $(document).on('click', '.pilih_petugas', function () {
+            const id = $(this).data('id');
+            $('#pengajuan_id_target').val(id);
+            $('#modal_pilih_petugas').modal('show');
+        });
+
+        // Inisialisasi Select2 dengan AJAX search
+        $('#select_petugas').select2({
+            placeholder: "Ketik nama atau email petugas...",
+            allowClear: true,
+            ajax: {
+                url: "{{ route('ciptakarya.search_petugas') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term }; // parameter pencarian
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            },
+            width: '100%'
+        });
+        
+        // Tombol Simpan Petugas
+        $('#btn_simpan_petugas').click(function() {
+            const pengajuanId = $('#pengajuan_id_target').val();
+            const petugasId = $('#select_petugas').val();
+
+            if (!petugasId) {
+                return alert("Silakan pilih petugas terlebih dahulu.");
+            }
+
+            $.ajax({
+                url: "{{ route('ciptakarya.update_petugas') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: pengajuanId,
+                    petugas_id: petugasId
+                },
+                success: function(res) {
+                    if (res.status) {
+                        toastr.success(res.message);
+                        $('#modal_pilih_petugas').modal('hide');
+                        product_table.ajax.reload();
+                    } else {
+                        toastr.warning(res.message);
+                    }
+                },
+                error: function() {
+                    toastr.error("Gagal menyimpan data petugas!");
+                }
+            });
+        });
 
     </script>
 @endsection

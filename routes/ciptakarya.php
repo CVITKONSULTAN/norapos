@@ -23,4 +23,8 @@ Route::group([
     Route::get('petugas', 'CiptaKarya\DataController@petugas_index')->name('ciptakarya.list_data_petugas');
     Route::get('petugas/data', 'CiptaKarya\DataController@list_data_petugas')->name('ciptakarya.list_data_petugas_datatables');
     Route::post('store_petugas_lapangan', 'CiptaKarya\DataController@store_petugas_lapangan')->name('ciptakarya.store_petugas_lapangan');
+
+    Route::post('update-petugas', 'CiptaKarya\DataController@update_petugas')->name('ciptakarya.update_petugas');
+    Route::get('search-petugas', 'CiptaKarya\DataController@search_petugas')->name('ciptakarya.search_petugas');
+
 });

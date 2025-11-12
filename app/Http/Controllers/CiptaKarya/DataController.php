@@ -314,4 +314,53 @@ class DataController extends Controller
             ->json(['status' => true, 'message' => 'OK']);
     }
 
+    public function update_petugas(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:pengajuan_pbg,id',
+            'petugas_id' => 'required|exists:petugas_lapangans,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+        }
+
+        $pengajuan = PengajuanPBG::find($request->id);
+        $petugas = PetugasLapangan::find($request->petugas_id);
+
+        $pengajuan->petugas_id = $petugas->id;
+        $pengajuan->petugas = $petugas->nama ?? $petugas->email; // simpan juga nama/email
+
+        $pengajuan->save();
+
+        return response()->json(['status' => true, 'message' => 'Petugas berhasil dikaitkan']);
+    }
+
+    public function search_petugas(Request $request)
+    {
+        $term = $request->q ?? '';
+
+        $query = PetugasLapangan::query()
+            ->select('id', 'nama', 'email')
+            ->when($term, function ($q) use ($term) {
+                $q->where('nama', 'like', "%{$term}%")
+                ->orWhere('email', 'like', "%{$term}%");
+            })
+            ->limit(20)
+            ->get();
+
+        $results = $query->map(function ($p) {
+            return [
+                'id' => $p->id,
+                'text' => "{$p->nama} ({$p->email})"
+            ];
+        });
+
+        return response()->json(['results' => $results]);
+    }
+
+
+
+    
+
 }

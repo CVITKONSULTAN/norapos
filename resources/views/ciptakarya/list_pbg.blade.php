@@ -160,6 +160,20 @@
                     </div>
 
                     <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Koefisien Lantai Bangunan (KLB) maksimum :</label>
+                        <div class="col-sm-9">
+                        <input name="koefisiensi_lantai" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Koordinat Bangunan:</label>
+                        <div class="col-sm-9">
+                        <input name="koordinat_bangunan" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Upload Dokumen :</label>
                         <div class="col-sm-9">
                             <div id="dropzone_pengajuan" class="dropzone border rounded p-3">
@@ -202,22 +216,39 @@
             <div class="row">
                 <div class="form-group col-md-2">
                     <select id="filter_tahun" class="form-control" required>
-                        <option>-- Semua Tahun --</option>
+                        <option value="">-- Semua Tahun --</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
                     </select>
                 </div>
                 <div class="form-group col-md-2">
                     <select id="filter_kategori" class="form-control" required>
-                        <option>-- Semua Kategori Permohonan --</option>
+                        <option value="">-- Semua Kategori Permohonan --</option>
+                        <option value="Khusus">Khusus </option>
+                        <option value="Sosial Budaya">Sosial Budaya</option>
+                        <option value="Hunian">Hunian </option>
+                        <option value="Usaha">Usaha </option>
+                        <option value="Keagamaan">Keagamaan </option>
                     </select>
                 </div>
                 <div class="form-group col-md-2">
                     <select id="filter_jenis" class="form-control" required>
-                        <option>-- Semua Jenis Izin --</option>
+                        <option value="">-- Semua Jenis Izin --</option>
+                        <option value="PBG">PBG</option>
+                        <option value="SLF">SLF</option>
+                        <option value="PBG/SLF">PBG/SLF</option>
                     </select>
                 </div>
                 <div class="form-group col-md-2">
                     <select id="filter_status" class="form-control" required>
-                        <option>-- Semua Status --</option>
+                        <option value="">-- Semua Status --</option>
+                        <option value="pending">PROSES</option>
+                        <option value="gagal">GAGAL</option>
+                        <option value="terbit">TERBIT</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -277,7 +308,14 @@
                 { data: 'created_at', render: (data) => data || '-' },
                 { data: 'no_permohonan', render: (data) => data || '-' },
                 { data: 'nama_pemohon', render: (data) => data || '-' },
-                { data: 'tipe', render: (data) => `<span class="badge badge-info">${data || '-'}</span>` },
+                { data: 'tipe', render: (data) =>{
+                    let status = "gray";
+                    if(data == "PBG") status = "blue"
+                    if(data == "SLF") status = "yellow"
+                    if(data == "PBG/SLF") status = "green"
+                    return `<span class="badge bg-${status}">${data || '-'}</span>`
+                }
+                },
                 { data: 'fungsi_bangunan', render: (data) => data || '-' },
                 { 
                     data: 'created_at',
@@ -286,9 +324,10 @@
                 { 
                     data: 'status', 
                     render: (data) => {
-                        let label = data ? data.toUpperCase() : 'PENDING';
-                        let color = data === 'approved' ? 'success' : (data === 'rejected' ? 'danger' : 'warning');
-                        return `<span class="badge badge-${color}">${label}</span>`;
+                        if(data == 'pending') data = "PROSES";
+                        let label = data ? data.toUpperCase() : 'PROSES';
+                        let color = data === 'terbit' ? 'green' : (data === 'gagal' ? 'red' : 'blue');
+                        return `<span class="badge bg-${color}">${label}</span>`;
                     } 
                 },
                 { data: 'petugas', render: (data) => data || '-' },
@@ -306,9 +345,9 @@
             ]
         });
 
-        // $('#filter_tahun, #filter_kategori, #filter_jenis, #filter_status').on('change', function () {
-        //     product_table.ajax.reload();
-        // });
+        $('#filter_tahun, #filter_kategori, #filter_jenis, #filter_status').on('change', function () {
+            product_table.ajax.reload();
+        });
 
         const filteringData = () => {
             product_table.ajax.reload();

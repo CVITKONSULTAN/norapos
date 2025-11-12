@@ -9,6 +9,7 @@ class PengajuanPBG extends Model
     protected $table = 'pengajuan'; // Jika tabel tidak otomatis plural
 
     protected $fillable = [
+        'tipe',
         'no_permohonan',
         'no_krk',
         'nama_pemohon',
@@ -28,7 +29,11 @@ class PengajuanPBG extends Model
         'kdb_max',
         'uploaded_files', // simpan JSON dropzone
         'status',
-        'nilai_retribusi'
+        'nilai_retribusi',
+        'ketinggian_bangunan',
+        'koefisiensi_dasar',
+        'koefisiensi_lantai',
+        'koordinat_bangunan',
     ];
 
     // Agar kolom JSON otomatis array saat diakses

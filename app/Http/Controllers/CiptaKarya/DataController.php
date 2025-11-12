@@ -317,7 +317,7 @@ class DataController extends Controller
     public function update_petugas(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|exists:pengajuan_pbg,id',
+            'id' => 'required|exists:pengajuan,id',
             'petugas_id' => 'required|exists:petugas_lapangans,id'
         ]);
 
@@ -329,7 +329,7 @@ class DataController extends Controller
         $petugas = PetugasLapangan::find($request->petugas_id);
 
         $pengajuan->petugas_id = $petugas->id;
-        $pengajuan->petugas = $petugas->nama ?? $petugas->email; // simpan juga nama/email
+        $pengajuan->petugas_lapangan = $petugas->toArray(); // simpan juga nama/email
 
         $pengajuan->save();
 

@@ -34,10 +34,16 @@ class PengajuanPBG extends Model
         'koefisiensi_dasar',
         'koefisiensi_lantai',
         'koordinat_bangunan',
+        'petugas_lapangan'
     ];
 
     // Agar kolom JSON otomatis array saat diakses
     protected $casts = [
         'uploaded_files' => 'array',
+        'petugas_lapangan' => 'array',
     ];
+
+    function petugas(){
+        return $this->belongsTo(PetugasLapangan::class,'petugas_id','id');
+    }
 }

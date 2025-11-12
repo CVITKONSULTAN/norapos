@@ -18,4 +18,8 @@ class PetugasLapangan extends Model
     ];
 
     protected $casts = ['google_data'=>'array'];
+
+    function pengajuan(){
+        return $this->hasMany(PengajuanPBG::class.'petugas_id','id');
+    }
 }

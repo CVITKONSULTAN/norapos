@@ -368,7 +368,9 @@
                         return `<span class="badge bg-${color}">${label}</span>`;
                     } 
                 },
-                { data: 'petugas', render: (data) => data || '-' },
+                { data: 'petugas_lapangan', render: (data) => {
+                    return data?.nama ?? '-';
+                }},
                 {
                     data: 'id',
                     orderable: false,
@@ -664,27 +666,36 @@
             $('#modal_pilih_petugas').modal('show');
         });
 
-        // Inisialisasi Select2 dengan AJAX search
-        $('#select_petugas').select2({
-            placeholder: "Ketik nama atau email petugas...",
-            allowClear: true,
-            ajax: {
-                url: "{{ route('ciptakarya.search_petugas') }}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return { q: params.term }; // parameter pencarian
+        $(document).ready(function() {
+            // Inisialisasi Select2 dengan AJAX search
+            $('#select_petugas').select2({
+                dropdownParent: $('#modal_pilih_petugas'), // 👈 ini WAJIB kalau di dalam modal
+                placeholder: "Ketik nama atau email petugas...",
+                allowClear: true,
+                ajax: {
+                    url: "{{ route('ciptakarya.search_petugas') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { q: params.term }; // kirim keyword
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
                 },
-                processResults: function (data) {
-                    return {
-                        results: data.results
-                    };
-                },
-                cache: true
-            },
-            width: '100%'
+                width: '100%'
+            });
+    
+            $('#modal_pilih_petugas').on('shown.bs.modal', function () {
+                console.log('cek');
+                $('#select_petugas').select2('open');
+            });
         });
-        
+
+
         // Tombol Simpan Petugas
         $('#btn_simpan_petugas').click(function() {
             const pengajuanId = $('#pengajuan_id_target').val();

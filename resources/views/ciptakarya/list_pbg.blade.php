@@ -107,6 +107,12 @@
                         <input name="luas_bangunan" class="form-control" />
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Ketinggian Bangunan :</label>
+                        <div class="col-sm-9">
+                        <input name="ketinggian_bangunan" class="form-control" />
+                        </div>
+                    </div>
 
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Lokasi Bangunan :</label>

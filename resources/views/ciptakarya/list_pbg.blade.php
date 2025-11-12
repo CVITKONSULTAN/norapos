@@ -76,7 +76,15 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Fungsi Bangunan :</label>
                         <div class="col-sm-9">
-                        <input name="fungsi_bangunan" class="form-control" />
+                        {{-- <input name="fungsi_bangunan" class="form-control" /> --}}
+                            <select name="fungsi_bangunan" class="form-control" required>
+                                <option value="">-- Pilih --</option>
+                                <option value="Khusus">Khusus </option>
+                                <option value="Sosial Budaya">Sosial Budaya</option>
+                                <option value="Hunian">Hunian </option>
+                                <option value="Usaha">Usaha </option>
+                                <option value="Keagamaan">Keagamaan </option>
+                            </select>
                         </div>
                     </div>
 
@@ -459,7 +467,7 @@
             modals.find('input[name=nama_pemohon]').val(data.nama_pemohon);
             modals.find('input[name=nik]').val(data.nik);
             modals.find('textarea[name=alamat]').val(data.alamat);
-            modals.find('input[name=fungsi_bangunan]').val(data.fungsi_bangunan);
+            modals.find('select[name=fungsi_bangunan]').val(data.fungsi_bangunan);
             modals.find('input[name=nama_bangunan]').val(data.nama_bangunan);
             modals.find('input[name=jumlah_bangunan]').val(data.jumlah_bangunan);
             modals.find('input[name=jumlah_lantai]').val(data.jumlah_lantai);

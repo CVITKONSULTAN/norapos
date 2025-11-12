@@ -311,7 +311,10 @@ class DataController extends Controller
 
         $petugas->save();
         return response()
-            ->json(['status' => true, 'message' => 'OK']);
+            ->json(['status' => true, 'message' => 'OK','data'=>[
+                'user_id'=>$petugas->id,
+                'email'=>$petugas->email,
+            ]]);
     }
 
     public function update_petugas(Request $request)

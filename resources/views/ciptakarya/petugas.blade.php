@@ -102,6 +102,7 @@
                             <th>NIP</th>
                             <th>NIK</th>
                             <th>Created At</th>
+                            <th>Deleted At</th>
                             <th>@lang( 'messages.action' )</th>
                         </tr>
                     </thead>
@@ -152,6 +153,13 @@
                 { 
                     data: 'created_at',
                     render: data => moment(data).format('DD/MM/YYYY HH:mm')
+                },
+                { 
+                    data: 'deleted_at',
+                    render: data => {
+                        if(!data) return '-'
+                        return moment(data).format('DD/MM/YYYY HH:mm')
+                    }
                 },
                 {
                     data: 'id',

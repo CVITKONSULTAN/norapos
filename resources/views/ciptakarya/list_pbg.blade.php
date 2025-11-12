@@ -377,9 +377,11 @@
                     searchable: false,
                     render: (data, type, row) => {
                         return `
-                            <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas">Petugas</button>
-                            <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">Edit</button>
-                            <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan">Hapus</button>
+                            <button data-id="${data}" class="btn btn-sm btn-primary"><i class="fa fa-history"></i> Riwayat</button>
+                            <a href="detail/${data}" class="btn btn-sm btn-primary"><i class="fa fa-list"></i> Detail</a>
+                            <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas"><i class="fa fa-user"></i> Petugas</button>
+                            <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan"><i class="fa fa-pencil"></i> Edit</button>
+                            <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan"><i class="fa fa-trash"></i> Hapus</button>
                         `;
                     }
                 }

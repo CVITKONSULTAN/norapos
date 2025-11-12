@@ -152,6 +152,7 @@ Route::group(['prefix'=>'ciptakarya'],function(){
         Route::get('pengajuan', 'CiptaKarya\DataController@list_pengajuan');
         Route::get('pengajuan/{id}', 'CiptaKarya\DataController@show_pengajuan');
         Route::post('answer/{id}', 'CiptaKarya\DataController@store_question_answer');
+        Route::post('upload','CiptaKarya\DataController@upload');
     });
 });
 

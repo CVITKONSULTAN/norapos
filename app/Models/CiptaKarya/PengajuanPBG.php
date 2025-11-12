@@ -36,7 +36,8 @@ class PengajuanPBG extends Model
         'koordinat_bangunan',
         'petugas_lapangan',
         'answers',
-        'questions'
+        'questions',
+        'list_foto'
     ];
 
     // Agar kolom JSON otomatis array saat diakses
@@ -45,6 +46,7 @@ class PengajuanPBG extends Model
         'petugas_lapangan' => 'array',
         'answers' => 'array',
         'questions' => 'array',
+        'list_foto' => 'array',
     ];
 
     function petugas(){

@@ -408,6 +408,7 @@ class DataController extends Controller
         // ambil filter status (opsional)
         $status = $request->input('status');
         $perPage = $request->input('per_page', 10);
+        $search = $request->input('search'); // ✅ tambahkan search opsional
 
         // query data berdasarkan petugas login
         $query = PengajuanPBG::where('petugas_id', $petugas->id)
@@ -415,6 +416,16 @@ class DataController extends Controller
 
         if ($status) {
             $query->where('status', $status);
+        }
+
+         // ✅ Filter pencarian (jika ada)
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_pemohon', 'like', "%{$search}%")
+                ->orWhere('no_permohonan', 'like', "%{$search}%")
+                ->orWhere('fungsi_bangunan', 'like', "%{$search}%")
+                ->orWhere('nama_bangunan', 'like', "%{$search}%");
+            });
         }
 
         $data = $query->paginate($perPage);
@@ -472,10 +483,15 @@ class DataController extends Controller
                 'message' => "data not found"
             ]);
 
-        // $data->update([
-        //     'answers'=>$request->answers,
-        //     'questions'=>$request->questions,
-        // ]);
+        if($request->list_foto){
+            $data->list_foto = json_encode($request->list_foto);
+            $data->save();
+            return response()->json([
+                'status' => true,
+                'message' => 'OK',
+            ]);
+        }
+
         $data->answers = json_encode($request->answers);
         $data->questions = json_encode($request->questions);
         $data->save();
@@ -484,6 +500,38 @@ class DataController extends Controller
             'status' => true,
             'message' => 'OK',
         ]);
+    }
+
+    function upload(Request $request){
+        try {
+
+            // Validasi file upload
+            $validated = $request->validate([
+                // 'file_data' => 'required|image|max:512', // ukuran dalam kilobyte (500KB)
+                'file_data' => 'required|mimes:jpeg,jpg,png|max:600', // 600 KB aman
+            ]);
+
+            if (!$request->hasFile('file_data') || !$request->file('file_data')->isValid()) {
+                return [
+                    "status"=>false,
+                    'message' => "Format data hanya boleh image, dan maksimal ukuran 600KB"
+                ];
+            }
+
+            $pathFile = $request->file_data->store('file_ciptakarya');
+            $pathFile = url('uploads/'.$pathFile);
+
+            return [
+                "status"=>true,
+                "data"=> $pathFile,
+            ];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return [
+                "status"=>false,
+                "message"=>$th->getMessage(),
+            ];
+        }
     }
     
 

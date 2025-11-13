@@ -11,6 +11,76 @@
         text-align: center;
         padding: 40px 0;
     }
+    .timeline {
+        position: relative;
+        margin: 40px 0;
+        padding-left: 80px;
+    }
+
+    .timeline:before {
+        content: "";
+        position: absolute;
+        left: 110px;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: #f4c542; /* warna kuning */
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .timeline-year {
+        width: 60px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #333;
+        margin-right: 40px;
+        text-align: right;
+    }
+
+    .timeline-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: white;
+        border: 4px solid #f4c542;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 25px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .timeline-icon.active {
+        background: #f4c542;
+    }
+
+    .timeline-icon img {
+        width: 28px;
+        height: 28px;
+        filter: invert(15%) sepia(5%) saturate(10%) hue-rotate(0deg) brightness(20%);
+    }
+
+    .timeline-content {
+        max-width: 450px;
+    }
+
+    .timeline-content h3 {
+        font-size: 18px;
+        margin: 0 0 4px;
+    }
+
+    .timeline-content p {
+        margin: 0;
+        color: #444;
+    }
+
 </style>
 @endsection
 
@@ -21,6 +91,55 @@
 <section class="content-header">
     <h1>Data Pemohon / Pengajuan</h1>
 </section>
+
+<!-- UNIVERSAL MODAL HITUNG RETRIBUSI -->
+<div id="modal_retribusi" class="modal fade">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fa fa-calculator"></i> Hitung Nilai Retribusi</h4>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="ret_id" value="">
+
+                <div class="form-group">
+                    <label>Luas Bangunan (m²)</label>
+                    <input type="number" id="ret_luas" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Tarif Retribusi (Rp / m²)</label>
+                    <input type="number" id="ret_tarif" class="form-control" value="5000">
+                </div>
+
+                <div class="form-group">
+                    <label>Fungsi Bangunan</label>
+                    <input type="text" id="ret_fungsi" class="form-control" readonly>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label><b>Total Retribusi (Rp)</b></label>
+                    <input type="text" id="ret_total" class="form-control" readonly 
+                           style="font-weight:bold; font-size:18px;">
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn_simpan_retribusi">
+                    <i class="fa fa-save"></i> Simpan
+                </button>
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <div id="modal_pilih_petugas" class="modal fade">
     <div class="modal-dialog">
@@ -233,6 +352,30 @@
     </div>
 </div>
 
+<!-- MODAL RIWAYAT -->
+<div id="modal_timeline" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Riwayat Proses Pengajuan</h4>
+            </div>
+
+            <div class="modal-body">
+                <div id="timeline_container">
+                    <!-- timeline akan di-inject via JS -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary', 'title' => ""])
@@ -292,6 +435,7 @@
                     <button onclick="filteringData()" class="btn btn-primary">Tampilkan Data</button>
                 </div>
             </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="product_table">
                     <thead>
@@ -303,6 +447,7 @@
                             <th>Jenis / Kategori</th>
                             <th>Tgl Pengajuan</th>
                             <th>Status</th>
+                            <th>Nilai Retribusi</th>
                             <th>Petugas</th>
                             <th>@lang( 'messages.action' )</th>
                         </tr>
@@ -368,6 +513,12 @@
                         return `<span class="badge bg-${color}">${label}</span>`;
                     } 
                 },
+                {
+                    data: 'nilai_retribusi',
+                    render: (data) => {
+                        return formatRupiah(data);
+                    }
+                },
                 { data: 'petugas_lapangan', render: (data) => {
                     return data?.nama ?? '-';
                 }},
@@ -380,6 +531,9 @@
                             <a href="print/${data}" class="btn btn-sm btn-success"><i class="fa fa-print"></i> Cetak</a>
                             <button data-id="${data}" class="btn btn-sm btn-primary"><i class="fa fa-history"></i> Riwayat</button>
                             <a href="detail/${data}" class="btn btn-sm btn-primary"><i class="fa fa-list"></i> Detail</a>
+                            <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
+                                <i class="fa fa-calculator"></i> Retribusi
+                            </button>
                             <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas"><i class="fa fa-user"></i> Petugas</button>
                             <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan"><i class="fa fa-pencil"></i> Edit</button>
                             <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan"><i class="fa fa-trash"></i> Hapus</button>
@@ -730,6 +884,137 @@
                 }
             });
         });
+
+        function renderTimeline(step) {
+
+            const steps = [
+                {title: "Admin", desc: "Input data permohonan & penentuan jenis izin", icon: "🚀"},
+                {title: "Petugas Lapangan", desc: "Verifikasi gambar teknis & survey lokasi", icon: "📍"},
+                {title: "Pemeriksa", desc: "Pemeriksaan dokumen teknis", icon: "🧭"},
+                {title: "Admin Retribusi", desc: "Perhitungan retribusi & rekom teknis", icon: "💰"},
+                {title: "Koordinator", desc: "Verifikasi keseluruhan data", icon: "📊"},
+                {title: "Kabid", desc: "Validasi teknis lanjutan", icon: "📑"},
+                {title: "Kadis", desc: "Persetujuan akhir permohonan", icon: "✔️"},
+            ];
+
+            let html = `<div class="timeline">`;
+
+            steps.forEach((item, index) => {
+                const number = index + 1;
+                const active = number <= step ? "active" : "";
+
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-year">${number}</div>
+
+                        <div class="timeline-icon ${active}">
+                            <span style="font-size:22px">${item.icon}</span>
+                        </div>
+
+                        <div class="timeline-content">
+                            <h3><strong>${item.title}</strong></h3>
+                            <p>${item.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+
+            return html;
+        }
+
+        $(document).on('click', '.btn-primary:has(.fa-history)', function() {
+            const id = $(this).data('id');
+
+            const url = `{{ route('ciptakarya.list_data_pbg') }}/${id}/detail`;
+
+            // GET dari backend
+            $.get(url, function(res) {
+
+                // res.step = angka 1–7 dari database
+                // const step = res.step ?? 1;
+                const step = 2;
+
+                // Generate timeline
+                $('#timeline_container').html(renderTimeline(step));
+
+                // Tampilkan modal
+                $('#modal_timeline').modal('show');
+            });
+        });
+
+        $(document).on('click', '.hitung_retribusi', function () {
+
+            let id = $(this).data('id');
+
+            // Simpan id di hidden input
+            $('#ret_id').val(id);
+
+            // GET detail data pengajuan
+            $.get(`{{ route('ciptakarya.list_data_pbg') }}/${id}/detail`, function(res){
+
+                if (!res.status) {
+                    return toastr.error("Data tidak ditemukan");
+                }
+
+                const d = res.data;
+
+                $('#ret_luas').val(d.luas_bangunan ?? 0);
+                $('#ret_fungsi').val(d.fungsi_bangunan ?? '-');
+
+                hitungRetribusi();
+
+                $('#modal_retribusi').modal('show');
+            });
+        });
+
+        $('#ret_luas, #ret_tarif').on('input', hitungRetribusi);
+
+        function hitungRetribusi() {
+            let luas = parseFloat($('#ret_luas').val()) || 0;
+            let tarif = parseFloat($('#ret_tarif').val()) || 0;
+
+            let total = luas * tarif;
+
+            $('#ret_total').val(new Intl.NumberFormat().format(total));
+        }
+
+        $('#btn_simpan_retribusi').click(function () {
+
+            const id = $('#ret_id').val();
+            const total = $('#ret_total').val();
+
+            $.post("{{ url('/ciptakarya/update-retribusi') }}/" + id, {
+                _token: "{{ csrf_token() }}",
+                nilai_retribusi: total
+            }, function(res){
+                if (res.status) {
+                    toastr.success("Retribusi berhasil disimpan!");
+                    $('#modal_retribusi').modal('hide');
+                    product_table.ajax.reload();
+                }
+            });
+
+        });
+
+        function formatRupiah(angka) {
+            if (!angka) return "0";
+
+            // Ubah string ke float dulu supaya angka valid
+            let number = parseFloat(angka);
+
+            if (isNaN(number)) return "0";
+
+            // Bulatkan tanpa decimal
+            number = Math.floor(number);
+
+            // Format dengan separator ribuan
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+
+
 
     </script>
 @endsection

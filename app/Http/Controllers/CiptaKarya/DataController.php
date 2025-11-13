@@ -561,6 +561,21 @@ class DataController extends Controller
     function print_data(Request $request,$id){
         return view('ciptakarya.cetak_list_pbg');
     }
-    
+
+    function detail_data(Request $request,$id){
+        $data['pengajuan'] = PengajuanPBG::findorfail($id);
+        if($data['pengajuan']) $data['pengajuan'] = $data['pengajuan']->toArray();
+        return view('ciptakarya.detail_pbg',$data);
+    }
+
+    public function updateRetribusi(Request $request, $id)
+    {
+        $p = PengajuanPBG::find($id);
+
+        $p->nilai_retribusi = str_replace(',', '', $request->nilai_retribusi);
+        $p->save();
+
+        return response()->json(['status' => true]);
+    }    
 
 }

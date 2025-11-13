@@ -15,6 +15,7 @@ Route::group([
 ],function(){
     Route::get('dashboard', 'CiptaKarya\DataController@dashboard')->name('ciptakarya.dashboard');
 
+    Route::get('detail/{id}', 'CiptaKarya\DataController@detail_data')->name('ciptakarya.detail_data');
     Route::get('print/{id}', 'CiptaKarya\DataController@print_data')->name('ciptakarya.print_data');
     Route::get('list-data-pbg', 'CiptaKarya\DataController@list_index')->name('ciptakarya.list_data_pbg');
     Route::get('list-data-pbg/{id}/detail', 'CiptaKarya\DataController@show_pbg')->name('ciptakarya.pbg.show');
@@ -28,5 +29,7 @@ Route::group([
 
     Route::post('update-petugas', 'CiptaKarya\DataController@update_petugas')->name('ciptakarya.update_petugas');
     Route::get('search-petugas', 'CiptaKarya\DataController@search_petugas')->name('ciptakarya.search_petugas');
+
+    Route::post('update-retribusi/{id}', 'CiptaKarya\DataController@updateRetribusi');
 
 });

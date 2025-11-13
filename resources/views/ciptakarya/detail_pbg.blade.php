@@ -169,7 +169,7 @@
     @endphp
 
     @if($fotos)
-        @foreach ($fotos as $foto)
+        @foreach ($fotos ?? [] as $foto)
             <div class="foto-item">
                 <img src="{{ $foto['url'] }}" class="img-thumbnail">
                 <small>{{ $foto['caption'] }}</small>
@@ -186,7 +186,7 @@
 
     @if(!empty($pengajuan['uploaded_files']))
         <ul>
-            @foreach ($pengajuan['uploaded_files'] as $file)
+            @foreach ($pengajuan['uploaded_files'] ?? [] as $file)
                 <li><a href="{{ $file }}" target="_blank">{{ basename($file) }}</a></li>
             @endforeach
         </ul>
@@ -203,7 +203,7 @@
         $answers = json_decode($pengajuan['answers'], true);
     @endphp
 
-    @foreach ($answers as $caption => $item)
+    @foreach ($answers ?? [] as $caption => $item)
         <div class="timeline-box">
             <b>{{ $caption }}</b> :
             @if($item['value'] == 1)

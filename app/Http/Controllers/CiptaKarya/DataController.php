@@ -78,7 +78,10 @@ class DataController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }
 
-            $data = PengajuanPBG::create($request->except(['_token', 'insert', 'update', 'delete']));
+            $input = $request->except(['_token', 'insert', 'update', 'delete']);
+            $input['answers'] = json_encode([]);
+            $input['questions'] = json_encode([]);
+            $data = PengajuanPBG::create($input);
             return response()->json(['status' => true, 'message' => 'Data berhasil ditambahkan', 'data' => $data]);
         }
 

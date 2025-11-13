@@ -155,7 +155,22 @@ class DataController extends Controller
     public function list_data_pbg(Request $request)
     {
         // return DataTables::of(PengajuanPBG::orderBy('id','desc'))->make(true);
-        $query = PengajuanPBG::query()->orderBy('id', 'desc');
+        // $query = PengajuanPBG::query()->orderBy('id', 'desc');
+        $query = PengajuanPBG::select([
+            'id',
+            'no_permohonan',
+            'tipe',
+            'nama_pemohon',
+            'fungsi_bangunan',
+            'nama_bangunan',
+            'lokasi_bangunan',
+            'nilai_retribusi',
+            'status',
+            'petugas_id',
+            'created_at'
+        ])
+        ->with(['petugas:id,nama'])
+        ->orderBy('id', 'desc');
 
         // ✅ Filter Tahun (created_at)
         if ($request->has('tahun') && $request->tahun != '') {

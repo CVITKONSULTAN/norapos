@@ -519,7 +519,7 @@
                         return formatRupiah(data);
                     }
                 },
-                { data: 'petugas_lapangan', render: (data) => {
+                { data: 'petugas', render: (data) => {
                     return data?.nama ?? '-';
                 }},
                 {

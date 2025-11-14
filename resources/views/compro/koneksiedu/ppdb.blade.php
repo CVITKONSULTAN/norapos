@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PPDB SD Muhammadiyah 2 Pontianak</title>
+    <title>SPMB SD Muhammadiyah 2 Pontianak</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -135,7 +135,7 @@
          <div class="d-flex align-items-center justify-content-center vh-100">
           <div class="text-center p-5 bg-white rounded-4 shadow" style="max-width: 480px;">
             <div style="font-size: 64px; color: #e63946;">🚫</div>
-            <h3 class="fw-bold mt-3 mb-2 text-danger">Pendaftaran PPDB Telah Ditutup</h3>
+            <h3 class="fw-bold mt-3 mb-2 text-danger">Pendaftaran SPMB Telah Ditutup</h3>
             <p class="text-muted mb-4">
               Terima kasih atas antusiasme dan partisipasi Anda.<br>
               Pendaftaran peserta didik baru untuk tahun ajaran 
@@ -144,7 +144,7 @@
 
             <div class="alert alert-warning text-start shadow-sm border-0">
               <i class="bi bi-info-circle me-2"></i>
-              Silakan pantau informasi pembukaan PPDB selanjutnya melalui website resmi atau media sosial sekolah.
+              Silakan pantau informasi pembukaan SPMB selanjutnya melalui website resmi atau media sosial sekolah.
             </div>
 
             <a href="/" class="btn btn-outline-success px-4 mt-3 rounded-pill">
@@ -153,7 +153,7 @@
 
             <div class="mt-4 text-secondary small">
               © {{ date('Y') }} SD Muhammadiyah 2 Pontianak<br>
-              Panitia PPDB
+              Panitia SPMB
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@
                 <h4 class="fw-bold text-dark mb-3">PEMBAYARAN FORMULIR PENDAFTARAN</h4>
 
                 <p class="text-muted mb-4">
-                  Penerimaan Peserta Didik Baru (PPDB) <b>SD Muhammadiyah 2 Pontianak</b>,<br>
+                  Seleksi Penerimaan Murid Baru (SPMB) <b>SD Muhammadiyah 2 Pontianak</b>,<br>
                   Tahun Ajaran <span id="tahun-ajaran">{{$tahun_ajaran}}</span> sebesar 
                   <b id="nominal-pembayaran" class="text-dark">Rp {{ number_format($jumlah_tagihan,0,',','.') }},-</b>
                 </p>
@@ -258,7 +258,7 @@
             <div class="modal-content border-0 shadow-lg rounded-4">
               <div class="modal-body text-center p-5">
                 <h5 class="fw-bold mb-3">
-                  Penerimaan Peserta Didik Baru (PPDB)<br>
+                  Seleksi Penerimaan Murid Baru (SPMB)<br>
                   SD Muhammadiyah 2 Pontianak, Tahun Ajaran <span id="tahunAjaranValidasi">{{ $tahun_ajaran }}</span>
                 </h5>
 

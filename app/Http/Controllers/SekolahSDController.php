@@ -1636,10 +1636,14 @@ class SekolahSDController extends Controller
                 $data->status_bayar = 'upload';
                 $data->save();
 
-                // kirim ke admin sekolah
-                Mail::to("itkonsultanindonesia@gmail.com")->send(new \App\Mail\AdminUploadBuktiNotification($data));
+                 // 🔹 Kirim email ke semua STAFF TU
+                $business_id = 13;
+                $staffTU = User::role("Staff TU#$business_id")->pluck('email')->toArray();
 
-
+                if (!empty($staffTU)) {
+                    Mail::to($staffTU)->send(new \App\Mail\AdminUploadBuktiNotification($data));
+                }
+                
                 return [
                     'status'=>true,
                     'message'=>"OK",
@@ -1915,11 +1919,14 @@ class SekolahSDController extends Controller
             return '❌ Belum ada data PPDB di database. Isi dulu minimal 1 data pendaftar.';
         }
 
-        // Ganti dengan email admin kamu
-        $emailTujuan = "itkonsultanindonesia@gmail.com";
-
         try {
-            Mail::to($emailTujuan)->send(new \App\Mail\NewPPDBNotification($ppdb));
+             // 🔹 Kirim email ke semua STAFF TU
+            $business_id = 13;
+            $staffTU = User::role("Staff TU#$business_id")->pluck('email')->toArray();
+
+            if (!empty($staffTU)) {
+                Mail::to($staffTU)->send(new \App\Mail\NewPPDBNotification($ppdb));
+            }
             return '✅ Test email PPDB berhasil dikirim ke ' . $emailTujuan;
         } catch (Exception $e) {
             return '❌ Gagal kirim email: ' . $e->getMessage();

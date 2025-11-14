@@ -122,7 +122,8 @@
                     <tr>
                         <td class="text-center">{{ $key+1 }}</td>
                         {{-- <td class="text-center">{{ $i+1 }}</td> --}}
-                        <td>{{ $item->mapel->nama ?? "" }}</td>
+                        {{-- <td>{{ $item->mapel->nama ?? "" }}</td> --}}
+                        <td>{{ $item->nama ?? "" }}</td>
                         <td class="text-center">{{ $item->nilai_rapor }}</td>
                         <td style="padding:0px;">
                             @if(!empty($item->catatan_max_tp))

@@ -150,7 +150,7 @@ class SekolahSDController extends Controller
             $data['kelas_wali'] = Kelas::where('wali_kelas_id',$user->id)->get();
         }
         if($user->checkAdmin()){
-            $data['kelas_wali'] = Kelas::all();
+            $data['kelas_wali'] = Kelas::orderByDesc('id')->get();
         }
 
 
@@ -521,11 +521,13 @@ class SekolahSDController extends Controller
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
-        ->whereHas('mapel')
+        // ->whereHas('mapel')
         ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
         ->orderBy('mapels.orders','asc')
         ->with('mapel')
         ->get();
+
+        // dd($data['nilai_list']->toArray());
         
         $data['fase'] = null;
         $kelas = $data['kelas_siswa']->kelas;
@@ -640,7 +642,7 @@ class SekolahSDController extends Controller
         ];
 
         $data['nilai_list'] = NilaiSiswa::where($where)
-        ->whereHas('mapel')
+        // ->whereHas('mapel')
         ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
         ->orderBy('mapels.orders','asc')
         ->with('mapel')

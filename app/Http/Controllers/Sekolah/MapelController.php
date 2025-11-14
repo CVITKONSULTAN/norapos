@@ -84,10 +84,10 @@ class MapelController extends Controller
             return $q->kelas->nama_kelas;
         })
         ->addColumn('nama_mapel',function($q){
-            return $q->mapel->nama;
+            return $q->mapel->nama ?? "";
         })
         ->addColumn('kategori_mapel',function($q){
-            return $q->mapel->kategori;
+            return $q->mapel->kategori ?? "";
         })
         ->make(true);
     }

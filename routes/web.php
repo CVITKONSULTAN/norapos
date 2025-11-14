@@ -363,6 +363,14 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         Route::get('peserta-didik-baru',"SekolahSDController@peserta_didik_baru")->name('sekolah_sd.peserta_didik_baru');
         Route::get('peserta-didik-baru-config',"SekolahSDController@peserta_didik_baru_config")->name('sekolah_sd.peserta_didik_baru.config');
+        Route::get('jadwal-harian-detail', 
+            [PPDBSettingController::class, 'hariDetail'])
+            ->name('sekolah_sd.ppdb.jadwal_harian.detail');
+
+        Route::get('jadwal-harian/export', 
+            [PPDBSettingController::class, 'exportExcelJadwalPPDB']
+        )->name('sekolah_sd.ppdb.jadwal_harian.export');
+
 
         Route::prefix('ppdb/setting')->group(function() {
             Route::get('/', [PPDBSettingController::class, 'index'])->name('sekolah_sd.ppdb.setting.index');

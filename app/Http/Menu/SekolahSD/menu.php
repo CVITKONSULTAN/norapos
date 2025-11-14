@@ -110,6 +110,15 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ]
                 );
                 $sub->url(
+                    route('sekolah_sd.ppdb.jadwal_harian.detail'),
+                    "Jadwal Test Perhari",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'jadwal-harian-detail'
+                    ]
+                );
+                $sub->url(
                     route('sekolah_sd.peserta_didik_baru.config'),
                     "Pengaturan Penerimaan",
                     [

@@ -102,23 +102,23 @@
 
             <div class="form-group">
                 <label>Tanggal Tes IQ (bisa lebih dari 1)</label>
-                <input type="text" class="form-control" id="iq_days" name="iq_days[]" placeholder="Contoh: 2025-02-19, 2025-02-20">
+                <input readonly type="text" class="form-control" id="iq_days" name="iq_days[]" placeholder="Contoh: 2025-02-19, 2025-02-20">
                 <small class="text-muted">Format: YYYY-MM-DD dipisahkan dengan koma</small>
             </div>
 
             <div class="form-group">
                 <label>Tanggal Tes Pemetaan (bisa lebih dari 1)</label>
-                <input type="text" class="form-control" id="map_days" name="map_days[]" placeholder="Contoh: 2025-02-26, 2025-02-27">
+                <input readonly type="text" class="form-control" id="map_days" name="map_days[]" placeholder="Contoh: 2025-02-26, 2025-02-27">
             </div>
 
             <div class="form-group">
                 <label>Daftar Jam Sesi (contoh: 07:00-08:00, 08:00-09:00)</label>
-                <input type="text" class="form-control" id="sessions" name="sessions[]" placeholder="07:00-08:00, 08:00-09:00, ...">
+                <input readonly type="text" class="form-control" id="sessions" name="sessions[]" placeholder="07:00-08:00, 08:00-09:00, ...">
             </div>
 
             <div class="form-group">
                 <label>Kapasitas Per Sesi</label>
-                <input type="number" name="capacity_per_session" id="capacity_per_session" class="form-control" min="1" value="14">
+                <input readonly type="number" name="capacity_per_session" id="capacity_per_session" class="form-control" min="1" value="14">
             </div>
 
             <div class="text-right">

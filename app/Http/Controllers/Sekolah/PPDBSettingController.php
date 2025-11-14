@@ -7,6 +7,9 @@ use App\Models\Sekolah\PPDBSetting;
 use Illuminate\Http\Request;
 use DataTables;
 use Carbon\Carbon;
+use DB;
+use Excel;
+use App\Exports\JadwalTesExport;
 
 class PPDBSettingController extends Controller
 {
@@ -125,4 +128,135 @@ class PPDBSettingController extends Controller
         $setting->delete();
         return response()->json(['status'=>true, 'message'=>'Periode berhasil dihapus.']);
     }
+
+    public function hariDetail(Request $request)
+    {
+        // ------------------------------
+        // 1) Ambil semua tanggal tes yang tersedia dari DB
+        // ------------------------------
+        $availableDates = DB::table('ppdb_test_schedules')
+            ->select('iq_date', 'map_date')
+            ->get()
+            ->flatMap(function ($item) {
+                return [$item->iq_date, $item->map_date];
+            })
+            ->unique()
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
+
+        // Jika belum ada data sama sekali
+        if (count($availableDates) == 0) {
+            return view('sekolah_sd.jadwal_test_ppdb', [
+                'data' => [],
+                'filter' => null,
+                'tipe' => 'iq',
+                'dates' => []
+            ]);
+        }
+
+        // ------------------------------
+        // 2) Ambil filter user
+        // ------------------------------
+        $filter = $request->tanggal ?: $availableDates[0];
+        $tipe = $request->tipe ?? 'iq'; // iq | map
+
+        // ------------------------------
+        // 3) Query data peserta + nomor HP
+        // ------------------------------
+        $query = DB::table('ppdb_test_schedules as s')
+            ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->select(
+                'p.nama',
+                'p.kode_bayar',
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                's.iq_date',
+                's.iq_start_time',
+                's.iq_end_time',
+                's.map_date',
+                's.map_start_time',
+                's.map_end_time'
+            );
+
+        // ------------------------------
+        // 4) Filter berdasarkan tipe tes
+        // ------------------------------
+        if ($tipe === 'map') {
+            $query->where('s.map_date', $filter);
+        } else {
+            $query->where('s.iq_date', $filter);
+        }
+
+        $rows = $query->orderBy('s.iq_start_time')->get();
+        // ------------------------------
+        // 5) Susun hasil: Hari → Sesi → Peserta
+        // ------------------------------
+        $result = [];
+
+        foreach ($rows as $item) {
+
+            // Tentukan atribut utama sesuai tipe tes
+            if ($tipe === 'map') {
+                $hariTanggal = $item->map_date;
+                $start = $item->map_start_time;
+                $end   = $item->map_end_time;
+            } else {
+                $hariTanggal = $item->iq_date;
+                $start = $item->iq_start_time;
+                $end   = $item->iq_end_time;
+            }
+
+            // Hari
+            $hari = Carbon::parse($hariTanggal)->translatedFormat('d F Y');
+
+            // Sesi
+            $jam = Carbon::parse($start)->format('H:i') . " - " .
+                Carbon::parse($end)->format('H:i');
+
+            if (!isset($result[$hari])) {
+                $result[$hari] = [];
+            }
+
+            if (!isset($result[$hari][$jam])) {
+                $result[$hari][$jam] = [];
+            }
+
+            // Isi data peserta
+            $result[$hari][$jam][] = [
+                'nama'       => $item->nama,
+                'kode_bayar' => $item->kode_bayar,
+                'no_hp'      => $item->no_hp,
+
+                // Jadwal pemetaan selalu ditampilkan (referensi)
+                'pemetaan' => [
+                    'tanggal' => Carbon::parse($item->map_date)->translatedFormat('d F Y'),
+                    'jam'     => Carbon::parse($item->map_start_time)->format('H:i') . " - " .
+                                Carbon::parse($item->map_end_time)->format('H:i'),
+                ]
+            ];
+        }
+
+        // ------------------------------
+        // 6) Return ke view
+        // ------------------------------
+        return view('sekolah_sd.jadwal_test_ppdb', [
+            'data'   => $result,
+            'filter' => $filter,
+            'tipe'   => $tipe,
+            'dates'  => $availableDates
+        ]);
+    }
+
+    
+    public function exportExcelJadwalPPDB(Request $request)
+    {
+        $tanggal = $request->tanggal;
+        $tipe = $request->tipe ?? 'iq';
+
+        $namaFile = "Jadwal-Test-PPDB-$tanggal.xlsx";
+
+        return Excel::download(new JadwalTesExport($tanggal, $tipe), $namaFile);
+    }
+
 }

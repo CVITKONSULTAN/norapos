@@ -788,6 +788,7 @@
           // 📨 Tampilkan input email via SweetAlert
           const { value: email } = await Swal.fire({
             title: "Masukkan Email Anda",
+            text: "email akan digunakan untuk mengirimkan kartu test peserta",
             input: "email",
             inputPlaceholder: "contoh: nama@email.com",
             confirmButtonText: "Lanjutkan",

@@ -1642,8 +1642,10 @@ class SekolahSDController extends Controller
                 $nama = $request->nama_lengkap;
             }
 
+            $setting = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
+
             // Tentukan biaya dasar pendaftaran
-            $biayaDasar = 350000;
+            $biayaDasar = $setting->jumlah_tagihan ?? 350000;
 
             // Generate 3 angka unik (antara 001 - 999)
             $kodeUnik = random_int(1, 999);

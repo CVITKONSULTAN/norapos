@@ -29,14 +29,6 @@
                     @endforeach
                 </select>
 
-                <!-- FILTER TIPE TES -->
-                <label style="margin-right:10px;"><b>Tipe Tes</b></label>
-
-                <select name="tipe" class="form-control" style="margin-right:15px;">
-                    <option value="iq"  {{ $tipe == 'iq'  ? 'selected' : '' }}>Tes IQ</option>
-                    <option value="map" {{ $tipe == 'map' ? 'selected' : '' }}>Tes Pemetaan</option>
-                </select>
-
                 <!-- BUTTON TAMPILKAN -->
                 <button class="btn btn-primary">
                     <i class="fa fa-search"></i> Tampilkan
@@ -49,7 +41,7 @@
                 </a>
 
                 <!-- BUTTON EXPORT -->
-                <a href="{{ route('sekolah_sd.ppdb.jadwal_harian.export', ['tanggal' => $filter, 'tipe' => $tipe]) }}"
+                <a href="{{ route('sekolah_sd.ppdb.jadwal_harian.export', ['tanggal' => $filter]) }}"
                    class="btn btn-success" 
                    style="margin-left:10px;">
                     <i class="fa fa-file-excel-o"></i> Export Excel
@@ -61,7 +53,7 @@
     </div>
 
     <!-- JIKA KOSONG -->
-    @if (count($data) === 0)
+    @if (empty($data))
         <div class="alert alert-warning">
             <b>Tidak ada data jadwal.</b>
         </div>
@@ -69,7 +61,7 @@
 
 
     <!-- LIST HARI -->
-    @foreach ($data as $hari => $sessions)
+    @foreach ($data as $hari => $testTypes)
 
         <div class="box box-primary">
             <div class="box-header with-border">
@@ -78,35 +70,45 @@
 
             <div class="box-body">
 
-                <!-- LIST SESI -->
-                @foreach ($sessions as $jam => $peserta)
+                <!-- LOOP TIPE TES (IQ / MAP) -->
+                @foreach ($testTypes as $tipeTes => $sessions)
 
-                    <h4 style="margin-top:20px;"><b>⏰ {{ $jam }}</b></h4>
+                    <h3 style="margin-top:10px;">
+                        <b>
+                            @if ($tipeTes === 'IQ')
+                                🧠 Tes IQ
+                            @else
+                                📘 Tes Pemetaan
+                            @endif
+                        </b>
+                    </h3>
 
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th width="30%">Nama Peserta</th>
-                                <th width="15%">Kode Bayar</th>
-                                <th width="20%">No HP</th>
-                                <th width="35%">Jadwal Pemetaan</th>
-                            </tr>
-                        </thead>
+                    <!-- LOOP SESI -->
+                    @foreach ($sessions as $jam => $peserta)
 
-                        <tbody>
-                            @foreach ($peserta as $p)
+                        <h4 style="margin-top:20px;"><b>⏰ {{ $jam }}</b></h4>
+
+                        <table class="table table-bordered table-striped">
+                            <thead>
                                 <tr>
-                                    <td>{{ $p['nama'] }}</td>
-                                    <td>{{ $p['kode_bayar'] }}</td>
-                                    <td>{{ $p['no_hp'] ?? '-' }}</td>
-                                    <td>
-                                        {{ $p['pemetaan']['tanggal'] }}
-                                        ({{ $p['pemetaan']['jam'] }})
-                                    </td>
+                                    <th width="40%">Nama Peserta</th>
+                                    <th width="20%">Kode Bayar</th>
+                                    <th width="25%">No HP</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                @foreach ($peserta as $p)
+                                    <tr>
+                                        <td>{{ $p['nama'] }}</td>
+                                        <td>{{ $p['kode_bayar'] }}</td>
+                                        <td>{{ $p['no_hp'] ?? '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                    @endforeach
 
                 @endforeach
 

@@ -131,132 +131,92 @@ class PPDBSettingController extends Controller
 
     public function hariDetail(Request $request)
     {
-        // ------------------------------
-        // 1) Ambil semua tanggal tes yang tersedia dari DB
-        // ------------------------------
+        // 1. Ambil semua tanggal (iq + map) tapi digabung jadi satu filter
         $availableDates = DB::table('ppdb_test_schedules')
             ->select('iq_date', 'map_date')
             ->get()
-            ->flatMap(function ($item) {
-                return [$item->iq_date, $item->map_date];
-            })
+            ->flatMap(fn($x) => [$x->iq_date, $x->map_date])
             ->unique()
             ->filter()
             ->sort()
             ->values()
             ->toArray();
 
-        // Jika belum ada data sama sekali
         if (count($availableDates) == 0) {
             return view('sekolah_sd.jadwal_test_ppdb', [
-                'data' => [],
+                'data'   => [],
                 'filter' => null,
-                'tipe' => 'iq',
-                'dates' => []
+                'dates'  => [],
             ]);
         }
 
-        // ------------------------------
-        // 2) Ambil filter user
-        // ------------------------------
-        $filter = $request->tanggal ?: $availableDates[0];
-        $tipe = $request->tipe ?? 'iq'; // iq | map
+        // 2. Filter tanggal yang dipilih
+        $filter = $request->tanggal ?? $availableDates[0];
 
-        // ------------------------------
-        // 3) Query data peserta + nomor HP
-        // ------------------------------
-        $query = DB::table('ppdb_test_schedules as s')
+        // 3. Ambil data peserta IQ atau MAP yang sesuai tanggal
+        $rows = DB::table('ppdb_test_schedules as s')
             ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
             ->select(
-                'p.nama',
-                'p.kode_bayar',
+                'p.nama', 'p.kode_bayar',
                 DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
-                's.iq_date',
-                's.iq_start_time',
-                's.iq_end_time',
-                's.map_date',
-                's.map_start_time',
-                's.map_end_time'
-            );
+                's.*'
+            )
+            ->where(function($q) use ($filter) {
+                $q->where('s.iq_date', $filter)
+                ->orWhere('s.map_date', $filter);
+            })
+            ->get();
 
-        // ------------------------------
-        // 4) Filter berdasarkan tipe tes
-        // ------------------------------
-        if ($tipe === 'map') {
-            $query->where('s.map_date', $filter);
-        } else {
-            $query->where('s.iq_date', $filter);
-        }
-
-        $rows = $query->orderBy('s.iq_start_time')->get();
-        // ------------------------------
-        // 5) Susun hasil: Hari → Sesi → Peserta
-        // ------------------------------
+        // 4. Kembalikan format: IQ dan MAP dipisah sesi
         $result = [];
 
         foreach ($rows as $item) {
 
-            // Tentukan atribut utama sesuai tipe tes
-            if ($tipe === 'map') {
-                $hariTanggal = $item->map_date;
-                $start = $item->map_start_time;
-                $end   = $item->map_end_time;
-            } else {
-                $hariTanggal = $item->iq_date;
-                $start = $item->iq_start_time;
-                $end   = $item->iq_end_time;
+            // IQ
+            if ($item->iq_date == $filter) {
+
+                $hari = Carbon::parse($item->iq_date)->translatedFormat('d F Y');
+                $jam  = Carbon::parse($item->iq_start_time)->format('H:i')
+                    ." - ".
+                    Carbon::parse($item->iq_end_time)->format('H:i');
+
+                $result[$hari]['IQ'][$jam][] = [
+                    'nama' => $item->nama,
+                    'kode_bayar' => $item->kode_bayar,
+                    'no_hp' => $item->no_hp,
+                ];
             }
 
-            // Hari
-            $hari = Carbon::parse($hariTanggal)->translatedFormat('d F Y');
+            // MAP
+            if ($item->map_date == $filter) {
 
-            // Sesi
-            $jam = Carbon::parse($start)->format('H:i') . " - " .
-                Carbon::parse($end)->format('H:i');
+                $hari = Carbon::parse($item->map_date)->translatedFormat('d F Y');
+                $jam  = Carbon::parse($item->map_start_time)->format('H:i')
+                    ." - ".
+                    Carbon::parse($item->map_end_time)->format('H:i');
 
-            if (!isset($result[$hari])) {
-                $result[$hari] = [];
+                $result[$hari]['MAP'][$jam][] = [
+                    'nama' => $item->nama,
+                    'kode_bayar' => $item->kode_bayar,
+                    'no_hp' => $item->no_hp,
+                ];
             }
-
-            if (!isset($result[$hari][$jam])) {
-                $result[$hari][$jam] = [];
-            }
-
-            // Isi data peserta
-            $result[$hari][$jam][] = [
-                'nama'       => $item->nama,
-                'kode_bayar' => $item->kode_bayar,
-                'no_hp'      => $item->no_hp,
-
-                // Jadwal pemetaan selalu ditampilkan (referensi)
-                'pemetaan' => [
-                    'tanggal' => Carbon::parse($item->map_date)->translatedFormat('d F Y'),
-                    'jam'     => Carbon::parse($item->map_start_time)->format('H:i') . " - " .
-                                Carbon::parse($item->map_end_time)->format('H:i'),
-                ]
-            ];
         }
 
-        // ------------------------------
-        // 6) Return ke view
-        // ------------------------------
         return view('sekolah_sd.jadwal_test_ppdb', [
             'data'   => $result,
             'filter' => $filter,
-            'tipe'   => $tipe,
             'dates'  => $availableDates
         ]);
     }
-
     
     public function exportExcelJadwalPPDB(Request $request)
     {
         $tanggal = $request->tanggal;
-        $tipe = $request->tipe ?? 'iq';
 
         $namaFile = "Jadwal-Test-PPDB-$tanggal.xlsx";
 
-        return Excel::download(new JadwalTesExport($tanggal, $tipe), $namaFile);
+        return Excel::download(new JadwalTesExport($tanggal), $namaFile);
     }
 
 }

@@ -1,55 +1,74 @@
 <table>
     <tr>
-        <td colspan="3"><b>Jadwal Tes PPDB</b></td>
+        <td colspan="4"><b>Jadwal Tes PPDB</b></td>
     </tr>
     <tr>
-        <td colspan="3">Tanggal: 
+        <td colspan="4">Tanggal: 
             {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}
-        </td>
-    </tr>
-    <tr>
-        <td colspan="3">Tipe Tes: 
-            {{ strtoupper($tipe) }}
         </td>
     </tr>
 </table>
 
-@foreach ($data as $hari => $sessions)
+@foreach ($data as $hari => $testTypes)
 
     <br>
+
+    {{-- HEADER HARI --}}
     <table border="1">
         <tr style="background:#c8e1ff;">
-            <th colspan="3" style="font-weight:bold;">
-                {{ $hari }}
+            <th colspan="4" style="font-weight:bold;">
+                📅 {{ $hari }}
             </th>
         </tr>
 
-        @foreach ($sessions as $jam => $peserta)
+        {{-- LOOP TIPE TES: IQ / MAP --}}
+        @foreach ($testTypes as $tipeTes => $sessions)
 
-        <tr style="background:#eee;">
-            <th colspan="3">⏰ {{ $jam }}</th>
-        </tr>
+            <tr style="background:#d5ffd5;">
+                <th colspan="4" style="font-weight:bold;">
+                    {{ $tipeTes === 'IQ' ? '🧠 Tes IQ' : '📘 Tes Pemetaan' }}
+                </th>
+            </tr>
 
-        <tr>
-            <th>Nama Peserta</th>
-            <th>No HP</th>
-            <th>Kode Bayar</th>
-            <th>Jadwal Pemetaan</th>
-        </tr>
+            {{-- LOOP SESI --}}
+            @foreach ($sessions as $jam => $peserta)
 
-        @foreach ($peserta as $p)
-        <tr>
-            <td>{{ $p['nama'] }}</td>
-            <td>{{ $p['no_hp'] }}</td>
-            <td>{{ $p['kode_bayar'] }}</td>
-            <td>
-                {{ $p['pemetaan']['tanggal'] }}
-                ({{ $p['pemetaan']['jam'] }})
-            </td>
-        </tr>
+                <tr style="background:#eee;">
+                    <th colspan="4">⏰ {{ $jam }}</th>
+                </tr>
+
+                <tr>
+                    <th>Nama Peserta</th>
+                    <th>No HP</th>
+                    <th>Kode Bayar</th>
+                    <th>
+                        {{ $tipeTes === 'MAP' ? 'Jadwal Pemetaan' : 'Catatan' }}
+                    </th>
+                </tr>
+
+                {{-- DAFTAR PESERTA --}}
+                @foreach ($peserta as $p)
+                    <tr>
+                        <td>{{ $p['nama'] }}</td>
+                        <td>{{ $p['no_hp'] }}</td>
+                        <td>{{ $p['kode_bayar'] }}</td>
+
+                        {{-- KOLOM 4: Untuk MAP tampilkan jadwal pemetaan --}}
+                        <td>
+                            @if ($tipeTes === 'MAP')
+                                {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}
+                                ({{ $jam }})
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+
+            @endforeach
+
         @endforeach
 
-        @endforeach
     </table>
 
 @endforeach

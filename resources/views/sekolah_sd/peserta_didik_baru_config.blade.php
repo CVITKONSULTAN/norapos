@@ -17,7 +17,6 @@
 <section class="content">
 
     <div class="text-right mb-3" style="margin-bottom:50px;">
-        {{-- <button class="btn btn-primary" data-toggle="modal" data-target="#modal_ppdb_setting"> --}}
         <button class="btn btn-primary" id="tambah">
             <i class="fa fa-plus"></i> Tambah Periode
         </button>
@@ -33,7 +32,7 @@
                         <th>Biaya</th>
                         <th>Status</th>
                         <th>Rekening</th>
-                        <th>Tanggal Tes</th>
+                        <th>Tanggal Tes (Lama)</th>
                         <th>Tempat Tes</th>
                         <th>Aksi</th>
                     </tr>
@@ -88,13 +87,38 @@
             </div>
 
             <div class="form-group">
-                <label>Tanggal Tes</label>
+                <label>Tanggal Tes (Lama)</label>
                 <input type="date" name="tanggal_tes" id="tanggal_tes" class="form-control">
             </div>
 
             <div class="form-group">
                 <label>Tempat Tes</label>
                 <input type="text" name="tempat_tes" id="tempat_tes" class="form-control">
+            </div>
+
+            <hr>
+
+            <h4>Pengaturan Jadwal Tes (Dinamis)</h4>
+
+            <div class="form-group">
+                <label>Tanggal Tes IQ (bisa lebih dari 1)</label>
+                <input type="text" class="form-control" id="iq_days" name="iq_days[]" placeholder="Contoh: 2025-02-19, 2025-02-20">
+                <small class="text-muted">Format: YYYY-MM-DD dipisahkan dengan koma</small>
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal Tes Pemetaan (bisa lebih dari 1)</label>
+                <input type="text" class="form-control" id="map_days" name="map_days[]" placeholder="Contoh: 2025-02-26, 2025-02-27">
+            </div>
+
+            <div class="form-group">
+                <label>Daftar Jam Sesi (contoh: 07:00-08:00, 08:00-09:00)</label>
+                <input type="text" class="form-control" id="sessions" name="sessions[]" placeholder="07:00-08:00, 08:00-09:00, ...">
+            </div>
+
+            <div class="form-group">
+                <label>Kapasitas Per Sesi</label>
+                <input type="number" name="capacity_per_session" id="capacity_per_session" class="form-control" min="1" value="14">
             </div>
 
             <div class="text-right">
@@ -115,7 +139,7 @@
 let table;
 
 $(document).ready(function(){
-    // 🔹 Load data tabel
+
     table = $('#table_setting').DataTable({
         order:[],
         ajax: "{{ route('sekolah_sd.ppdb.setting.data') }}",
@@ -148,22 +172,47 @@ $(document).ready(function(){
         $('#atas_nama').val("");
         $('#tempat_tes').val("");
         $('#tanggal_tes').val("");
-    
         $('#tgl_penerimaan').val("");
 
+        $('#iq_days').val("");
+        $('#map_days').val("");
+        $('#sessions').val("");
+        $('#capacity_per_session').val(14);
+
         $('#modal_ppdb_setting').modal('show');
-    })
+    });
 
     // 🔹 Simpan data
     $('#form_setting').on('submit', function(e){
         e.preventDefault();
+
         const btn = $(this).find('button[type="submit"]');
         btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Menyimpan...');
 
         $.ajax({
             url: "{{ route('sekolah_sd.ppdb.setting.store') }}",
             method: 'POST',
-            data: $(this).serialize(),
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: $('#id_edit').val(),
+                tahun_ajaran: $('#tahun_ajaran').val(),
+                tgl_penerimaan: $('#tgl_penerimaan').val(),
+                jumlah_tagihan: $('#jumlah_tagihan').val(),
+                nama_bank: $('#nama_bank').val(),
+                no_rek: $('#no_rek').val(),
+                atas_nama: $('#atas_nama').val(),
+                tanggal_tes: $('#tanggal_tes').val(),
+                tempat_tes: $('#tempat_tes').val(),
+
+                // ===== Jadwal Tes Dinamis =====
+                iq_days: $('#iq_days').val().split(',').map(s => s.trim()).filter(s => s),
+                map_days: $('#map_days').val().split(',').map(s => s.trim()).filter(s => s),
+                sessions: $('#sessions').val().split(',').map(s => {
+                    const [a, b] = s.trim().split('-');
+                    return [a, b];
+                }),
+                capacity_per_session: $('#capacity_per_session').val(),
+            },
             complete: function(){
                 btn.prop('disabled', false).html('<i class="fa fa-save"></i> Simpan');
             },
@@ -191,6 +240,7 @@ function editData(id){
     $.get(`/sekolah_sd/ppdb/setting/${id}`, function(res){
         if(res.status){
             const d = res.data;
+
             $('#id_edit').val(d.id);
             $('#tahun_ajaran').val(d.tahun_ajaran);
             $('#jumlah_tagihan').val(d.jumlah_tagihan);
@@ -199,9 +249,19 @@ function editData(id){
             $('#atas_nama').val(d.atas_nama);
             $('#tempat_tes').val(d.tempat_tes);
             $('#tanggal_tes').val(d.tanggal_tes ? moment(d.tanggal_tes).format('YYYY-MM-DD') : '');
-            
-            // ✅ Format tanggal penerimaan agar tampil
             $('#tgl_penerimaan').val(d.tgl_penerimaan ? moment(d.tgl_penerimaan).format('YYYY-MM-DD') : '');
+
+            // Jadwal tes dinamis
+            $('#iq_days').val(d.iq_days ? d.iq_days.join(', ') : '');
+            $('#map_days').val(d.map_days ? d.map_days.join(', ') : '');
+
+            let sesiFormatted = "";
+            if (d.sessions) {
+                sesiFormatted = d.sessions.map(s => `${s[0]}-${s[1]}`).join(', ');
+            }
+            $('#sessions').val(sesiFormatted);
+
+            $('#capacity_per_session').val(d.capacity_per_session ?? 14);
 
             $('#modal_ppdb_setting').modal('show');
         } else {
@@ -211,7 +271,7 @@ function editData(id){
 }
 
 
-// 🔹 Toggle status open/close (hanya 1 yang boleh dibuka)
+// 🔹 Toggle status periode
 function toggleStatus(id, close){
     $.post('{{ route("sekolah_sd.ppdb.setting.toggle") }}', {
         id,

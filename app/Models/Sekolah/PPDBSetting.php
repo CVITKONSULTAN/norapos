@@ -19,11 +19,18 @@ class PPDBSetting extends Model
         'no_rek',
         'atas_nama',
         'tanggal_tes',
-        'tempat_tes'
+        'tempat_tes',
+        'iq_days',
+        'map_days',
+        'sessions',
     ];
 
     protected $casts = [
         'close_ppdb' => 'boolean',
         'tgl_penerimaan' => 'date',
+        'close_ppdb' => 'boolean',
+        'iq_days' => 'array',
+        'map_days' => 'array',
+        'sessions' => 'array',
     ];
 }

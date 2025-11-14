@@ -133,57 +133,94 @@
   </div>
 
   <div class="card">
+
+    <!-- QR CODE -->
     <div class="qr">
-      <img id="qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=SDMUH2-2025-001" alt="QR">
+      <img id="qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=40x40&data={{ $ppdb->kode_bayar }}" alt="QR">
     </div>
 
+    <!-- HEADER -->
     <div class="header">
       <img src="/img/svg/sdm2_logo.svg" class="logo" alt="Logo Sekolah">
       <h2>SD MUHAMMADIYAH 2 PONTIANAK</h2>
-      <small>Jl. Jenderal Ahmad Yani No.9, Akcaya, Kec. Pontianak Sel., Kota Pontianak, Kalimantan Barat 78121</small>
-      <small>Kartu Tes Penerimaan Peserta Didik Baru (PPDB)</small>
-      <small>Tahun Pelajaran 2025/2026</small>
+      <small>Jl. Ahmad Yani No.9, Pontianak Selatan, Kalimantan Barat</small>
+      <small>Kartu Tes Seleksi Penerimaan Murid Baru (SPMB)</small>
+      <small>Tahun Pelajaran {{$setting->tahun_ajaran ?? ""}}</small>
     </div>
 
+    <!-- BIODATA -->
     <table>
       <tr><td width="40%">Nomor Urut</td><td>: {{ $ppdb->id }}-EDU</td></tr>
       <tr><td>Nama Lengkap</td><td>: {{ $ppdb->nama }}</td></tr>
       <tr><td>Jenis Kelamin</td><td>: {{ $ppdb->detail['jenis-kelamin'] ?? '-' }}</td></tr>
       <tr><td>Kode Bayar</td><td>: {{ $ppdb->kode_bayar }}</td></tr>
+      <tr><td>Tgl Pendaftaran</td><td>: {{ $ppdb->created_at->format('d/m/Y H:i:s') }}</td></tr>
     </table>
 
-    {{-- <div class="tes"> --}}
-      {{-- <b>Jenis Tes:</b> Observasi Calon Peserta Didik Baru dan Wawancara Orang Tua<br>
-      <b>Tanggal Tes:</b>{{ $setting->tanggal_tes ?? '-' }}<br>
-      <b>Tempat Tes:</b> {{ $setting->tempat_tes ?? "-" }} --}}
-      <table class="tes">
-            <tr><td colspan="2"></td></tr>
-            <tr><td colspan="2"></td></tr>
-            <tr>
-                <td width="14%"><b>Jenis Tes</b></td>
-                <td>: Observasi Calon Peserta Didik Baru dan Wawancara Orang Tua</td>
-            </tr>
-            <tr>
-                <td><b>Tanggal Tes</b></td>
-                <td>: {{ $setting->tanggal_tes ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><b>Tempat Tes</b></td>
-                <td>: {{ $setting->tempat_tes ?? '-' }}</td>
-            </tr>
-        </table>
-    {{-- </div> --}}
+    <!-- JADWAL TES -->
+    <table class="tes">
+      <tr>
+        <td colspan="2"><b>Jadwal Tes IQ</b></td>
+      </tr>
+      <tr>
+        <td width="35%">Tanggal</td>
+        <td>:
+          {{ $schedule && $schedule->iq_date 
+              ? \Carbon\Carbon::parse($schedule->iq_date)->translatedFormat('d F Y') 
+              : '-' }}
+        </td>
+      </tr>
+      <tr>
+        <td>Waktu</td>
+        <td>:
+          @if($schedule && $schedule->iq_start_time)
+            {{ \Carbon\Carbon::parse($schedule->iq_start_time)->format('H:i') }}
+            -
+            {{ \Carbon\Carbon::parse($schedule->iq_end_time)->format('H:i') }}
+          @else
+            -
+          @endif
+        </td>
+      </tr>
 
+      <tr><td colspan="2" style="height: 8px;"></td></tr>
+
+      <tr>
+        <td colspan="2"><b>Jadwal Tes Pemetaan</b></td>
+      </tr>
+      <tr>
+        <td>Tanggal</td>
+        <td>:
+          {{ $schedule && $schedule->map_date
+              ? \Carbon\Carbon::parse($schedule->map_date)->translatedFormat('d F Y')
+              : '-' }}
+        </td>
+      </tr>
+      <tr>
+        <td>Waktu</td>
+        <td>:
+          @if($schedule && $schedule->map_start_time)
+            {{ \Carbon\Carbon::parse($schedule->map_start_time)->format('H:i') }}
+            -
+            {{ \Carbon\Carbon::parse($schedule->map_end_time)->format('H:i') }}
+          @else
+            -
+          @endif
+        </td>
+      </tr>
+    </table>
+
+    <!-- CATATAN -->
     <div class="catatan">
       <b>Catatan:</b>
       <ol style="margin:4px 0 0 16px; padding:0;">
         <li>Peserta wajib membawa kartu tes ini saat ujian.</li>
         <li>Datang 30 menit sebelum tes dimulai.</li>
         <li>Berpakaian sopan dan rapi.</li>
-        <li>Membawa alat tulis sendiri.</li>
       </ol>
     </div>
 
+    <!-- TTD -->
     <div class="bottom-section">
       <div class="foto">Tempel Foto 3x4</div>
       <div class="footer">
@@ -192,13 +229,12 @@
       </div>
     </div>
   </div>
-  <!-- QR Code Generator -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
   <script>
     window.onload = function() {
-      // pastikan QR selesai dibuat sebelum print
-      setTimeout(() => window.print(), 800);
+      setTimeout(() => window.print(), 600);
     };
   </script>
+
 </body>
 </html>

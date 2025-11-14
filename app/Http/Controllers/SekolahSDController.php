@@ -19,6 +19,7 @@ use \App\Models\Sekolah\DimensiProjek;
 use \App\Models\Sekolah\DataDimensiID;
 use \App\Models\Sekolah\PPDBSekolah;
 use \App\Models\Sekolah\PPDBSetting;
+use \App\Models\Sekolah\PpdbTestSchedule;
 use \App\User;
 use \App\Visitor;
 
@@ -1609,10 +1610,20 @@ class SekolahSDController extends Controller
 
     function cetak_kartutes_ppdb(Request $request){
 
-        $data['ppdb'] = PPDBSekolah::where('kode_bayar',$request->kode_bayar ?? '')->firstorfail();
-        $data['setting'] = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
+        // Data peserta berdasarkan kode bayar
+        $ppdb = PPDBSekolah::where('kode_bayar', $request->kode_bayar ?? '')->firstOrFail();
 
-        return view('compro.koneksiedu.cetak_kartu_ppdb',$data);
+        // PPDB setting aktif
+        $setting = PPDBSetting::where('close_ppdb', 0)->orderBy('id','desc')->first();
+
+        // Ambil jadwal tes peserta (IQ & Pemetaan)
+        $schedule = PpdbTestSchedule::where('kode_bayar', $ppdb->kode_bayar)->first();
+
+        return view('compro.koneksiedu.cetak_kartu_ppdb', [
+            'ppdb'     => $ppdb,
+            'setting'  => $setting,
+            'schedule' => $schedule
+        ]);
     }
 
     function ppdb_store(Request $request){
@@ -1807,6 +1818,8 @@ class SekolahSDController extends Controller
             $data->keterangan = null;
             $data->save();
 
+            $this->generateScheduleFor($data->kode_bayar);
+
             // 🔔 Kirim email ke pendaftar
             try {
                 $emailTujuan = $data->detail['email'] ?? null;
@@ -1912,5 +1925,64 @@ class SekolahSDController extends Controller
             return '❌ Gagal kirim email: ' . $e->getMessage();
         }
     }
+
+    private function generateScheduleFor($kodeBayar)
+    {
+        // Cek apakah jadwal sudah ada
+        $existing = PpdbTestSchedule::where('kode_bayar', $kodeBayar)->first();
+        if ($existing) return $existing;
+
+        // Ambil setting PPDB aktif
+        $setting = PPDBSetting::where('close_ppdb', 0)->first();
+        if (!$setting) return null; // tidak ada periode aktif = skip
+
+        // Aturan dinamis
+        $iqDays  = $setting->iq_days ?? [];
+        $mapDays = $setting->map_days ?? [];
+        $sessions = $setting->sessions ?? [];
+        $perSesi = $setting->capacity_per_session ?? 14;
+
+        $slotPerHari = count($sessions);
+        $hariJumlah  = count($iqDays);
+        $perHari     = $perSesi * $slotPerHari;
+
+        // Ambil semua peserta yang sudah divalidasi
+        $validated = PPDBSekolah::where('status_bayar', 'sudah')
+                    ->orderBy('validated_at')
+                    ->pluck('kode_bayar')
+                    ->toArray();
+
+        $index = array_search($kodeBayar, $validated);
+        if ($index === false) return null;
+
+        // Hitung hari
+        $hariKe = floor($index / $perHari);
+        if ($hariKe >= $hariJumlah) $hariKe = $hariJumlah - 1;
+
+        // Hitung sesi
+        $sisa = $index % $perHari;
+        $sesiKe = floor($sisa / $perSesi);
+
+        // Ambil tanggal & jam berdasarkan index
+        $iqDate = $iqDays[$hariKe] ?? null;
+        $mapDate = $mapDays[$hariKe] ?? null;
+
+        [$iqStart, $iqEnd] = $sessions[$sesiKe] ?? [null, null];
+        [$mapStart, $mapEnd] = $sessions[$sesiKe] ?? [null, null];
+
+        // Simpan jadwal
+        return PpdbTestSchedule::create([
+            'kode_bayar' => $kodeBayar,
+
+            'iq_date' => $iqDate,
+            'iq_start_time' => $iqStart,
+            'iq_end_time' => $iqEnd,
+
+            'map_date' => $mapDate,
+            'map_start_time' => $mapStart,
+            'map_end_time' => $mapEnd,
+        ]);
+    }
+
     
 }

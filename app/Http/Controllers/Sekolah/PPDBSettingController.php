@@ -21,28 +21,45 @@ class PPDBSettingController extends Controller
 
     public function show($id) {
         $data = PPDBSetting::find($id);
+
         if ($data) {
-            // ✅ Format tanggal agar cocok untuk <input type="date">
+            // Format input date (single date)
             $data->tgl_penerimaan = $data->tgl_penerimaan
                 ? Carbon::parse($data->tgl_penerimaan)->format('Y-m-d')
                 : null;
 
+            // Format tanggal_tes lama
             $data->tanggal_tes = $data->tanggal_tes
                 ? Carbon::parse($data->tanggal_tes)->format('Y-m-d')
                 : null;
+
+            // Format JSON → array 
+            $data->iq_days  = $data->iq_days ?: [];
+            $data->map_days = $data->map_days ?: [];
+            $data->sessions = $data->sessions ?: [];
+            $data->capacity_per_session = $data->capacity_per_session ?? 14;
         }
-        return response()->json(['status' => !!$data, 'data' => $data]);
+
+        return response()->json([
+            'status' => !!$data,
+            'data' => $data
+        ]);
     }
 
+
     public function store(Request $request) {
-        // ✅ Validasi dasar
         $request->validate([
             'tahun_ajaran' => 'required|string|max:20',
             'tgl_penerimaan' => 'required|date',
             'jumlah_tagihan' => 'required|numeric|min:0',
+
+            // Jadwal Test Dinamis
+            'iq_days'  => 'nullable|array',
+            'map_days' => 'nullable|array',
+            'sessions' => 'nullable|array',
+            'capacity_per_session' => 'nullable|numeric|min:1',
         ]);
 
-        // ✅ Format tanggal agar tersimpan konsisten
         $tglPenerimaan = Carbon::parse($request->tgl_penerimaan)->format('Y-m-d');
         $tglTes = $request->tanggal_tes ? Carbon::parse($request->tanggal_tes)->format('Y-m-d') : null;
 
@@ -57,18 +74,22 @@ class PPDBSettingController extends Controller
                 'atas_nama'      => $request->atas_nama,
                 'tanggal_tes'    => $tglTes,
                 'tempat_tes'     => $request->tempat_tes,
+
+                // 🎯 Tambahan untuk jadwal tes dinamis
+                'iq_days'  => $request->iq_days ?? [],
+                'map_days' => $request->map_days ?? [],
+                'sessions' => $request->sessions ?? [],
+                'capacity_per_session' => $request->capacity_per_session ?? 14,
             ]
         );
 
-        // 🔹 Jangan ubah status close_ppdb di sini
-        // Semua data baru tetap tertutup, dan hanya toggle() yang mengatur open/close
-
         return response()->json([
             'status'  => true,
-            'message' => 'Periode berhasil disimpan (dalam status tertutup).',
+            'message' => 'Pengaturan berhasil disimpan.',
             'data'    => $setting
         ]);
     }
+
 
     public function toggle(Request $request) {
         $id = $request->id;

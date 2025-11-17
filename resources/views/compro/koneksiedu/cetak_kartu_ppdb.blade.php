@@ -160,7 +160,7 @@
     <!-- JADWAL TES -->
     <table class="tes">
       <tr>
-        <td colspan="2"><b>Jadwal Tes IQ</b></td>
+        <td colspan="2"><b>Jadwal Tes Psikotes</b></td>
       </tr>
       <tr>
         <td width="35%">Tanggal</td>

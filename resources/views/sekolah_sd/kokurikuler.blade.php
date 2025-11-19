@@ -38,10 +38,13 @@
                         <div class="form-group">
                             <label>{{ $item }}</label>
                             <select required class="form-control" name="dimensi[{{$i}}][nilai]">
-                                <option value="SB">Sangat Baik (SB)</option>
+                                <option value="M">Mahir (M)</option>
+                                <option value="C">Cakap (C)</option>
+                                <option value="B">Berkembang (B)</option>
+                                {{-- <option value="SB">Sangat Baik (SB)</option>
                                 <option value="B">Baik (B)</option>
                                 <option value="C">Cukup (C)</option>
-                                <option value="K">Kurang (K)</option>
+                                <option value="K">Kurang (K)</option> --}}
                             </select>
                         </div>
                     @endforeach

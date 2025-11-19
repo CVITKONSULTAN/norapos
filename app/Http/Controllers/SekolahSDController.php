@@ -542,36 +542,74 @@ class SekolahSDController extends Controller
         }
 
         // Urutan ranking nilai kokurikuler
-        $ranking = ["SB" => 4, "B" => 3, "C" => 2, "K" => 1];
-        $descrip = ["SB" => "sangat baik", "B" => "baik", "C" => "cukup", "K" => "kurang"];
+        // $ranking = ["SB" => 4, "B" => 3, "C" => 2, "K" => 1];
+        // $descrip = ["SB" => "sangat baik", "B" => "baik", "C" => "cukup", "K" => "kurang"];
+        $ranking = ["M" => 3, "C" => 2, "B" => 1];
+        $descrip = ["M" => "mahir", "C" => "cakap", "B" => "berkembang"];
 
         $nilai_kokurikuler = $data['kelas_siswa']->nilai_kokurikuler ?? [];
         $nama_siswa = $data['kelas_siswa']->siswa->nama ?? "";
 
         foreach ($nilai_kokurikuler as $key => $value) {
 
-            $nilai_tertinggi = collect($value['dimensi'])
-            ->sortByDesc(fn($d) => $ranking[$d['nilai']])
-            ->first();
+            // $nilai_tertinggi = collect($value['dimensi'])
+            // ->sortByDesc(fn($d) => $ranking[$d['nilai']])
+            // ->first();
     
-            $nilai_terendah = collect($value['dimensi'])
-            ->sortBy(fn($d) => $ranking[$d['nilai']])
-            ->first();
+            // $nilai_terendah = collect($value['dimensi'])
+            // ->sortBy(fn($d) => $ranking[$d['nilai']])
+            // ->first();
+
+            // $tema = $value['kokurikuler_tema'] ?? '';
+            // $min = strtolower($nilai_terendah['nama'] ?? '');
+            // $max = strtolower($nilai_tertinggi['nama'] ?? '');
+            // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+            // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+
+            // $nilai_kokurikuler[$key]['kokurikuler_desc'] = "";
+            // dd(
+            //     count($value['dimensi']),
+            //     $value['dimensi']
+            // );
+            // if( count($value['dimensi']) == 1){
+            //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+            // }
+            // if( count($value['dimensi']) > 1){
+            //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+            // }
 
             $tema = $value['kokurikuler_tema'] ?? '';
-            $min = strtolower($nilai_terendah['nama'] ?? '');
-            $max = strtolower($nilai_tertinggi['nama'] ?? '');
-            $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
-            $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+            $dimensi = collect($value['dimensi']);
+            $nilai_unik = $dimensi->pluck('nilai')->unique();
 
-            $nilai_kokurikuler[$key]['kokurikuler_desc'] = "";
+            if ($nilai_unik->count() === 1) {
+                // Semua nilai sama
+                $nilai = $nilai_unik->first(); // M / C / B
+                $nilai_desc = $descrip[$nilai] ?? '';
 
-            if( count($value['dimensi']) == 1){
-                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                $aspek_list = $dimensi->pluck('nama')->map(fn($n) => strtolower($n))->implode(' dan ');
+
+                $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
+            } else {
+                // Ada nilai tertinggi & terendah berbeda (logika lama)
+                $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
+                $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
+
+                $min = strtolower($nilai_terendah['nama'] ?? '');
+                $max = strtolower($nilai_tertinggi['nama'] ?? '');
+                $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+
+                if ($dimensi->count() === 1) {
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                } else {
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                }
             }
-            if( count($value['dimensi']) > 1){
-                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
-            }
+
         }
 
         $data['nilai_kokurikuler'] = $nilai_kokurikuler;
@@ -660,36 +698,74 @@ class SekolahSDController extends Controller
         $data['naik_kelas'] = angkaKeRomawi( $lvlkelas ). " (".ucfirst( angkaKeHuruf($lvlkelas) ).")";
 
         // Urutan ranking nilai kokurikuler
-        $ranking = ["SB" => 4, "B" => 3, "C" => 2, "K" => 1];
-        $descrip = ["SB" => "sangat baik", "B" => "baik", "C" => "cukup", "K" => "kurang"];
+        // $ranking = ["SB" => 4, "B" => 3, "C" => 2, "K" => 1];
+        // $descrip = ["SB" => "sangat baik", "B" => "baik", "C" => "cukup", "K" => "kurang"];
+        $ranking = ["M" => 3, "C" => 2, "B" => 1];
+        $descrip = ["M" => "mahir", "C" => "cakap", "B" => "berkembang"];
 
         $nilai_kokurikuler = $data['kelas_siswa']->nilai_kokurikuler ?? [];
         $nama_siswa = $data['kelas_siswa']->siswa->nama ?? "";
 
         foreach ($nilai_kokurikuler as $key => $value) {
 
-            $nilai_tertinggi = collect($value['dimensi'])
-            ->sortByDesc(fn($d) => $ranking[$d['nilai']])
-            ->first();
+            // $nilai_tertinggi = collect($value['dimensi'])
+            // ->sortByDesc(fn($d) => $ranking[$d['nilai']])
+            // ->first();
     
-            $nilai_terendah = collect($value['dimensi'])
-            ->sortBy(fn($d) => $ranking[$d['nilai']])
-            ->first();
+            // $nilai_terendah = collect($value['dimensi'])
+            // ->sortBy(fn($d) => $ranking[$d['nilai']])
+            // ->first();
+
+            // $tema = $value['kokurikuler_tema'] ?? '';
+            // $min = strtolower($nilai_terendah['nama'] ?? '');
+            // $max = strtolower($nilai_tertinggi['nama'] ?? '');
+            // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+            // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+
+            // $nilai_kokurikuler[$key]['kokurikuler_desc'] = "";
+            // dd(
+            //     count($value['dimensi']),
+            //     $value['dimensi']
+            // );
+            // if( count($value['dimensi']) == 1){
+            //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+            // }
+            // if( count($value['dimensi']) > 1){
+            //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+            // }
 
             $tema = $value['kokurikuler_tema'] ?? '';
-            $min = strtolower($nilai_terendah['nama'] ?? '');
-            $max = strtolower($nilai_tertinggi['nama'] ?? '');
-            $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
-            $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+            $dimensi = collect($value['dimensi']);
+            $nilai_unik = $dimensi->pluck('nilai')->unique();
 
-            $nilai_kokurikuler[$key]['kokurikuler_desc'] = "";
+            if ($nilai_unik->count() === 1) {
+                // Semua nilai sama
+                $nilai = $nilai_unik->first(); // M / C / B
+                $nilai_desc = $descrip[$nilai] ?? '';
 
-            if( count($value['dimensi']) == 1){
-                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam $max pada tema $tema";
+                $aspek_list = $dimensi->pluck('nama')->map(fn($n) => strtolower($n))->implode(' dan ');
+
+                $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
+            } else {
+                // Ada nilai tertinggi & terendah berbeda (logika lama)
+                $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
+                $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
+
+                $min = strtolower($nilai_terendah['nama'] ?? '');
+                $max = strtolower($nilai_tertinggi['nama'] ?? '');
+                $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+
+                if ($dimensi->count() === 1) {
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                } else {
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                }
             }
-            if( count($value['dimensi']) > 1){
-                $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam $max serta $min_desc dalam $min pada tema $tema";
-            }
+
         }
 
         $data['nilai_kokurikuler'] = $nilai_kokurikuler;

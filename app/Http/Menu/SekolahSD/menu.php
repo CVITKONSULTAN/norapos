@@ -13,6 +13,51 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             request()->segment(1) == 'home'
         ]
     );
+    if($user->checkRole('Staff TU')){
+        $menu->dropdown(
+            "Peserta Didik Baru",
+            function ($sub) {
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru'),
+                    "Daftar Data",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.ppdb.jadwal_harian.detail'),
+                    "Jadwal Test Perhari",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'jadwal-harian-detail'
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru.config'),
+                    "Pengaturan Penerimaan",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru-config'
+                    ]
+                );
+            },
+            ['icon' => 'fa fas fa-user-plus']
+        );
+        $menu->url(
+            route('admin.visitor.index',['domain'=>['koneksiedu.com','si-muda.com']]),
+            "Statistik Pengunjung",
+            [
+                'icon' => 'fa fas fa-circle', 
+                'active' => 
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'statistik-pengunjung' 
+            ]
+        )->order(1);
+    }
 
     if($user->checkAdmin()){
         $menu->dropdown(

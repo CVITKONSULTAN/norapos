@@ -294,7 +294,7 @@ $(document).ready(function(){
     });
 
     // 🔹 Reload tabel saat filter berubah
-    $('#filter_tahun, #filter_semester').on('change', () => table.ajax.reload());
+    $('#filter_tahun, #filter_semester, #filter_lvl_kelas').on('change', () => table.ajax.reload());
 
     // 🔹 Form simpan
     $('#form_tema').on('submit', function(e){
@@ -424,6 +424,34 @@ function editTema(id){
         }
     }).fail(()=>{
         toastr.error("Gagal memuat data tema");
+    });
+}
+
+// 🔹 Hapus data
+function hapusTema(id){
+    swal({
+        title: "Hapus Tema?",
+        text: "Data yang dihapus tidak bisa dikembalikan.",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    }).then(ok=>{
+        if(ok){
+            $.ajax({
+                url:`/sekolah_sd/kokurikuler/tema/${id}`,
+                method:"DELETE",
+                data:{ _token:"{{ csrf_token() }}" },
+                success:(res)=>{
+                    if(res.status){
+                        toastr.success("Tema dihapus!");
+                        table.ajax.reload();
+                    }else toastr.error(res.message);
+                },
+                error:()=>{
+                    toastr.error("Gagal menghapus data");
+                }
+            });
+        }
     });
 }
 

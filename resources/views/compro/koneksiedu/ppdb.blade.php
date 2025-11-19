@@ -272,7 +272,7 @@
                   </div>
                   <div class="col-md-12">
                     <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2">
-                      Cetak Kartu Nomor Test Siswa
+                      Cetak Kartu Nomor Test Murid
                     </button>
                   </div>
                   <div class="col-md-12">
@@ -289,7 +289,7 @@
 
 
                 <p class="mt-3 text-muted fst-italic small">
-                  Anda dapat menekan tombol cetak kartu test siswa saat proses validasi pembayaran berhasil.
+                  Anda dapat menekan tombol cetak kartu test murid saat proses validasi pembayaran berhasil.
                 </p>
               </div>
             </div>
@@ -299,7 +299,7 @@
         <div class="card mx-auto" style="max-width: 720px;">
           <div class="card-body p-4">
 
-            <h5 class="text-center fw-bold mb-4 text-success">Data Calon Siswa</h5>
+            <h5 class="text-center fw-bold mb-4 text-success">Data Calon Murid</h5>
 
             <form onsubmit="submitPPDB(event)">
               {{-- Nama --}}
@@ -408,7 +408,7 @@
 
                 {{-- Akta Lahir --}}
                 <div class="mb-4">
-                  <label class="form-label fw-semibold">Scan / Foto Akta Lahir Calon Siswa</label>
+                  <label class="form-label fw-semibold">Scan / Foto Akta Lahir Calon Murid</label>
                   <input type="file" id="akta-lahir" class="form-control" accept=".jpeg, .jpg, .png">
                   <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
 

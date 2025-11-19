@@ -250,6 +250,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::post('data-mapel/apply',"Sekolah\MapelController@applyKelas")
         ->name('sekolah_sd.mapel.apply');
 
+        Route::get('data-mapel/activity-log', 'Sekolah\MapelController@activityLog')
+        ->name('sekolah_sd.mapel.activity_log');
+
         Route::post('data-mapel/update-show-mapel',"Sekolah\MapelController@update_show_mapel")
         ->name('sekolah_sd.mapel.update_show_mapel');
 

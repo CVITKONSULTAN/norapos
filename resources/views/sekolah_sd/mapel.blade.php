@@ -19,6 +19,38 @@
 
 <section class="content">
 
+    <div id="riwayat_modal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Riwayat Apply Mapel
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <table id="riwayat_table" class="table table-bordered table-striped" width="100%">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Module</th>
+                                <th>Action</th>
+                                <th>Kelas</th>
+                                <th>Nama Kelas</th>
+                                <th>Tahun Ajaran</th>
+                                <th>Semester</th>
+                                <th>Waktu Apply</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="apply_modal" class="modal fade">
         <div class="modal-dialog">
             <form class="modal-content" id="apply_kelas" method="POST" action="{{route('sekolah_sd.mapel.apply')}}">
@@ -176,6 +208,7 @@
                             @if(
                                 auth()->user()->checkAdmin()
                             )
+                                <button onclick="showRiwayatApply()" class="btn btn-info">Riwayat Apply</button>
                                 <button onclick="$('#import_modal').modal('show')" class="btn btn-primary">Import</button>
                                 <button onclick="applykelas(this)" class="btn btn-success">Apply ke Kelas</button>
                                 <div class="form-check">
@@ -493,6 +526,65 @@
                 updateShowMapel(0)
             }
         });
+
+        const showRiwayatApply = () => {
+            $("#riwayat_modal").modal("show");
+            riwayat_table.ajax.reload();
+        }
+
+        let riwayat_table;
+
+        $(document).ready(function(){
+
+            riwayat_table = $('#riwayat_table').DataTable({
+                processing: true,
+                serverSide: true,
+                order:[],
+                ajax: {
+                    url: "{{ route('sekolah_sd.mapel.activity_log') }}",
+                    data: function(d){
+                         d.kelas = $("#filter_kelas").val();
+                        d = __datatable_ajax_callback(d);
+                    }
+                },
+                columns: [
+                    {   data: 'user_id', 
+                        name: 'user_id',
+                        render:(data,_,row)=>{
+                            const first = row.user?.first_name ?? "";
+                            const last = row.user?.last_name ?? "";
+                            const username = row.user?.username ?? "-";
+
+                            const fullname = `${first} ${last}`.trim();
+
+                            return `${fullname} (${username})`;
+                        }
+                    },
+                    { data: 'module', name: 'module' },
+                    { data: 'action', name: 'action' },
+                    { data: 'kelas', name: 'kelas' },
+                    // nama kelas (1E, 1A)
+                    { 
+                        data: 'payload.nama_kelas',
+                        name: 'nama_kelas',
+                        render:(data)=> data ?? '-' 
+                    },
+                    { data: 'tahun_ajaran', name: 'tahun_ajaran' },
+                    { data: 'semester', name: 'semester' },
+                    { data: 'created_at', name: 'created_at' },
+                ]
+            });
+
+        });
+
+        @if(session('error'))
+            toastr.error("{{ session('error') }}");
+        @endif
+
+        @if(session('success'))
+            toastr.success("{{ session('success') }}");
+        @endif
+
 
     </script>
 @endsection

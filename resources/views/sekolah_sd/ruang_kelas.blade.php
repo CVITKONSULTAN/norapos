@@ -446,7 +446,15 @@ href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.d
                     // { data: 'siswa.nisn'  },
                     // { data: 'nama_siswa'  },
                     { data: 'siswa.nisn'  },
-                    { data: 'siswa.nama'  },
+                    { 
+                        data: 'siswa.nama',
+                        render: function(data) {
+                            if (!data) return '';
+                            return data
+                                .toLowerCase()
+                                .replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+                        }
+                    },
                     { data: 'nis',
                         searchable:false,
                         render:(data)=> {

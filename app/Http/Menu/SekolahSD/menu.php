@@ -13,6 +13,7 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             request()->segment(1) == 'home'
         ]
     );
+
     if($user->checkRole('Staff TU')){
         $menu->dropdown(
             "Peserta Didik Baru",
@@ -57,6 +58,35 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                 request()->segment(2) == 'statistik-pengunjung' 
             ]
         )->order(1);
+    } else {
+        $menu->url(
+            action('SekolahSDController@jurnal_kelas'),
+            "Jurnal Kelas",
+            [
+                'icon' => 'fa fas fa-address-book', 
+                'active' => 
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'jurnal-kelas' 
+            ]
+        );
+
+        //Absensi dropdown
+        $menu->dropdown(
+            "Absensi",
+            function ($sub) {
+                $sub->url(
+                    route('absensi.list'),
+                    "Daftar Absensi",
+                    ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
+                );
+                $sub->url(
+                    route('absensi.create'),
+                    "Tambah",
+                    ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
+                );
+            },
+            ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
+        )->order(12);
     }
 
     if($user->checkAdmin()){
@@ -668,35 +698,6 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             ]
         );
     }
-
-    $menu->url(
-        action('SekolahSDController@jurnal_kelas'),
-        "Jurnal Kelas",
-        [
-            'icon' => 'fa fas fa-address-book', 
-            'active' => 
-            request()->segment(1) == 'sekolah_sd' &&
-            request()->segment(2) == 'jurnal-kelas' 
-        ]
-    );
-
-    //Absensi dropdown
-    $menu->dropdown(
-        "Absensi",
-        function ($sub) {
-            $sub->url(
-                route('absensi.list'),
-                "Daftar Absensi",
-                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
-            );
-            $sub->url(
-                route('absensi.create'),
-                "Tambah",
-                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
-            );
-        },
-        ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
-    )->order(12);
 
 });
 

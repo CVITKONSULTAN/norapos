@@ -162,7 +162,7 @@
         <div class="ppdb-header mb-4">
           <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2 Pontianak">
           <h5>
-            PENERIMAAN PESERTA DIDIK BARU<br>
+            SELEKSI PENERIMAAN MURID BARU (SPMB)<br>
             SD MUHAMMADIYAH 2 PONTIANAK<br>
             TAHUN AJARAN {{$tahun_ajaran}}
           </h5>

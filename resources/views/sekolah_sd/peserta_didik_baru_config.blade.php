@@ -66,6 +66,16 @@
             </div>
 
             <div class="form-group">
+                <label>Tanggal Tutup Penerimaan</label>
+                <input type="date" name="tgl_tutup_penerimaan" id="tgl_tutup_penerimaan" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal Masuk Sekolah</label>
+                <input type="date" name="tgl_masuk_sekolah" id="tgl_masuk_sekolah" class="form-control">
+            </div>
+
+            <div class="form-group">
                 <label>Biaya Pendaftaran (Rp)</label>
                 <input type="number" name="jumlah_tagihan" id="jumlah_tagihan" class="form-control" min="0" required>
             </div>
@@ -173,6 +183,9 @@ $(document).ready(function(){
     $('#tambah').click(()=>{
         $('#id_edit').val(0);
         $('#form_setting')[0].reset();
+        
+        $('#tgl_tutup_penerimaan').val("");
+        $('#tgl_masuk_sekolah').val("");
 
         // bersihkan sesi tes baru
         $('#sessionBody').empty();
@@ -228,6 +241,9 @@ $(document).ready(function(){
                 tanggal_tes: $('#tanggal_tes').val(),
                 tempat_tes: $('#tempat_tes').val(),
 
+                tgl_tutup_penerimaan: $('#tgl_tutup_penerimaan').val(),
+                tgl_masuk_sekolah: $('#tgl_masuk_sekolah').val(),
+
                 // field lama (biarkan tetap ada)
                 iq_days: $('#iq_days').val(),
                 map_days: $('#map_days').val(),
@@ -279,6 +295,9 @@ function editData(id){
             $('#map_days').val(d.map_days ? d.map_days.join(', ') : '');
             $('#sessions').val(d.sessions ? d.sessions.map(s => `${s[0]}-${s[1]}`).join(', ') : '');
             $('#capacity_per_session').val(d.capacity_per_session ?? 14);
+
+            $('#tgl_tutup_penerimaan').val( d.tgl_tutup_penerimaan ? moment(d.tgl_tutup_penerimaan).format('YYYY-MM-DD') : '');
+            $('#tgl_masuk_sekolah').val( d.tgl_masuk_sekolah ? moment(d.tgl_masuk_sekolah).format('YYYY-MM-DD') : '');
 
             // ===========================
             //  Load session_capacities baru

@@ -24,6 +24,8 @@ class PPDBSetting extends Model
         'map_days',
         'sessions',
         'session_capacities',
+        'tgl_tutup_penerimaan',
+        'tgl_masuk_sekolah'
     ];
 
     protected $casts = [
@@ -34,5 +36,7 @@ class PPDBSetting extends Model
         'map_days' => 'array',
         'sessions' => 'array',
         'session_capacities' => 'array',
+        'tgl_tutup_penerimaan' => 'date',
+        'tgl_masuk_sekolah' => 'date',
     ];
 }

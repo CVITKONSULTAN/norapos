@@ -41,6 +41,15 @@ class PPDBSettingController extends Controller
             $data->map_days = $data->map_days ?: [];
             $data->sessions = $data->sessions ?: [];
             $data->capacity_per_session = $data->capacity_per_session ?? 14;
+
+            $data->tgl_tutup_penerimaan = $data->tgl_tutup_penerimaan
+            ? Carbon::parse($data->tgl_tutup_penerimaan)->format('Y-m-d')
+            : null;
+
+        $data->tgl_masuk_sekolah = $data->tgl_masuk_sekolah
+            ? Carbon::parse($data->tgl_masuk_sekolah)->format('Y-m-d')
+            : null;
+
         }
 
         return response()->json([
@@ -58,7 +67,12 @@ class PPDBSettingController extends Controller
             'tgl_penerimaan' => 'required|date',
             'jumlah_tagihan' => 'required|numeric|min:0',
             'session_capacities' => 'nullable|string', // JSON string
+            'tgl_tutup_penerimaan' => 'nullable|date',
+            'tgl_masuk_sekolah' => 'nullable|date',
         ]);
+
+        $tglTutup = $request->tgl_tutup_penerimaan ? Carbon::parse($request->tgl_tutup_penerimaan)->format('Y-m-d') : null;
+        $tglMasuk = $request->tgl_masuk_sekolah ? Carbon::parse($request->tgl_masuk_sekolah)->format('Y-m-d') : null;
 
         // Format tanggal
         $tglPenerimaan = Carbon::parse($request->tgl_penerimaan)->format('Y-m-d');
@@ -89,6 +103,9 @@ class PPDBSettingController extends Controller
                 'atas_nama'         => $request->atas_nama,
                 'tanggal_tes'       => $tglTes,
                 'tempat_tes'        => $request->tempat_tes,
+
+                'tgl_tutup_penerimaan' => $tglTutup,
+                'tgl_masuk_sekolah' => $tglMasuk,
 
                 // 🎯 SIMPAN FORMAT BARU
                 'session_capacities' => $sessionCapacities,

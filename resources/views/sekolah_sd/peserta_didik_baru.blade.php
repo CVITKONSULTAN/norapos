@@ -169,6 +169,7 @@
                                         <th>Nama</th>
                                         <th>Jenis Kelamin</th>
                                         <th>Tempat / Tgl Lahir</th>
+                                        <th>Umur Saat masuk sekolah ({{ $ppdb_setting->tgl_masuk_sekolah->format('d/m/Y') ?? '' }})</th>
                                         <th>Total Bayar</th>
                                         <th>Status Bayar</th>
                                         <th>Keterangan</th>
@@ -193,10 +194,14 @@
 @section('javascript')
 
 <script type="text/javascript">
-    const HitungTglLahir = (tgl_lahir) => {
+
+    const tglMasuk = "{{ $ppdb_setting->tgl_masuk_sekolah }}";
+
+    const HitungTglLahir = (tgl_lahir,diff_date) => {
+        const currentDate = !diff_date ? moment() : moment(diff_date);
         if(!tgl_lahir) return '-';
         const birthDate = moment(tgl_lahir, 'YYYY-MM-DD');
-        const currentDate = moment();
+        // const currentDate = moment();
         const years = currentDate.diff(birthDate, 'years');
         const months = currentDate.diff(birthDate.add(years, 'years'), 'months');
         return `${years} tahun ${months} bulan`;
@@ -387,6 +392,15 @@
                             ? HitungTglLahir(row.detail['tanggal-lahir'])
                             : '';
                         return `${tempat}, ${tgl} (${umur})`;
+                    }
+                },
+                {
+                    data:'id',
+                    render:(data,type,row)=>{
+                        const umur = row.detail['tanggal-lahir']
+                            ? HitungTglLahir(row.detail['tanggal-lahir'],tglMasuk)
+                            : '-';
+                        return `${umur}`;
                     }
                 },
                 {

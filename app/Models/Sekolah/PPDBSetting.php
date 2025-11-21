@@ -23,6 +23,7 @@ class PPDBSetting extends Model
         'iq_days',
         'map_days',
         'sessions',
+        'session_capacities',
     ];
 
     protected $casts = [
@@ -32,5 +33,6 @@ class PPDBSetting extends Model
         'iq_days' => 'array',
         'map_days' => 'array',
         'sessions' => 'array',
+        'session_capacities' => 'array',
     ];
 }

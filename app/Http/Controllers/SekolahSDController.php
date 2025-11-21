@@ -2013,61 +2013,140 @@ class SekolahSDController extends Controller
 
     private function generateScheduleFor($kodeBayar)
     {
-        // Cek apakah jadwal sudah ada
+        // Jika sudah punya jadwal → langsung return
         $existing = PpdbTestSchedule::where('kode_bayar', $kodeBayar)->first();
         if ($existing) return $existing;
 
-        // Ambil setting PPDB aktif
+        // Ambil periode aktif
         $setting = PPDBSetting::where('close_ppdb', 0)->first();
-        if (!$setting) return null; // tidak ada periode aktif = skip
+        if (!$setting || !$setting->session_capacities) return null;
 
-        // Aturan dinamis
-        $iqDays  = $setting->iq_days ?? [];
-        $mapDays = $setting->map_days ?? [];
-        $sessions = $setting->sessions ?? [];
-        $perSesi = $setting->capacity_per_session ?? 14;
+        $sessions = $setting->session_capacities;
 
-        $slotPerHari = count($sessions);
-        $hariJumlah  = count($iqDays);
-        $perHari     = $perSesi * $slotPerHari;
+        // Pisahkan slot IQ dan MAP
+        $iqSlots  = array_filter($sessions, fn($s) => $s['type'] === 'iq');
+        $mapSlots = array_filter($sessions, fn($s) => $s['type'] === 'map');
 
-        // Ambil semua peserta yang sudah divalidasi
-        $validated = PPDBSekolah::where('status_bayar', 'sudah')
-                    ->orderBy('validated_at')
-                    ->pluck('kode_bayar')
-                    ->toArray();
+        // ===============================
+        // 1. Cari slot IQ yang masih ada kuota
+        // ===============================
+        $selectedIQ = null;
 
-        $index = array_search($kodeBayar, $validated);
-        if ($index === false) return null;
+        foreach ($iqSlots as $slot) {
 
-        // Hitung hari
-        $hariKe = floor($index / $perHari);
-        if ($hariKe >= $hariJumlah) $hariKe = $hariJumlah - 1;
+            // Hitung jumlah peserta yang sudah terisi di slot ini
+            $filled = PpdbTestSchedule::where('iq_date', $slot['date'])
+                        ->where('iq_start_time', $slot['start'])
+                        ->count();
 
-        // Hitung sesi
-        $sisa = $index % $perHari;
-        $sesiKe = floor($sisa / $perSesi);
+            if ($filled < $slot['capacity']) {
+                $selectedIQ = $slot;
+                break;
+            }
+        }
 
-        // Ambil tanggal & jam berdasarkan index
-        $iqDate = $iqDays[$hariKe] ?? null;
-        $mapDate = $mapDays[$hariKe] ?? null;
+        // Jika tidak ada slot IQ kosong → tidak bisa assign
+        if (!$selectedIQ) return null;
 
-        [$iqStart, $iqEnd] = $sessions[$sesiKe] ?? [null, null];
-        [$mapStart, $mapEnd] = $sessions[$sesiKe] ?? [null, null];
+        // ===============================
+        // 2. Cari slot MAP yang masih ada kuota
+        // ===============================
+        $selectedMAP = null;
 
-        // Simpan jadwal
+        foreach ($mapSlots as $slot) {
+
+            $filled = PpdbTestSchedule::where('map_date', $slot['date'])
+                        ->where('map_start_time', $slot['start'])
+                        ->count();
+
+            if ($filled < $slot['capacity']) {
+                $selectedMAP = $slot;
+                break;
+            }
+        }
+
+        // Kalau tidak ada slot MAP → jadwal IQ tetap masuk, MAP kosong
+        // (opsional: bisa dibuat wajib MAP, tapi saya ikuti logika default)
+        if (!$selectedMAP) {
+            $selectedMAP = [
+                "date" => null,
+                "start" => null,
+                "end" => null
+            ];
+        }
+
+        // ===============================
+        // 3. SIMPAN JADWAL
+        // ===============================
         return PpdbTestSchedule::create([
             'kode_bayar' => $kodeBayar,
 
-            'iq_date' => $iqDate,
-            'iq_start_time' => $iqStart,
-            'iq_end_time' => $iqEnd,
+            'iq_date'       => $selectedIQ['date'],
+            'iq_start_time' => $selectedIQ['start'],
+            'iq_end_time'   => $selectedIQ['end'],
 
-            'map_date' => $mapDate,
-            'map_start_time' => $mapStart,
-            'map_end_time' => $mapEnd,
+            'map_date'       => $selectedMAP['date'],
+            'map_start_time' => $selectedMAP['start'],
+            'map_end_time'   => $selectedMAP['end'],
         ]);
     }
 
+    // private function generateScheduleFor($kodeBayar)
+    // {
+    //     // Cek apakah jadwal sudah ada
+    //     $existing = PpdbTestSchedule::where('kode_bayar', $kodeBayar)->first();
+    //     if ($existing) return $existing;
+
+    //     // Ambil setting PPDB aktif
+    //     $setting = PPDBSetting::where('close_ppdb', 0)->first();
+    //     if (!$setting) return null; // tidak ada periode aktif = skip
+
+    //     // Aturan dinamis
+    //     $iqDays  = $setting->iq_days ?? [];
+    //     $mapDays = $setting->map_days ?? [];
+    //     $sessions = $setting->sessions ?? [];
+    //     $perSesi = $setting->capacity_per_session ?? 14;
+
+    //     $slotPerHari = count($sessions);
+    //     $hariJumlah  = count($iqDays);
+    //     $perHari     = $perSesi * $slotPerHari;
+
+    //     // Ambil semua peserta yang sudah divalidasi
+    //     $validated = PPDBSekolah::where('status_bayar', 'sudah')
+    //                 ->orderBy('validated_at')
+    //                 ->pluck('kode_bayar')
+    //                 ->toArray();
+
+    //     $index = array_search($kodeBayar, $validated);
+    //     if ($index === false) return null;
+
+    //     // Hitung hari
+    //     $hariKe = floor($index / $perHari);
+    //     if ($hariKe >= $hariJumlah) $hariKe = $hariJumlah - 1;
+
+    //     // Hitung sesi
+    //     $sisa = $index % $perHari;
+    //     $sesiKe = floor($sisa / $perSesi);
+
+    //     // Ambil tanggal & jam berdasarkan index
+    //     $iqDate = $iqDays[$hariKe] ?? null;
+    //     $mapDate = $mapDays[$hariKe] ?? null;
+
+    //     [$iqStart, $iqEnd] = $sessions[$sesiKe] ?? [null, null];
+    //     [$mapStart, $mapEnd] = $sessions[$sesiKe] ?? [null, null];
+
+    //     // Simpan jadwal
+    //     return PpdbTestSchedule::create([
+    //         'kode_bayar' => $kodeBayar,
+
+    //         'iq_date' => $iqDate,
+    //         'iq_start_time' => $iqStart,
+    //         'iq_end_time' => $iqEnd,
+
+    //         'map_date' => $mapDate,
+    //         'map_start_time' => $mapStart,
+    //         'map_end_time' => $mapEnd,
+    //     ]);
+    // }
     
 }

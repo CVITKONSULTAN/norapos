@@ -44,9 +44,8 @@
 
 </section>
 
-<!-- 🔹 Modal Tambah/Edit -->
 <div class="modal fade" id="modal_ppdb_setting" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Tambah / Perbarui Periode PPDB</h4>
@@ -98,30 +97,31 @@
 
             <hr>
 
-            <h4>Pengaturan Jadwal Tes (Dinamis)</h4>
+            <h4>Pengaturan Sesi Tes (Baru)</h4>
 
-            <div class="form-group">
-                <label>Tanggal Tes IQ (bisa lebih dari 1)</label>
-                <input readonly type="text" class="form-control" id="iq_days" name="iq_days[]" placeholder="Contoh: 2025-02-19, 2025-02-20">
-                <small class="text-muted">Format: YYYY-MM-DD dipisahkan dengan koma</small>
-            </div>
+            <table class="table table-bordered" id="sessionTable">
+                <thead>
+                    <tr>
+                        <th>Tipe</th>
+                        <th>Tanggal</th>
+                        <th>Mulai</th>
+                        <th>Selesai</th>
+                        <th>Kuota</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="sessionBody">
+                    <!-- rows dynamic -->
+                </tbody>
+            </table>
 
-            <div class="form-group">
-                <label>Tanggal Tes Pemetaan (bisa lebih dari 1)</label>
-                <input readonly type="text" class="form-control" id="map_days" name="map_days[]" placeholder="Contoh: 2025-02-26, 2025-02-27">
-            </div>
+            <button type="button" class="btn btn-primary btn-xs" id="addSessionRow">
+                <i class="fa fa-plus"></i> Tambah Sesi
+            </button>
 
-            <div class="form-group">
-                <label>Daftar Jam Sesi (contoh: 07:00-08:00, 08:00-09:00)</label>
-                <input readonly type="text" class="form-control" id="sessions" name="sessions[]" placeholder="07:00-08:00, 08:00-09:00, ...">
-            </div>
+            <input type="hidden" name="session_capacities" id="session_capacities">
 
-            <div class="form-group">
-                <label>Kapasitas Per Sesi</label>
-                <input readonly type="number" name="capacity_per_session" id="capacity_per_session" class="form-control" min="1" value="14">
-            </div>
-
-            <div class="text-right">
+            <div class="text-right" style="margin-top:15px;">
                 <button type="submit" class="btn btn-success">
                     <i class="fa fa-save"></i> Simpan
                 </button>
@@ -131,6 +131,7 @@
     </div>
   </div>
 </div>
+
 @endsection
 
 
@@ -140,6 +141,9 @@ let table;
 
 $(document).ready(function(){
 
+    // ===========================
+    //  INIT DATATABLE
+    // ===========================
     table = $('#table_setting').DataTable({
         order:[],
         ajax: "{{ route('sekolah_sd.ppdb.setting.data') }}",
@@ -163,28 +167,48 @@ $(document).ready(function(){
         ]
     });
 
+    // ===========================
+    //  TAMBAH PERIODE
+    // ===========================
     $('#tambah').click(()=>{
         $('#id_edit').val(0);
-        $('#tahun_ajaran').val("");
-        $('#jumlah_tagihan').val("");
-        $('#nama_bank').val("");
-        $('#no_rek').val("");
-        $('#atas_nama').val("");
-        $('#tempat_tes').val("");
-        $('#tanggal_tes').val("");
-        $('#tgl_penerimaan').val("");
+        $('#form_setting')[0].reset();
 
-        $('#iq_days').val("");
-        $('#map_days').val("");
-        $('#sessions').val("");
-        $('#capacity_per_session').val(14);
+        // bersihkan sesi tes baru
+        $('#sessionBody').empty();
 
         $('#modal_ppdb_setting').modal('show');
     });
 
-    // 🔹 Simpan data
+    // ===========================
+    //  TAMBAH BARIS SESI TES
+    // ===========================
+    $('#addSessionRow').click(function () {
+        appendSessionRow();
+    });
+
+    // Hapus row sesi
+    $(document).on('click', '.removeSessionRow', function () {
+        $(this).closest('tr').remove();
+    });
+
+    // ===========================
+    //  SUBMIT FORM
+    // ===========================
     $('#form_setting').on('submit', function(e){
         e.preventDefault();
+
+        // Ambil semua sesi tes
+        let sessions = [];
+        $('#sessionBody tr').each(function() {
+            sessions.push({
+                type: $(this).find('.type').val(),
+                date: $(this).find('.date').val(),
+                start: $(this).find('.start').val(),
+                end: $(this).find('.end').val(),
+                capacity: $(this).find('.capacity').val()
+            });
+        });
 
         const btn = $(this).find('button[type="submit"]');
         btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Menyimpan...');
@@ -204,14 +228,14 @@ $(document).ready(function(){
                 tanggal_tes: $('#tanggal_tes').val(),
                 tempat_tes: $('#tempat_tes').val(),
 
-                // ===== Jadwal Tes Dinamis =====
-                iq_days: $('#iq_days').val().split(',').map(s => s.trim()).filter(s => s),
-                map_days: $('#map_days').val().split(',').map(s => s.trim()).filter(s => s),
-                sessions: $('#sessions').val().split(',').map(s => {
-                    const [a, b] = s.trim().split('-');
-                    return [a, b];
-                }),
+                // field lama (biarkan tetap ada)
+                iq_days: $('#iq_days').val(),
+                map_days: $('#map_days').val(),
+                sessions_old: $('#sessions').val(),
                 capacity_per_session: $('#capacity_per_session').val(),
+
+                // field baru
+                session_capacities: JSON.stringify(sessions),
             },
             complete: function(){
                 btn.prop('disabled', false).html('<i class="fa fa-save"></i> Simpan');
@@ -221,8 +245,6 @@ $(document).ready(function(){
                     toastr.success(res.message);
                     $('#modal_ppdb_setting').modal('hide');
                     table.ajax.reload();
-                    $('#form_setting')[0].reset();
-                    $('#id_edit').val('');
                 } else {
                     toastr.error(res.message);
                 }
@@ -234,8 +256,9 @@ $(document).ready(function(){
     });
 });
 
-
-// 🔹 Edit data
+// ===========================
+//  EDIT DATA
+// ===========================
 function editData(id){
     $.get(`/sekolah_sd/ppdb/setting/${id}`, function(res){
         if(res.status){
@@ -251,18 +274,39 @@ function editData(id){
             $('#tanggal_tes').val(d.tanggal_tes ? moment(d.tanggal_tes).format('YYYY-MM-DD') : '');
             $('#tgl_penerimaan').val(d.tgl_penerimaan ? moment(d.tgl_penerimaan).format('YYYY-MM-DD') : '');
 
-            // Jadwal tes dinamis
+            // field lama
             $('#iq_days').val(d.iq_days ? d.iq_days.join(', ') : '');
             $('#map_days').val(d.map_days ? d.map_days.join(', ') : '');
-
-            let sesiFormatted = "";
-            if (d.sessions) {
-                sesiFormatted = d.sessions.map(s => `${s[0]}-${s[1]}`).join(', ');
-            }
-            $('#sessions').val(sesiFormatted);
-
+            $('#sessions').val(d.sessions ? d.sessions.map(s => `${s[0]}-${s[1]}`).join(', ') : '');
             $('#capacity_per_session').val(d.capacity_per_session ?? 14);
 
+            // ===========================
+            //  Load session_capacities baru
+            // ===========================
+            $('#sessionBody').empty();
+            if (d.session_capacities) {
+                let arr = d.session_capacities;
+
+                // kalau berupa string JSON, parse
+                if (typeof arr === 'string') {
+                    try {
+                        arr = JSON.parse(arr);
+                    } catch (e) {
+                        console.error("Invalid JSON session_capacities", e);
+                        arr = [];
+                    }
+                }
+
+                if (Array.isArray(arr)) {
+                    arr.forEach(s => appendSessionRow(
+                        s.type,
+                        s.date,
+                        s.start,
+                        s.end,
+                        s.capacity
+                    ));
+                }
+            }
             $('#modal_ppdb_setting').modal('show');
         } else {
             toastr.error("Data tidak ditemukan");
@@ -270,25 +314,9 @@ function editData(id){
     });
 }
 
-
-// 🔹 Toggle status periode
-function toggleStatus(id, close){
-    $.post('{{ route("sekolah_sd.ppdb.setting.toggle") }}', {
-        id,
-        close_ppdb: close,
-        _token: "{{ csrf_token() }}"
-    }, function(res){
-        if(res.status){
-            toastr.success(res.message);
-            table.ajax.reload();
-        } else {
-            toastr.error(res.message);
-        }
-    });
-}
-
-
-// 🔹 Hapus data
+// ===========================
+//  HAPUS PERIODE
+// ===========================
 function deleteData(id){
     swal({
         title: "Hapus Periode?",
@@ -314,5 +342,50 @@ function deleteData(id){
         }
     })
 }
+
+// ===========================
+//  BUKA / TUTUP PERIODE
+// ===========================
+function toggleStatus(id, close){
+    $.post('{{ route("sekolah_sd.ppdb.setting.toggle") }}', {
+        id,
+        close_ppdb: close,
+        _token: "{{ csrf_token() }}"
+    }, function(res){
+        if(res.status){
+            toastr.success(res.message);
+            table.ajax.reload();
+        } else {
+            toastr.error(res.message);
+        }
+    });
+}
+
+// ===========================
+//  BUILDER ROW SESI TES
+// ===========================
+function appendSessionRow(type = 'iq', date = '', start = '', end = '', capacity = '') {
+    let html = `
+        <tr>
+            <td>
+                <select class="form-control type">
+                    <option value="iq" ${type === 'iq' ? 'selected' : ''}>IQ</option>
+                    <option value="map" ${type === 'map' ? 'selected' : ''}>Pemetaan</option>
+                </select>
+            </td>
+            <td><input type="date" class="form-control date" value="${date}"></td>
+            <td><input type="time" class="form-control start" value="${start}"></td>
+            <td><input type="time" class="form-control end" value="${end}"></td>
+            <td><input type="number" class="form-control capacity" value="${capacity}" min="1"></td>
+            <td>
+                <button type="button" class="btn btn-danger btn-xs removeSessionRow">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+    $('#sessionBody').append(html);
+}
 </script>
+
 @endsection

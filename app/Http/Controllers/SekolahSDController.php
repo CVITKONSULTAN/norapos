@@ -614,6 +614,7 @@ class SekolahSDController extends Controller
             }
         } catch (\Throwable $th) {
             Log::info("Error raport akhir index :".$th->getMessage());
+            Log::info(json_encode($data));
         }
 
         $data['nilai_kokurikuler'] = $nilai_kokurikuler;

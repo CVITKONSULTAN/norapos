@@ -198,6 +198,7 @@ class TemaController extends Controller
 
         DB::beginTransaction();
         try {
+
             foreach ($kelasList as $kelas) {
                 $kelas->tema_kokurikuler = $tema->toArray();
                 $kelas->save();
@@ -206,6 +207,10 @@ class TemaController extends Controller
                 $val->history_apply = array_merge($val->history_apply ?? [], [$newHistory]);
                 $val->save();
             }
+
+            //kosongkan di nilai siswa
+            $kelasIdList = $kelasList->pluck('id')->toArray();
+            KelasSiswa::whereIn('kelas_id',$kelasIdList)->update(['nilai_kokurikuler'=>null]);
 
             DB::commit();
             return response()->json(['status' => true, 'message' => 'Tema berhasil dikaitkan ke kelas.']);

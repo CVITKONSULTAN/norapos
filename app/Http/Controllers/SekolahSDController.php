@@ -582,13 +582,14 @@ class SekolahSDController extends Controller
                 $tema = $value['kokurikuler_tema'] ?? '';
                 $dimensi = collect($value['dimensi']);
                 $nilai_unik = $dimensi->pluck('nilai')->unique();
+
     
                 if ($nilai_unik->count() === 1) {
                     // Semua nilai sama
                     $nilai = $nilai_unik->first(); // M / C / B
                     $nilai_desc = $descrip[$nilai] ?? '';
     
-                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => strtolower($n))->implode(' dan ');
+                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
     
                     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                         "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
@@ -597,11 +598,11 @@ class SekolahSDController extends Controller
                     $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
                     $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
     
-                    $min = strtolower($nilai_terendah['nama'] ?? '');
-                    $max = strtolower($nilai_tertinggi['nama'] ?? '');
+                    $min = $nilai_terendah['nama'] ?? '';
+                    $max = $nilai_tertinggi['nama'] ?? '';
                     $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
                     $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
-    
+
                     if ($dimensi->count() === 1) {
                         $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                             "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
@@ -749,7 +750,7 @@ class SekolahSDController extends Controller
                     $nilai = $nilai_unik->first(); // M / C / B
                     $nilai_desc = $descrip[$nilai] ?? '';
     
-                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => strtolower($n))->implode(' dan ');
+                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
     
                     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                         "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
@@ -758,11 +759,11 @@ class SekolahSDController extends Controller
                     $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
                     $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
     
-                    $min = strtolower($nilai_terendah['nama'] ?? '');
-                    $max = strtolower($nilai_tertinggi['nama'] ?? '');
+                    $min = $nilai_terendah['nama'] ?? '';
+                    $max = $nilai_tertinggi['nama'] ?? '';
                     $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
                     $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
-    
+
                     if ($dimensi->count() === 1) {
                         $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                             "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";

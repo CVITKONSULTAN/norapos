@@ -594,22 +594,33 @@ class SekolahSDController extends Controller
                     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                         "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
                 } else {
-                    // Ada nilai tertinggi & terendah berbeda (logika lama)
-                    $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
-                    $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
+                    // // Ada nilai tertinggi & terendah berbeda (logika lama)
+                    // $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
+                    // $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
     
-                    $min = $nilai_terendah['nama'] ?? '';
-                    $max = $nilai_tertinggi['nama'] ?? '';
-                    $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
-                    $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+                    // $min = $nilai_terendah['nama'] ?? '';
+                    // $max = $nilai_tertinggi['nama'] ?? '';
+                    // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                    // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
 
-                    if ($dimensi->count() === 1) {
-                        $nilai_kokurikuler[$key]['kokurikuler_desc'] =
-                            "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
-                    } else {
-                        $nilai_kokurikuler[$key]['kokurikuler_desc'] =
-                            "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
-                    }
+                    // if ($dimensi->count() === 1) {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                    // } else {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                    // }
+
+                    // ===============================
+                    // Menampilkan SEMUA aspek dimensi
+                    // ===============================
+                    $aspek_deskripsi = $dimensi->map(function ($d) use ($descrip) {
+                        $desc = $descrip[$d['nilai']] ?? '';
+                        return "$desc dalam aspek {$d['nama']}";
+                    })->implode(', ');
+
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $aspek_deskripsi pada tema $tema";
                 }
     
             }
@@ -755,22 +766,33 @@ class SekolahSDController extends Controller
                     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                         "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
                 } else {
-                    // Ada nilai tertinggi & terendah berbeda (logika lama)
-                    $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
-                    $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
+                    // // Ada nilai tertinggi & terendah berbeda (logika lama)
+                    // $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
+                    // $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
     
-                    $min = $nilai_terendah['nama'] ?? '';
-                    $max = $nilai_tertinggi['nama'] ?? '';
-                    $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
-                    $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+                    // $min = $nilai_terendah['nama'] ?? '';
+                    // $max = $nilai_tertinggi['nama'] ?? '';
+                    // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                    // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
 
-                    if ($dimensi->count() === 1) {
-                        $nilai_kokurikuler[$key]['kokurikuler_desc'] =
-                            "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
-                    } else {
-                        $nilai_kokurikuler[$key]['kokurikuler_desc'] =
-                            "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
-                    }
+                    // if ($dimensi->count() === 1) {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                    // } else {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                    // }
+
+                    // ===============================
+                    // Menampilkan SEMUA aspek dimensi
+                    // ===============================
+                    $aspek_deskripsi = $dimensi->map(function ($d) use ($descrip) {
+                        $desc = $descrip[$d['nilai']] ?? '';
+                        return "$desc dalam aspek {$d['nama']}";
+                    })->implode(', ');
+
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $aspek_deskripsi pada tema $tema";
                 }
     
             }

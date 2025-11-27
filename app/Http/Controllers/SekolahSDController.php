@@ -2036,7 +2036,7 @@ class SekolahSDController extends Controller
             if (!empty($staffTU)) {
                 Mail::to($staffTU)->send(new \App\Mail\NewPPDBNotification($ppdb));
             }
-            return '✅ Test email PPDB berhasil dikirim ke ' . $emailTujuan;
+            return '✅ Test email PPDB berhasil dikirim ke ' . implode(', ', $staffTU);
         } catch (Exception $e) {
             return '❌ Gagal kirim email: ' . $e->getMessage();
         }

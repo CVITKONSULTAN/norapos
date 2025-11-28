@@ -299,6 +299,11 @@
         <div class="card mx-auto" style="max-width: 720px;">
           <div class="card-body p-4">
 
+            {{-- <h2 class="text-center fw-bold mb-4 text-danger">
+              Cetak Kartu Tes ? 
+              <a href="#" onclick="promptKodeBayar()">Klik disini</a>
+            </h2> --}}
+
             <h5 class="text-center fw-bold mb-4 text-success">Data Calon Murid</h5>
 
             <form onsubmit="submitPPDB(event)">
@@ -485,6 +490,11 @@
         </div>
 
       @endif
+
+      <h2 class="text-center fw-bold my-4 text-danger">
+        Cetak Kartu Tes ? 
+        <a href="#" onclick="promptKodeBayar()">Klik disini</a>
+      </h2>
       
       <h1 class="text-center mt-5">Statistik Kunjungan</h1>
       <div class="row text-center mb-4">
@@ -1250,6 +1260,53 @@
         // Tampilkan modal
         menungguModal.show();
       }
+
+      async function promptKodeBayar() {
+        const { value: kode } = await Swal.fire({
+            title: "Masukkan Kode Bayar",
+            text: "Masukkan kode bayar untuk melihat status atau mencetak kwitansi.",
+            input: "text",
+            inputPlaceholder: "contoh: 2025000123",
+            confirmButtonText: "Lanjutkan",
+            showCancelButton: true,
+            cancelButtonText: "Batal",
+            inputAttributes: {
+                maxlength: 20,
+                autocapitalize: "off",
+                autocorrect: "off",
+            },
+            inputValidator: (value) => {
+                if (!value) return "Kode bayar wajib diisi!";
+            }
+        });
+
+        if (!kode) return;
+
+        // 🔄 Loading
+        Swal.fire({
+            title: "Memeriksa kode...",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            const res = await axios.get(`${baseURL}/ppdb-show/${kode}`);
+
+            Swal.close();
+
+            if (!res.data.status) {
+                return Swal.fire("Tidak ditemukan", "Kode bayar tidak valid.", "error");
+            }
+
+            // 🔀 Redirect ke halaman upload pembayaran
+            window.location.href = `/cetak-karu-simuda?kode_bayar=${kode}`;
+
+        } catch (err) {
+            Swal.close();
+            Swal.fire("Error", err.response?.data?.message || "Terjadi kesalahan.", "error");
+        }
+    }
+
 
     </script>
 

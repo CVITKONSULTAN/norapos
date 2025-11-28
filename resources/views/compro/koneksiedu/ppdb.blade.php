@@ -1266,7 +1266,7 @@
             title: "Masukkan Kode Bayar",
             text: "Masukkan kode bayar untuk melihat status atau mencetak kwitansi.",
             input: "text",
-            inputPlaceholder: "contoh: 2025000123",
+            inputPlaceholder: "",
             confirmButtonText: "Lanjutkan",
             showCancelButton: true,
             cancelButtonText: "Batal",

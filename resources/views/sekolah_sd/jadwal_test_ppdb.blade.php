@@ -101,7 +101,10 @@
                                 @foreach ($peserta as $p)
                                     <tr>
                                         <td>{{ $p['nama'] }}</td>
-                                        <td>{{ $p['kode_bayar'] }}</td>
+                                        <td>
+                                            <p>{{ $p['kode_bayar'] }}</p>
+                                            <a href="{{route('sekolah.cetak_kartutes_ppdb',['kode_bayar'=> $p['kode_bayar'] ])}}" class="btn btn-primary">Cetak Kartu Tes</a>
+                                        </td>
                                         <td>{{ $p['no_hp'] ?? '-' }}</td>
                                     </tr>
                                 @endforeach

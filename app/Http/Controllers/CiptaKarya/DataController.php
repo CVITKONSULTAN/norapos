@@ -525,13 +525,17 @@ class DataController extends Controller
                 'message' => "data not found"
             ]);
 
+        if($request->photoMaps){
+            $data->photoMaps = json_encode($request->photoMaps);
+        }
+
         if($request->list_foto){
             $data->list_foto = json_encode($request->list_foto);
-            $data->save();
-            return response()->json([
-                'status' => true,
-                'message' => 'Photo saved',
-            ]);
+            // $data->save();
+            // return response()->json([
+            //     'status' => true,
+            //     'message' => 'Photo saved',
+            // ]);
         }
 
         $data->answers = json_encode($request->answers);

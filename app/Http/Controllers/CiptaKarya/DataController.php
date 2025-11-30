@@ -538,8 +538,12 @@ class DataController extends Controller
             // ]);
         }
 
+        if($request->answers)
         $data->answers = json_encode($request->answers);
+        
+        if($request->questions)
         $data->questions = json_encode($request->questions);
+    
         $data->save();
 
         return response()->json([

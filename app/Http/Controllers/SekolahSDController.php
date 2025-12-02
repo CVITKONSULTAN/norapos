@@ -589,7 +589,8 @@ class SekolahSDController extends Controller
                     $nilai = $nilai_unik->first(); // M / C / B
                     $nilai_desc = $descrip[$nilai] ?? '';
     
-                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
+                    // $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
+                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' , ');
     
                     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                         "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
@@ -761,7 +762,8 @@ class SekolahSDController extends Controller
                     $nilai = $nilai_unik->first(); // M / C / B
                     $nilai_desc = $descrip[$nilai] ?? '';
     
-                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
+                    // $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
+                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' , ');
     
                     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
                         "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";

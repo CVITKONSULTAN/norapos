@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\CiptaKarya\PengajuanPBG;
 use App\Models\CiptaKarya\PetugasLapangan;
+use App\Models\CiptaKarya\PbgTracking;
 use Validator;
 use DataTables;
 use DB;
@@ -741,7 +742,7 @@ class DataController extends Controller
 
         $role = auth()->user()->roles->first()->name ?? 'admin'; // pastikan role tersedia
 
-        \App\Models\Ciptakarya\PbgTracking::updateOrCreate(
+        PbgTracking::updateOrCreate(
             [
                 'pengajuan_id' => $pengajuanId,
                 'role' => $role
@@ -780,7 +781,7 @@ class DataController extends Controller
         $flow = config('pbgflow');
 
         // load data tracking aktual di DB
-        $trackDB = \App\Models\Ciptakarya\PbgTracking::where('pengajuan_id', $id)
+        $trackDB = PbgTracking::where('pengajuan_id', $id)
                     ->get()
                     ->keyBy('role'); // hasil -> role => data tracking
 
@@ -818,7 +819,7 @@ class DataController extends Controller
 
     public function riwayatVerifikasi($id)
     {
-        $data = \App\Models\Ciptakarya\PbgTracking::where('pengajuan_id', $id)
+        $data = PbgTracking::where('pengajuan_id', $id)
             ->orderBy('verified_at', 'asc')
             ->get()
             ->map(function($t){

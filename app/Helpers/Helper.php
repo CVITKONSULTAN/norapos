@@ -56,5 +56,19 @@ class Helper {
         }
     }
 
+    public static function answerLabel($val) {
+         $map = [
+            '1' => 'Ya',
+            '-2' => 'Tidak',
+            '2' => 'Sedang',
+            '3' => 'Berat',
+        ];
+
+        $key = (string)$val;
+
+        return $map[$key] ?? $val;
+    }
+
+
 
 }

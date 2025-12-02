@@ -54,4 +54,20 @@ class PengajuanPBG extends Model
     function petugas(){
         return $this->belongsTo(PetugasLapangan::class,'petugas_id','id');
     }
+
+    public function nextStage($role, $status)
+    {
+        $flow = [
+            'admin_entry' => 'petugas',
+            'petugas' => 'pemeriksa',
+            'pemeriksa' => 'admin_retribusi',
+            'admin_retribusi' => 'koordinator',
+            'koordinator' => 'kabid',
+            'kabid' => 'finish',
+        ];
+
+        if ($status == 'rejected') return 'revisi';
+
+        return $flow[$role] ?? 'finish';
+    }
 }

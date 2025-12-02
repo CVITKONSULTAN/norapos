@@ -47,6 +47,7 @@ class RoleController extends Controller
             return DataTables::of($roles)
                 ->addColumn('action', function ($row) {
                     if (
+                        auth()->user()->business->business_category != 'ciptakarya' &&
                         auth()->user()->business->business_category != 'sekolah_sd' &&
                         (!$row->is_default || $row->name == "Cashier#" . $row->business_id)
                     ) {

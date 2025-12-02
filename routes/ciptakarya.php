@@ -20,7 +20,14 @@ Route::group([
     Route::get('list-data-pbg', 'CiptaKarya\DataController@list_index')->name('ciptakarya.list_data_pbg');
     Route::get('list-data-pbg/{id}/detail', 'CiptaKarya\DataController@show_pbg')->name('ciptakarya.pbg.show');
     Route::get('list-data-pbg/data', 'CiptaKarya\DataController@list_data_pbg')->name('ciptakarya.list_data_pbg_datatables');
+    Route::get('pbg/{id}/timeline', 'CiptaKarya\DataController@timeline')->name('ciptakarya.timeline');
+
+    Route::get('riwayatVerifikasi/{id}', 'CiptaKarya\DataController@riwayatVerifikasi')
+    ->name('ciptakarya.riwayatVerifikasi');
+
+
     Route::post('store_pbg', 'CiptaKarya\DataController@store_pbg')->name('ciptakarya.store_pbg');
+    Route::post('simpanVerifikasi', 'CiptaKarya\DataController@simpanVerifikasi')->name('ciptakarya.simpanVerifikasi');
     
     Route::get('petugas', 'CiptaKarya\DataController@petugas_index')->name('ciptakarya.list_data_petugas');
     Route::get('petugas', 'CiptaKarya\DataController@petugas_index')->name('ciptakarya.list_data_petugas');

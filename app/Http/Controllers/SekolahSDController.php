@@ -2033,7 +2033,8 @@ class SekolahSDController extends Controller
         try {
              // 🔹 Kirim email ke semua STAFF TU
             $business_id = 13;
-            $staffTU = User::role("Staff TU#$business_id")->pluck('email')->toArray();
+            // $staffTU = User::role("Staff TU#$business_id")->pluck('email')->toArray();
+            $staffTU = ['itkonsultanindonesia@gmail.com'];
 
             if (!empty($staffTU)) {
                 Mail::to($staffTU)->send(new \App\Mail\NewPPDBNotification($ppdb));

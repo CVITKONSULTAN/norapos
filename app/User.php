@@ -368,7 +368,7 @@ class User extends Authenticatable
         return !empty($check);
     }
     function checkRole($role_name){
-        $check = $this->roles()->where('name','like','%'.$role_name.'%')->first();
+        $check = $this->roles()->where('name','like','%'.strtolower($role_name).'%')->first();
         return !empty($check);
     }
 

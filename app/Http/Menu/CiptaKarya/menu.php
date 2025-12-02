@@ -14,6 +14,15 @@ Menu::create('admin-sidebar-ciptakarya', function ($menu) {
         ]
     )->order(0);
 
+    $menu->url(
+        route('ciptakarya.list_data_pbg'),
+        "Pemohon / Pengajuan",
+        [
+            'icon' => 'fa fas fa-inbox', 
+            'active' => request()->segment(1) == 'ciptakarya' && request()->segment(2) == 'list-data-pbg'
+        ]
+    )->order(2);
+
     if($user->checkAdmin()){
         
         $menu->dropdown(
@@ -32,15 +41,6 @@ Menu::create('admin-sidebar-ciptakarya', function ($menu) {
             },
             ['icon' => 'fa fas fa-users']
         )->order(1);
-
-        $menu->url(
-            route('ciptakarya.list_data_pbg'),
-            "Pemohon / Pengajuan",
-            [
-                'icon' => 'fa fas fa-inbox', 
-                'active' => request()->segment(1) == 'ciptakarya' && request()->segment(2) == 'list-data-pbg'
-            ]
-        )->order(2);
 
         $menu->url(
             route('ciptakarya.list_data_petugas'),

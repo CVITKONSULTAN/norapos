@@ -4,9 +4,12 @@ namespace App\Http\Controllers\CiptaKarya;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
 use App\Models\CiptaKarya\PengajuanPBG;
 use App\Models\CiptaKarya\PetugasLapangan;
 use App\Models\CiptaKarya\PbgTracking;
+use App\User;
+
 use Validator;
 use DataTables;
 use DB;
@@ -742,7 +745,7 @@ class DataController extends Controller
 
         $role = auth()->user()->roles->first()->name ?? 'admin'; // pastikan role tersedia
 
-        PbgTracking::updateOrCreate(
+        $tracking = PbgTracking::updateOrCreate(
             [
                 'pengajuan_id' => $pengajuanId,
                 'role' => $role
@@ -755,8 +758,24 @@ class DataController extends Controller
             ]
         );
 
-        // optional: update pengajuan current_stage atau status ringkas
-        // PengajuanPBG::where('id', $pengajuanId)->update(['current_stage' => $this->nextStage($role, $status)]);
+        $emailList = [];
+        // === KIRIM EMAIL OTOMATIS JIKA ROLE = PEMERIKSA ===
+        if ( auth()->user()->checkRole('pemeriksa') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Retribusi#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+            }
+            $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+
+            // Kirim email
+            \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                $pengajuan,
+                $tracking
+            ));
+        }
 
         return response()->json([
             'status' => true,

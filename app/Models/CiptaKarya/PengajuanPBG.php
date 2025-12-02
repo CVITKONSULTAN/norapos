@@ -3,9 +3,12 @@
 namespace App\Models\CiptaKarya;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PengajuanPBG extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 'pengajuan'; // Jika tabel tidak otomatis plural
 
     protected $fillable = [

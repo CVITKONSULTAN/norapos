@@ -13,9 +13,13 @@ use App\User;
 use Validator;
 use DataTables;
 use DB;
+use Mail;
+
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
 use App\Helpers\Helper;
+
+use App\Mail\PetugasAssignedMail;
 
 class DataController extends Controller
 {
@@ -87,6 +91,22 @@ class DataController extends Controller
             $input['answers'] = json_encode([]);
             $input['questions'] = json_encode([]);
             $data = PengajuanPBG::create($input);
+
+            $role = auth()->user()->roles->first()->name ?? 'admin'; // pastikan role tersedia
+
+            $tracking = PbgTracking::updateOrCreate(
+                [
+                    'pengajuan_id' => $data->id,
+                    'role' => $role
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'catatan' => "Membuat data pbg",
+                    'status' => "proses",
+                    'verified_at' => now()
+                ]
+            );
+
             return response()->json(['status' => true, 'message' => 'Data berhasil ditambahkan', 'data' => $data]);
         }
 
@@ -376,10 +396,16 @@ class DataController extends Controller
         $pengajuan = PengajuanPBG::find($request->id);
         $petugas = PetugasLapangan::find($request->petugas_id);
 
+
         $pengajuan->petugas_id = $petugas->id;
         $pengajuan->petugas_lapangan = $petugas->toArray(); // simpan juga nama/email
 
         $pengajuan->save();
+
+        // Kirim email notifikasi
+        if (!empty($petugas->email)) {
+            Mail::to($petugas->email)->send(new PetugasAssignedMail($pengajuan, $petugas));
+        }
 
         return response()->json(['status' => true, 'message' => 'Petugas berhasil dikaitkan']);
     }
@@ -517,6 +543,7 @@ class DataController extends Controller
     public function store_question_answer(Request $request,$id)
     {
         $petugas = $request->petugas;
+        $role = "petugas#$petugas->id&$petugas->nama"; // pastikan role tersedia
 
         // query data berdasarkan petugas login
         $data = PengajuanPBG::where([
@@ -532,6 +559,18 @@ class DataController extends Controller
 
         if($request->photoMaps){
             $data->photoMaps = json_encode($request->photoMaps);
+            $tracking = PbgTracking::updateOrCreate(
+                [
+                    'pengajuan_id' => $data->id,
+                    'role' => $role
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'catatan' => 'Menyimpan hasil pemeriksaan lapangan',
+                    'status' => "proses",
+                    'verified_at' => now()
+                ]
+            );
         }
 
         if($request->list_foto){
@@ -759,6 +798,7 @@ class DataController extends Controller
         );
 
         $emailList = [];
+        
         // === KIRIM EMAIL OTOMATIS JIKA ROLE = PEMERIKSA ===
         if ( auth()->user()->checkRole('pemeriksa') ) {
             

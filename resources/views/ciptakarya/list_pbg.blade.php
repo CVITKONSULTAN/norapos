@@ -526,17 +526,66 @@
                     data: 'id',
                     orderable: false,
                     searchable: false,
-                    render: (data, type, row) => {
+                    render: function (data, type, row) {
+
                         return `
-                            <a href="print/${data}" class="btn btn-sm btn-success"><i class="fa fa-print"></i> Cetak</a>
-                            <button data-id="${data}" class="btn btn-sm btn-primary"><i class="fa fa-history"></i> Riwayat</button>
-                            <a href="detail/${data}" class="btn btn-sm btn-primary"><i class="fa fa-list"></i> Detail</a>
-                            <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
-                                <i class="fa fa-calculator"></i> Retribusi
-                            </button>
-                            <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas"><i class="fa fa-user"></i> Petugas</button>
-                            <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan"><i class="fa fa-pencil"></i> Edit</button>
-                            <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan"><i class="fa fa-trash"></i> Hapus</button>
+                            @if(auth()->user()->checkRole('pemeriksa'))
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-history"></i> Riwayat
+                                </button>
+                                <a href="detail/${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-list"></i> Detail
+                                </a>
+                            @elseif(auth()->user()->checkRole('admin'))
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-history"></i> Riwayat
+                                </button>
+                                <a href="detail/${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-list"></i> Detail
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
+                                    <i class="fa fa-calculator"></i> Retribusi
+                                </button>
+                                <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas">
+                                    <i class="fa fa-user"></i> Petugas
+                                </button>
+                                <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </button>
+                                <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            @elseif(auth()->user()->checkRole('retribusi'))
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-history"></i> Riwayat
+                                </button>
+                                <a href="detail/${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-list"></i> Detail
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
+                                    <i class="fa fa-calculator"></i> Retribusi
+                                </button>
+                            @else
+                                <!-- USER LAINNYA -->
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-history"></i> Riwayat
+                                </button>
+                                <a href="detail/${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-list"></i> Detail
+                                </a>
+                            @endif
                         `;
                     }
                 }

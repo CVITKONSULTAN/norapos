@@ -310,7 +310,8 @@
                     Pontianak, 20 Juni 2025<br />
                     @endif
                     @if($kelas_siswa->kelas->semester == 1)
-                    Pontianak, 13 Desember 2024<br />
+                    {{-- Pontianak, 13 Desember 2024<br /> --}}
+                    Pontianak, 12 Desember 2025<br />
                     @endif
                     {{-- Mengetahui,<br /> --}}
                     Orangtua/Wali

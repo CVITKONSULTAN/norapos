@@ -20,6 +20,8 @@ use \App\Models\Sekolah\DataDimensiID;
 use \App\Models\Sekolah\PPDBSekolah;
 use \App\Models\Sekolah\PPDBSetting;
 use \App\Models\Sekolah\PpdbTestSchedule;
+use \App\Models\Sekolah\NilaiIntervalKeyword;
+
 use \App\User;
 use \App\Visitor;
 
@@ -32,6 +34,7 @@ use DataTables;
 use Storage;
 use Mail;
 use Carbon;
+use Validator;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PPDBExport;
@@ -2123,6 +2126,54 @@ class SekolahSDController extends Controller
             'map_start_time' => $selectedMAP['start'],
             'map_end_time'   => $selectedMAP['end'],
         ]);
+    }
+
+    public function intervalIndex(Request $request){
+        return view('sekolah_sd.nilai_interval');
+    }
+
+    public function intervalNilaiStore(Request $request){
+         // Validasi input
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:nilai_interval_keywords,id',
+            'nilai_minimum' => 'required|numeric',
+            'nilai_maksimum' => 'required|numeric|gte:nilai_minimum',
+            'formatter_string' => 'required|string',
+            'tipe' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Ambil model
+        $interval = NilaiIntervalKeyword::findOrFail($request->id);
+
+        // Update data
+        $interval->update([
+            'nilai_minimum'     => $request->nilai_minimum,
+            'nilai_maksimum'    => $request->nilai_maksimum,
+            'formatter_string'  => $request->formatter_string,
+            'tipe'              => $request->tipe
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Interval nilai berhasil diperbarui',
+            'data' => $interval
+        ]);
+    }
+
+    public function intervalNilaiData(Request $request){
+        $query = NilaiIntervalKeyword::query();
+        if($request->id){
+            $query = $query->where('id',$request->id);
+        }
+        return DataTables::of($query)->make(true);
     }
 
     // private function generateScheduleFor($kodeBayar)

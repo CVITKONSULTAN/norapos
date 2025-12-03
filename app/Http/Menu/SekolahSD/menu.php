@@ -261,6 +261,14 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                 //     ]
                 // );
                 $sub->url(
+                    route('sekolah_sd.interval.index'),
+                    "Rentang Penilaian",
+                    ['icon' => 'fa fas fa-user', 'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'interval' 
+                    ]
+                );
+                $sub->url(
                     action('SekolahSDController@raport_akhir_index'),
                     "Raport Akhir",
                     ['icon' => 'fa fas fa-user', 

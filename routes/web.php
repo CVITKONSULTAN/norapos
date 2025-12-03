@@ -146,6 +146,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
 
+        Route::get('interval','SekolahSDController@intervalIndex')
+        ->name('sekolah_sd.interval.index');
+        Route::get('interval/data','SekolahSDController@intervalNilaiData')
+        ->name('sekolah_sd.interval.data');
+        Route::post('interval/store','SekolahSDController@intervalNilaiStore')
+        ->name('sekolah_sd.interval.store');
+
         Route::get('ppdb/update','SekolahSDController@update_nama_ppdb')
         ->name('sekolah_sd.ppdb.update');
 

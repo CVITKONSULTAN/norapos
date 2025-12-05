@@ -295,16 +295,6 @@
     <table class="table_ttd">
         <tr>
             <td style="text-align: center;">
-                {{-- {{dd()}} --}}
-                <p>
-                    {{-- Mengetahui,<br /> --}}
-                    Wali Kelas
-                </p>
-                <br />
-                <p class="ttd">{{$kelas_siswa->kelas->nama_wali_kelas}}</p>
-                <p style="margin:0px;">NBM. {{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
-            </td>
-            <td style="text-align: center;">
                 <p>
                     @if($kelas_siswa->kelas->semester == 2)
                     Pontianak, 20 Juni 2025<br />
@@ -319,6 +309,16 @@
                 <br />
                 {{-- <p class="ttd">{{$kelas_siswa->siswa->detail['nama_ayah'] ?? ''}}</p> --}}
                 <p class="ttd">.................................</p>
+            </td>
+            <td style="text-align: center;">
+                {{-- {{dd()}} --}}
+                <p>
+                    {{-- Mengetahui,<br /> --}}
+                    Wali Kelas
+                </p>
+                <br />
+                <p class="ttd">{{$kelas_siswa->kelas->nama_wali_kelas}}</p>
+                <p style="margin:0px;">NBM. {{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
             </td>
         </tr>
         <tr>

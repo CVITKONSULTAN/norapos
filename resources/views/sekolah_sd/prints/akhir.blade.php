@@ -296,13 +296,6 @@
         <tr>
             <td style="text-align: center;">
                 <p>
-                    @if($kelas_siswa->kelas->semester == 2)
-                    Pontianak, 20 Juni 2025<br />
-                    @endif
-                    @if($kelas_siswa->kelas->semester == 1)
-                    {{-- Pontianak, 13 Desember 2024<br /> --}}
-                    Pontianak, 12 Desember 2025<br />
-                    @endif
                     {{-- Mengetahui,<br /> --}}
                     Orangtua/Wali
                 </p>
@@ -313,6 +306,13 @@
             <td style="text-align: center;">
                 {{-- {{dd()}} --}}
                 <p>
+                    @if($kelas_siswa->kelas->semester == 2)
+                    Pontianak, 20 Juni 2025<br />
+                    @endif
+                    @if($kelas_siswa->kelas->semester == 1)
+                    {{-- Pontianak, 13 Desember 2024<br /> --}}
+                    Pontianak, 12 Desember 2025<br />
+                    @endif
                     {{-- Mengetahui,<br /> --}}
                     Wali Kelas
                 </p>

@@ -904,6 +904,7 @@
 
         // Tombol Simpan Petugas
         $('#btn_simpan_petugas').click(function() {
+            const buttonDom = $(this);
             const pengajuanId = $('#pengajuan_id_target').val();
             const petugasId = $('#select_petugas').val();
 
@@ -918,6 +919,14 @@
                     _token: "{{ csrf_token() }}",
                     id: pengajuanId,
                     petugas_id: petugasId
+                },
+                beforeSend:function(){
+                    buttonDom.attr('disabled',true);
+                    buttonDom.text('Loading...');
+                },
+                complete:function(){
+                    buttonDom.removeAttr('disabled');
+                    buttonDom.text('Simpan');
                 },
                 success: function(res) {
                     if (res.status) {

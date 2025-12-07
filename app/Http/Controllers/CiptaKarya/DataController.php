@@ -640,7 +640,21 @@ class DataController extends Controller
 
     public function updateRetribusi(Request $request, $id)
     {
-        $p = PengajuanPBG::find($id);
+        $p = PengajuanPBG::findorfail($id);
+
+        if ( auth()->user()->checkRole('retribusi') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Koordinator#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\RetribusiInputMail(
+                    $p
+                ));
+            }
+        }
 
         $p->nilai_retribusi = str_replace(',', '', $request->nilai_retribusi);
         $p->save();
@@ -807,14 +821,62 @@ class DataController extends Controller
             $admin = User::role("Retribusi#$business_id")->get();
             if($admin->count() > 0){
                 $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                    $pengajuan,
+                    $tracking
+                ));
             }
-            $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+        }
 
-            // Kirim email
-            \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
-                $pengajuan,
-                $tracking
-            ));
+        if ( auth()->user()->checkRole('retribusi') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Koordinator#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\RetribusiInputMail(
+                    $pengajuan
+                ));
+            }
+        }
+
+        if ( auth()->user()->checkRole('koordinator') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Kepala Bidang#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\KepalaBidangNotifMail(
+                    $pengajuan
+                ));
+            }
+        }
+
+        if ( auth()->user()->checkRole('kepala bidang') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Kepala Dinas#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\KepalaDinasNotifMail(
+                    $pengajuan
+                ));
+            }
         }
 
         return response()->json([

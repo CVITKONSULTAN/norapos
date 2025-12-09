@@ -39,4 +39,8 @@ Route::group([
 
     Route::post('update-retribusi/{id}', 'CiptaKarya\DataController@updateRetribusi');
 
+    Route::get('cek_retribusi', function(){
+        return view('ciptakarya.retribusi_form');
+    });
+
 });

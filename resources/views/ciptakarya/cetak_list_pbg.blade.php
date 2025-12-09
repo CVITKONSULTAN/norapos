@@ -625,6 +625,16 @@
                                 {{ in_array($row['answer'], ['Tidak','Tidak Ada','Tidak Sesuai']) ? '☑' : '' }}
                             </td>
                         </tr>
+
+                        {{-- === VISUAL (LEVEL 1) === --}}
+                        @if(!empty($row['visual']))
+                        <tr>
+                            <td colspan="3" style="padding-left:25px; font-style:italic; color:#444;">
+                                Hasil Pengamatan Visual: <b>{{ $row['visual'] }}</b>
+                            </td>
+                        </tr>
+                        @endif
+
                     @endforeach
                 </tbody>
             </table>
@@ -653,7 +663,7 @@
                     <tbody>
                         @foreach($child1['rows'] as $row)
                             <tr>
-                                <td style="padding-left: 20px;">
+                                <td style="padding-left:20px;">
                                     {{ $row['question'] }}
                                 </td>
 
@@ -665,6 +675,16 @@
                                     {{ in_array($row['answer'], ['Tidak','Tidak Ada','Tidak Sesuai']) ? '☑' : '' }}
                                 </td>
                             </tr>
+
+                            {{-- === VISUAL (LEVEL 2) === --}}
+                            @if(!empty($row['visual']))
+                            <tr>
+                                <td colspan="3" style="padding-left:45px; font-style:italic; color:#444;">
+                                    Hasil Pengamatan Visual: <b>{{ $row['visual'] }}</b>
+                                </td>
+                            </tr>
+                            @endif
+
                         @endforeach
                     </tbody>
                 </table>
@@ -692,7 +712,7 @@
                     <tbody>
                         @foreach($child2['rows'] as $row)
                             <tr>
-                                <td style="padding-left: 35px;">
+                                <td style="padding-left:35px;">
                                     {{ $row['question'] }}
                                 </td>
 
@@ -704,6 +724,16 @@
                                     {{ in_array($row['answer'], ['Tidak','Tidak Ada','Tidak Sesuai']) ? '☑' : '' }}
                                 </td>
                             </tr>
+
+                            {{-- === VISUAL (LEVEL 3) === --}}
+                            @if(!empty($row['visual']))
+                            <tr>
+                                <td colspan="3" style="padding-left:65px; font-style:italic; color:#444;">
+                                    Hasil Pengamatan Visual: <b>{{ $row['visual'] }}</b>
+                                </td>
+                            </tr>
+                            @endif
+
                         @endforeach
                     </tbody>
                 </table>

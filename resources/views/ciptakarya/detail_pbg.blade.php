@@ -308,7 +308,7 @@
 </section>
 
 <section class="content row">
-
+    @if ( !auth()->user()->checkRole('retribusi') )
     <div class="detail-box col-md-12">
         <div class="detail-title">Verifikasi Berkas</div>
 
@@ -350,6 +350,7 @@
         </div>
 
     </div>
+    @endif
 
     <div class="detail-box col-md-12">
         <div class="detail-title">Informasi Umum</div>

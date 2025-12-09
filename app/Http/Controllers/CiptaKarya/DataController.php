@@ -592,16 +592,31 @@ class DataController extends Controller
     
         $data->save();
 
-        $business_id = 18;
+        $business_id = 15;
         // Cari user admin_retribusi
         $admin = User::role("Pemeriksa#$business_id")->get();
+
+        $role = 'Petugas Lapangan#'.$business_id; // pastikan role tersedia
+
+        $tracking = PbgTracking::updateOrCreate(
+                [
+                    'pengajuan_id' => $data->id,
+                    'role' => $role
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'catatan' => "mengisi data pengajuan",
+                    'status' => "proses",
+                    'verified_at' => now()
+                ]
+            );
+
         if($admin->count() > 0){
             $emailList = $admin->pluck('email')->toArray();
-            $pengajuan = PengajuanPBG::findorfail($pengajuanId);
 
             // Kirim email
             \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
-                $pengajuan,
+                $data,
                 $tracking
             ));
         }
@@ -644,7 +659,8 @@ class DataController extends Controller
         }
     }
 
-    function print_data(Request $request,$id){
+    function print_data(Request $request, $id)
+    {
         $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
 
         // Decode answers
@@ -652,6 +668,20 @@ class DataController extends Controller
         $sections = json_decode($pengajuan['questions'], true) ?? [];
 
         $results = [];
+
+        // Helper untuk memisahkan answer & visual
+        $parseAnswer = function($val) {
+            if (!is_numeric($val)) {
+                return [
+                    'answer' => null,   // tidak dianggap Ya/Tidak
+                    'visual' => $val    // ini teks visual
+                ];
+            }
+            return [
+                'answer' => Helper::answerLabel($val),
+                'visual' => null
+            ];
+        };
 
         foreach ($sections as $section) {
 
@@ -663,8 +693,7 @@ class DataController extends Controller
 
             /* ======================================================
             * LEVEL 1  (section -> questioner)
-            * Key format: "caption__index"
-            * ====================================================== */
+            ====================================================== */
             if (isset($section['questioner'])) {
 
                 foreach ($section['questioner'] as $i => $q) {
@@ -672,19 +701,20 @@ class DataController extends Controller
                     $key = $section['caption'] . '__' . $i;
 
                     $val = $answers[$key]['value'] ?? null;
+                    $parsed = $parseAnswer($val);
 
                     $sec['rows'][] = [
                         'question' => $q['question'],
-                        'answer' => Helper::answerLabel($val),
+                        'answer'   => $parsed['answer'],
+                        'visual'   => $parsed['visual'],
                     ];
                 }
             }
 
 
             /* ======================================================
-            * LEVEL 2 (section -> child)
-            * Key format: "caption > child_caption__index"
-            * ====================================================== */
+            * LEVEL 2  (section -> child)
+            ====================================================== */
             if (isset($section['child'])) {
 
                 foreach ($section['child'] as $child1) {
@@ -697,6 +727,7 @@ class DataController extends Controller
 
                     // child1 langsung punya questioner
                     if (isset($child1['questioner'])) {
+
                         foreach ($child1['questioner'] as $i => $q) {
 
                             $key = $section['caption']
@@ -704,20 +735,20 @@ class DataController extends Controller
                                 . '__' . $i;
 
                             $val = $answers[$key]['value'] ?? null;
+                            $parsed = $parseAnswer($val);
 
                             $sub['rows'][] = [
                                 'question' => $q['question'],
-                                'answer' => Helper::answerLabel($val)
+                                'answer'   => $parsed['answer'],
+                                'visual'   => $parsed['visual'],
                             ];
                         }
                     }
 
 
                     /* ======================================================
-                    * LEVEL 3  (section -> child -> sub child)
-                    * Key format:
-                    * "caption > child_caption > subchild_caption__index"
-                    * ====================================================== */
+                    * LEVEL 3  (section -> child -> subchild)
+                    ====================================================== */
                     if (isset($child1['child'])) {
 
                         foreach ($child1['child'] as $child2) {
@@ -735,10 +766,12 @@ class DataController extends Controller
                                     . '__' . $i;
 
                                 $val = $answers[$key]['value'] ?? null;
+                                $parsed = $parseAnswer($val);
 
                                 $sub2['rows'][] = [
                                     'question' => $q['question'],
-                                    'answer' => Helper::answerLabel($val)
+                                    'answer'   => $parsed['answer'],
+                                    'visual'   => $parsed['visual'],
                                 ];
                             }
 
@@ -753,18 +786,21 @@ class DataController extends Controller
             $results[] = $sec;
         }
 
-       $photos = json_decode($pengajuan['photoMaps'] ?? '[]', true);
+
+        /* ======================================================
+        * FOTO MAPPING
+        ====================================================== */
+        $photos = json_decode($pengajuan['photoMaps'] ?? '[]', true);
 
         $sectionPhotos = [];
 
         foreach ($photos as $p) {
 
-            // Ambil nomor section dari foto (angka sebelum "-")
             preg_match('/^(\d+)-/', $p['caption'], $match);
 
             if (!isset($match[1])) continue;
 
-            $sectionNum = $match[1]; // contoh: 6
+            $sectionNum = $match[1];
 
             $sectionPhotos[$sectionNum][] = [
                 'caption' => $p['caption'],
@@ -772,12 +808,13 @@ class DataController extends Controller
             ];
         }
 
-        return view('ciptakarya.cetak_list_pbg',[
-            'pengajuan' => $pengajuan,
-            'inspectionResults' => $results,
-            'sectionPhotos'     => $sectionPhotos
+        return view('ciptakarya.cetak_list_pbg', [
+            'pengajuan'        => $pengajuan,
+            'inspectionResults'=> $results,
+            'sectionPhotos'    => $sectionPhotos,
         ]);
     }
+
 
     // function detail_data(Request $request,$id){
     //     $data['pengajuan'] = PengajuanPBG::findorfail($id);

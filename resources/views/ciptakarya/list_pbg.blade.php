@@ -983,24 +983,26 @@
         }
 
         $(document).on('click', '.btn-primary:has(.fa-history)', function() {
+
             const id = $(this).data('id');
 
-            const url = `{{ route('ciptakarya.list_data_pbg') }}/${id}/detail`;
+            // URL controller timeline
+            const url = `{{ route('ciptakarya.timeline', ':id') }}`.replace(':id', id);
 
-            // GET dari backend
             $.get(url, function(res) {
 
-                // res.step = angka 1–7 dari database
-                // const step = res.step ?? 1;
-                const step = 2;
+                if (!res.status) {
+                    toastr.error("Gagal memuat timeline!");
+                    return;
+                }
 
-                // Generate timeline
-                $('#timeline_container').html(renderTimeline(step));
+                const flow = res.timeline; 
+                $('#timeline_container').html(renderFullTimeline(flow));
 
-                // Tampilkan modal
                 $('#modal_timeline').modal('show');
             });
         });
+
 
         $(document).on('click', '.hitung_retribusi', function () {
 
@@ -1070,6 +1072,49 @@
             // Format dengan separator ribuan
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
+
+        function renderFullTimeline(flow) {
+
+    let html = `<div class="timeline">`;
+
+    flow.forEach((step, index) => {
+
+        // gunakan warna dari backend: green / red
+        const bg = step.color === 'green' ? '#4CAF50' : '#FF5252';
+        const textColor = 'white';
+
+        html += `
+            <div class="timeline-item">
+                <div class="timeline-year">${index + 1}</div>
+
+                <div class="timeline-icon" style="
+                    background: ${bg};
+                    color: ${textColor};
+                    border-color: ${bg};
+                ">
+                    <span style="font-size:22px">✔️</span>
+                </div>
+
+                <div class="timeline-content">
+                    <h3><strong>${step.label}</strong></h3>
+                    <p>${step.desc}</p>
+                    
+                    <p style="margin-top:4px;">
+                        <b>Status:</b> ${step.status.toUpperCase()} <br>
+                        <b>Catatan:</b> ${step.catatan ?? '-'} <br>
+                        <b>Tanggal:</b> ${step.verified_at ? moment(step.verified_at).format("DD MMMM YYYY HH:mm") : '-'} <br>
+                        <b>User:</b> ${step.user ?? '-'}
+                    </p>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+
+    return html;
+}
+
 
 
 

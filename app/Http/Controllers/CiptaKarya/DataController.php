@@ -1018,56 +1018,59 @@ class DataController extends Controller
     }
 
     public function timeline($id)
-    {
-        // Data pengajuan
-        $pengajuan = PengajuanPBG::find($id);
+{
+    $pengajuan = PengajuanPBG::find($id);
 
-        if (!$pengajuan) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data pengajuan tidak ditemukan'
-            ]);
-        }
-
-        // load master step flow
-        $flow = config('pbgflow');
-
-        // load data tracking aktual di DB
-        $trackDB = PbgTracking::where('pengajuan_id', $id)
-                    ->get()
-                    ->keyBy('role'); // hasil -> role => data tracking
-
-        $timeline = [];
-
-        // Buat output final 7 item urut
-        foreach ($flow as $step) {
-
-            $role = $step['role'];
-            $row = [
-                'role' => $role,
-                'label' => $step['label'],
-                'desc'  => $step['desc'],
-                'status' => 'pending',   // default
-                'catatan' => null,
-                'verified_at' => null,
-                'user' => null
-            ];
-
-            if (isset($trackDB[$role])) {
-                $row['status'] = $trackDB[$role]->status;
-                $row['catatan'] = $trackDB[$role]->catatan;
-                $row['verified_at'] = $trackDB[$role]->verified_at;
-                $row['user'] = $trackDB[$role]->user->nama ?? null;
-            }
-
-            $timeline[] = $row;
-        }
-
+    if (!$pengajuan) {
         return response()->json([
-            'status' => true,
-            'timeline' => $timeline
+            'status' => false,
+            'message' => 'Data pengajuan tidak ditemukan'
         ]);
     }
+
+    $flow = config('pbgflow');
+
+    $timeline = [];
+
+    foreach ($flow as $step) {
+
+        // Normalisasi role flow: hilangkan spasi & lowercase
+        $searchKey = strtolower(str_replace(' ', '', $step['role']));
+
+        // Cari tracking berdasarkan LIKE
+        $track = PbgTracking::where('pengajuan_id', $id)
+            ->whereRaw("LOWER(REPLACE(role, ' ', '')) LIKE ?", ["%{$searchKey}%"])
+            ->first();
+
+        $row = [
+            'role' => $step['role'],
+            'label' => $step['label'],
+            'desc'  => $step['desc'],
+            'status' => 'pending',
+            'catatan' => null,
+            'verified_at' => null,
+            'user' => null,
+            'color' => 'red'
+        ];
+
+        if ($track) {
+            $row['status']      = $track->status;
+            $row['catatan']     = $track->catatan;
+            $row['verified_at'] = $track->verified_at;
+            $row['user']        = $track->user->username ?? null;
+            $row['color']       = 'green';
+        }
+
+        $timeline[] = $row;
+    }
+
+    return response()->json([
+        'status' => true,
+        'timeline' => $timeline
+    ]);
+}
+
+
 
     public function riwayatVerifikasi($id)
     {

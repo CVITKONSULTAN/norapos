@@ -629,7 +629,138 @@ class DataController extends Controller
     }
 
     function print_data(Request $request,$id){
-        return view('ciptakarya.cetak_list_pbg');
+        $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
+
+        // Decode answers
+        $answers = json_decode($pengajuan['answers'], true) ?? [];
+        $sections = json_decode($pengajuan['questions'], true) ?? [];
+
+        $results = [];
+
+        foreach ($sections as $section) {
+
+            $sec = [
+                'caption' => $section['caption'],
+                'rows' => [],
+                'child' => [],
+            ];
+
+            /* ======================================================
+            * LEVEL 1  (section -> questioner)
+            * Key format: "caption__index"
+            * ====================================================== */
+            if (isset($section['questioner'])) {
+
+                foreach ($section['questioner'] as $i => $q) {
+
+                    $key = $section['caption'] . '__' . $i;
+
+                    $val = $answers[$key]['value'] ?? null;
+
+                    $sec['rows'][] = [
+                        'question' => $q['question'],
+                        'answer' => Helper::answerLabel($val),
+                    ];
+                }
+            }
+
+
+            /* ======================================================
+            * LEVEL 2 (section -> child)
+            * Key format: "caption > child_caption__index"
+            * ====================================================== */
+            if (isset($section['child'])) {
+
+                foreach ($section['child'] as $child1) {
+
+                    $sub = [
+                        'caption' => $child1['caption'],
+                        'rows' => [],
+                        'child' => []
+                    ];
+
+                    // child1 langsung punya questioner
+                    if (isset($child1['questioner'])) {
+                        foreach ($child1['questioner'] as $i => $q) {
+
+                            $key = $section['caption']
+                                . ' > ' . $child1['caption']
+                                . '__' . $i;
+
+                            $val = $answers[$key]['value'] ?? null;
+
+                            $sub['rows'][] = [
+                                'question' => $q['question'],
+                                'answer' => Helper::answerLabel($val)
+                            ];
+                        }
+                    }
+
+
+                    /* ======================================================
+                    * LEVEL 3  (section -> child -> sub child)
+                    * Key format:
+                    * "caption > child_caption > subchild_caption__index"
+                    * ====================================================== */
+                    if (isset($child1['child'])) {
+
+                        foreach ($child1['child'] as $child2) {
+
+                            $sub2 = [
+                                'caption' => $child2['caption'],
+                                'rows' => []
+                            ];
+
+                            foreach ($child2['questioner'] as $i => $q) {
+
+                                $key = $section['caption']
+                                    . ' > ' . $child1['caption']
+                                    . ' > ' . $child2['caption']
+                                    . '__' . $i;
+
+                                $val = $answers[$key]['value'] ?? null;
+
+                                $sub2['rows'][] = [
+                                    'question' => $q['question'],
+                                    'answer' => Helper::answerLabel($val)
+                                ];
+                            }
+
+                            $sub['child'][] = $sub2;
+                        }
+                    }
+
+                    $sec['child'][] = $sub;
+                }
+            }
+
+            $results[] = $sec;
+        }
+
+       $photos = json_decode($pengajuan['photoMaps'] ?? '[]', true);
+
+        $sectionPhotos = [];
+
+        foreach ($photos as $p) {
+
+            // Ambil nomor section dari foto (angka sebelum "-")
+            preg_match('/^(\d+)-/', $p['caption'], $match);
+
+            if (!isset($match[1])) continue;
+
+            $sectionNum = $match[1]; // contoh: 6
+
+            $sectionPhotos[$sectionNum][] = [
+                'caption' => $p['caption'],
+                'url' => $p['url']
+            ];
+        }
+
+        return view('ciptakarya.cetak_list_pbg',[
+            'pengajuan' => $pengajuan,
+            'inspectionResults' => $results,
+            'sectionPhotos'     => $sectionPhotos
+        ]);
     }
 
     // function detail_data(Request $request,$id){

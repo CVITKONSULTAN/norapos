@@ -306,7 +306,8 @@
         <tr>
             <td>Nomor</td>
             <td>:</td>
-            <td>600.1.15.1/...../SIMBG/DPUPRPRKP-CK/2025</td>
+            {{-- <td>600.1.15.1/...../SIMBG/DPUPRPRKP-CK/2025</td> --}}
+            <td>....../...../SIMBG/DPUPRPRKP-CK/{{ \Carbon\Carbon::parse($pengajuan['created_at'])->format('Y') }}</td>
         </tr>
         <tr>
             <td>Sifat</td>
@@ -334,7 +335,7 @@
         Berdasarkan hasil pemeriksaan kesesuaian dokumen rencana teknis yang disampaikan dan dengan memperhatikan berita acara konsultansi oleh TPA/TPT, bersama ini kami menyatakan bahwa dokumen rencana teknis telah memenuhi standar teknis dengan data sebagai berikut :
     </p>
 
-    <table class="tabel_surat_pernyataan">
+    {{-- <table class="tabel_surat_pernyataan">
         <tr>
             <td><strong>Nomor Permohonan</strong></td>
             <td>611201-01092025-011</td>
@@ -426,7 +427,118 @@
             <td><strong>Koordinat Bangunan</strong></td>
             <td>-</td>
         </tr>
-    </table>
+    </table> --}}
+
+    <table class="tabel_surat_pernyataan">
+
+    <tr>
+        <td><strong>Nomor Permohonan</strong></td>
+        <td>{{ $pengajuan['no_permohonan'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Nomor KRK / KKPR</strong></td>
+        <td>{{ $pengajuan['no_krk'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Nama Pemohon</strong></td>
+        <td>
+            {{ $pengajuan['nama_pemohon'] ?? '-' }}
+            @if(!empty($pengajuan['pemilik_tanah']))
+                <br>an. {{ $pengajuan['pemilik_tanah'] }}
+            @endif
+        </td>
+    </tr>
+
+    <tr>
+        <td><strong>NIK</strong></td>
+        <td>{{ $pengajuan['nik'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Alamat</strong></td>
+        <td>{!! nl2br(e($pengajuan['alamat'] ?? '-')) !!}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Fungsi Bangunan</strong></td>
+        <td>{{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Nama Bangunan</strong></td>
+        <td>{{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Jumlah Bangunan</strong></td>
+        <td>{{ $pengajuan['jumlah_bangunan'] ?? '-' }} Unit</td>
+    </tr>
+
+    <tr>
+        <td><strong>Jumlah Lantai</strong></td>
+        <td>{{ $pengajuan['jumlah_lantai'] ?? '-' }} Lantai</td>
+    </tr>
+
+    <tr>
+        <td><strong>Luas Bangunan</strong></td>
+        <td>{{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td>
+    </tr>
+
+    <tr>
+        <td><strong>Ketinggian Bangunan</strong></td>
+        <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td>
+    </tr>
+
+    <tr>
+        <td><strong>Lokasi Bangunan</strong></td>
+        <td>{!! nl2br(e($pengajuan['lokasi_bangunan'] ?? '-')) !!}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Di Atas Tanah No. Persil</strong></td>
+        <td>{!! nl2br(e($pengajuan['no_persil'] ?? '-')) !!}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Luas Tanah</strong></td>
+        <td>{{ $pengajuan['luas_tanah'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Atas Nama/Pemilik Tanah</strong></td>
+        <td>{{ $pengajuan['pemilik_tanah'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Garis Sempadan Bangunan (GSB) Minimum</strong></td>
+        <td>{{ $pengajuan['gbs_min'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Koefisien Daerah Hijau (KDH) Minimum</strong></td>
+        <td>{{ $pengajuan['kdh_min'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Koefisien Dasar Bangunan (KDB) Maksimum</strong></td>
+        <td>{{ $pengajuan['kdb_max'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Koefisien Lantai Bangunan (KLB) Maksimum</strong></td>
+        <td>{{ $pengajuan['koefisiensi_lantai'] ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td><strong>Koordinat Bangunan</strong></td>
+        <td>{{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
+    </tr>
+
+</table>
+
+
     <p>Dengan demikian permohonan Persetujuan Bangunan Gedung (PBG) dan Sertifikat Laik Fungsi (SLF) dapat disetujui dan diterbitkan.<br />
     Demikian surat pernyataan ini kami sampaikan, atas perhatiannya diucapkan terima kasih.</p>
 
@@ -473,131 +585,134 @@
     <h2 style="text-align:center;">DAFTAR SIMAK PEMERIKSAAN KELAIKAN FUNGSI BANGUNAN GEDUNG</h2>
 
     <table class="no-border">
-        <tr><td width="25%">Nama Pemohon</td><td>: SUSANTO</td></tr>
-        <tr><td>Fungsi Bangunan</td><td>: Gudang 1 Lantai</td></tr>
-        <tr><td>Lokasi Bangunan</td><td>: Jl. Sungai Raya Dalam, Desa Sungai Raya Dalam</td></tr>
+        <tr><td width="25%">Nama Pemohon</td><td>: {{ $pengajuan['nama_pemohon'] ?? '-' }}</td></tr>
+        <tr><td>Fungsi Bangunan</td><td>: {{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td></tr>
+        <tr><td>Lokasi Bangunan</td><td>: {{ $pengajuan['alamat'] ?? '-' }}</td></tr>
     </table>
 
-    <!-- ======================
-        1. IDENTITAS PEMILIK
-    ======================= -->
-    <div class="section-title">1. Identitas Pemilik</div>
+    {{-- =========================
+        LOOP SECTION LEVEL 1
+    ========================== --}}
+    @foreach($inspectionResults as $section)
 
-    <table>
-        <tr>
-            <th>Identitas Pemilik</th>
-            <th width="15%">Ada</th>
-            <th width="15%">Tidak Ada</th>
-        </tr>
-        <tr>
-            <td>Identitas Pemilik</td>
-            <td class="check">☑</td>
-            <td class="check">☐</td>
-        </tr>
-    </table>
+        <div class="section-title">
+            {{ $section['caption'] }}
+        </div>
 
-    <!-- ======================
-        2. DOKUMEN PBG
-    ======================= -->
-    <div class="section-title">2. Dokumen PBG</div>
+        {{-- ===========================
+            TABLE LEVEL 1
+        ============================ --}}
+        @if(!empty($section['rows']))
+            <table>
+                <thead>
+                    <tr>
+                        <th width="70%">Uraian</th>
+                        <th width="15%">Ya / Ada / Sesuai</th>
+                        <th width="15%">Tidak / Tidak Ada</th>
+                    </tr>
+                </thead>
 
-    <table>
-        <tr>
-            <th width="5%">No.</th>
-            <th>Dokumen PBG</th>
-            <th width="15%">Ya</th>
-            <th width="15%">Tidak</th>
-        </tr>
-        <tr><td>1</td><td>Dokumen PBG tersedia</td><td>☑</td><td></td></tr>
-        <tr><td>2</td><td>Fungsi Bangunan sesuai dokumen</td><td></td><td>☑</td></tr>
-        <tr><td>3</td><td>Luas Bangunan sesuai dokumen</td><td></td><td>☑</td></tr>
-        <tr><td>4</td><td>Ketinggian Bangunan sesuai dokumen</td><td></td><td>☑</td></tr>
-        <tr><td>5</td><td>Jumlah Lantai sesuai dokumen</td><td></td><td>☑</td></tr>
-    </table>
+                <tbody>
+                    @foreach($section['rows'] as $row)
+                        <tr>
+                            <td>{{ $row['question'] }}</td>
 
-    <!-- ======================
-        3. GAMBAR TERBANGUN
-    ======================= -->
-    <div class="section-title">3. Dokumen Rencana Teknis / Gambar Terbangun</div>
+                            <td class="check">
+                                {{ in_array($row['answer'], ['Ya','Ada','Sesuai']) ? '☑' : '' }}
+                            </td>
 
-    <table>
-        <tr>
-            <th>No.</th>
-            <th>Dokumen Rencana Teknis</th>
-            <th>Ya</th>
-            <th>Tidak</th>
-        </tr>
-        <tr><td>1</td><td>Dokumen tersedia</td><td>☑</td><td></td></tr>
-        <tr><td>2</td><td>Fungsi sesuai dokumen</td><td>☑</td><td></td></tr>
-        <tr><td>3</td><td>Luas sesuai dokumen</td><td>☑</td><td></td></tr>
-        <tr><td>4</td><td>Ketinggian sesuai dokumen</td><td>☑</td><td></td></tr>
-        <tr><td>5</td><td>Jumlah lantai sesuai dokumen</td><td></td><td></td></tr>
-        <tr><td>6</td><td>Kondisi struktur sesuai dokumen</td><td></td><td></td></tr>
-        <tr><td>7</td><td>Kondisi arsitektur sesuai dokumen</td><td>☑</td><td></td></tr>
-    </table>
+                            <td class="check">
+                                {{ in_array($row['answer'], ['Tidak','Tidak Ada','Tidak Sesuai']) ? '☑' : '' }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
 
-    <!-- ======================
-        4. KONDISI GEDUNG
-    ======================= -->
-    <div class="section-title">4. Kondisi Bangunan Gedung</div>
 
-    <table>
-        <tr>
-            <th>No.</th>
-            <th>Kondisi Bangunan</th>
-            <th>Ya</th>
-            <th>Tidak</th>
-        </tr>
-        <tr><td>1</td><td>Miring / deformasi</td><td></td><td>☑</td></tr>
-        <tr><td>2</td><td>Kerusakan ringan</td><td></td><td>☑</td></tr>
-        <tr><td>3</td><td>Kerusakan sedang</td><td></td><td>☑</td></tr>
-        <tr><td>4</td><td>Kerusakan berat</td><td></td><td></td></tr>
-        <tr><td>5</td><td>Bangunan terawat</td><td></td><td></td></tr>
-    </table>
+        {{-- ===========================
+            TABLE LEVEL 2
+        ============================ --}}
+        @foreach($section['child'] as $child1)
 
-    <!-- ======================
-        5. PENILAIAN NILAI
-    ======================= -->
-    <div class="section-title">5. Pemeriksaan Kesesuaian Dokumen & Visual</div>
+            <div class="sub-title" style="margin-top:10px;">
+                {{ $child1['caption'] }}
+            </div>
 
-    <table>
-        <tr><th>Jenis</th><th>Hasil</th></tr>
-        <tr><td>Fungsi Bangunan</td><td>Gudang</td></tr>
-        <tr><td>Pemanfaatan Ruang</td><td>M/L/M + N</td></tr>
-        <tr><td>Luas Dasar</td><td>457.50</td></tr>
-        <tr><td>Luas Lantai</td><td>462.60</td></tr>
-        <tr><td>Jumlah Lantai</td><td>1</td></tr>
-        <tr><td>Ketinggian</td><td>3.90</td></tr>
-    </table>
+            @if(!empty($child1['rows']))
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="70%">Uraian</th>
+                            <th width="15%">Ya / Ada / Sesuai</th>
+                            <th width="15%">Tidak / Tidak Ada</th>
+                        </tr>
+                    </thead>
 
-    <!-- ======================
-        6. STRUKTUR
-    ======================= -->
-    <div class="section-title">6. Pemeriksaan Sistem Struktur</div>
+                    <tbody>
+                        @foreach($child1['rows'] as $row)
+                            <tr>
+                                <td style="padding-left: 20px;">
+                                    {{ $row['question'] }}
+                                </td>
 
-    <table>
-        <tr>
-            <th>Elemen Struktur</th>
-            <th>Pengamatan Visual</th>
-            <th>Ada</th><th>Tidak</th>
-        </tr>
+                                <td class="check">
+                                    {{ in_array($row['answer'], ['Ya','Ada','Sesuai']) ? '☑' : '' }}
+                                </td>
 
-        <tr><td>Kolom</td><td>Retak, honeycomb</td><td>☑</td><td></td></tr>
-        <tr><td>Balok</td><td>Pecah, korosi</td><td></td><td>☑</td></tr>
-        <tr><td>Pelat</td><td>Lendutan ringan</td><td>☑</td><td></td></tr>
-        <tr><td>Rangka Atap</td><td>Korosi</td><td></td><td>☑</td></tr>
-    </table>
+                                <td class="check">
+                                    {{ in_array($row['answer'], ['Tidak','Tidak Ada','Tidak Sesuai']) ? '☑' : '' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
 
-    <!-- ======================
-        6.2 KEBAKARAN
-    ======================= -->
-    <div class="section-title">6.2 Proteksi Kebakaran</div>
 
-    <table>
-        <tr><th>Jenis Pemeriksaan</th><th>Kondisi</th><th>Kesesuaian</th></tr>
-        <tr><td>Hidran</td><td>Ada</td><td>☑ Sesuai</td></tr>
-        <tr><td>APAR</td><td>Ada</td><td>☑ Sesuai</td></tr>
-    </table>
+            {{-- ===========================
+                TABLE LEVEL 3
+            ============================ --}}
+            @foreach($child1['child'] as $child2)
+
+                <div class="sub-title-2" style="margin-top:5px;">
+                    {{ $child2['caption'] }}
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="70%">Uraian</th>
+                            <th width="15%">Ya / Ada / Sesuai</th>
+                            <th width="15%">Tidak / Tidak Ada</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach($child2['rows'] as $row)
+                            <tr>
+                                <td style="padding-left: 35px;">
+                                    {{ $row['question'] }}
+                                </td>
+
+                                <td class="check">
+                                    {{ in_array($row['answer'], ['Ya','Ada','Sesuai']) ? '☑' : '' }}
+                                </td>
+
+                                <td class="check">
+                                    {{ in_array($row['answer'], ['Tidak','Tidak Ada','Tidak Sesuai']) ? '☑' : '' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            @endforeach
+
+        @endforeach
+
+    @endforeach
 
     <!-- ======================
         6.11 TTD
@@ -626,9 +741,9 @@
             <div class="judul-vertical">DOKUMENTASI VISUAL LAPANGAN</div>
 
             <div class="info-box">
-                <p><strong>NAMA PEMOHON</strong><br>SUSANTO / PT. CEMERLANG INTERPLAST NUSANTARA</p>
-                <p><strong>FUNGSI BANGUNAN</strong><br>Gudang</p>
-                <p><strong>LOKASI BANGUNAN</strong><br>Jl. Sungai Raya Dalam, Desa Sungai Raya Dalam</p>
+                <p><strong>NAMA PEMOHON</strong><br>{{ $pengajuan['nama_pemohon'] ?? '-' }}</p>
+                <p><strong>FUNGSI BANGUNAN</strong><br>{{ $pengajuan['fungsi_bangunan'] ?? '-' }}</p>
+                <p><strong>LOKASI BANGUNAN</strong><br>{{ $pengajuan['alamat'] ?? '-' }}</p>
             </div>
         </div>
 
@@ -636,43 +751,186 @@
 
             <div class="foto-grid">
 
-                <!-- FOTO 1 -->
-                <div class="foto-item">
-                    <div class="foto-frame">
-                        <img src="https://www.suaraindo.id/wp-content/uploads/2025/05/1-45.jpeg" alt="">
-                    </div>
-                    <div class="foto-label">KONDISI LANTAI</div>
-                </div>
+                @foreach($inspectionResults as $sec)
 
-                <!-- FOTO 2 -->
-                <div class="foto-item">
-                    <div class="foto-frame">
-                        <img src="https://www.suaraindo.id/wp-content/uploads/2025/05/1-45.jpeg" alt="">
-                    </div>
-                    <div class="foto-label">KONDISI DINDING</div>
-                </div>
+                    @php
+                        preg_match('/^(\d+)/', $sec['caption'], $m);
+                        $secNum = $m[1] ?? null;
 
-                <!-- FOTO 3 -->
-                <div class="foto-item">
-                    <div class="foto-frame">
-                        <img src="https://www.suaraindo.id/wp-content/uploads/2025/05/1-45.jpeg" alt="">
-                    </div>
-                    <div class="foto-label">KONDISI BANGUNAN LUAR</div>
-                </div>
+                        $fotos = $sectionPhotos[$secNum] ?? [];
+                    @endphp
 
-                <!-- FOTO 4 -->
-                <div class="foto-item">
-                    <div class="foto-frame">
-                        <img src="https://www.suaraindo.id/wp-content/uploads/2025/05/1-45.jpeg" alt="">
-                    </div>
-                    <div class="foto-label">KONDISI RANGKA ATAP</div>
-                </div>
+                    @foreach($fotos as $foto)
+                        <div class="foto-item">
+                            <div class="foto-frame">
+                                <img src="{{ $foto['url'] }}">
+                            </div>
+                            <div class="foto-label">{{ $foto['caption'] }}</div>
+                        </div>
+                    @endforeach
+
+                @endforeach
 
             </div>
 
         </div>
 
     </div>
+</div>
+
+
+<div class="page">
+
+    <h2 style="text-align:center; margin-bottom:0;">
+        SURAT PERNYATAAN KELAIKAN FUNGSI BANGUNAN GEDUNG
+    </h2>
+
+    <br>
+
+    <table class="no-border" style="font-size:12pt;">
+        <tr><td width="27%">Nomor</td><td>: .....................................................</td></tr>
+        <tr><td>Tanggal</td><td>: .....................................................</td></tr>
+        <tr><td>Lampiran</td><td>: .....................................................</td></tr>
+    </table>
+
+    <p style="text-align:justify; font-size:12pt;">
+        Pelaksana pemeriksaan kelaikan fungsi bangunan gedung:
+    </p>
+
+    <table class="tabel_surat_pernyataan">
+        <tr>
+            <td>Nama Petugas 1</td>
+            <td>: .....................................................</td>
+        </tr>
+        <tr>
+            <td>Jabatan</td>
+            <td>: .....................................................</td>
+        </tr>
+        <tr>
+            <td>Nama Petugas 2</td>
+            <td>: .....................................................</td>
+        </tr>
+        <tr>
+            <td>Jabatan</td>
+            <td>: .....................................................</td>
+        </tr>
+    </table>
+
+    <p style="text-align:justify; font-size:12pt;">
+        Telah melaksanakan pemeriksaan pada bangunan gedung dengan data:
+    </p>
+
+    <table class="tabel_surat_pernyataan">
+        {{-- <tr><td>Nama Bangunan</td><td>: .....................................................</td></tr>
+        <tr><td>Alamat Bangunan</td><td>: .....................................................</td></tr>
+        <tr><td>Koordinat</td><td>: .....................................................</td></tr>
+        <tr><td>Fungsi Bangunan</td><td>: .....................................................</td></tr>
+        <tr><td>Klasifikasi Kompleksitas</td><td>: .....................................................</td></tr>
+        <tr><td>Ketinggian</td><td>: .....................................................</td></tr>
+        <tr><td>Jumlah Lantai</td><td>: .....................................................</td></tr>
+        <tr><td>Luas Lantai</td><td>: .....................................................</td></tr>
+        <tr><td>Jumlah Basemen</td><td>: .....................................................</td></tr>
+        <tr><td>Luas Lantai Basemen</td><td>: .....................................................</td></tr>
+        <tr><td>Luas Tanah</td><td>: .....................................................</td></tr> --}}
+        <tr>
+    <td>Nama Bangunan</td>
+    <td>: {{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Alamat Bangunan</td>
+    <td>: {{ $pengajuan['lokasi_bangunan'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Koordinat</td>
+    <td>: {{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Fungsi Bangunan</td>
+    <td>: {{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Klasifikasi Kompleksitas</td>
+    <td>: {{ $pengajuan['klasifikasi_kompleksitas'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Ketinggian</td>
+    <td>: {{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td>
+</tr>
+
+<tr>
+    <td>Jumlah Lantai</td>
+    <td>: {{ $pengajuan['jumlah_lantai'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Luas Lantai</td>
+    <td>: {{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td>
+</tr>
+
+<tr>
+    <td>Jumlah Basemen</td>
+    <td>: {{ $pengajuan['jumlah_basemen'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Luas Lantai Basemen</td>
+    <td>: {{ $pengajuan['luas_lantai_basemen'] ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td>Luas Tanah</td>
+    <td>: {{ $pengajuan['luas_tanah'] ?? '-' }}</td>
+</tr>
+    </table>
+
+    <br>
+
+    <div style="
+        border:2px solid #000;
+        padding:12px;
+        text-align:center;
+        font-weight:bold;
+        font-size:14pt;
+        margin:20px 0;">
+        BANGUNAN GEDUNG DINYATAKAN LAYAK FUNGSI
+    </div>
+
+    <p style="text-align:justify; font-size:12pt;">
+        Sesuai kesimpulan dari analisis dan evaluasi terhadap hasil pemeriksaan dokumen dan pemeriksaan kondisi bangunan gedung sebagaimana termuat dalam Laporan Pemeriksaan Kelaikan Fungsi Bangunan Gedung terlampir
+    </p>
+
+    <p style="text-align:justify; font-size:12pt;">
+        Surat pernyataan ini berlaku sepanjang tidak ada perubahan yang dilakukan oleh Pemilik /Pengguna terhadap bangunan gedung atau penyebab gangguan lainnya yang dibuktikan kemudian.
+    </p>
+
+    <p style="text-align:justify; font-size:12pt;">
+        Selanjutnya Pemilik/Pengguna bangunan gedung dapat menggunakan surat pernyataan ini untuk keperluan permohonan Sertifikat Laik Fungsi (SLF) bangunan gedung.<br />
+        Demikian surat pernyataan ini dibuat dengan sebenarnya. Apabila dikemudian hari ditemui bahwa pernyataan kami bertentangan dengan kondisi bangunan gedung secara factual, maka kami bersedia mengikuti proses hukum sesuai dengan ketentuan yang berlaku.
+    </p>
+
+    <br><br>
+
+    <table class="no-border" style="width:100%; font-size:12pt;">
+        <tr>
+            <td style="text-align:center; width:50%;">
+                Pemeriksa,<br><br><br><br><br>
+                (.............................................)<br>
+                Petugas 1
+            </td>
+
+            <td style="text-align:center;">
+                Pemeriksa,<br><br><br><br><br>
+                (.............................................)<br>
+                Petugas 2
+            </td>
+        </tr>
+    </table>
+
 </div>
 
 <!-- =======================

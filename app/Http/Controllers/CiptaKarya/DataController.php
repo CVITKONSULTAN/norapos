@@ -592,6 +592,20 @@ class DataController extends Controller
     
         $data->save();
 
+        $business_id = 18;
+        // Cari user admin_retribusi
+        $admin = User::role("Pemeriksa#$business_id")->get();
+        if($admin->count() > 0){
+            $emailList = $admin->pluck('email')->toArray();
+            $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+
+            // Kirim email
+            \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                $pengajuan,
+                $tracking
+            ));
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'OK',

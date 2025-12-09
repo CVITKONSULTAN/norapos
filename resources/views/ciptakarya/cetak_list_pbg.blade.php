@@ -722,11 +722,11 @@
         <tr>
             <td width="50%" style="text-align:center;">
                 Mengetahui,<br>Pemilik Bangunan<br><br><br><br>
-                <u>SUSANTO</u>
+                <u>{{ $pengajuan['nama_pemohon'] }}</u>
             </td>
             <td style="text-align:center;">
                 Kubu Raya, 01-08-2025<br>Pemeriksa Teknis<br><br><br><br>
-                <u>MARANATHA YOHANES SINAGA, S.ST</u>
+                <u>{{ $pengajuan['petugas_lapangan']['nama'] ?? '-' }}</u>
             </td>
         </tr>
     </table>
@@ -799,21 +799,21 @@
 
     <table class="tabel_surat_pernyataan">
         <tr>
-            <td>Nama Petugas 1</td>
-            <td>: .....................................................</td>
+            <td>Nama Petugas</td>
+            <td>: {{ $pengajuan['petugas_lapangan']['nama'] ?? '-' }}</td>
         </tr>
         <tr>
             <td>Jabatan</td>
-            <td>: .....................................................</td>
+            <td>: {{ $pengajuan['petugas_lapangan']['jabatan'] ?? '-' }}</td>
         </tr>
-        <tr>
+        {{-- <tr>
             <td>Nama Petugas 2</td>
             <td>: .....................................................</td>
         </tr>
         <tr>
             <td>Jabatan</td>
             <td>: .....................................................</td>
-        </tr>
+        </tr> --}}
     </table>
 
     <p style="text-align:justify; font-size:12pt;">
@@ -918,15 +918,15 @@
     <table class="no-border" style="width:100%; font-size:12pt;">
         <tr>
             <td style="text-align:center; width:50%;">
-                Pemeriksa,<br><br><br><br><br>
+                {{-- Pemeriksa,<br><br><br><br><br>
                 (.............................................)<br>
-                Petugas 1
+                Petugas 1 --}}
             </td>
 
             <td style="text-align:center;">
                 Pemeriksa,<br><br><br><br><br>
-                (.............................................)<br>
-                Petugas 2
+                ({{ $pengajuan['petugas_lapangan']['nama'] ?? '-' }})<br>
+                Petugas
             </td>
         </tr>
     </table>

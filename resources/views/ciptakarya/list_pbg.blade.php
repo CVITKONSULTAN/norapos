@@ -379,6 +379,7 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary', 'title' => ""])
+    @if( auth()->user()->checkRole('admin') )
         <div class="row">
             <div class="col-sm-4">
                 <button onclick="addPengajuan('PBG')" class="btn btn-success btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG</button>
@@ -390,6 +391,7 @@
                 <button onclick="addPengajuan('PBG/SLF')" class="btn btn-primary btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG & SLF</button>
             </div>
         </div>
+    @endif
     @endcomponent
     @component('components.widget', ['class' => 'box-primary', 'title' => "Daftar Pemohon PBG dan SLF"])
             <p>Filter Data :</p>

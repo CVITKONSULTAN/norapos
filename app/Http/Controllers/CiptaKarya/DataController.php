@@ -400,6 +400,8 @@ class DataController extends Controller
         $pengajuan->petugas_id = $petugas->id;
         $pengajuan->petugas_lapangan = $petugas->toArray(); // simpan juga nama/email
 
+        $pengajuan->tgl_penugasan = date('Y-m-d H:i:s');
+
         $pengajuan->save();
 
         // Kirim email notifikasi

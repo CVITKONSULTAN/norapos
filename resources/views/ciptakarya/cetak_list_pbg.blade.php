@@ -302,7 +302,7 @@
     <hr class="kop-line">
 
     {{-- <p style="text-align: right;">Sungai Raya, <span style="margin-right:180px;"></span></p> --}}
-    <p style="text-align: right;">Sungai Raya, <input style="width: 100px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="{{ date('d M Y') }}" /></p>
+    <p style="text-align: right;">Sungai Raya, <input style="width: 150px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="{{ date('d M Y') }}" /></p>
     <table class="tabel_head">
         <tr>
             <td>Nomor</td>
@@ -325,7 +325,7 @@
         <tr>
             <td>Hal</td>
             <td>:</td>
-            <td><b>Rekomendasi Teknis</b></td>
+            <td><input style="font-weight:bold;width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Rekomendasi Teknis" /></td>
         </tr>
     </table>
 

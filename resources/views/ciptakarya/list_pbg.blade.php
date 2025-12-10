@@ -440,7 +440,7 @@
                             <th>No. Permohonan</th>
                             <th>Nama Pemohon</th>
                             <th>Jenis Izin</th>
-                            <th>Jenis / Kategori</th>
+                            <th>Fungsi Bangunan</th>
                             <th>Tgl Pengajuan</th>
                             <th>Status</th>
                             <th>Nilai Retribusi</th>

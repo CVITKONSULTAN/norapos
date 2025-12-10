@@ -243,6 +243,15 @@
     margin-top: 5px;
 }
 
+.tabel_custom_head tr td {
+    padding: 1px 10px;
+}
+
+/* td pertama pada setiap baris */
+.tabel_custom_head tr td:first-child {
+    padding-left: 0;
+}
+
 
     /* Sembunyikan tombol print saat dicetak */
     @media print {
@@ -303,7 +312,7 @@
 
     {{-- <p style="text-align: right;">Sungai Raya, <span style="margin-right:180px;"></span></p> --}}
     <p style="text-align: right;">Sungai Raya, <input style="width: 150px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="{{ date('d M Y') }}" /></p>
-    <table class="tabel_head">
+    <table class="tabel_head tabel_custom_head">
         <tr>
             <td>Nomor</td>
             <td>:</td>
@@ -325,7 +334,8 @@
         <tr>
             <td>Hal</td>
             <td>:</td>
-            <td><input style="font-weight:bold;width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Rekomendasi Teknis" /></td>
+            {{-- <td><input style="font-weight:bold;width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Rekomendasi Teknis" /></td> --}}
+            <td><textarea rows="1" style="font-weight:bold;width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;"></textarea></td>
         </tr>
     </table>
 
@@ -333,7 +343,7 @@
     {{-- <p>Yth. Kepala DPMPTSP Kab. Kuburaya</p> --}}
     <p style="margin-left:33px;">di -</p>
     {{-- <p style="margin-left:33px;">Sungai Raya</p> --}}
-    <p style="margin-left:33px;"><input style="width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Sungai Raya" /></p>
+    <p style="margin-left:33px;"><input style="width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Tempat" /></p>
 
     <p style="text-align: justify;">
         Dengan hormat,<br />

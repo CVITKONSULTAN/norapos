@@ -408,7 +408,7 @@
 
     <div class="detail-box col-md-12">
         <div class="detail-title">Informasi Umum
-            @if(auth()->user()->checkRole('koordinator'))
+            @if(!auth()->user()->checkRole('koordinator'))
                 <button class="btn btn-sm btn-primary float-right" id="btnDisposisi">
                     <i class="fa fa-share"></i> Disposisikan
                 </button>

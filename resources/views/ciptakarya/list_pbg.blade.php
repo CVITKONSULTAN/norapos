@@ -420,7 +420,7 @@
                 <div class="form-group col-md-2">
                     <select id="filter_status" class="form-control" required>
                         <option value="">-- Semua Status --</option>
-                        <option value="pending">PROSES</option>
+                        <option selected value="proses">PROSES</option>
                         <option value="gagal">GAGAL</option>
                         <option value="terbit">TERBIT</option>
                     </select>

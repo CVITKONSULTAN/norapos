@@ -21,6 +21,7 @@ npm-debug.log
 /public/uploads/temp/*
 /public/modules/
 /public/mix-manifest.json
+/public/CKverify.apk
 *.exe
 *.zip
 /composer.lock

@@ -531,6 +531,15 @@
                     searchable: false,
                     render: function (data, type, row) {
 
+                        if(row.status.toLowerCase() == 'terbit'){
+                            return `<a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-history"></i> Riwayat
+                                </button>`;
+                        }
+
                         return `
                             @if(auth()->user()->checkRole('pemeriksa'))
                                 <a href="print/${data}" class="btn btn-sm btn-success">

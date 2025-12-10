@@ -864,7 +864,6 @@ class DataController extends Controller
 
             if ($admin->count() > 0) {
                 $emailList = $admin->pluck('email')->toArray();
-                Log::info("email kirim ke Koordinator ". json_encode($emailList));
                 \Mail::to($emailList)
                     ->send(new \App\Mail\RetribusiInputMail($p));
             }
@@ -1224,7 +1223,6 @@ class DataController extends Controller
         $emailAdmin = User::role("Admin#$business_id")->get();
         
         if ($emailAdmin->count() > 0) {
-            Log::info('emailadmin>>'. json_encode($emailAdmin));
             $emailList = $emailAdmin->pluck('email')->toArray();
             \Mail::to($emailList)->send(new \App\Mail\DokumenTerbitMail($pengajuan));
         }

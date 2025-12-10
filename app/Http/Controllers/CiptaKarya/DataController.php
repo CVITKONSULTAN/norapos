@@ -856,10 +856,10 @@ class DataController extends Controller
         $p->nilai_retribusi = $nilai;
         $p->save();
 
+        $business_id = auth()->user()->business->id;
         // KIRIM EMAIL NOTIF KE KOORDINATOR RETRIBUSI
         if (auth()->user()->checkRole('retribusi')) {
 
-            $business_id = auth()->user()->business->id;
             $admin = User::role("Koordinator#$business_id")->get();
 
             if ($admin->count() > 0) {
@@ -869,6 +869,21 @@ class DataController extends Controller
                     ->send(new \App\Mail\RetribusiInputMail($p));
             }
         }
+
+        $role = 'Retribusi#'.$business_id; // pastikan role tersedia
+
+        $tracking = PbgTracking::updateOrCreate(
+            [
+                'pengajuan_id' => $p->id,
+                'role' => $role
+            ],
+            [
+                'user_id' => auth()->id(),
+                'catatan' => "mengisi nilai retribusi",
+                'status' => "proses",
+                'verified_at' => now()
+            ]
+        );
 
         return response()->json(['status' => true]);
     }

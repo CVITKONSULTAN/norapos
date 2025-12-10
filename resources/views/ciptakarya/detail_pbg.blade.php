@@ -390,7 +390,7 @@
             <div class="detail-title">Excel Retribusi</div>
 
             <iframe 
-                src="https://view.officeapps.live.com/op/embed.aspx?src={{ url('/upload/'.$pengajuan['excel_retribusi']) }}" 
+                src="https://view.officeapps.live.com/op/embed.aspx?src={{ url('/uploads/'.$pengajuan['excel_retribusi']) }}" 
                 width="100%" 
                 height="600px" 
                 frameborder="0">

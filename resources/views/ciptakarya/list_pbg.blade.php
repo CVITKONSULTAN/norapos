@@ -109,14 +109,14 @@
                 <div class="form-group">
                     <label><b>Nilai Retribusi (Rp)</b></label>
                     <input type="text" id="nilai_retribusi" class="form-control" 
-                        placeholder="Masukkan nilai retribusi">
+                        placeholder="Masukkan nilai retribusi" required>
                 </div>
 
                 <!-- UPLOAD FILE EXCEL -->
                 <div class="form-group">
                     <label><b>Upload File Excel Retribusi</b></label>
                     <input type="file" id="excel_retribusi" class="form-control" 
-                        accept=".xls,.xlsx">
+                        accept=".xls,.xlsx" required>
                     <small class="text-muted">Format wajib: .xls atau .xlsx</small>
                 </div>
 

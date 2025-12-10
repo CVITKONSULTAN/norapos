@@ -385,6 +385,17 @@
         <div class="detail-item"><b>KDH Minimum:</b> {{ $pengajuan['kdh_min'] }}</div>
         <div class="detail-item"><b>GBS Minimum:</b> {{ $pengajuan['gbs_min'] }}</div>
         <div class="detail-item"><b>Koordinat:</b> {{ $pengajuan['koordinat_bangunan'] }}</div>
+
+        @if( isset($pengajuan['excel_retribusi']) && !empty($pengajuan['excel_retribusi']))
+            <div class="detail-title">Excel Retribusi</div>
+
+            <iframe 
+                src="https://view.officeapps.live.com/op/embed.aspx?src={{ url($pengajuan['excel_retribusi']) }}" 
+                width="100%" 
+                height="600px" 
+                frameborder="0">
+            </iframe>
+        @endif
     </div>
 
     <div class="detail-box col-md-12">

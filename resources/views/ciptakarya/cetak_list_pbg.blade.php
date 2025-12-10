@@ -78,7 +78,7 @@
     }
 
     .tabel_head {
-        width: 40%;
+        width: 65%;
     }
     .tabel_head tr td {
         border: 0px;
@@ -301,13 +301,12 @@
 
     <hr class="kop-line">
 
-    <p style="text-align: right;">Sungai Raya, ..........</p>
+    <p style="text-align: right;">Sungai Raya, ........................................</p>
     <table class="tabel_head">
         <tr>
             <td>Nomor</td>
             <td>:</td>
-            {{-- <td>600.1.15.1/...../SIMBG/DPUPRPRKP-CK/2025</td> --}}
-            <td>....../...../SIMBG/DPUPRPRKP-CK/{{ \Carbon\Carbon::parse($pengajuan['created_at'])->format('Y') }}</td>
+            <td width="500">............./................/SIMBG/DPUPRPRKP-CK/{{ \Carbon\Carbon::parse($pengajuan['created_at'])->format('Y') }}</td>
         </tr>
         <tr>
             <td>Sifat</td>
@@ -580,6 +579,7 @@
     </div>
 </div> --}}
 
+@if($pengajuan['tipe'] == 'pbg' || $pengajuan['tipe'] == 'pbg/slf')
 <div class="page">
 
     <h2 style="text-align:center;">DAFTAR SIMAK PEMERIKSAAN KELAIKAN FUNGSI BANGUNAN GEDUNG</h2>
@@ -762,6 +762,7 @@
     </table>
 
 </div>
+@endif
 
 
 <div class="page">
@@ -808,7 +809,7 @@
     </div>
 </div>
 
-
+@if($pengajuan['tipe'] == 'pbg' || $pengajuan['tipe'] == 'pbg/slf')
 <div class="page">
 
     <h2 style="text-align:center; margin-bottom:0;">
@@ -851,117 +852,118 @@
     </p>
 
     <table class="tabel_surat_pernyataan">
-        {{-- <tr><td>Nama Bangunan</td><td>: .....................................................</td></tr>
-        <tr><td>Alamat Bangunan</td><td>: .....................................................</td></tr>
-        <tr><td>Koordinat</td><td>: .....................................................</td></tr>
-        <tr><td>Fungsi Bangunan</td><td>: .....................................................</td></tr>
-        <tr><td>Klasifikasi Kompleksitas</td><td>: .....................................................</td></tr>
-        <tr><td>Ketinggian</td><td>: .....................................................</td></tr>
-        <tr><td>Jumlah Lantai</td><td>: .....................................................</td></tr>
-        <tr><td>Luas Lantai</td><td>: .....................................................</td></tr>
-        <tr><td>Jumlah Basemen</td><td>: .....................................................</td></tr>
-        <tr><td>Luas Lantai Basemen</td><td>: .....................................................</td></tr>
-        <tr><td>Luas Tanah</td><td>: .....................................................</td></tr> --}}
-        <tr>
-    <td>Nama Bangunan</td>
-    <td>: {{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
-</tr>
+            {{-- <tr><td>Nama Bangunan</td><td>: .....................................................</td></tr>
+            <tr><td>Alamat Bangunan</td><td>: .....................................................</td></tr>
+            <tr><td>Koordinat</td><td>: .....................................................</td></tr>
+            <tr><td>Fungsi Bangunan</td><td>: .....................................................</td></tr>
+            <tr><td>Klasifikasi Kompleksitas</td><td>: .....................................................</td></tr>
+            <tr><td>Ketinggian</td><td>: .....................................................</td></tr>
+            <tr><td>Jumlah Lantai</td><td>: .....................................................</td></tr>
+            <tr><td>Luas Lantai</td><td>: .....................................................</td></tr>
+            <tr><td>Jumlah Basemen</td><td>: .....................................................</td></tr>
+            <tr><td>Luas Lantai Basemen</td><td>: .....................................................</td></tr>
+            <tr><td>Luas Tanah</td><td>: .....................................................</td></tr> --}}
+            <tr>
+                <td>Nama Bangunan</td>
+                <td>: {{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Alamat Bangunan</td>
-    <td>: {{ $pengajuan['lokasi_bangunan'] ?? '-' }}</td>
-</tr>
+            <tr>
+                <td>Alamat Bangunan</td>
+                <td>: {{ $pengajuan['lokasi_bangunan'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Koordinat</td>
-    <td>: {{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
-</tr>
+            <tr>
+                <td>Koordinat</td>
+                <td>: {{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Fungsi Bangunan</td>
-    <td>: {{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
-</tr>
+            <tr>
+                <td>Fungsi Bangunan</td>
+                <td>: {{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Klasifikasi Kompleksitas</td>
-    <td>: {{ $pengajuan['klasifikasi_kompleksitas'] ?? '-' }}</td>
-</tr>
+            <tr>
+                <td>Klasifikasi Kompleksitas</td>
+                <td>: {{ $pengajuan['klasifikasi_kompleksitas'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Ketinggian</td>
-    <td>: {{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td>
-</tr>
+            <tr>
+                <td>Ketinggian</td>
+                <td>: {{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td>
+            </tr>
 
-<tr>
-    <td>Jumlah Lantai</td>
-    <td>: {{ $pengajuan['jumlah_lantai'] ?? '-' }}</td>
-</tr>
+            <tr>
+                <td>Jumlah Lantai</td>
+                <td>: {{ $pengajuan['jumlah_lantai'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Luas Lantai</td>
-    <td>: {{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td>
-</tr>
+            <tr>
+                <td>Luas Lantai</td>
+                <td>: {{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td>
+            </tr>
 
-<tr>
-    <td>Jumlah Basemen</td>
-    <td>: {{ $pengajuan['jumlah_basemen'] ?? '-' }}</td>
-</tr>
+            <tr>
+                <td>Jumlah Basemen</td>
+                <td>: {{ $pengajuan['jumlah_basemen'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Luas Lantai Basemen</td>
-    <td>: {{ $pengajuan['luas_lantai_basemen'] ?? '-' }}</td>
-</tr>
+            <tr>
+                <td>Luas Lantai Basemen</td>
+                <td>: {{ $pengajuan['luas_lantai_basemen'] ?? '-' }}</td>
+            </tr>
 
-<tr>
-    <td>Luas Tanah</td>
-    <td>: {{ $pengajuan['luas_tanah'] ?? '-' }}</td>
-</tr>
-    </table>
+            <tr>
+                <td>Luas Tanah</td>
+                <td>: {{ $pengajuan['luas_tanah'] ?? '-' }}</td>
+            </tr>
+        </table>
 
-    <br>
+        <br>
 
-    <div style="
-        border:2px solid #000;
-        padding:12px;
-        text-align:center;
-        font-weight:bold;
-        font-size:14pt;
-        margin:20px 0;">
-        BANGUNAN GEDUNG DINYATAKAN LAYAK FUNGSI
-    </div>
+        <div style="
+            border:2px solid #000;
+            padding:12px;
+            text-align:center;
+            font-weight:bold;
+            font-size:14pt;
+            margin:20px 0;">
+            BANGUNAN GEDUNG DINYATAKAN LAYAK FUNGSI
+        </div>
 
-    <p style="text-align:justify; font-size:12pt;">
-        Sesuai kesimpulan dari analisis dan evaluasi terhadap hasil pemeriksaan dokumen dan pemeriksaan kondisi bangunan gedung sebagaimana termuat dalam Laporan Pemeriksaan Kelaikan Fungsi Bangunan Gedung terlampir
-    </p>
+        <p style="text-align:justify; font-size:12pt;">
+            Sesuai kesimpulan dari analisis dan evaluasi terhadap hasil pemeriksaan dokumen dan pemeriksaan kondisi bangunan gedung sebagaimana termuat dalam Laporan Pemeriksaan Kelaikan Fungsi Bangunan Gedung terlampir
+        </p>
 
-    <p style="text-align:justify; font-size:12pt;">
-        Surat pernyataan ini berlaku sepanjang tidak ada perubahan yang dilakukan oleh Pemilik /Pengguna terhadap bangunan gedung atau penyebab gangguan lainnya yang dibuktikan kemudian.
-    </p>
+        <p style="text-align:justify; font-size:12pt;">
+            Surat pernyataan ini berlaku sepanjang tidak ada perubahan yang dilakukan oleh Pemilik /Pengguna terhadap bangunan gedung atau penyebab gangguan lainnya yang dibuktikan kemudian.
+        </p>
 
-    <p style="text-align:justify; font-size:12pt;">
-        Selanjutnya Pemilik/Pengguna bangunan gedung dapat menggunakan surat pernyataan ini untuk keperluan permohonan Sertifikat Laik Fungsi (SLF) bangunan gedung.<br />
-        Demikian surat pernyataan ini dibuat dengan sebenarnya. Apabila dikemudian hari ditemui bahwa pernyataan kami bertentangan dengan kondisi bangunan gedung secara factual, maka kami bersedia mengikuti proses hukum sesuai dengan ketentuan yang berlaku.
-    </p>
+        <p style="text-align:justify; font-size:12pt;">
+            Selanjutnya Pemilik/Pengguna bangunan gedung dapat menggunakan surat pernyataan ini untuk keperluan permohonan Sertifikat Laik Fungsi (SLF) bangunan gedung.<br />
+            Demikian surat pernyataan ini dibuat dengan sebenarnya. Apabila dikemudian hari ditemui bahwa pernyataan kami bertentangan dengan kondisi bangunan gedung secara factual, maka kami bersedia mengikuti proses hukum sesuai dengan ketentuan yang berlaku.
+        </p>
 
-    <br><br>
+        <br><br>
 
-    <table class="no-border" style="width:100%; font-size:12pt;">
-        <tr>
-            <td style="text-align:center; width:50%;">
-                {{-- Pemeriksa,<br><br><br><br><br>
-                (.............................................)<br>
-                Petugas 1 --}}
-            </td>
+        <table class="no-border" style="width:100%; font-size:12pt;">
+            <tr>
+                <td style="text-align:center; width:50%;">
+                    {{-- Pemeriksa,<br><br><br><br><br>
+                    (.............................................)<br>
+                    Petugas 1 --}}
+                </td>
 
-            <td style="text-align:center;">
-                Pemeriksa,<br><br><br><br><br>
-                ({{ $pengajuan['petugas_lapangan']['nama'] ?? '-' }})<br>
-                Petugas
-            </td>
-        </tr>
-    </table>
+                <td style="text-align:center;">
+                    Pemeriksa,<br><br><br><br><br>
+                    ({{ $pengajuan['petugas_lapangan']['nama'] ?? '-' }})<br>
+                    Petugas
+                </td>
+            </tr>
+        </table>
 
 </div>
+@endif
 
 <!-- =======================
       PRINT BUTTON (BOTTOM)

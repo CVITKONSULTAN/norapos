@@ -43,7 +43,7 @@ Route::group([
         return view('ciptakarya.retribusi_form');
     });
 
-    Route::post('/pengajuan/disposisi/{id}', 'CiptaKarya\DataController@disposisi')->name('ciptakarya.disposisi');
+    Route::get('/pengajuan/disposisi/{id}', 'CiptaKarya\DataController@disposisi')->name('ciptakarya.disposisi');
     Route::post('/pengajuan/terbitkan/{id}', 'CiptaKarya\DataController@terbitkanDokumen')->name('ciptakarya.terbitkanDokumen');
 
 });

@@ -1224,6 +1224,7 @@ class DataController extends Controller
         $emailAdmin = User::role("Admin#$business_id")->get();
         
         if ($emailAdmin->count() > 0) {
+            Log::info('emailadmin>>', json_encode($emailAdmin));
             $emailList = $emailAdmin->pluck('email')->toArray();
             \Mail::to($emailList)->send(new \App\Mail\DokumenTerbitMail($pengajuan));
         }

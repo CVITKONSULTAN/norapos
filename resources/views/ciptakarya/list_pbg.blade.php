@@ -484,10 +484,10 @@
                 }
             },
             columns: [
-                { data: 'created_at', render: (data) => data || '-' },
-                { data: 'no_permohonan', render: (data) => data || '-' },
-                { data: 'nama_pemohon', render: (data) => data || '-' },
-                { data: 'tipe', render: (data) =>{
+                { searchable: false, data: 'created_at', render: (data) => data || '-' },
+                { searchable: true, data: 'no_permohonan', render: (data) => data || '-' },
+                { searchable: true, data: 'nama_pemohon', render: (data) => data || '-' },
+                { searchable: false, data: 'tipe', render: (data) =>{
                     let status = "gray";
                     if(data == "PBG") status = "blue"
                     if(data == "SLF") status = "yellow"
@@ -495,12 +495,13 @@
                     return `<span class="badge bg-${status}">${data || '-'}</span>`
                 }
                 },
-                { data: 'fungsi_bangunan', render: (data) => data || '-' },
-                { 
+                { searchable: true, data: 'fungsi_bangunan', render: (data) => data || '-' },
+                { searchable: false,
                     data: 'created_at',
                     render: (data) => moment(data).format('DD/MM/YYYY HH:mm') 
                 },
                 { 
+                    searchable: true,
                     data: 'status', 
                     render: (data) => {
                         if(data == 'pending') data = "PROSES";
@@ -510,6 +511,7 @@
                     } 
                 },
                 {
+                    searchable: false,
                     data: 'nilai_retribusi',
                     render: (data,_,row) => {
                         let str = formatRupiah(data);
@@ -519,7 +521,9 @@
                         return str;
                     }
                 },
-                { data: 'petugas', render: (data,_,row) => {
+                { 
+                    searchable: false,
+                    data: 'petugas', render: (data,_,row) => {
                     let nama = data?.nama ?? '';
                     if(row.tgl_penugasan){
                         const tgl = moment(row.tgl_penugasan).format('DD/MM/YYYY HH:mm') 

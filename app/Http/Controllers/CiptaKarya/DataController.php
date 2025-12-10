@@ -304,7 +304,7 @@ class DataController extends Controller
     }
 
     public function dashboard() {
-        $totalTerbit = PengajuanPBG::where('status', 'approved')->count();
+        $totalTerbit = PengajuanPBG::where('status', 'terbit')->count();
         $totalPengajuan = PengajuanPBG::count();
         $totalRetribusi = PengajuanPBG::sum('nilai_retribusi'); // kalau ada field ini
 
@@ -314,7 +314,7 @@ class DataController extends Controller
         $grafikPengajuan = [];
 
         foreach ($years as $year) {
-            $grafikTerbit[] = PengajuanPBG::whereYear('created_at', $year)->where('status', 'approved')->count();
+            $grafikTerbit[] = PengajuanPBG::whereYear('created_at', $year)->where('status', 'terbit')->count();
             $grafikPengajuan[] = PengajuanPBG::whereYear('created_at', $year)->count();
         }
 

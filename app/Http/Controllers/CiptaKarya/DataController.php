@@ -1217,6 +1217,15 @@ class DataController extends Controller
 
     public function terbitkanDokumen($id)
     {
+        // Kirim ke semua admin_berkas (tanpa nama admin)
+        $business_id = auth()->user()->business->id;
+        $emailAdmin = User::role("Admin#$business_id")->get();
+        
+        if ($emailAdmin->count() > 0) {
+            $emailList = $emailAdmin->pluck('email')->toArray();
+            \Mail::to($emailList)->send(new \App\Mail\DokumenTerbitMail($pengajuan));
+        }
+
         $pengajuan = PengajuanPBG::findOrFail($id);
 
         if ($pengajuan->status == 'terbit') {
@@ -1230,14 +1239,6 @@ class DataController extends Controller
         $pengajuan->status = 'terbit';
         $pengajuan->tgl_terbit = now();
         $pengajuan->save();
-
-        // Kirim ke semua admin_berkas (tanpa nama admin)
-        $business_id = auth()->user()->business->id;
-        $emailList = User::role("Admin#$business_id")->pluck('email')->toArray();
-
-        if (count($emailList) > 0) {
-            \Mail::to($emailList)->send(new \App\Mail\DokumenTerbitMail($pengajuan));
-        }
 
         return response()->json(['status' => true]);
     }

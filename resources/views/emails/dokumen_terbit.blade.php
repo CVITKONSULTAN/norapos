@@ -1,28 +1,23 @@
 @component('mail::message')
 
-# Disposisi Pengajuan Baru
+# Dokumen Telah Diterbitkan
 
-Anda menerima disposisi pengajuan dari **{{ $pengirim->username }}**.
+Halo,
+
+Pengajuan berikut telah **berhasil diterbitkan**:
 
 ---
 
-## Detail Pengajuan
+### Detail Pengajuan
 - **Nama Pemohon:** {{ $pengajuan->nama_pemohon }}
 - **No. Permohonan:** {{ $pengajuan->no_permohonan }}
 - **Jenis Izin:** {{ $pengajuan->tipe }}
-- **Status Saat Ini:** {{ strtoupper($pengajuan->status) }}
-
----
-
-@if($catatan)
-### Catatan Disposisi:
-> {{ $catatan ?? "" }}
-@endif
+- **Tanggal Terbit:** {{ $pengajuan->tgl_terbit ?? now() }}
 
 ---
 
 @component('mail::button', ['url' => url('/ciptakarya/list-data-pbg?pengajuan='.$pengajuan->id)])
-Lihat Pengajuan
+Lihat Dokumen
 @endcomponent
 
 Terima kasih,  

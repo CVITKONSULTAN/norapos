@@ -1053,6 +1053,10 @@
                 toastr.error('Nilai retribusi belum diisi.');
                 return;
             }
+            if (!excelFile) {
+                toastr.error('File Excel Retribusi belum diisi.');
+                return;
+            }
 
             let formData = new FormData();
             formData.append('id', id);

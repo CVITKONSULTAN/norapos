@@ -344,49 +344,61 @@
     <h1>Detail Pengajuan</h1>
 </section>
 
+@if($pengajuan['status'] == 'terbit')
+    <div class="alert alert-success" style="font-weight:bold;">
+        DOKUMEN TELAH TERBIT
+    </div>
+@endif
+
 <section class="content row">
     @if ( !auth()->user()->checkRole('retribusi') )
-    <div class="detail-box col-md-12">
-        <div class="detail-title">Verifikasi Berkas</div>
+        <div class="detail-box col-md-12">
+            <div class="detail-title">Verifikasi Berkas</div>
 
-        <input type="hidden" id="pengajuan_id" value="{{ $pengajuan['id'] }}">
+            <input type="hidden" id="pengajuan_id" value="{{ $pengajuan['id'] }}">
 
-        <div class="detail-title">Riwayat Verifikasi</div>
+            <div class="detail-title">Riwayat Verifikasi</div>
 
-        <div id="riwayat_verifikasi_list">
-            <div class="text-muted">Memuat riwayat...</div>
+            <div id="riwayat_verifikasi_list">
+                <div class="text-muted">Memuat riwayat...</div>
+            </div>
+
+            <div class="form-group detail-item">
+                <b>Keterangan / Catatan:</b>
+                <textarea id="catatan_verifikasi" class="form-control" 
+                rows="3"
+                placeholder="Tuliskan catatan atau keterangan pemeriksaan..."></textarea>
+            </div>
+
+            <div class="form-group detail-item">
+                <b>Hasil Verifikasi:</b><br>
+
+                <label style="margin-right:20px;">
+                    <input type="radio" name="hasil_verifikasi" value="sesuai">
+                    <span class="text-success"><b>Sesuai</b></span>
+                </label>
+
+                <label>
+                    <input type="radio" name="hasil_verifikasi" value="tidak_sesuai">
+                    <span class="text-danger"><b>Tidak Sesuai</b></span>
+                </label>
+            </div>
+
+            <!-- 🔥 TOMBOL SIMPAN BARU -->
+            <div class="text-right mt-3">
+                <button id="btn_simpan_verifikasi" class="btn btn-lg btn-success"
+                    style="padding: 12px 30px; font-size: 18px; font-weight:bold; border-radius:10px;">
+                    <i class="fa fa-save"></i> SIMPAN VERIFIKASI
+                </button>
+                @if($pengajuan['status'] !== 'terbit' && auth()->user()->checkRole('kepala bidang'))
+                    <button id="btn_terbitkan" class="btn btn-lg btn-primary"
+                        style="padding: 12px 30px; font-size: 18px; font-weight:bold; border-radius:10px;">
+                        <i class="fa fa-file"></i> TERBITKAN DOKUMEN
+                    </button>
+                @endif
+            </div>
+
         </div>
-
-        <div class="form-group detail-item">
-            <b>Keterangan / Catatan:</b>
-            <textarea id="catatan_verifikasi" class="form-control" 
-            rows="3"
-            placeholder="Tuliskan catatan atau keterangan pemeriksaan..."></textarea>
-        </div>
-
-        <div class="form-group detail-item">
-            <b>Hasil Verifikasi:</b><br>
-
-            <label style="margin-right:20px;">
-                <input type="radio" name="hasil_verifikasi" value="sesuai">
-                <span class="text-success"><b>Sesuai</b></span>
-            </label>
-
-            <label>
-                <input type="radio" name="hasil_verifikasi" value="tidak_sesuai">
-                <span class="text-danger"><b>Tidak Sesuai</b></span>
-            </label>
-        </div>
-
-        <!-- 🔥 TOMBOL SIMPAN BARU -->
-        <div class="text-right mt-3">
-            <button id="btn_simpan_verifikasi" class="btn btn-lg btn-success"
-                style="padding: 12px 30px; font-size: 18px; font-weight:bold; border-radius:10px;">
-                <i class="fa fa-save"></i> SIMPAN VERIFIKASI
-            </button>
-        </div>
-
-    </div>
     @endif
 
     <div class="detail-box col-md-12">
@@ -590,6 +602,7 @@
 @endsection
 
 @section('javascript')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // --- Lightbox / preview untuk foto ---
     (function() {
@@ -800,6 +813,70 @@
         });
 
     });
+
+    $('#btn_terbitkan').on('click', function () {
+
+        let pengajuanId = $('#pengajuan_id').val();
+
+        if (!pengajuanId) {
+            toastr.error('ID pengajuan tidak ditemukan.');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Terbitkan Dokumen?',
+            html: 'Setelah diterbitkan, dokumen tidak dapat diubah lagi.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Terbitkan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                let btn = $('#btn_terbitkan');
+                let oldHtml = btn.html();
+                btn.prop('disabled', true)
+                .html('<i class="fa fa-spinner fa-spin"></i> Menerbitkan...');
+
+                $.ajax({
+                    url: "{{ url('/ciptakarya/pengajuan/terbitkan') }}/" + pengajuanId,
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (res) {
+                        if (res.status) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Dokumen berhasil diterbitkan.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            toastr.error(res.message || 'Gagal menerbitkan dokumen.');
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error('Terjadi kesalahan proses.');
+                        console.log(err);
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html(oldHtml);
+                    }
+                });
+
+            }
+
+        });
+
+    });
+
+
 
 </script>
 @endsection

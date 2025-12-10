@@ -1215,6 +1215,25 @@ class DataController extends Controller
         return response()->json(['status' => true]);
     }
 
+    public function terbitkanDokumen($id)
+    {
+        $pengajuan = PengajuanPBG::findOrFail($id);
+
+        if ($pengajuan->status == 'terbit') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen sudah diterbitkan sebelumnya.'
+            ]);
+        }
+
+        // PROSES PENERBITAN (di sini bisa generate PDF / update status)
+        $pengajuan->status = 'terbit';
+        $pengajuan->tgl_terbit = now();
+        $pengajuan->save();
+
+        return response()->json(['status' => true]);
+    }
+
 
 
 }

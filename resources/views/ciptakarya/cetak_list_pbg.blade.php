@@ -301,12 +301,16 @@
 
     <hr class="kop-line">
 
-    <p style="text-align: right;">Sungai Raya, ........................................</p>
+    {{-- <p style="text-align: right;">Sungai Raya, <span style="margin-right:180px;"></span></p> --}}
+    <p style="text-align: right;">Sungai Raya, <input style="width: 100px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="{{ date('d M Y') }}" /></p>
     <table class="tabel_head">
         <tr>
             <td>Nomor</td>
             <td>:</td>
-            <td width="500">............./................/SIMBG/DPUPRPRKP-CK/{{ \Carbon\Carbon::parse($pengajuan['created_at'])->format('Y') }}</td>
+            <td width="500">
+                {{-- <span style="margin-left:80px;"></span>/<span style="margin-left:80px;"></span>/SIMBG/DPUPRPRKP-CK/{{ \Carbon\Carbon::parse($pengajuan['created_at'])->format('Y') }} --}}
+                <input style="width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value=".  /.  /SIMBG/DPUPRPRKP-CK/2025" />
+            </td>
         </tr>
         <tr>
             <td>Sifat</td>
@@ -321,13 +325,15 @@
         <tr>
             <td>Hal</td>
             <td>:</td>
-            <td><b>Pernyataan Pemenuhan Standar Teknis Bangunan Gedung</b></td>
+            <td><b>Rekomendasi Teknis</b></td>
         </tr>
     </table>
 
-    <p>Yth. Kepala DPMPTSP Kab. Kuburaya</p>
-    <p style="margin-left:20px;">di -</p>
-    <p>Sungai Raya</p>
+    <p>Yth. <input style="width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Kepala DPMPTSP Kab. Kuburaya" /></p>
+    {{-- <p>Yth. Kepala DPMPTSP Kab. Kuburaya</p> --}}
+    <p style="margin-left:33px;">di -</p>
+    {{-- <p style="margin-left:33px;">Sungai Raya</p> --}}
+    <p style="margin-left:33px;"><input style="width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Sungai Raya" /></p>
 
     <p style="text-align: justify;">
         Dengan hormat,<br />

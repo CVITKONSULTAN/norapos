@@ -388,7 +388,12 @@
             <div class="text-right mt-3">
                 <button id="btn_simpan_verifikasi" class="btn btn-lg btn-success"
                     style="padding: 12px 30px; font-size: 18px; font-weight:bold; border-radius:10px;">
-                    <i class="fa fa-save"></i> SIMPAN VERIFIKASI
+                    <i class="fa fa-save"></i> 
+                    @if(auth()->user()->checkRole('koordinator'))
+                    DISPOSISIKAN
+                    @else
+                    SIMPAN VERIFIKASI
+                    @endif
                 </button>
                 @if($pengajuan['status'] !== 'terbit' && auth()->user()->checkRole('kepala bidang'))
                     <button id="btn_terbitkan" class="btn btn-lg btn-primary"
@@ -403,9 +408,11 @@
 
     <div class="detail-box col-md-12">
         <div class="detail-title">Informasi Umum
-            <button class="btn btn-sm btn-primary float-right" id="btnDisposisi">
-                <i class="fa fa-share"></i> Disposisikan
-            </button>
+            @if(auth()->user()->checkRole('koordinator'))
+                <button class="btn btn-sm btn-primary float-right" id="btnDisposisi">
+                    <i class="fa fa-share"></i> Disposisikan
+                </button>
+            @endif
         </div>
 
         <div class="detail-item"><b>Nama Pemohon:</b> {{ $pengajuan['nama_pemohon'] }}</div>
@@ -739,6 +746,11 @@
                 if (res.status) {
                     toastr.success(res.message || "Verifikasi berhasil disimpan!");
                     loadRiwayat();
+
+                    @if(auth()->user()->checkRole('koordinator'))
+                        $('#btn_terbitkan').trigger('click');
+                    @endif
+
                 } else {
                     toastr.error(res.message || "Gagal menyimpan verifikasi!");
                 }

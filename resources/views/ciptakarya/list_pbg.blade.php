@@ -565,9 +565,6 @@
                                     <i class="fa fa-trash"></i> Hapus
                                 </button>
                             @elseif(auth()->user()->checkRole('retribusi'))
-                                <a href="print/${data}" class="btn btn-sm btn-success">
-                                    <i class="fa fa-print"></i> Cetak
-                                </a>
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>

@@ -1217,6 +1217,8 @@ class DataController extends Controller
 
     public function terbitkanDokumen($id)
     {
+        $pengajuan = PengajuanPBG::findOrFail($id);
+
         // Kirim ke semua admin_berkas (tanpa nama admin)
         $business_id = auth()->user()->business->id;
         $emailAdmin = User::role("Admin#$business_id")->get();
@@ -1226,7 +1228,6 @@ class DataController extends Controller
             \Mail::to($emailList)->send(new \App\Mail\DokumenTerbitMail($pengajuan));
         }
 
-        $pengajuan = PengajuanPBG::findOrFail($id);
 
         if ($pengajuan->status == 'terbit') {
             return response()->json([

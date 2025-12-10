@@ -326,7 +326,7 @@
     </table>
 
     <p>Yth. Kepala DPMPTSP Kab. Kuburaya</p>
-    <p>di -</p>
+    <p style="margin-left:20px;">di -</p>
     <p>Sungai Raya</p>
 
     <p style="text-align: justify;">
@@ -539,13 +539,13 @@
 
 
     <p>Dengan demikian permohonan 
-        @if($pengajuan['tipe'] == 'pbg/slf')
+        @if($pengajuan['tipe'] == 'PBG/SLF')
         Persetujuan Bangunan Gedung (PBG) dan Sertifikat Laik Fungsi (SLF) 
         @endif
-        @if($pengajuan['tipe'] == 'pbg')
+        @if($pengajuan['tipe'] == 'PBG')
         Persetujuan Bangunan Gedung (PBG)
         @endif
-        @if($pengajuan['tipe'] == 'pbg')
+        @if($pengajuan['tipe'] == 'SLF')
         Sertifikat Laik Fungsi (SLF) 
         @endif
     dapat disetujui dan diterbitkan.<br />

@@ -92,40 +92,32 @@
     <h1>Data Pemohon / Pengajuan</h1>
 </section>
 
-<!-- UNIVERSAL MODAL HITUNG RETRIBUSI -->
+<!-- UNIVERSAL MODAL RETRIBUSI -->
 <div id="modal_retribusi" class="modal fade">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h4 class="modal-title"><i class="fa fa-calculator"></i> Hitung Nilai Retribusi</h4>
+                <h4 class="modal-title"><i class="fa fa-calculator"></i> Input Nilai Retribusi</h4>
             </div>
 
             <div class="modal-body">
 
                 <input type="hidden" id="ret_id" value="">
 
+                <!-- NILAI RETRIBUSI -->
                 <div class="form-group">
-                    <label>Luas Bangunan (m²)</label>
-                    <input type="number" id="ret_luas" class="form-control">
+                    <label><b>Nilai Retribusi (Rp)</b></label>
+                    <input type="text" id="nilai_retribusi" class="form-control" 
+                        placeholder="Masukkan nilai retribusi">
                 </div>
 
+                <!-- UPLOAD FILE EXCEL -->
                 <div class="form-group">
-                    <label>Tarif Retribusi (Rp / m²)</label>
-                    <input type="number" id="ret_tarif" class="form-control" value="5000">
-                </div>
-
-                <div class="form-group">
-                    <label>Fungsi Bangunan</label>
-                    <input type="text" id="ret_fungsi" class="form-control" readonly>
-                </div>
-
-                <hr>
-
-                <div class="form-group">
-                    <label><b>Total Retribusi (Rp)</b></label>
-                    <input type="text" id="ret_total" class="form-control" readonly 
-                           style="font-weight:bold; font-size:18px;">
+                    <label><b>Upload File Excel Retribusi</b></label>
+                    <input type="file" id="excel_retribusi" class="form-control" 
+                        accept=".xls,.xlsx">
+                    <small class="text-muted">Format wajib: .xls atau .xlsx</small>
                 </div>
 
             </div>
@@ -140,6 +132,7 @@
         </div>
     </div>
 </div>
+
 
 <div id="modal_pilih_petugas" class="modal fade">
     <div class="modal-dialog">
@@ -161,7 +154,6 @@
         </div>
     </div>
 </div>
-
 
 <div id="editor_modal_pengajuan" class="modal fade">
     <div class="modal-dialog modal-lg">
@@ -517,12 +509,21 @@
                 },
                 {
                     data: 'nilai_retribusi',
-                    render: (data) => {
-                        return formatRupiah(data);
+                    render: (data,_,row) => {
+                        let str = formatRupiah(data);
+                        if(row.excel_retribusi){
+                            str += `<br /><br /><a target="_blank" href="${'/uploads/'+row.excel_retribusi}""><i class="fa fa-file"></i> Download file retribusi</a>`
+                        }
+                        return str;
                     }
                 },
-                { data: 'petugas', render: (data) => {
-                    return data?.nama ?? '-';
+                { data: 'petugas', render: (data,_,row) => {
+                    let nama = data?.nama ?? '';
+                    if(row.tgl_penugasan){
+                        const tgl = moment(row.tgl_penugasan).format('DD/MM/YYYY HH:mm') 
+                        nama += ` (${tgl})`;
+                    }
+                    return nama;
                 }},
                 {
                     data: 'id',
@@ -1042,23 +1043,76 @@
             $('#ret_total').val(new Intl.NumberFormat().format(total));
         }
 
-        $('#btn_simpan_retribusi').click(function () {
+        $('#btn_simpan_retribusi').on('click', function () {
 
-            const id = $('#ret_id').val();
-            const total = $('#ret_total').val();
+            let btn = $(this);
+            let id  = $('#ret_id').val();
+            let excelFile = $('#excel_retribusi')[0].files[0];
 
-            $.post("{{ url('/ciptakarya/update-retribusi') }}/" + id, {
-                _token: "{{ csrf_token() }}",
-                nilai_retribusi: total
-            }, function(res){
-                if (res.status) {
-                    toastr.success("Retribusi berhasil disimpan!");
+            let nilaiFormatted = $('#nilai_retribusi').val();
+            let nilaiBersih = nilaiFormatted.replace(/\./g, ""); // VALUE ASLI
+
+            if (!nilaiBersih) {
+                toastr.error('Nilai retribusi belum diisi.');
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('id', id);
+            formData.append('nilai_retribusi', nilaiBersih);
+
+            if (excelFile) {
+                formData.append('excel_retribusi', excelFile);
+            }
+
+            // === BUTTON LOADING ===
+            btn.prop('disabled', true);
+            let oldHtml = btn.html();
+            btn.html('<i class="fa fa-spinner fa-spin"></i> Menyimpan...');
+
+            $.ajax({
+                url: "{{ url('/ciptakarya/update-retribusi') }}/" + id,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+
+                    toastr.success('Data berhasil disimpan.');
+
                     $('#modal_retribusi').modal('hide');
-                    product_table.ajax.reload();
+                },
+                error: function (err) {
+
+                    toastr.error('Gagal menyimpan data.');
+                    console.log(err);
+                },
+                complete: function () {
+                    // === RESET BUTTON ===
+                    btn.prop('disabled', false);
+                    btn.html(oldHtml);
                 }
             });
 
         });
+
+
+        // MASKING FORMAT RIBUAN UNTUK INPUT NILAI RETRIBUSI
+        document.getElementById("nilai_retribusi").addEventListener("input", function (e) {
+
+            // Ambil nilai asli tanpa titik
+            let raw = this.value.replace(/\./g, "");
+
+            // Hapus semua karakter kecuali digit
+            raw = raw.replace(/\D/g, "");
+
+            // Format ulang menjadi ribuan
+            let formatted = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            this.value = formatted;
+        });
+
+
 
         function formatRupiah(angka) {
             if (!angka) return "0";

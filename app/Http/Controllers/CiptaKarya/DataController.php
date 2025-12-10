@@ -195,7 +195,9 @@ class DataController extends Controller
             'nilai_retribusi',
             'status',
             'petugas_id',
-            'created_at'
+            'created_at',
+            'excel_retribusi',
+            'tgl_penugasan'
         ])
         ->with(['petugas:id,nama'])
         ->orderBy('id', 'desc');
@@ -824,27 +826,50 @@ class DataController extends Controller
 
     public function updateRetribusi(Request $request, $id)
     {
-        $p = PengajuanPBG::findorfail($id);
+        $p = PengajuanPBG::findOrFail($id);
 
-        if ( auth()->user()->checkRole('retribusi') ) {
-            
+        // VALIDASI
+        $request->validate([
+            'nilai_retribusi' => 'required',
+            'excel_retribusi' => 'nullable|mimes:xls,xlsx|max:5120', // max 5MB
+        ]);
+
+        // CLEAN NILAI RETRIBUSI DARI MASKING
+        // Dari "1.000.000" → "1000000"
+        $nilai = str_replace('.', '', $request->nilai_retribusi);
+
+        // SIMPAN FILE EXCEL (JIKA ADA)
+        if ($request->hasFile('excel_retribusi')) {
+
+            $file = $request->file('excel_retribusi');
+
+            // Misal simpan di: storage/app/retribusi/excel/
+            $path = $file->store('retribusi/excel', 'local');
+
+            // Simpan path ke DB
+            $p->excel_retribusi = $path;
+        }
+
+        // UPDATE NILAI RETRIBUSI
+        $p->nilai_retribusi = $nilai;
+        $p->save();
+
+        // KIRIM EMAIL NOTIF KE KOORDINATOR RETRIBUSI
+        if (auth()->user()->checkRole('retribusi')) {
+
             $business_id = auth()->user()->business->id;
-            // Cari user admin_retribusi
             $admin = User::role("Koordinator#$business_id")->get();
-            if($admin->count() > 0){
+
+            if ($admin->count() > 0) {
                 $emailList = $admin->pluck('email')->toArray();
-                // Kirim email
-                \Mail::to($emailList)->send(new \App\Mail\RetribusiInputMail(
-                    $p
-                ));
+                \Mail::to($emailList)
+                    ->send(new \App\Mail\RetribusiInputMail($p));
             }
         }
 
-        $p->nilai_retribusi = str_replace(',', '', $request->nilai_retribusi);
-        $p->save();
-
         return response()->json(['status' => true]);
-    }  
+    }
+  
     
     function detail_data(Request $request, $id)
     {

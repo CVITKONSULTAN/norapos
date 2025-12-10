@@ -14,6 +14,7 @@ use Validator;
 use DataTables;
 use DB;
 use Mail;
+use Log;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
@@ -594,7 +595,8 @@ class DataController extends Controller
     
         $data->save();
 
-        $business_id = 15;
+        // $business_id = 15; //local
+        $business_id = 18; //server
         // Cari user admin_retribusi
         $admin = User::role("Pemeriksa#$business_id")->get();
 
@@ -862,6 +864,7 @@ class DataController extends Controller
 
             if ($admin->count() > 0) {
                 $emailList = $admin->pluck('email')->toArray();
+                Log::info("email kirim ke Koordinator ". json_encode($emailList));
                 \Mail::to($emailList)
                     ->send(new \App\Mail\RetribusiInputMail($p));
             }

@@ -791,7 +791,7 @@
             btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Mengirim...');
 
             $.ajax({
-                url: "{{ route('ciptakarya.disposisi',['id'=>$pengajuan['id']]) }}/",
+                url: "{{ route('ciptakarya.disposisi',['id'=>$pengajuan['id']]) }}&user_id="+userId,
                 type: "POST",
                 data: {
                     user_id: userId,

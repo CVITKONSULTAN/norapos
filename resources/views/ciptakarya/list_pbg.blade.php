@@ -583,6 +583,9 @@
                                 <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
                                     <i class="fa fa-calculator"></i> Retribusi
                                 </button>
+                                <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </button>
                             @else
                                 <!-- USER LAINNYA -->
                                 <a href="print/${data}" class="btn btn-sm btn-success">

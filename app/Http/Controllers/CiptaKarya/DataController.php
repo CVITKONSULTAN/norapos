@@ -999,9 +999,13 @@ class DataController extends Controller
             $results[] = $sec;
         }
 
+        $business_id = auth()->user()->business->id;
+        $userList = User::where('business_id',$business_id)->orderByDesc('id')->get();
+
         return view('ciptakarya.detail_pbg', [
             'pengajuan' => $pengajuan,
-            'inspectionResults' => $results
+            'inspectionResults' => $results,
+            'userList'=>$userList
         ]);
     }
 
@@ -1188,5 +1192,29 @@ class DataController extends Controller
             'data' => $data
         ]);
     }
+
+    public function disposisi(Request $request, $id)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        $pengajuan = PengajuanPBG::findOrFail($id);
+        $tujuan    = User::find($request->user_id);
+        $pengirim  = auth()->user();
+
+        // simpan disposisi
+        $pengajuan->disposisi_ke = $tujuan->id;
+        $pengajuan->save();
+
+        // kirim email
+        \Mail::to($tujuan->email)->send(
+            new \App\Mail\DisposisiPengajuanMail($pengajuan, $pengirim)
+        );
+
+        return response()->json(['status' => true]);
+    }
+
+
 
 }

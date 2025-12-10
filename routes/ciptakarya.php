@@ -43,4 +43,6 @@ Route::group([
         return view('ciptakarya.retribusi_form');
     });
 
+    Route::post('/pengajuan/disposisi/{id}', 'CiptaKarya\DataController@disposisi')->name('ciptakarya.disposisi');
+
 });

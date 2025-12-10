@@ -303,6 +303,43 @@
 
 @section('content')
 
+<div class="modal fade" id="modal_disposisi">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Disposisikan Pengajuan</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="pengajuan_id" value="{{ $pengajuan['id'] }}">
+
+                <div class="form-group">
+                    <label>Pilih Pengguna Tujuan</label>
+                    <select id="select_user_disposisi" class="form-control select2" style="width: 100%;">
+                        <option value="">-- Pilih User --</option>
+                        @foreach($userList as $u)
+                            <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnKirimDisposisi">
+                    <i class="fa fa-paper-plane"></i> Kirim Disposisi
+                </button>
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <section class="content-header">
     <h1>Detail Pengajuan</h1>
 </section>
@@ -353,7 +390,11 @@
     @endif
 
     <div class="detail-box col-md-12">
-        <div class="detail-title">Informasi Umum</div>
+        <div class="detail-title">Informasi Umum
+            <button class="btn btn-sm btn-primary float-right" id="btnDisposisi">
+                <i class="fa fa-share"></i> Disposisikan
+            </button>
+        </div>
 
         <div class="detail-item"><b>Nama Pemohon:</b> {{ $pengajuan['nama_pemohon'] }}</div>
         <div class="detail-item"><b>NIK:</b> {{ $pengajuan['nik'] }}</div>
@@ -708,5 +749,57 @@
     $(function(){
         loadRiwayat();
     });
+
+    $(document).ready(function() {
+
+        // Aktifkan Select2
+        $('.select2').select2({
+            dropdownParent: $('#modal_disposisi')
+        });
+
+        // Tampilkan modal disposisi
+        $('#btnDisposisi').on('click', function () {
+            $('#modal_disposisi').modal('show');
+        });
+
+        // Kirim disposisi
+        $('#btnKirimDisposisi').on('click', function () {
+
+            let pengajuanId = $('#pengajuan_id').val();
+            let userId = $('#select_user_disposisi').val();
+
+            if (!userId) {
+                toastr.error('Pilih pengguna tujuan disposisi.');
+                return;
+            }
+
+            let btn = $(this);
+            let oldHtml = btn.html();
+            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Mengirim...');
+
+            $.ajax({
+                url: "{{ route('ciptakarya.disposisi',['id'=>$pengajuan['id']]) }}/",
+                type: "POST",
+                data: {
+                    user_id: userId,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(res) {
+                    toastr.success('Disposisi berhasil dikirim.');
+                    $('#modal_disposisi').modal('hide');
+                },
+                error: function(err) {
+                    console.log(err);
+                    toastr.error('Gagal mengirim disposisi.');
+                },
+                complete: function() {
+                    btn.prop('disabled', false).html(oldHtml);
+                }
+            });
+
+        });
+
+    });
+
 </script>
 @endsection

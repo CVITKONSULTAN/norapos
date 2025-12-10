@@ -423,7 +423,7 @@
                     <select id="filter_status" class="form-control" required>
                         <option value="">-- Semua Status --</option>
                         <option selected value="proses">PROSES</option>
-                        <option value="gagal">GAGAL</option>
+                        <option value="tolak">TOLAK</option>
                         <option value="terbit">TERBIT</option>
                     </select>
                 </div>
@@ -506,7 +506,7 @@
                     render: (data) => {
                         if(data == 'pending') data = "PROSES";
                         let label = data ? data.toUpperCase() : 'PROSES';
-                        let color = data === 'terbit' ? 'green' : (data === 'gagal' ? 'red' : 'blue');
+                        let color = data === 'terbit' ? 'green' : (data === 'tolak' ? 'red' : 'blue');
                         return `<span class="badge bg-${color}">${label}</span>`;
                     } 
                 },

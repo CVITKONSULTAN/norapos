@@ -792,7 +792,7 @@
 
             $.ajax({
                 url: "{{ route('ciptakarya.disposisi',['id'=>$pengajuan['id']]) }}?user_id="+userId,
-                type: "POST",
+                type: "GET",
                 data: {
                     user_id: userId,
                     _token: "{{ csrf_token() }}"

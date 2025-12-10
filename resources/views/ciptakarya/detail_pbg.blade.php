@@ -321,7 +321,7 @@
                     <select id="select_user_disposisi" class="form-control select2" style="width: 100%;">
                         <option value="">-- Pilih User --</option>
                         @foreach($userList as $u)
-                            <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->email }})</option>
+                            <option value="{{ $u->id }}">{{ $u->username }} ({{ $u->email }})</option>
                         @endforeach
                     </select>
                 </div>

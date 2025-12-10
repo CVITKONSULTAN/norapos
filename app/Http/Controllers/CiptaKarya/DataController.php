@@ -1203,9 +1203,9 @@ class DataController extends Controller
         $tujuan    = User::find($request->user_id);
         $pengirim  = auth()->user();
 
-        // simpan disposisi
-        $pengajuan->disposisi_ke = $tujuan->id;
-        $pengajuan->save();
+        // // simpan disposisi
+        // $pengajuan->disposisi_ke = $tujuan->id;
+        // $pengajuan->save();
 
         // kirim email
         \Mail::to($tujuan->email)->send(

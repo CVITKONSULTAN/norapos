@@ -538,7 +538,17 @@
 </table>
 
 
-    <p>Dengan demikian permohonan Persetujuan Bangunan Gedung (PBG) dan Sertifikat Laik Fungsi (SLF) dapat disetujui dan diterbitkan.<br />
+    <p>Dengan demikian permohonan 
+        @if($pengajuan['tipe'] == 'pbg/slf')
+        Persetujuan Bangunan Gedung (PBG) dan Sertifikat Laik Fungsi (SLF) 
+        @endif
+        @if($pengajuan['tipe'] == 'pbg')
+        Persetujuan Bangunan Gedung (PBG)
+        @endif
+        @if($pengajuan['tipe'] == 'pbg')
+        Sertifikat Laik Fungsi (SLF) 
+        @endif
+    dapat disetujui dan diterbitkan.<br />
     Demikian surat pernyataan ini kami sampaikan, atas perhatiannya diucapkan terima kasih.</p>
 
     <div class="ttd-container" style="margin-left:450px;">

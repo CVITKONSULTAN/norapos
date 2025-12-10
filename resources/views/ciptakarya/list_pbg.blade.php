@@ -246,7 +246,8 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Luas Bangunan :</label>
                         <div class="col-sm-9">
-                        <input name="luas_bangunan" class="form-control" />
+                        {{-- <input name="luas_bangunan" class="form-control" /> --}}
+                        <textarea name="luas_bangunan" class="form-control"></textarea>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -275,7 +276,8 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Luas Tanah :</label>
                         <div class="col-sm-9">
-                        <input name="luas_tanah" class="form-control" />
+                        {{-- <input name="luas_tanah" class="form-control" /> --}}
+                        <textarea name="luas_tanah" class="form-control"></textarea>
                         </div>
                     </div>
 

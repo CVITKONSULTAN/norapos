@@ -748,7 +748,7 @@
                     loadRiwayat();
 
                     @if(auth()->user()->checkRole('koordinator'))
-                        $('#btn_terbitkan').trigger('click');
+                        $('#modal_disposisi').modal('show');
                     @endif
 
                 } else {

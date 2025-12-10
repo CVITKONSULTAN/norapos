@@ -289,7 +289,7 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Garis Sempadan Bangunan (GBS) minimum :</label>
+                        <label class="col-sm-3 col-form-label">Garis Sempadan Bangunan (GSB) minimum :</label>
                         <div class="col-sm-9">
                         <input name="gbs_min" class="form-control" />
                         </div>

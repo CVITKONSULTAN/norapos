@@ -498,12 +498,14 @@
 
     <tr>
         <td><strong>Luas Bangunan</strong></td>
-        <td>{{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td>
+        {{-- <td>{{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td> --}}
+        <td>{{ $pengajuan['luas_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td><strong>Ketinggian Bangunan</strong></td>
-        <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td>
+        {{-- <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td> --}}
+        <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
@@ -926,7 +928,8 @@
 
             <tr>
                 <td>Luas Lantai</td>
-                <td>: {{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td>
+                {{-- <td>: {{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td> --}}
+                <td>: {!! nl2br(e($pengajuan['luas_bangunan'] ?? '-')) !!}</td>
             </tr>
 
             <tr>
@@ -941,7 +944,8 @@
 
             <tr>
                 <td>Luas Tanah</td>
-                <td>: {{ $pengajuan['luas_tanah'] ?? '-' }}</td>
+                {{-- <td>: {{ $pengajuan['luas_tanah'] ?? '-' }}</td> --}}
+                <td>: {!! nl2br(e($pengajuan['luas_tanah'] ?? '-')) !!}</td>
             </tr>
         </table>
 

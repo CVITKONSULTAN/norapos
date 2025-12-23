@@ -201,6 +201,19 @@
                     </div>
 
                     <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Kecamatan :</label>
+                        <div class="col-sm-9">
+                            <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
+                                <option value="">-- Pilih --</option>
+                                @foreach($kecamatan as $kec)
+                                    <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="nama_kecamatan" id="nama_kecamatan" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Alamat :</label>
                         <div class="col-sm-9">
                         <textarea name="alamat" rows="3" class="form-control"></textarea>
@@ -210,7 +223,6 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Fungsi Bangunan :</label>
                         <div class="col-sm-9">
-                        {{-- <input name="fungsi_bangunan" class="form-control" /> --}}
                             <select name="fungsi_bangunan" class="form-control" required>
                                 <option value="">-- Pilih --</option>
                                 <option value="Khusus">Khusus </option>
@@ -427,6 +439,14 @@
                         <option value="terbit">TERBIT</option>
                     </select>
                 </div>
+                <div class="form-group col-md-2">
+                    <select id="filter_kecamatan" class="form-control" required>
+                        <option value="">-- Semua Kecamatan --</option>
+                        @foreach($kecamatan as $kec)
+                            <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="form-group">
                     <button onclick="filteringData()" class="btn btn-primary">Tampilkan Data</button>
                 </div>
@@ -441,6 +461,7 @@
                             <th>Nama Pemohon</th>
                             <th>Jenis Izin</th>
                             <th>Fungsi Bangunan</th>
+                            <th>Kecamatan</th>
                             <th>Tgl Pengajuan</th>
                             <th>Status</th>
                             <th>Nilai Retribusi</th>
@@ -481,6 +502,7 @@
                     d.kategori = $('#filter_kategori').val();
                     d.jenis = $('#filter_jenis').val();
                     d.status = $('#filter_status').val();
+                    d.kecamatan_id = $('#filter_kecamatan').val();
                 }
             },
             columns: [
@@ -496,6 +518,7 @@
                 }
                 },
                 { searchable: true, data: 'fungsi_bangunan', render: (data) => data || '-' },
+                { searchable: true, data: 'nama_kecamatan', render: (data) => data || '-' },
                 { searchable: false,
                     data: 'created_at',
                     render: (data) => moment(data).format('DD/MM/YYYY HH:mm') 
@@ -537,30 +560,31 @@
                     searchable: false,
                     render: function (data, type, row) {
 
-                        if(row.status.toLowerCase() == 'terbit'){
-                            return `<a href="print/${data}" class="btn btn-sm btn-success">
-                                    <i class="fa fa-print"></i> Cetak
-                                </a>
-                                <button data-id="${data}" class="btn btn-sm btn-primary">
-                                    <i class="fa fa-history"></i> Riwayat
-                                </button>`;
-                        }
+                        const status = row.status.toLowerCase();
+                        let buttons = '';
 
-                        return `
-                            @if(auth()->user()->checkRole('pemeriksa'))
+                        // =========================
+                        // CETAK (GLOBAL RULE)
+                        // =========================
+                        if (status === 'terbit') {
+                            buttons += `
                                 <a href="print/${data}" class="btn btn-sm btn-success">
                                     <i class="fa fa-print"></i> Cetak
                                 </a>
+                            `;
+                        }
+
+                        // =========================
+                        // ROLE BASED BUTTON
+                        // =========================
+                        @if(auth()->user()->checkRole('pemeriksa'))
+                            buttons += `
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
-                                <a href="detail/${data}" class="btn btn-sm btn-primary">
-                                    <i class="fa fa-list"></i> Detail
-                                </a>
-                            @elseif(auth()->user()->checkRole('admin'))
-                                <a href="print/${data}" class="btn btn-sm btn-success">
-                                    <i class="fa fa-print"></i> Cetak
-                                </a>
+                            `;
+                        @elseif(auth()->user()->checkRole('admin'))
+                            buttons += `
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
@@ -579,7 +603,9 @@
                                 <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan">
                                     <i class="fa fa-trash"></i> Hapus
                                 </button>
-                            @elseif(auth()->user()->checkRole('retribusi'))
+                            `;
+                        @elseif(auth()->user()->checkRole('retribusi'))
+                            buttons += `
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
@@ -592,25 +618,101 @@
                                 <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
                                     <i class="fa fa-pencil"></i> Edit
                                 </button>
-                            @else
-                                <!-- USER LAINNYA -->
-                                <a href="print/${data}" class="btn btn-sm btn-success">
-                                    <i class="fa fa-print"></i> Cetak
-                                </a>
+                            `;
+                        @else
+                            buttons += `
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
                                 <a href="detail/${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-list"></i> Detail
                                 </a>
-                            @endif
-                        `;
+                            `;
+                        @endif
+
+                        return buttons;
                     }
                 }
+                // {
+                //     data: 'id',
+                //     orderable: false,
+                //     searchable: false,
+                //     render: function (data, type, row) {
+                //         var status = row.status.toLowerCase();
+                //         if(status == 'terbit'){
+                //             return `<a href="print/${data}" class="btn btn-sm btn-success">
+                //                     <i class="fa fa-print"></i> Cetak
+                //                 </a>
+                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-history"></i> Riwayat
+                //                 </button>`;
+                //         }
+
+                //         return `
+                //             @if(auth()->user()->checkRole('pemeriksa'))
+                //                 <a href="print/${data}" class="btn btn-sm btn-success">
+                //                     <i class="fa fa-print"></i> Cetak
+                //                 </a>
+                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-history"></i> Riwayat
+                //                 </button>
+                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-list"></i> Detail
+                //                 </a>
+                //             @elseif(auth()->user()->checkRole('admin'))
+                //                 <a href="print/${data}" class="btn btn-sm btn-success">
+                //                     <i class="fa fa-print"></i> Cetak
+                //                 </a>
+                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-history"></i> Riwayat
+                //                 </button>
+                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-list"></i> Detail
+                //                 </a>
+                //                 <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
+                //                     <i class="fa fa-calculator"></i> Retribusi
+                //                 </button>
+                //                 <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas">
+                //                     <i class="fa fa-user"></i> Petugas
+                //                 </button>
+                //                 <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
+                //                     <i class="fa fa-pencil"></i> Edit
+                //                 </button>
+                //                 <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan">
+                //                     <i class="fa fa-trash"></i> Hapus
+                //                 </button>
+                //             @elseif(auth()->user()->checkRole('retribusi'))
+                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-history"></i> Riwayat
+                //                 </button>
+                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-list"></i> Detail
+                //                 </a>
+                //                 <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
+                //                     <i class="fa fa-calculator"></i> Retribusi
+                //                 </button>
+                //                 <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
+                //                     <i class="fa fa-pencil"></i> Edit
+                //                 </button>
+                //             @else
+                //                 <!-- USER LAINNYA -->
+                //                 <a href="print/${data}" class="btn btn-sm btn-success">
+                //                     <i class="fa fa-print"></i> Cetak
+                //                 </a>
+                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-history"></i> Riwayat
+                //                 </button>
+                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
+                //                     <i class="fa fa-list"></i> Detail
+                //                 </a>
+                //             @endif
+                //         `;
+                //     }
+                // }
             ]
         });
 
-        $('#filter_tahun, #filter_kategori, #filter_jenis, #filter_status').on('change', function () {
+        $('#filter_tahun, #filter_kategori, #filter_jenis, #filter_status, #filter_kecamatan').on('change', function () {
             product_table.ajax.reload();
         });
 
@@ -881,6 +983,12 @@
 
                 return false; // Hentikan submit normal
             }
+        });
+
+        $('#kecamatan_id').on('change', function () {
+            const nama = $(this).find('option:selected').text();
+            console.log('nama>>',nama);
+            $('#nama_kecamatan').val(nama);
         });
 
         // ===================== PILIH PETUGAS =====================

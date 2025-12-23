@@ -606,8 +606,7 @@
         </div>
     </div>
 </div> --}}
-
-@if($pengajuan['tipe'] == 'pbg' || $pengajuan['tipe'] == 'pbg/slf')
+@if($pengajuan['tipe'] == 'SLF' || $pengajuan['tipe'] == 'PBG/SLF')
 <div class="page">
 
     <h2 style="text-align:center;">DAFTAR SIMAK PEMERIKSAAN KELAIKAN FUNGSI BANGUNAN GEDUNG</h2>
@@ -837,7 +836,7 @@
     </div>
 </div>
 
-@if($pengajuan['tipe'] == 'pbg' || $pengajuan['tipe'] == 'pbg/slf')
+@if($pengajuan['tipe'] == 'PBG' || $pengajuan['tipe'] == 'PBG/SLF')
 <div class="page">
 
     <h2 style="text-align:center; margin-bottom:0;">

@@ -44,7 +44,10 @@ class PengajuanPBG extends Model
         'photoMaps',
         'template_excel_retribusi',
         'excel_retribusi',
-        'tgl_penugasan'
+        'tgl_penugasan',
+        'kecamatan_id',
+        'nama_kecamatan',
+        'alsasan_tolak',
     ];
 
     // Agar kolom JSON otomatis array saat diakses

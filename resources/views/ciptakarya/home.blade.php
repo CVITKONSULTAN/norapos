@@ -122,17 +122,36 @@
         // ✅ Apply skeleton at start
         $('.total_terbit, .total_pengajuan, .total_retribusi').addClass('skeleton');
 
-        // ✅ Initial empty charts (placeholder)
-        const chartRekap = new ApexCharts(document.querySelector("#chart"), {
-            series: [
-                { name: 'PBG & SLF Terbit', type: 'line', data: [] },
-                { name: 'Jumlah Pengajuan', type: 'line', data: [] },
-            ],
-            xaxis: { categories: [] },
-            chart: { height: 350, type: 'line', stacked: false },
-            dataLabels: { enabled: false },
-        });
+        // ✅ BAR CHART – Pengajuan PBG / SLF
+        const chartRekap = new ApexCharts(
+            document.querySelector("#chart"),
+            {
+                chart: {
+                    type: 'bar',
+                    height: 380
+                },
+                colors: ['#f1c40f', '#2ecc71', '#e74c3c'],
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%'
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: [] // PBG, SLF, PBG/SLF
+                },
+                legend: {
+                    position: 'top'
+                },
+                series: [] // Proses, Terbit, tolak
+            }
+        );
+
         chartRekap.render();
+
 
         const chartJenis = new ApexCharts(document.querySelector("#donut-chart"), {
             series: [],
@@ -142,11 +161,29 @@
         chartJenis.render();
 
         const chartBar = new ApexCharts(document.querySelector("#bar-chart"), {
-            series: [{ name: 'Jumlah Pengajuan', data: [] }],
-            xaxis: { categories: [] },
-            chart: { type: 'bar', height: 380 }
+            chart: {
+                type: 'bar',
+                height: 380
+            },
+            plotOptions: {
+                bar: {
+                    distributed: true   // 🔥 penting agar tiap bar beda warna
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: []
+            },
+            series: [
+                { name: 'Jumlah Pengajuan', data: [] }
+            ],
+            colors: []
         });
+
         chartBar.render();
+
 
         // ✅ Fetch Data Once
         $(document).ready(function () {
@@ -163,25 +200,61 @@
 
                         // ✅ Remove skeleton
                         $('.total_terbit, .total_pengajuan, .total_retribusi').removeClass('skeleton');
-                        console.log("data.total_terbit",data.total_terbit);
                         $('.total_terbit').text(data.total_terbit);
                         $('.total_pengajuan').text(data.total_pengajuan);
                         $('.total_retribusi').text(formatRupiah(data.total_retribusi));
 
-                        // ✅ Update Line Chart
-                        chartRekap.updateOptions({ xaxis: { categories: data.grafik_trend.tahun }});
-                        chartRekap.updateSeries([
-                            { name: 'PBG & SLF Terbit', data: data.grafik_trend.terbit },
-                            { name: 'Jumlah Pengajuan', data: data.grafik_trend.pengajuan }
-                        ]);
+                        const barData = res.data.grafik_status_tipe;
+
+                        chartRekap.updateOptions({
+                            xaxis: { categories: barData.kategori }
+                        });
+
+                        chartRekap.updateSeries(barData.series);
 
                         // ✅ Update Donut Chart
                         chartJenis.updateSeries(data.jenis_izin.map(i => i.total));
                         chartJenis.updateOptions({ labels: data.jenis_izin.map(i => i.fungsi_bangunan || 'Tidak diketahui') });
 
                         // ✅ Update Bar Chart
-                        chartBar.updateOptions({ xaxis: { categories: data.wilayah.map(w => w.lokasi_bangunan || 'Tidak diketahui') }});
-                        chartBar.updateSeries([{ data: data.wilayah.map(w => w.total) }]);
+                        const KECAMATAN_COLORS = {
+                            "Batu Ampar": "#1abc9c",
+                            "Kubu": "#2ecc71",
+                            "Terentang": "#3498db",
+                            "Sungai Raya": "#9b59b6",
+                            "Sungai Ambawang": "#f1c40f",
+                            "Sungai Kakap": "#e67e22",
+                            "Teluk Pakedai": "#e74c3c",
+                            "Rasau Jaya": "#16a085",
+                            "Kuala Mandor B": "#34495e",
+
+                            // khusus fallback
+                            "Tidak diketahui": "#95a5a6"
+                        };
+
+                        const wilayah = res.data.wilayah;
+
+                        // X-axis (PAKAI FIELD BARU)
+                        const categories = wilayah.map(w => w.nama_kecamatan);
+
+                        // Value (PASTIKAN NUMBER)
+                        const values = wilayah.map(w => Number(w.total));
+
+                        // Warna hardcode per kecamatan
+                        const colors = categories.map(name => {
+                            return KECAMATAN_COLORS[name] || "#7f8c8d";
+                        });
+
+                        chartBar.updateOptions({
+                            xaxis: { categories },
+                            colors: colors
+                        });
+
+                        chartBar.updateSeries([
+                            { name: 'Jumlah Pengajuan', data: values }
+                        ]);
+
+
                     }
                 }
             });

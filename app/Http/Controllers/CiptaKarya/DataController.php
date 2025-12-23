@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CiptaKarya\PengajuanPBG;
 use App\Models\CiptaKarya\PetugasLapangan;
 use App\Models\CiptaKarya\PbgTracking;
+use App\Models\CiptaKarya\Kecamatan;
 use App\User;
 
 use Validator;
@@ -31,7 +32,8 @@ class DataController extends Controller
      */
     public function list_index()
     {
-        return view('ciptakarya.list_pbg');
+        $data['kecamatan'] = Kecamatan::orderBy('nama')->get();
+        return view('ciptakarya.list_pbg',$data);
     }
     /**
      * Display a listing of the resource.
@@ -91,6 +93,7 @@ class DataController extends Controller
             $input = $request->except(['_token', 'insert', 'update', 'delete']);
             $input['answers'] = json_encode([]);
             $input['questions'] = json_encode([]);
+
             $data = PengajuanPBG::create($input);
 
             $role = auth()->user()->roles->first()->name ?? 'admin'; // pastikan role tersedia
@@ -198,7 +201,9 @@ class DataController extends Controller
             'petugas_id',
             'created_at',
             'excel_retribusi',
-            'tgl_penugasan'
+            'tgl_penugasan',
+            'kecamatan_id',
+            'nama_kecamatan',
         ])
         ->with(['petugas:id,nama'])
         ->orderBy('id', 'desc');
@@ -221,6 +226,9 @@ class DataController extends Controller
         // ✅ Filter Status (pending / approved / rejected)
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
+        }
+        if ($request->has('kecamatan_id') && $request->kecamatan_id != '') {
+            $query->where('kecamatan_id', $request->kecamatan_id);
         }
 
         return DataTables::of($query)->make(true);
@@ -303,46 +311,128 @@ class DataController extends Controller
 
     }
 
-    public function dashboard() {
-        $totalTerbit = PengajuanPBG::where('status', 'terbit')->count();
-        $totalPengajuan = PengajuanPBG::count();
-        $totalRetribusi = PengajuanPBG::sum('nilai_retribusi'); // kalau ada field ini
+    public function dashboard()
+    {
+        // ======================
+        // KPI
+        // ======================
+        $totalTerbit     = PengajuanPBG::where('status', 'terbit')
+        ->whereNull('deleted_at')
+        ->count();
+        $totalPengajuan  = PengajuanPBG::whereNull('deleted_at')->count();
+        $totalRetribusi  = PengajuanPBG::whereNull('deleted_at')->sum('nilai_retribusi');
 
-        // Grafik 5 tahun terakhir
+        // ======================
+        // Grafik Trend (LAMA)
+        // ======================
         $years = range(now()->year - 4, now()->year);
         $grafikTerbit = [];
         $grafikPengajuan = [];
 
         foreach ($years as $year) {
-            $grafikTerbit[] = PengajuanPBG::whereYear('created_at', $year)->where('status', 'terbit')->count();
-            $grafikPengajuan[] = PengajuanPBG::whereYear('created_at', $year)->count();
+            $grafikTerbit[] = PengajuanPBG::whereYear('created_at', $year)
+                ->whereNull('deleted_at')
+                ->where('status', 'terbit')->count();
+
+            $grafikPengajuan[] = PengajuanPBG::whereYear('created_at', $year)
+            ->whereNull('deleted_at')
+            ->count();
         }
 
-        // Jenis izin (Donut)
-        $jenisIzin = PengajuanPBG::select('fungsi_bangunan', DB::raw('count(*) as total'))
+        // ======================
+        // Donut Jenis Izin
+        // ======================
+        $jenisIzin = PengajuanPBG::selectRaw('
+                COALESCE(fungsi_bangunan, "Tidak diketahui") as fungsi_bangunan,
+                COUNT(*) as total
+            ')
+            ->whereNull('deleted_at')
             ->groupBy('fungsi_bangunan')
             ->get();
 
-        // Wilayah terbanyak (Bar chart)
-        $wilayah = PengajuanPBG::select('lokasi_bangunan', DB::raw('count(*) as total'))
-            ->groupBy('lokasi_bangunan')
-            ->orderByDesc('total')
-            ->take(9)
+        // ======================
+        // Bar Kecamatan (BARU)
+        // ======================
+        $wilayah = DB::table('kecamatans as k')
+            ->leftJoin('pengajuan as p', function ($join) {
+                $join->on('k.id', '=', 'p.kecamatan_id')
+                ->whereNull('p.deleted_at');
+            })
+            ->selectRaw('
+                k.id as kecamatan_id,
+                k.nama as nama_kecamatan,
+                COUNT(p.id) as total
+            ')
+            ->groupBy('k.id', 'k.nama')
+            ->orderBy('k.nama')
             ->get();
+        
+        $unknownTotal = PengajuanPBG::whereNull('deleted_at')->whereNull('kecamatan_id')
+            ->orWhere('kecamatan_id', 0)
+            ->count();
 
+        $wilayah = $wilayah->push((object) [
+            'kecamatan_id' => 0,
+            'nama_kecamatan' => 'Tidak diketahui',
+            'total' => $unknownTotal
+        ]);
+
+
+
+        // ======================
+        // BAR BARU: Status x Tipe
+        // ======================
+        $summary = PengajuanPBG::selectRaw('
+                tipe,
+                SUM(CASE WHEN status = "proses" THEN 1 ELSE 0 END) as proses,
+                SUM(CASE WHEN status = "terbit" THEN 1 ELSE 0 END) as terbit,
+                SUM(CASE WHEN status = "tidak" THEN 1 ELSE 0 END) as tidak
+            ')
+            ->whereNull('deleted_at')
+            ->groupBy('tipe')
+            ->get()
+            ->keyBy('tipe');
+
+        $kategori = ['PBG', 'SLF', 'PBG/SLF'];
+
+        $dataProses = [];
+        $dataTerbit = [];
+        $dataTidak  = [];
+
+        foreach ($kategori as $k) {
+            $dataProses[] = $summary[$k]->proses ?? 0;
+            $dataTerbit[] = $summary[$k]->terbit ?? 0;
+            $dataTidak[]  = $summary[$k]->tidak ?? 0;
+        }
+
+        // ======================
+        // RESPONSE FINAL
+        // ======================
         return response()->json([
             'status' => true,
             'data' => [
                 'total_terbit' => $totalTerbit,
                 'total_pengajuan' => $totalPengajuan,
                 'total_retribusi' => $totalRetribusi,
+
                 'grafik_trend' => [
                     'tahun' => $years,
                     'terbit' => $grafikTerbit,
                     'pengajuan' => $grafikPengajuan,
                 ],
+
                 'jenis_izin' => $jenisIzin,
                 'wilayah' => $wilayah,
+
+                // 🔥 BAR BARU
+                'grafik_status_tipe' => [
+                    'kategori' => $kategori,
+                    'series' => [
+                        ['name' => 'Proses', 'data' => $dataProses],
+                        ['name' => 'Terbit', 'data' => $dataTerbit],
+                        ['name' => 'Tolak',  'data' => $dataTidak],
+                    ]
+                ]
             ]
         ]);
     }
@@ -666,6 +756,15 @@ class DataController extends Controller
     function print_data(Request $request, $id)
     {
         $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
+        if (
+            $pengajuan->status !== 'terbit' 
+            && (
+                !auth()->user()->checkRole('kepala bidang') ||
+                !auth()->user()->checkRole('kepala dinas')
+                )
+            ) {
+            abort(403, 'Dokumen belum terbit');
+        }
 
         // Decode answers
         $answers = json_decode($pengajuan['answers'], true) ?? [];

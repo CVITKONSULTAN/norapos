@@ -836,7 +836,7 @@
     </div>
 </div>
 
-@if($pengajuan['tipe'] == 'PBG' || $pengajuan['tipe'] == 'PBG/SLF')
+@if($pengajuan['tipe'] == 'SLF' || $pengajuan['tipe'] == 'PBG/SLF')
 <div class="page">
 
     <h2 style="text-align:center; margin-bottom:0;">
@@ -846,9 +846,9 @@
     <br>
 
     <table class="no-border" style="font-size:12pt;">
-        <tr><td width="27%">Nomor</td><td>: .....................................................</td></tr>
-        <tr><td>Tanggal</td><td>: .....................................................</td></tr>
-        <tr><td>Lampiran</td><td>: .....................................................</td></tr>
+        <tr><td width="27%">Nomor</td><td>: <input style="width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value=".  /.  /SIMBG/DPUPRPRKP-CK/2025" /></td></tr>
+        <tr><td>Tanggal</td><td>: <input style="width: 150px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="{{ date('d M Y') }}" /></td></tr>
+        <tr><td>Lampiran</td><td>: <input style="width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value=" - " /></td></tr>
     </table>
 
     <p style="text-align:justify; font-size:12pt;">
@@ -879,17 +879,6 @@
     </p>
 
     <table class="tabel_surat_pernyataan">
-            {{-- <tr><td>Nama Bangunan</td><td>: .....................................................</td></tr>
-            <tr><td>Alamat Bangunan</td><td>: .....................................................</td></tr>
-            <tr><td>Koordinat</td><td>: .....................................................</td></tr>
-            <tr><td>Fungsi Bangunan</td><td>: .....................................................</td></tr>
-            <tr><td>Klasifikasi Kompleksitas</td><td>: .....................................................</td></tr>
-            <tr><td>Ketinggian</td><td>: .....................................................</td></tr>
-            <tr><td>Jumlah Lantai</td><td>: .....................................................</td></tr>
-            <tr><td>Luas Lantai</td><td>: .....................................................</td></tr>
-            <tr><td>Jumlah Basemen</td><td>: .....................................................</td></tr>
-            <tr><td>Luas Lantai Basemen</td><td>: .....................................................</td></tr>
-            <tr><td>Luas Tanah</td><td>: .....................................................</td></tr> --}}
             <tr>
                 <td>Nama Bangunan</td>
                 <td>: {{ $pengajuan['nama_bangunan'] ?? '-' }}</td>

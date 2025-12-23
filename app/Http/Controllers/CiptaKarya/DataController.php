@@ -757,7 +757,7 @@ class DataController extends Controller
     {
         $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
         if (
-            $pengajuan->status !== 'terbit' 
+            $pengajuan['status'] !== 'terbit' 
             && (
                 !auth()->user()->checkRole('kepala bidang') ||
                 !auth()->user()->checkRole('kepala dinas')

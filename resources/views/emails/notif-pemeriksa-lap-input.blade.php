@@ -25,12 +25,12 @@
                 <td style="padding:6px 0; color:#333;">: {{ $pengajuan->nama_pemohon }}</td>
             </tr>
             <tr>
-                <td style="padding:6px 0; color:#555;">Nama Bangunan</td>
-                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->nama_bangunan }}</td>
+                <td style="padding:6px 0; color:#555;">Fungsi Bangunan</td>
+                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->fungsi_bangunan }}</td>
             </tr>
             <tr>
                 <td style="padding:6px 0; color:#555;">Alamat Bangunan</td>
-                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->alamat_bangunan }}</td>
+                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->alamat }}</td>
             </tr>
             <tr>
                 <td style="padding:6px 0; color:#555;">Tanggal Pemeriksaan</td>

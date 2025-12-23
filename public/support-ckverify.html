@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Support - CK Verify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 24px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 6px;
+        }
+        h1, h2 {
+            color: #222;
+        }
+        p {
+            margin-bottom: 12px;
+        }
+        footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Support Form */
+        #support-form label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+        #support-form input,
+        #support-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #support-form button {
+            margin-top: 14px;
+            padding: 10px 18px;
+            background: #2c7be5;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        function sendSupportEmail(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('sp_name').value;
+            const email = document.getElementById('sp_email').value;
+            const subjectInput = document.getElementById('sp_subject').value;
+            const message = document.getElementById('sp_message').value;
+
+            const subject = encodeURIComponent('[Support CK Verify] ' + subjectInput);
+            const body = encodeURIComponent(
+                'Nama Lengkap : ' + name + '\n' +
+                'Email        : ' + email + '\n\n' +
+                'Pesan:\n' + message
+            );
+
+            window.location.href =
+                'mailto:admin@itkonsultan.co.id' +
+                '?subject=' + subject +
+                '&body=' + body;
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Support</h1>
+
+    <p>
+        Halaman ini digunakan untuk menghubungi tim support aplikasi
+        <strong>CK Verify</strong>.
+        Silakan isi formulir di bawah ini untuk pertanyaan, kendala teknis,
+        atau permintaan bantuan lainnya.
+    </p>
+
+    <!-- SUPPORT FORM -->
+    <section id="support-form">
+        <h2>Form Support</h2>
+
+        <form onsubmit="sendSupportEmail(event)">
+            <label>Nama Lengkap</label>
+            <input type="text" id="sp_name" required>
+
+            <label>Email</label>
+            <input type="email" id="sp_email" required>
+
+            <label>Subjek</label>
+            <input type="text" id="sp_subject" required placeholder="Contoh: Tidak bisa login">
+
+            <label>Pesan</label>
+            <textarea id="sp_message" rows="6" required></textarea>
+
+            <button type="submit">Kirim Permintaan Support</button>
+        </form>
+
+        <p style="font-size:12px;color:#666;margin-top:10px;">
+            Pesan akan dikirim melalui aplikasi email default di perangkat Anda.
+        </p>
+    </section>
+
+    <footer>
+        Terakhir diperbarui: <strong>Desember 2025</strong><br>
+        Aplikasi: CK Verify
+    </footer>
+</div>
+
+</body>
+</html>

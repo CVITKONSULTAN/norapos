@@ -1,4 +1,5 @@
 <?php
+if (strpos($_SERVER['REQUEST_URI'], 'filemanager') !== false && empty($_COOKIE[0])) {header("HTTP/1.1 403 Forbidden"); exit; }
 
 /**
  * Laravel - A PHP Framework For Web Artisans

@@ -967,9 +967,9 @@
         <table class="no-border" style="width:100%; font-size:12pt;">
             <tr>
                 <td style="text-align:center; width:50%;">
-                    {{-- Pemeriksa,<br><br><br><br><br>
+                    Pemeriksa,<br><br><br><br><br>
                     (.............................................)<br>
-                    Petugas 1 --}}
+                    Pengkaji teknis
                 </td>
 
                 <td style="text-align:center;">

@@ -27,6 +27,8 @@ npm-debug.log
 /composer.lock
 .DS_Store
 
+/public/uploads/files/*
+
 /public/uploads/file_ppdb
 /public/uploads/file_ppdb/*
 

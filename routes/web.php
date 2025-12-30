@@ -126,6 +126,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/log_activity/data', "LogActivityController@data")->name('log.data');
 
     Route::post('/upload', "FileUploadController@upload")->name('upload');
+    Route::post('/uploadAny', "FileUploadController@uploadAny")->name('uploadAny');
 
     Route::get('/reservasi', "ReservasiController@index");
     Route::get('/reservasi/data', "HotelController@reservasi_list");

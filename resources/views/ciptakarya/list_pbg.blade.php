@@ -11,6 +11,42 @@
         text-align: center;
         padding: 40px 0;
     }
+    
+    /* Loading overlay untuk dropzone */
+    .dropzone-uploading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border-radius: 4px;
+    }
+    
+    .dropzone-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .dropzone-upload-text {
+        margin-left: 15px;
+        font-size: 14px;
+        color: #333;
+    }
+    
     .timeline {
         position: relative;
         margin: 40px 0;
@@ -118,6 +154,27 @@
                     <input type="file" id="excel_retribusi" class="form-control" 
                         accept=".xls,.xlsx" required>
                     <small class="text-muted">Format wajib: .xls atau .xlsx</small>
+                </div>
+
+                <div class="form-group">
+                    <label><b>Upload PDF (opsional)</b></label>
+                    <input type="file" id="pdf_retribusi" class="form-control" 
+                        accept=".pdf" required>
+                    <small class="text-muted">Format wajib: .pdf</small>
+                </div>
+
+                <div class="form-group">
+                    <label><b>Upload Foto (opsional)</b></label>
+                    <input type="file" id="foto_retribusi" class="form-control" 
+                        accept=".jpg,.jpeg,.png" required>
+                    <small class="text-muted">Format wajib: .jpg, .jpeg, atau .png</small>
+                </div>
+
+                <div class="form-group">
+                    <label><b>Upload Zip (opsional)</b></label>
+                    <input type="file" id="zip_retribusi" class="form-control" 
+                        accept=".zip" required>
+                    <small class="text-muted">Format wajib: .zip</small>
                 </div>
 
             </div>
@@ -582,6 +639,9 @@
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
+                                <a href="detail/${data}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-list"></i> Detail
+                                </a>
                             `;
                         @elseif(auth()->user()->checkRole('admin'))
                             buttons += `
@@ -855,7 +915,7 @@
         let uploadedFiles = [];
 
         var dzPengajuan = new Dropzone("#dropzone_pengajuan", {
-            url: "{{ route('upload') }}", // Ganti ke route upload kamu
+            url: "{{ route('uploadAny') }}", // Ganti ke route upload kamu
             paramName: "file_data",
             maxFilesize: 5, 
             acceptedFiles: ".pdf,.jpg,.jpeg,.png",
@@ -868,10 +928,35 @@
             previewTemplate: `<span></span>`, // ❌ Nonaktifkan tampilan preview kartu bawaan Dropzone
             dictRemoveFile: "Hapus",
             init: function () {
+                var uploadingCount = 0;
+                var $dropzone = $('#dropzone_pengajuan');
+                
+                // Tambahkan overlay loading
+                this.on("addedfile", function(file) {
+                    uploadingCount++;
+                    if (uploadingCount === 1) {
+                        // Tampilkan overlay loading
+                        if ($dropzone.find('.dropzone-uploading-overlay').length === 0) {
+                            $dropzone.css('position', 'relative').append(`
+                                <div class="dropzone-uploading-overlay">
+                                    <div class="dropzone-spinner"></div>
+                                    <div class="dropzone-upload-text">Uploading file...</div>
+                                </div>
+                            `);
+                        }
+                    }
+                });
+                
                 this.on("success", function (file, response) {
+                    uploadingCount--;
+                    if (uploadingCount === 0) {
+                        $dropzone.find('.dropzone-uploading-overlay').remove();
+                    }
+                    
                     console.log(response);
                     if (response.status === true && response.data) {
-                        response.data = `/uploads/media/${response.data}`
+                        // response.data = `/uploads/media/${response.data}`
+                        response.data = response.data.url ?? "";
                         uploadedFiles.push(response.data); // SIMPAN URL KE ARRAY
                         addFileToList(file.name, response.data); // file.name = nama asli, response.data = URL file
                         console.log("uploadedFiles",uploadedFiles);
@@ -882,11 +967,24 @@
                     // Bisa tambahkan request delete ke backend kalau mau
                     console.log("File dihapus dari dropzone: ", file.name);
                     uploadedFiles = uploadedFiles.filter(url => url !== file.upload?.url);
+                    console.log("uploadedFiles>>",uploadedFiles);
                 });
+                
                 this.on("error", function (file, message) {
+                    uploadingCount--;
+                    if (uploadingCount === 0) {
+                        $dropzone.find('.dropzone-uploading-overlay').remove();
+                    }
                     // Hapus file dari dropzone
                     this.removeFile(file);
                     alert("Upload gagal: " + message);
+                });
+                
+                this.on("complete", function(file) {
+                    uploadingCount--;
+                    if (uploadingCount === 0) {
+                        $dropzone.find('.dropzone-uploading-overlay').remove();
+                    }
                 });
             }
         });
@@ -914,13 +1012,11 @@
 
         // Event hapus file dari list (opsional kirim ke backend)
         $(document).on('click', '.btn-remove-file', function () {
-            const url = $(this).data('url');
+            const uri = $(this).data('url');
             $(this).closest('li').remove();
 
-            // optional: panggil ajax untuk hapus file di server
-            /*
-            $.post('/hapus-file', { url: url, _token: $('meta[name="csrf-token"]').attr('content') });
-            */
+            uploadedFiles = uploadedFiles.filter(url => url !== uri);
+            console.log("uploadedFiles>>",uploadedFiles);
         });
 
         $("#form_pengajuan").validate({

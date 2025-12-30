@@ -456,6 +456,116 @@
                 frameborder="0">
             </iframe>
         @endif
+
+        @if( isset($pengajuan['pdf_retribusi']) && !empty($pengajuan['pdf_retribusi']))
+            <div class="detail-title">PDF Retribusi</div>
+
+            <iframe 
+                src="{{ url('/uploads/'.$pengajuan['pdf_retribusi']) }}" 
+                width="100%" 
+                height="600px" 
+                frameborder="0">
+            </iframe>
+            <div class="mt-2">
+                <a href="{{ url('/uploads/'.$pengajuan['pdf_retribusi']) }}" target="_blank" class="btn btn-primary">
+                    <i class="fa fa-download"></i> Download PDF
+                </a>
+            </div>
+        @endif
+
+        @if( isset($pengajuan['foto_retribusi']) && !empty($pengajuan['foto_retribusi']))
+            <div class="detail-title">Foto Retribusi</div>
+
+            <div class="text-center">
+                <img src="{{ url('/uploads/'.$pengajuan['foto_retribusi']) }}" 
+                     alt="Foto Retribusi" 
+                     style="max-width: 100%; max-height: 600px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            </div>
+            <div class="mt-2 text-center">
+                <a href="{{ url('/uploads/'.$pengajuan['foto_retribusi']) }}" target="_blank" class="btn btn-primary">
+                    <i class="fa fa-download"></i> Download Foto
+                </a>
+            </div>
+        @endif
+
+        @if( isset($pengajuan['zip_retribusi']) && !empty($pengajuan['zip_retribusi']))
+            <div class="detail-title">File ZIP Retribusi</div>
+
+            <div class="alert alert-info">
+                <i class="fa fa-file-archive-o fa-3x" style="float: left; margin-right: 15px;"></i>
+                <div>
+                    <strong>File ZIP tersedia untuk diunduh</strong><br>
+                    <small class="text-muted">{{ basename($pengajuan['zip_retribusi']) }}</small>
+                </div>
+            </div>
+            <div class="mt-2">
+                <a href="{{ url('/uploads/'.$pengajuan['zip_retribusi']) }}" download class="btn btn-primary">
+                    <i class="fa fa-download"></i> Download ZIP
+                </a>
+            </div>
+        @endif
+
+        @php
+            $uploadedFiles = [];
+            try {
+                if(isset($pengajuan['uploaded_files']) && !empty($pengajuan['uploaded_files'])) {
+                    $uploadedFiles = is_array($pengajuan['uploaded_files']) 
+                        ? $pengajuan['uploaded_files'] 
+                        : json_decode($pengajuan['uploaded_files'], true);
+                }
+            } catch (\Exception $e) {
+                $uploadedFiles = [];
+            }
+        @endphp
+
+        @if(!empty($uploadedFiles) && is_array($uploadedFiles))
+            <div class="detail-title">Lampiran Dokumen Pengajuan</div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="70%">Nama File</th>
+                            <th width="25%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($uploadedFiles as $index => $fileUrl)
+                            @php
+                                // Extract nama file dari URL
+                                $fileName = basename($fileUrl);
+                                $ext = strtoupper(pathinfo($fileName, PATHINFO_EXTENSION));
+                                
+                                // Icon berdasarkan extension
+                                $icon = 'fa-file-o';
+                                if(in_array($ext, ['PDF'])) $icon = 'fa-file-pdf-o';
+                                elseif(in_array($ext, ['JPG', 'JPEG', 'PNG', 'GIF'])) $icon = 'fa-file-image-o';
+                                elseif(in_array($ext, ['DOC', 'DOCX'])) $icon = 'fa-file-word-o';
+                                elseif(in_array($ext, ['XLS', 'XLSX'])) $icon = 'fa-file-excel-o';
+                                elseif(in_array($ext, ['ZIP', 'RAR'])) $icon = 'fa-file-archive-o';
+                            @endphp
+                            <tr>
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td>
+                                    <i class="fa {{ $icon }} text-primary"></i> 
+                                    {{ $fileName }}
+                                    <span class="badge bg-primary ml-2">{{ $ext }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ $fileUrl }}" 
+                                       target="_blank" 
+                                       class="btn btn-xs btn-primary" 
+                                       title="Lihat/Download">
+                                        <i class="fa fa-download"></i> Download
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 
     <div class="detail-box col-md-12">

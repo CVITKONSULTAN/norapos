@@ -933,6 +933,9 @@ class DataController extends Controller
         $request->validate([
             'nilai_retribusi' => 'required',
             'excel_retribusi' => 'nullable|mimes:xls,xlsx|max:5120', // max 5MB
+            'pdf_retribusi' => 'nullable|mimes:pdf|max:10240', // max 10MB
+            'foto_retribusi' => 'nullable|mimes:jpg,jpeg,png|max:5120', // max 5MB
+            'zip_retribusi' => 'nullable|mimes:zip|max:20480', // max 20MB
         ]);
 
         // CLEAN NILAI RETRIBUSI DARI MASKING
@@ -941,14 +944,30 @@ class DataController extends Controller
 
         // SIMPAN FILE EXCEL (JIKA ADA)
         if ($request->hasFile('excel_retribusi')) {
-
             $file = $request->file('excel_retribusi');
-
-            // Misal simpan di: storage/app/retribusi/excel/
             $path = $file->store('retribusi/excel', 'local');
-
-            // Simpan path ke DB
             $p->excel_retribusi = $path;
+        }
+
+        // SIMPAN FILE PDF (JIKA ADA)
+        if ($request->hasFile('pdf_retribusi')) {
+            $file = $request->file('pdf_retribusi');
+            $path = $file->store('retribusi/pdf', 'local');
+            $p->pdf_retribusi = $path;
+        }
+
+        // SIMPAN FOTO (JIKA ADA)
+        if ($request->hasFile('foto_retribusi')) {
+            $file = $request->file('foto_retribusi');
+            $path = $file->store('retribusi/foto', 'local');
+            $p->foto_retribusi = $path;
+        }
+
+        // SIMPAN FILE ZIP (JIKA ADA)
+        if ($request->hasFile('zip_retribusi')) {
+            $file = $request->file('zip_retribusi');
+            $path = $file->store('retribusi/zip', 'local');
+            $p->zip_retribusi = $path;
         }
 
         // UPDATE NILAI RETRIBUSI

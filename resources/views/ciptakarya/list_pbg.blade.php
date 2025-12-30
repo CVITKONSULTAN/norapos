@@ -150,7 +150,7 @@
 
                 <!-- UPLOAD FILE EXCEL -->
                 <div class="form-group">
-                    <label><b>Upload File Excel Retribusi</b></label>
+                    <label><b>Upload File Excel Retribusi (opsional)</b></label>
                     <input type="file" id="excel_retribusi" class="form-control" 
                         accept=".xls,.xlsx" required>
                     <small class="text-muted">Format wajib: .xls atau .xlsx</small>

@@ -194,6 +194,15 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                     ]
                 );
                 $sub->url(
+                    route('sekolah_sd.ppdb.jadwal_harian.no_schedule'),
+                    "Tidak dapat jadwal",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'tidak-dapat-jadwal'
+                    ]
+                );
+                $sub->url(
                     route('sekolah_sd.peserta_didik_baru.config'),
                     "Pengaturan Penerimaan",
                     [

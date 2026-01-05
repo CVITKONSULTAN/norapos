@@ -244,4 +244,27 @@ class PPDBSettingController extends Controller
         return Excel::download(new JadwalTesExport($tanggal), $namaFile);
     }
 
+    public function noSchedule(Request $request)
+    {
+        // Ambil peserta yang sudah bayar tapi belum dapat jadwal tes
+        $peserta = DB::table('p_p_d_b_sekolahs as p')
+            ->leftJoin('ppdb_test_schedules as s', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->select(
+                'p.id',
+                'p.nama',
+                'p.kode_bayar',
+                'p.status_bayar',
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.email')) as email")
+            )
+            ->where('p.status_bayar', 'sudah')
+            ->whereNull('s.id') // Tidak memiliki jadwal
+            ->orderBy('p.created_at', 'desc')
+            ->get();
+
+        return view('sekolah_sd.peserta_tanpa_jadwal', [
+            'peserta' => $peserta
+        ]);
+    }
+
 }

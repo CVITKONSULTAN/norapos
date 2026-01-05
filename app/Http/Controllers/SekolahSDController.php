@@ -2087,9 +2087,11 @@ class SekolahSDController extends Controller
 
         foreach ($iqSlots as $slot) {
 
-            // Hitung jumlah peserta yang sudah terisi di slot ini
-            $filled = PpdbTestSchedule::where('iq_date', $slot['date'])
-                        ->where('iq_start_time', $slot['start'])
+            // Hitung jumlah peserta yang sudah terisi di slot ini (dengan JOIN ke peserta)
+            $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.iq_date', $slot['date'])
+                        ->where('s.iq_start_time', 'LIKE', $slot['start'] . '%')
                         ->count();
 
             if ($filled < $slot['capacity']) {
@@ -2108,8 +2110,10 @@ class SekolahSDController extends Controller
 
         foreach ($mapSlots as $slot) {
 
-            $filled = PpdbTestSchedule::where('map_date', $slot['date'])
-                        ->where('map_start_time', $slot['start'])
+            $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.map_date', $slot['date'])
+                        ->where('s.map_start_time', 'LIKE', $slot['start'] . '%')
                         ->count();
 
             if ($filled < $slot['capacity']) {
@@ -2129,18 +2133,18 @@ class SekolahSDController extends Controller
         }
 
         // ===============================
-        // 3. SIMPAN JADWAL
+        // 3. SIMPAN JADWAL (dengan format waktu lengkap HH:MM:SS)
         // ===============================
         return PpdbTestSchedule::create([
             'kode_bayar' => $kodeBayar,
 
             'iq_date'       => $selectedIQ['date'],
-            'iq_start_time' => $selectedIQ['start'],
-            'iq_end_time'   => $selectedIQ['end'],
+            'iq_start_time' => $selectedIQ['start'] . ':00',
+            'iq_end_time'   => $selectedIQ['end'] . ':00',
 
             'map_date'       => $selectedMAP['date'],
-            'map_start_time' => $selectedMAP['start'],
-            'map_end_time'   => $selectedMAP['end'],
+            'map_start_time' => $selectedMAP['start'] ? $selectedMAP['start'] . ':00' : null,
+            'map_end_time'   => $selectedMAP['end'] ? $selectedMAP['end'] . ':00' : null,
         ]);
     }
 

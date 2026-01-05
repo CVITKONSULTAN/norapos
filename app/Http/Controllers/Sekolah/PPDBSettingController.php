@@ -387,48 +387,54 @@ class PPDBSettingController extends Controller
                 ]);
             }
 
-            // Cek kapasitas slot IQ
-            $iqFilled = DB::table('ppdb_test_schedules')
-                ->where('iq_date', $request->iq_date)
-                ->where('iq_start_time', $request->iq_start_time)
-                ->count();
+// Ambil kapasitas dari setting terlebih dahulu
+        $setting = PPDBSetting::where('close_ppdb', false)->first();
+        if (!$setting || !$setting->session_capacities) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Setting jadwal tidak ditemukan.'
+            ]);
+        }
 
-            // Cek kapasitas slot MAP
-            $mapFilled = DB::table('ppdb_test_schedules')
-                ->where('map_date', $request->map_date)
-                ->where('map_start_time', $request->map_start_time)
-                ->count();
+        // Ambil substring waktu untuk matching (HH:MM)
+        $iqStartShort = substr($request->iq_start_time, 0, 5);
+        $mapStartShort = substr($request->map_start_time, 0, 5);
 
-            // Ambil kapasitas dari setting
-            $setting = PPDBSetting::where('close_ppdb', false)->first();
-            if (!$setting || !$setting->session_capacities) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Setting jadwal tidak ditemukan.'
-                ]);
+        // Cari kapasitas IQ
+        $iqCapacity = 0;
+        foreach ($setting->session_capacities as $slot) {
+            if ($slot['type'] == 'iq' && 
+                $slot['date'] == $request->iq_date && 
+                $slot['start'] == $iqStartShort) {
+                $iqCapacity = $slot['capacity'];
+                break;
             }
+        }
 
-            // Cari kapasitas IQ
-            $iqCapacity = 0;
-            foreach ($setting->session_capacities as $slot) {
-                if ($slot['type'] == 'iq' && 
-                    $slot['date'] == $request->iq_date && 
-                    $slot['start'] == substr($request->iq_start_time, 0, 5)) {
-                    $iqCapacity = $slot['capacity'];
-                    break;
-                }
+        // Cari kapasitas MAP
+        $mapCapacity = 0;
+        foreach ($setting->session_capacities as $slot) {
+            if ($slot['type'] == 'map' && 
+                $slot['date'] == $request->map_date && 
+                $slot['start'] == $mapStartShort) {
+                $mapCapacity = $slot['capacity'];
+                break;
             }
+        }
 
-            // Cari kapasitas MAP
-            $mapCapacity = 0;
-            foreach ($setting->session_capacities as $slot) {
-                if ($slot['type'] == 'map' && 
-                    $slot['date'] == $request->map_date && 
-                    $slot['start'] == substr($request->map_start_time, 0, 5)) {
-                    $mapCapacity = $slot['capacity'];
-                    break;
-                }
-            }
+        // Cek kapasitas slot IQ (gunakan LIKE untuk matching dan JOIN dengan peserta)
+        $iqFilled = DB::table('ppdb_test_schedules as s')
+            ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->where('s.iq_date', $request->iq_date)
+            ->where('s.iq_start_time', 'LIKE', $iqStartShort . '%')
+            ->count();
+
+        // Cek kapasitas slot MAP (gunakan LIKE untuk matching dan JOIN dengan peserta)
+        $mapFilled = DB::table('ppdb_test_schedules as s')
+            ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->where('s.map_date', $request->map_date)
+            ->where('s.map_start_time', 'LIKE', $mapStartShort . '%')
+            ->count();
 
             // Validasi kapasitas
             if ($iqCapacity == 0) {

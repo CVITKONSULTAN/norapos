@@ -1685,6 +1685,22 @@ class SekolahSDController extends Controller
         // 🔹 Hitung jumlah pendaftar baru (30 hari terakhir)
         $data['pendaftarCount'] = PPDBSekolah::whereBetween('created_at', [$startDate, $endDate])->count();
 
+        // 🔹 Hitung total kunjungan
+        $data['totalVisitorCount'] = Visitor::where('page', 'ppdb-simuda')->count();
+
+        // 🔹 Hitung total peserta didik baru
+        $data['totalPendaftarCount'] = PPDBSekolah::count();
+
+        // 🔹 Hitung total yang sudah bayar
+        $data['totalSudahBayar'] = PPDBSekolah::where('status_bayar', 'sudah')->count();
+
+        // 🔹 Hitung total pendapatan
+        $data['totalPendapatan'] = PPDBSekolah::where('status_bayar', 'sudah')
+            ->get()
+            ->sum(function($item) {
+                return $item->detail['total_bayar'] ?? 0;
+            });
+
         return view('sekolah_sd.peserta_didik_baru',$data);
     }
     function peserta_didik_baru_config(Request $request){

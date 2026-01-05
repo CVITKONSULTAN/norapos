@@ -619,8 +619,8 @@ class PPDBSettingController extends Controller
                 ], 400);
             }
 
-            $startTime = trim($times[0]) . ':00';
-            $endTime = trim($times[1]) . ':00';
+            $startTime = trim($times[0]);
+            $endTime = trim($times[1]);
 
             // Query peserta based on test type - JOIN dengan ppdb_test_schedules
             $query = DB::table('ppdb_test_schedules as s')
@@ -634,12 +634,12 @@ class PPDBSettingController extends Controller
 
             if ($type == 'IQ') {
                 $query->where('s.iq_date', $date)
-                      ->where('s.iq_start_time', $startTime)
-                      ->where('s.iq_end_time', $endTime);
+                      ->where(DB::raw('TIME(s.iq_start_time)'), '=', $startTime)
+                      ->where(DB::raw('TIME(s.iq_end_time)'), '=', $endTime);
             } else {
                 $query->where('s.map_date', $date)
-                      ->where('s.map_start_time', $startTime)
-                      ->where('s.map_end_time', $endTime);
+                      ->where(DB::raw('TIME(s.map_start_time)'), '=', $startTime)
+                      ->where(DB::raw('TIME(s.map_end_time)'), '=', $endTime);
             }
 
             $peserta = $query->orderBy('p.validated_at', 'asc')->get();

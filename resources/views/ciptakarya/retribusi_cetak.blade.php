@@ -11,42 +11,6 @@
         text-align: center;
         padding: 40px 0;
     }
-    
-    /* Loading overlay untuk dropzone */
-    .dropzone-uploading-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        border-radius: 4px;
-    }
-    
-    .dropzone-spinner {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #3498db;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    .dropzone-upload-text {
-        margin-left: 15px;
-        font-size: 14px;
-        color: #333;
-    }
-    
     .timeline {
         position: relative;
         margin: 40px 0;
@@ -128,53 +92,40 @@
     <h1>Data Pemohon / Pengajuan</h1>
 </section>
 
-<!-- UNIVERSAL MODAL RETRIBUSI -->
+<!-- UNIVERSAL MODAL HITUNG RETRIBUSI -->
 <div id="modal_retribusi" class="modal fade">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h4 class="modal-title"><i class="fa fa-calculator"></i> Input Nilai Retribusi</h4>
+                <h4 class="modal-title"><i class="fa fa-calculator"></i> Hitung Nilai Retribusi</h4>
             </div>
 
             <div class="modal-body">
 
                 <input type="hidden" id="ret_id" value="">
 
-                <!-- NILAI RETRIBUSI -->
                 <div class="form-group">
-                    <label><b>Nilai Retribusi (Rp)</b></label>
-                    <input type="text" id="nilai_retribusi" class="form-control" 
-                        placeholder="Masukkan nilai retribusi" required>
-                </div>
-
-                <!-- UPLOAD FILE EXCEL -->
-                <div class="form-group">
-                    <label><b>Upload File Excel Retribusi (opsional)</b></label>
-                    <input type="file" id="excel_retribusi" class="form-control" 
-                        accept=".xls,.xlsx" required>
-                    <small class="text-muted">Format wajib: .xls atau .xlsx</small>
+                    <label>Luas Bangunan (m²)</label>
+                    <input type="number" id="ret_luas" class="form-control">
                 </div>
 
                 <div class="form-group">
-                    <label><b>Upload PDF (opsional)</b></label>
-                    <input type="file" id="pdf_retribusi" class="form-control" 
-                        accept=".pdf" required>
-                    <small class="text-muted">Format wajib: .pdf</small>
+                    <label>Tarif Retribusi (Rp / m²)</label>
+                    <input type="number" id="ret_tarif" class="form-control" value="5000">
                 </div>
 
                 <div class="form-group">
-                    <label><b>Upload Foto (opsional)</b></label>
-                    <input type="file" id="foto_retribusi" class="form-control" 
-                        accept=".jpg,.jpeg,.png" required>
-                    <small class="text-muted">Format wajib: .jpg, .jpeg, atau .png</small>
+                    <label>Fungsi Bangunan</label>
+                    <input type="text" id="ret_fungsi" class="form-control" readonly>
                 </div>
 
+                <hr>
+
                 <div class="form-group">
-                    <label><b>Upload Zip (opsional)</b></label>
-                    <input type="file" id="zip_retribusi" class="form-control" 
-                        accept=".zip" required>
-                    <small class="text-muted">Format wajib: .zip</small>
+                    <label><b>Total Retribusi (Rp)</b></label>
+                    <input type="text" id="ret_total" class="form-control" readonly 
+                           style="font-weight:bold; font-size:18px;">
                 </div>
 
             </div>
@@ -189,7 +140,6 @@
         </div>
     </div>
 </div>
-
 
 <div id="modal_pilih_petugas" class="modal fade">
     <div class="modal-dialog">
@@ -211,6 +161,7 @@
         </div>
     </div>
 </div>
+
 
 <div id="editor_modal_pengajuan" class="modal fade">
     <div class="modal-dialog modal-lg">
@@ -258,19 +209,6 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Kecamatan :</label>
-                        <div class="col-sm-9">
-                            <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
-                                <option value="">-- Pilih --</option>
-                                @foreach($kecamatan as $kec)
-                                    <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
-                                @endforeach
-                            </select>
-                            <input type="hidden" name="nama_kecamatan" id="nama_kecamatan" />
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Alamat :</label>
                         <div class="col-sm-9">
                         <textarea name="alamat" rows="3" class="form-control"></textarea>
@@ -280,6 +218,7 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Fungsi Bangunan :</label>
                         <div class="col-sm-9">
+                        {{-- <input name="fungsi_bangunan" class="form-control" /> --}}
                             <select name="fungsi_bangunan" class="form-control" required>
                                 <option value="">-- Pilih --</option>
                                 <option value="Khusus">Khusus </option>
@@ -315,8 +254,7 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Luas Bangunan :</label>
                         <div class="col-sm-9">
-                        {{-- <input name="luas_bangunan" class="form-control" /> --}}
-                        <textarea name="luas_bangunan" class="form-control"></textarea>
+                        <input name="luas_bangunan" class="form-control" />
                         </div>
                     </div>
                     <div class="form-group row">
@@ -345,8 +283,7 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Luas Tanah :</label>
                         <div class="col-sm-9">
-                        {{-- <input name="luas_tanah" class="form-control" /> --}}
-                        <textarea name="luas_tanah" class="form-control"></textarea>
+                        <input name="luas_tanah" class="form-control" />
                         </div>
                     </div>
 
@@ -358,7 +295,7 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Garis Sempadan Bangunan (GSB) minimum :</label>
+                        <label class="col-sm-3 col-form-label">Garis Sempadan Bangunan (GBS) minimum :</label>
                         <div class="col-sm-9">
                         <input name="gbs_min" class="form-control" />
                         </div>
@@ -442,7 +379,6 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary', 'title' => ""])
-    @if( auth()->user()->checkRole('admin') )
         <div class="row">
             <div class="col-sm-4">
                 <button onclick="addPengajuan('PBG')" class="btn btn-success btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG</button>
@@ -454,7 +390,6 @@
                 <button onclick="addPengajuan('PBG/SLF')" class="btn btn-primary btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG & SLF</button>
             </div>
         </div>
-    @endif
     @endcomponent
     @component('components.widget', ['class' => 'box-primary', 'title' => "Daftar Pemohon PBG dan SLF"])
             <p>Filter Data :</p>
@@ -491,17 +426,9 @@
                 <div class="form-group col-md-2">
                     <select id="filter_status" class="form-control" required>
                         <option value="">-- Semua Status --</option>
-                        <option selected value="proses">PROSES</option>
-                        <option value="tolak">TOLAK</option>
+                        <option value="pending">PROSES</option>
+                        <option value="gagal">GAGAL</option>
                         <option value="terbit">TERBIT</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-2">
-                    <select id="filter_kecamatan" class="form-control" required>
-                        <option value="">-- Semua Kecamatan --</option>
-                        @foreach($kecamatan as $kec)
-                            <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
-                        @endforeach
                     </select>
                 </div>
                 <div class="form-group">
@@ -517,8 +444,7 @@
                             <th>No. Permohonan</th>
                             <th>Nama Pemohon</th>
                             <th>Jenis Izin</th>
-                            <th>Fungsi Bangunan</th>
-                            <th>Kecamatan</th>
+                            <th>Jenis / Kategori</th>
                             <th>Tgl Pengajuan</th>
                             <th>Status</th>
                             <th>Nilai Retribusi</th>
@@ -559,14 +485,13 @@
                     d.kategori = $('#filter_kategori').val();
                     d.jenis = $('#filter_jenis').val();
                     d.status = $('#filter_status').val();
-                    d.kecamatan_id = $('#filter_kecamatan').val();
                 }
             },
             columns: [
-                { searchable: false, data: 'created_at', render: (data) => data || '-' },
-                { searchable: true, data: 'no_permohonan', render: (data) => data || '-' },
-                { searchable: true, data: 'nama_pemohon', render: (data) => data || '-' },
-                { searchable: false, data: 'tipe', render: (data) =>{
+                { data: 'created_at', render: (data) => data || '-' },
+                { data: 'no_permohonan', render: (data) => data || '-' },
+                { data: 'nama_pemohon', render: (data) => data || '-' },
+                { data: 'tipe', render: (data) =>{
                     let status = "gray";
                     if(data == "PBG") status = "blue"
                     if(data == "SLF") status = "yellow"
@@ -574,42 +499,28 @@
                     return `<span class="badge bg-${status}">${data || '-'}</span>`
                 }
                 },
-                { searchable: true, data: 'fungsi_bangunan', render: (data) => data || '-' },
-                { searchable: true, data: 'nama_kecamatan', render: (data) => data || '-' },
-                { searchable: false,
+                { data: 'fungsi_bangunan', render: (data) => data || '-' },
+                { 
                     data: 'created_at',
                     render: (data) => moment(data).format('DD/MM/YYYY HH:mm') 
                 },
                 { 
-                    searchable: true,
                     data: 'status', 
                     render: (data) => {
                         if(data == 'pending') data = "PROSES";
                         let label = data ? data.toUpperCase() : 'PROSES';
-                        let color = data === 'terbit' ? 'green' : (data === 'tolak' ? 'red' : 'blue');
+                        let color = data === 'terbit' ? 'green' : (data === 'gagal' ? 'red' : 'blue');
                         return `<span class="badge bg-${color}">${label}</span>`;
                     } 
                 },
                 {
-                    searchable: false,
                     data: 'nilai_retribusi',
-                    render: (data,_,row) => {
-                        let str = formatRupiah(data);
-                        if(row.excel_retribusi){
-                            str += `<br /><br /><a target="_blank" href="${'/uploads/'+row.excel_retribusi}""><i class="fa fa-file"></i> Download file retribusi</a>`
-                        }
-                        return str;
+                    render: (data) => {
+                        return formatRupiah(data);
                     }
                 },
-                { 
-                    searchable: false,
-                    data: 'petugas', render: (data,_,row) => {
-                    let nama = data?.nama ?? '';
-                    if(row.tgl_penugasan){
-                        const tgl = moment(row.tgl_penugasan).format('DD/MM/YYYY HH:mm') 
-                        nama += ` (${tgl})`;
-                    }
-                    return nama;
+                { data: 'petugas', render: (data) => {
+                    return data?.nama ?? '-';
                 }},
                 {
                     data: 'id',
@@ -617,34 +528,21 @@
                     searchable: false,
                     render: function (data, type, row) {
 
-                        const status = row.status.toLowerCase();
-                        let buttons = '';
-
-                        // =========================
-                        // CETAK (GLOBAL RULE)
-                        // =========================
-                        if (status === 'terbit') {
-                            buttons += `
+                        return `
+                            @if(auth()->user()->checkRole('pemeriksa'))
                                 <a href="print/${data}" class="btn btn-sm btn-success">
                                     <i class="fa fa-print"></i> Cetak
                                 </a>
-                            `;
-                        }
-
-                        // =========================
-                        // ROLE BASED BUTTON
-                        // =========================
-                        @if(auth()->user()->checkRole('pemeriksa'))
-                            buttons += `
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
                                 <a href="detail/${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-list"></i> Detail
                                 </a>
-                            `;
-                        @elseif(auth()->user()->checkRole('admin'))
-                            buttons += `
+                            @elseif(auth()->user()->checkRole('admin'))
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
@@ -663,9 +561,10 @@
                                 <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan">
                                     <i class="fa fa-trash"></i> Hapus
                                 </button>
-                            `;
-                        @elseif(auth()->user()->checkRole('retribusi'))
-                            buttons += `
+                            @elseif(auth()->user()->checkRole('retribusi'))
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
@@ -675,104 +574,25 @@
                                 <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
                                     <i class="fa fa-calculator"></i> Retribusi
                                 </button>
-                                <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
-                                    <i class="fa fa-pencil"></i> Edit
-                                </button>
-                            `;
-                        @else
-                            buttons += `
+                            @else
+                                <!-- USER LAINNYA -->
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
                                 <a href="detail/${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-list"></i> Detail
                                 </a>
-                            `;
-                        @endif
-
-                        return buttons;
+                            @endif
+                        `;
                     }
                 }
-                // {
-                //     data: 'id',
-                //     orderable: false,
-                //     searchable: false,
-                //     render: function (data, type, row) {
-                //         var status = row.status.toLowerCase();
-                //         if(status == 'terbit'){
-                //             return `<a href="print/${data}" class="btn btn-sm btn-success">
-                //                     <i class="fa fa-print"></i> Cetak
-                //                 </a>
-                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-history"></i> Riwayat
-                //                 </button>`;
-                //         }
-
-                //         return `
-                //             @if(auth()->user()->checkRole('pemeriksa'))
-                //                 <a href="print/${data}" class="btn btn-sm btn-success">
-                //                     <i class="fa fa-print"></i> Cetak
-                //                 </a>
-                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-history"></i> Riwayat
-                //                 </button>
-                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-list"></i> Detail
-                //                 </a>
-                //             @elseif(auth()->user()->checkRole('admin'))
-                //                 <a href="print/${data}" class="btn btn-sm btn-success">
-                //                     <i class="fa fa-print"></i> Cetak
-                //                 </a>
-                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-history"></i> Riwayat
-                //                 </button>
-                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-list"></i> Detail
-                //                 </a>
-                //                 <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
-                //                     <i class="fa fa-calculator"></i> Retribusi
-                //                 </button>
-                //                 <button data-id="${data}" class="btn btn-sm btn-info pilih_petugas">
-                //                     <i class="fa fa-user"></i> Petugas
-                //                 </button>
-                //                 <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
-                //                     <i class="fa fa-pencil"></i> Edit
-                //                 </button>
-                //                 <button data-id="${data}" class="btn btn-sm btn-danger delete_pengajuan">
-                //                     <i class="fa fa-trash"></i> Hapus
-                //                 </button>
-                //             @elseif(auth()->user()->checkRole('retribusi'))
-                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-history"></i> Riwayat
-                //                 </button>
-                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-list"></i> Detail
-                //                 </a>
-                //                 <button data-id="${data}" class="btn btn-sm btn-warning hitung_retribusi">
-                //                     <i class="fa fa-calculator"></i> Retribusi
-                //                 </button>
-                //                 <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
-                //                     <i class="fa fa-pencil"></i> Edit
-                //                 </button>
-                //             @else
-                //                 <!-- USER LAINNYA -->
-                //                 <a href="print/${data}" class="btn btn-sm btn-success">
-                //                     <i class="fa fa-print"></i> Cetak
-                //                 </a>
-                //                 <button data-id="${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-history"></i> Riwayat
-                //                 </button>
-                //                 <a href="detail/${data}" class="btn btn-sm btn-primary">
-                //                     <i class="fa fa-list"></i> Detail
-                //                 </a>
-                //             @endif
-                //         `;
-                //     }
-                // }
             ]
         });
 
-        $('#filter_tahun, #filter_kategori, #filter_jenis, #filter_status, #filter_kecamatan').on('change', function () {
+        $('#filter_tahun, #filter_kategori, #filter_jenis, #filter_status').on('change', function () {
             product_table.ajax.reload();
         });
 
@@ -915,7 +735,7 @@
         let uploadedFiles = [];
 
         var dzPengajuan = new Dropzone("#dropzone_pengajuan", {
-            url: "{{ route('uploadAny') }}", // Ganti ke route upload kamu
+            url: "{{ route('upload') }}", // Ganti ke route upload kamu
             paramName: "file_data",
             maxFilesize: 5, 
             acceptedFiles: ".pdf,.jpg,.jpeg,.png",
@@ -928,35 +748,10 @@
             previewTemplate: `<span></span>`, // ❌ Nonaktifkan tampilan preview kartu bawaan Dropzone
             dictRemoveFile: "Hapus",
             init: function () {
-                var uploadingCount = 0;
-                var $dropzone = $('#dropzone_pengajuan');
-                
-                // Tambahkan overlay loading
-                this.on("addedfile", function(file) {
-                    uploadingCount++;
-                    if (uploadingCount === 1) {
-                        // Tampilkan overlay loading
-                        if ($dropzone.find('.dropzone-uploading-overlay').length === 0) {
-                            $dropzone.css('position', 'relative').append(`
-                                <div class="dropzone-uploading-overlay">
-                                    <div class="dropzone-spinner"></div>
-                                    <div class="dropzone-upload-text">Uploading file...</div>
-                                </div>
-                            `);
-                        }
-                    }
-                });
-                
                 this.on("success", function (file, response) {
-                    uploadingCount--;
-                    if (uploadingCount === 0) {
-                        $dropzone.find('.dropzone-uploading-overlay').remove();
-                    }
-                    
                     console.log(response);
                     if (response.status === true && response.data) {
-                        // response.data = `/uploads/media/${response.data}`
-                        response.data = response.data.url ?? "";
+                        response.data = `/uploads/media/${response.data}`
                         uploadedFiles.push(response.data); // SIMPAN URL KE ARRAY
                         addFileToList(file.name, response.data); // file.name = nama asli, response.data = URL file
                         console.log("uploadedFiles",uploadedFiles);
@@ -967,24 +762,11 @@
                     // Bisa tambahkan request delete ke backend kalau mau
                     console.log("File dihapus dari dropzone: ", file.name);
                     uploadedFiles = uploadedFiles.filter(url => url !== file.upload?.url);
-                    console.log("uploadedFiles>>",uploadedFiles);
                 });
-                
                 this.on("error", function (file, message) {
-                    uploadingCount--;
-                    if (uploadingCount === 0) {
-                        $dropzone.find('.dropzone-uploading-overlay').remove();
-                    }
                     // Hapus file dari dropzone
                     this.removeFile(file);
                     alert("Upload gagal: " + message);
-                });
-                
-                this.on("complete", function(file) {
-                    uploadingCount--;
-                    if (uploadingCount === 0) {
-                        $dropzone.find('.dropzone-uploading-overlay').remove();
-                    }
                 });
             }
         });
@@ -1012,11 +794,13 @@
 
         // Event hapus file dari list (opsional kirim ke backend)
         $(document).on('click', '.btn-remove-file', function () {
-            const uri = $(this).data('url');
+            const url = $(this).data('url');
             $(this).closest('li').remove();
 
-            uploadedFiles = uploadedFiles.filter(url => url !== uri);
-            console.log("uploadedFiles>>",uploadedFiles);
+            // optional: panggil ajax untuk hapus file di server
+            /*
+            $.post('/hapus-file', { url: url, _token: $('meta[name="csrf-token"]').attr('content') });
+            */
         });
 
         $("#form_pengajuan").validate({
@@ -1079,12 +863,6 @@
 
                 return false; // Hentikan submit normal
             }
-        });
-
-        $('#kecamatan_id').on('change', function () {
-            const nama = $(this).find('option:selected').text();
-            console.log('nama>>',nama);
-            $('#nama_kecamatan').val(nama);
         });
 
         // ===================== PILIH PETUGAS =====================
@@ -1205,26 +983,24 @@
         }
 
         $(document).on('click', '.btn-primary:has(.fa-history)', function() {
-
             const id = $(this).data('id');
 
-            // URL controller timeline
-            const url = `{{ route('ciptakarya.timeline', ':id') }}`.replace(':id', id);
+            const url = `{{ route('ciptakarya.list_data_pbg') }}/${id}/detail`;
 
+            // GET dari backend
             $.get(url, function(res) {
 
-                if (!res.status) {
-                    toastr.error("Gagal memuat timeline!");
-                    return;
-                }
+                // res.step = angka 1–7 dari database
+                // const step = res.step ?? 1;
+                const step = 2;
 
-                const flow = res.timeline; 
-                $('#timeline_container').html(renderFullTimeline(flow));
+                // Generate timeline
+                $('#timeline_container').html(renderTimeline(step));
 
+                // Tampilkan modal
                 $('#modal_timeline').modal('show');
             });
         });
-
 
         $(document).on('click', '.hitung_retribusi', function () {
 
@@ -1262,80 +1038,23 @@
             $('#ret_total').val(new Intl.NumberFormat().format(total));
         }
 
-        $('#btn_simpan_retribusi').on('click', function () {
+        $('#btn_simpan_retribusi').click(function () {
 
-            let btn = $(this);
-            let id  = $('#ret_id').val();
-            let excelFile = $('#excel_retribusi')[0].files[0];
+            const id = $('#ret_id').val();
+            const total = $('#ret_total').val();
 
-            let nilaiFormatted = $('#nilai_retribusi').val();
-            let nilaiBersih = nilaiFormatted.replace(/\./g, ""); // VALUE ASLI
-
-            if (!nilaiBersih) {
-                toastr.error('Nilai retribusi belum diisi.');
-                return;
-            }
-            if (!excelFile) {
-                toastr.error('File Excel Retribusi belum diisi.');
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append('id', id);
-            formData.append('nilai_retribusi', nilaiBersih);
-
-            if (excelFile) {
-                formData.append('excel_retribusi', excelFile);
-            }
-
-            // === BUTTON LOADING ===
-            btn.prop('disabled', true);
-            let oldHtml = btn.html();
-            btn.html('<i class="fa fa-spinner fa-spin"></i> Menyimpan...');
-
-            $.ajax({
-                url: "{{ url('/ciptakarya/update-retribusi') }}/" + id,
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (res) {
-
-                    toastr.success('Data berhasil disimpan.');
-
+            $.post("{{ url('/ciptakarya/update-retribusi') }}/" + id, {
+                _token: "{{ csrf_token() }}",
+                nilai_retribusi: total
+            }, function(res){
+                if (res.status) {
+                    toastr.success("Retribusi berhasil disimpan!");
                     $('#modal_retribusi').modal('hide');
-                },
-                error: function (err) {
-
-                    toastr.error('Gagal menyimpan data.');
-                    console.log(err);
-                },
-                complete: function () {
-                    // === RESET BUTTON ===
-                    btn.prop('disabled', false);
-                    btn.html(oldHtml);
+                    product_table.ajax.reload();
                 }
             });
 
         });
-
-
-        // MASKING FORMAT RIBUAN UNTUK INPUT NILAI RETRIBUSI
-        document.getElementById("nilai_retribusi").addEventListener("input", function (e) {
-
-            // Ambil nilai asli tanpa titik
-            let raw = this.value.replace(/\./g, "");
-
-            // Hapus semua karakter kecuali digit
-            raw = raw.replace(/\D/g, "");
-
-            // Format ulang menjadi ribuan
-            let formatted = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-            this.value = formatted;
-        });
-
-
 
         function formatRupiah(angka) {
             if (!angka) return "0";
@@ -1351,49 +1070,6 @@
             // Format dengan separator ribuan
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
-
-        function renderFullTimeline(flow) {
-
-    let html = `<div class="timeline">`;
-
-    flow.forEach((step, index) => {
-
-        // gunakan warna dari backend: green / red
-        const bg = step.color === 'green' ? '#4CAF50' : '#FF5252';
-        const textColor = 'white';
-
-        html += `
-            <div class="timeline-item">
-                <div class="timeline-year">${index + 1}</div>
-
-                <div class="timeline-icon" style="
-                    background: ${bg};
-                    color: ${textColor};
-                    border-color: ${bg};
-                ">
-                    <span style="font-size:22px">✔️</span>
-                </div>
-
-                <div class="timeline-content">
-                    <h3><strong>${step.label}</strong></h3>
-                    <p>${step.desc}</p>
-                    
-                    <p style="margin-top:4px;">
-                        <b>Status:</b> ${step.status.toUpperCase()} <br>
-                        <b>Catatan:</b> ${step.catatan ?? '-'} <br>
-                        <b>Tanggal:</b> ${step.verified_at ? moment(step.verified_at).format("DD MMMM YYYY HH:mm") : '-'} <br>
-                        <b>User:</b> ${step.user ?? '-'}
-                    </p>
-                </div>
-            </div>
-        `;
-    });
-
-    html += `</div>`;
-
-    return html;
-}
-
 
 
 

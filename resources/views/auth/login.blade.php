@@ -60,11 +60,16 @@
             <br>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary btn-flat btn-login">@lang('lang_v1.login')</button>
-                @if(config('app.env') != 'demo')
-                <a href="{{ route('password.request') }}" class="pull-right">
-                    @lang('lang_v1.forgot_your_password')
+            </div>
+            <div class="form-group">
+                <a href="/CKverify.apk" class="btn btn-primary btn-flat">
+                    <i class="fas fa-download"></i> DOWNLOAD CKVERFIY
                 </a>
-            @endif
+                @if(config('app.env') != 'demo')
+                    <a href="{{ route('password.request') }}" class="pull-right mt-5">
+                        @lang('lang_v1.forgot_your_password')
+                    </a>
+                @endif
             </div>
         </form>
     </div>

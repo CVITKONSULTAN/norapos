@@ -33,8 +33,8 @@
           </a>
         @endif
         @if(str_contains( strtolower(auth()->user()->business->name) , 'ciptakarya'))
-          <a href="/panduan/manajerial_hotel.pdf" target="_blank" title="@lang('lang_v1.calculator')" type="button" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10 popover-default" data-toggle="popover" data-trigger="click" data-content='@include("layouts.partials.calculator")' data-html="true" data-placement="bottom">
-              <strong><i class="fa fa-book fa-lg" aria-hidden="true"></i></strong> PANDUAN
+          <a href="/CKverify.apk" target="_blank" title="@lang('lang_v1.calculator')" type="button" class="btn btn-success btn-flat pull-left m-8 hidden-xs btn-sm mt-10 popover-default" data-toggle="popover" data-trigger="click" data-content='download' data-html="true" data-placement="bottom">
+              <strong><i class="fa fa-book fa-lg" aria-hidden="true"></i></strong> Download APK CKVerify
           </a>
         @endif
 

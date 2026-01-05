@@ -8,12 +8,14 @@ use App\Http\Controllers\Controller;
 use App\Models\CiptaKarya\PengajuanPBG;
 use App\Models\CiptaKarya\PetugasLapangan;
 use App\Models\CiptaKarya\PbgTracking;
+use App\Models\CiptaKarya\Kecamatan;
 use App\User;
 
 use Validator;
 use DataTables;
 use DB;
 use Mail;
+use Log;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
@@ -30,7 +32,8 @@ class DataController extends Controller
      */
     public function list_index()
     {
-        return view('ciptakarya.list_pbg');
+        $data['kecamatan'] = Kecamatan::orderBy('nama')->get();
+        return view('ciptakarya.list_pbg',$data);
     }
     /**
      * Display a listing of the resource.
@@ -90,6 +93,7 @@ class DataController extends Controller
             $input = $request->except(['_token', 'insert', 'update', 'delete']);
             $input['answers'] = json_encode([]);
             $input['questions'] = json_encode([]);
+
             $data = PengajuanPBG::create($input);
 
             $role = auth()->user()->roles->first()->name ?? 'admin'; // pastikan role tersedia
@@ -195,7 +199,11 @@ class DataController extends Controller
             'nilai_retribusi',
             'status',
             'petugas_id',
-            'created_at'
+            'created_at',
+            'excel_retribusi',
+            'tgl_penugasan',
+            'kecamatan_id',
+            'nama_kecamatan',
         ])
         ->with(['petugas:id,nama'])
         ->orderBy('id', 'desc');
@@ -218,6 +226,9 @@ class DataController extends Controller
         // ✅ Filter Status (pending / approved / rejected)
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
+        }
+        if ($request->has('kecamatan_id') && $request->kecamatan_id != '') {
+            $query->where('kecamatan_id', $request->kecamatan_id);
         }
 
         return DataTables::of($query)->make(true);
@@ -300,46 +311,128 @@ class DataController extends Controller
 
     }
 
-    public function dashboard() {
-        $totalTerbit = PengajuanPBG::where('status', 'approved')->count();
-        $totalPengajuan = PengajuanPBG::count();
-        $totalRetribusi = PengajuanPBG::sum('nilai_retribusi'); // kalau ada field ini
+    public function dashboard()
+    {
+        // ======================
+        // KPI
+        // ======================
+        $totalTerbit     = PengajuanPBG::where('status', 'terbit')
+        ->whereNull('deleted_at')
+        ->count();
+        $totalPengajuan  = PengajuanPBG::whereNull('deleted_at')->count();
+        $totalRetribusi  = PengajuanPBG::whereNull('deleted_at')->sum('nilai_retribusi');
 
-        // Grafik 5 tahun terakhir
+        // ======================
+        // Grafik Trend (LAMA)
+        // ======================
         $years = range(now()->year - 4, now()->year);
         $grafikTerbit = [];
         $grafikPengajuan = [];
 
         foreach ($years as $year) {
-            $grafikTerbit[] = PengajuanPBG::whereYear('created_at', $year)->where('status', 'approved')->count();
-            $grafikPengajuan[] = PengajuanPBG::whereYear('created_at', $year)->count();
+            $grafikTerbit[] = PengajuanPBG::whereYear('created_at', $year)
+                ->whereNull('deleted_at')
+                ->where('status', 'terbit')->count();
+
+            $grafikPengajuan[] = PengajuanPBG::whereYear('created_at', $year)
+            ->whereNull('deleted_at')
+            ->count();
         }
 
-        // Jenis izin (Donut)
-        $jenisIzin = PengajuanPBG::select('fungsi_bangunan', DB::raw('count(*) as total'))
+        // ======================
+        // Donut Jenis Izin
+        // ======================
+        $jenisIzin = PengajuanPBG::selectRaw('
+                COALESCE(fungsi_bangunan, "Tidak diketahui") as fungsi_bangunan,
+                COUNT(*) as total
+            ')
+            ->whereNull('deleted_at')
             ->groupBy('fungsi_bangunan')
             ->get();
 
-        // Wilayah terbanyak (Bar chart)
-        $wilayah = PengajuanPBG::select('lokasi_bangunan', DB::raw('count(*) as total'))
-            ->groupBy('lokasi_bangunan')
-            ->orderByDesc('total')
-            ->take(9)
+        // ======================
+        // Bar Kecamatan (BARU)
+        // ======================
+        $wilayah = DB::table('kecamatans as k')
+            ->leftJoin('pengajuan as p', function ($join) {
+                $join->on('k.id', '=', 'p.kecamatan_id')
+                ->whereNull('p.deleted_at');
+            })
+            ->selectRaw('
+                k.id as kecamatan_id,
+                k.nama as nama_kecamatan,
+                COUNT(p.id) as total
+            ')
+            ->groupBy('k.id', 'k.nama')
+            ->orderBy('k.nama')
             ->get();
+        
+        $unknownTotal = PengajuanPBG::whereNull('deleted_at')->whereNull('kecamatan_id')
+            ->orWhere('kecamatan_id', 0)
+            ->count();
 
+        $wilayah = $wilayah->push((object) [
+            'kecamatan_id' => 0,
+            'nama_kecamatan' => 'Tidak diketahui',
+            'total' => $unknownTotal
+        ]);
+
+
+
+        // ======================
+        // BAR BARU: Status x Tipe
+        // ======================
+        $summary = PengajuanPBG::selectRaw('
+                tipe,
+                SUM(CASE WHEN status = "proses" THEN 1 ELSE 0 END) as proses,
+                SUM(CASE WHEN status = "terbit" THEN 1 ELSE 0 END) as terbit,
+                SUM(CASE WHEN status = "tidak" THEN 1 ELSE 0 END) as tidak
+            ')
+            ->whereNull('deleted_at')
+            ->groupBy('tipe')
+            ->get()
+            ->keyBy('tipe');
+
+        $kategori = ['PBG', 'SLF', 'PBG/SLF'];
+
+        $dataProses = [];
+        $dataTerbit = [];
+        $dataTidak  = [];
+
+        foreach ($kategori as $k) {
+            $dataProses[] = $summary[$k]->proses ?? 0;
+            $dataTerbit[] = $summary[$k]->terbit ?? 0;
+            $dataTidak[]  = $summary[$k]->tidak ?? 0;
+        }
+
+        // ======================
+        // RESPONSE FINAL
+        // ======================
         return response()->json([
             'status' => true,
             'data' => [
                 'total_terbit' => $totalTerbit,
                 'total_pengajuan' => $totalPengajuan,
                 'total_retribusi' => $totalRetribusi,
+
                 'grafik_trend' => [
                     'tahun' => $years,
                     'terbit' => $grafikTerbit,
                     'pengajuan' => $grafikPengajuan,
                 ],
+
                 'jenis_izin' => $jenisIzin,
                 'wilayah' => $wilayah,
+
+                // 🔥 BAR BARU
+                'grafik_status_tipe' => [
+                    'kategori' => $kategori,
+                    'series' => [
+                        ['name' => 'Proses', 'data' => $dataProses],
+                        ['name' => 'Terbit', 'data' => $dataTerbit],
+                        ['name' => 'Tolak',  'data' => $dataTidak],
+                    ]
+                ]
             ]
         ]);
     }
@@ -399,6 +492,8 @@ class DataController extends Controller
 
         $pengajuan->petugas_id = $petugas->id;
         $pengajuan->petugas_lapangan = $petugas->toArray(); // simpan juga nama/email
+
+        $pengajuan->tgl_penugasan = date('Y-m-d H:i:s');
 
         $pengajuan->save();
 
@@ -590,6 +685,36 @@ class DataController extends Controller
     
         $data->save();
 
+        // $business_id = 15; //local
+        $business_id = 18; //server
+        // Cari user admin_retribusi
+        $admin = User::role("Pemeriksa#$business_id")->get();
+
+        $role = 'Petugas Lapangan#'.$business_id; // pastikan role tersedia
+
+        $tracking = PbgTracking::updateOrCreate(
+                [
+                    'pengajuan_id' => $data->id,
+                    'role' => $role
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'catatan' => "mengisi data pengajuan",
+                    'status' => "proses",
+                    'verified_at' => now()
+                ]
+            );
+
+        if($admin->count() > 0){
+            $emailList = $admin->pluck('email')->toArray();
+
+            // Kirim email
+            \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                $data,
+                $tracking
+            ));
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'OK',
@@ -628,9 +753,171 @@ class DataController extends Controller
         }
     }
 
-    function print_data(Request $request,$id){
-        return view('ciptakarya.cetak_list_pbg');
+    function print_data(Request $request, $id)
+    {
+        $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
+        if (
+            $pengajuan['status'] !== 'terbit' 
+            && (
+                !auth()->user()->checkRole('kepala bidang') ||
+                !auth()->user()->checkRole('kepala dinas')
+                )
+            ) {
+            abort(403, 'Dokumen belum terbit');
+        }
+
+        // Decode answers
+        $answers = json_decode($pengajuan['answers'], true) ?? [];
+        $sections = json_decode($pengajuan['questions'], true) ?? [];
+
+        $results = [];
+
+        // Helper untuk memisahkan answer & visual
+        $parseAnswer = function($val) {
+            if (!is_numeric($val)) {
+                return [
+                    'answer' => null,   // tidak dianggap Ya/Tidak
+                    'visual' => $val    // ini teks visual
+                ];
+            }
+            return [
+                'answer' => Helper::answerLabel($val),
+                'visual' => null
+            ];
+        };
+
+        foreach ($sections as $section) {
+
+            $sec = [
+                'caption' => $section['caption'],
+                'rows' => [],
+                'child' => [],
+            ];
+
+            /* ======================================================
+            * LEVEL 1  (section -> questioner)
+            ====================================================== */
+            if (isset($section['questioner'])) {
+
+                foreach ($section['questioner'] as $i => $q) {
+
+                    $key = $section['caption'] . '__' . $i;
+
+                    $val = $answers[$key]['value'] ?? null;
+                    $parsed = $parseAnswer($val);
+
+                    $sec['rows'][] = [
+                        'question' => $q['question'],
+                        'answer'   => $parsed['answer'],
+                        'visual'   => $parsed['visual'],
+                    ];
+                }
+            }
+
+
+            /* ======================================================
+            * LEVEL 2  (section -> child)
+            ====================================================== */
+            if (isset($section['child'])) {
+
+                foreach ($section['child'] as $child1) {
+
+                    $sub = [
+                        'caption' => $child1['caption'],
+                        'rows' => [],
+                        'child' => []
+                    ];
+
+                    // child1 langsung punya questioner
+                    if (isset($child1['questioner'])) {
+
+                        foreach ($child1['questioner'] as $i => $q) {
+
+                            $key = $section['caption']
+                                . ' > ' . $child1['caption']
+                                . '__' . $i;
+
+                            $val = $answers[$key]['value'] ?? null;
+                            $parsed = $parseAnswer($val);
+
+                            $sub['rows'][] = [
+                                'question' => $q['question'],
+                                'answer'   => $parsed['answer'],
+                                'visual'   => $parsed['visual'],
+                            ];
+                        }
+                    }
+
+
+                    /* ======================================================
+                    * LEVEL 3  (section -> child -> subchild)
+                    ====================================================== */
+                    if (isset($child1['child'])) {
+
+                        foreach ($child1['child'] as $child2) {
+
+                            $sub2 = [
+                                'caption' => $child2['caption'],
+                                'rows' => []
+                            ];
+
+                            foreach ($child2['questioner'] as $i => $q) {
+
+                                $key = $section['caption']
+                                    . ' > ' . $child1['caption']
+                                    . ' > ' . $child2['caption']
+                                    . '__' . $i;
+
+                                $val = $answers[$key]['value'] ?? null;
+                                $parsed = $parseAnswer($val);
+
+                                $sub2['rows'][] = [
+                                    'question' => $q['question'],
+                                    'answer'   => $parsed['answer'],
+                                    'visual'   => $parsed['visual'],
+                                ];
+                            }
+
+                            $sub['child'][] = $sub2;
+                        }
+                    }
+
+                    $sec['child'][] = $sub;
+                }
+            }
+
+            $results[] = $sec;
+        }
+
+
+        /* ======================================================
+        * FOTO MAPPING
+        ====================================================== */
+        $photos = json_decode($pengajuan['photoMaps'] ?? '[]', true);
+
+        $sectionPhotos = [];
+
+        foreach ($photos as $p) {
+
+            preg_match('/^(\d+)-/', $p['caption'], $match);
+
+            if (!isset($match[1])) continue;
+
+            $sectionNum = $match[1];
+
+            $sectionPhotos[$sectionNum][] = [
+                'caption' => $p['caption'],
+                'url' => $p['url']
+            ];
+        }
+
+        return view('ciptakarya.cetak_list_pbg', [
+            'pengajuan'        => $pengajuan,
+            'inspectionResults'=> $results,
+            'sectionPhotos'    => $sectionPhotos,
+        ]);
     }
+
 
     // function detail_data(Request $request,$id){
     //     $data['pengajuan'] = PengajuanPBG::findorfail($id);
@@ -640,13 +927,84 @@ class DataController extends Controller
 
     public function updateRetribusi(Request $request, $id)
     {
-        $p = PengajuanPBG::find($id);
+        $p = PengajuanPBG::findOrFail($id);
 
-        $p->nilai_retribusi = str_replace(',', '', $request->nilai_retribusi);
+        // VALIDASI
+        $request->validate([
+            'nilai_retribusi' => 'required',
+            'excel_retribusi' => 'nullable|mimes:xls,xlsx|max:5120', // max 5MB
+            'pdf_retribusi' => 'nullable|mimes:pdf|max:10240', // max 10MB
+            'foto_retribusi' => 'nullable|mimes:jpg,jpeg,png|max:5120', // max 5MB
+            'zip_retribusi' => 'nullable|mimes:zip|max:20480', // max 20MB
+        ]);
+
+        // CLEAN NILAI RETRIBUSI DARI MASKING
+        // Dari "1.000.000" → "1000000"
+        $nilai = str_replace('.', '', $request->nilai_retribusi);
+
+        // SIMPAN FILE EXCEL (JIKA ADA)
+        if ($request->hasFile('excel_retribusi')) {
+            $file = $request->file('excel_retribusi');
+            $path = $file->store('retribusi/excel', 'local');
+            $p->excel_retribusi = $path;
+        }
+
+        // SIMPAN FILE PDF (JIKA ADA)
+        if ($request->hasFile('pdf_retribusi')) {
+            $file = $request->file('pdf_retribusi');
+            $path = $file->store('retribusi/pdf', 'local');
+            $p->pdf_retribusi = $path;
+        }
+
+        // SIMPAN FOTO (JIKA ADA)
+        if ($request->hasFile('foto_retribusi')) {
+            $file = $request->file('foto_retribusi');
+            $path = $file->store('retribusi/foto', 'local');
+            $p->foto_retribusi = $path;
+        }
+
+        // SIMPAN FILE ZIP (JIKA ADA)
+        if ($request->hasFile('zip_retribusi')) {
+            $file = $request->file('zip_retribusi');
+            $path = $file->store('retribusi/zip', 'local');
+            $p->zip_retribusi = $path;
+        }
+
+        // UPDATE NILAI RETRIBUSI
+        $p->nilai_retribusi = $nilai;
         $p->save();
 
+        $business_id = auth()->user()->business->id;
+        // KIRIM EMAIL NOTIF KE KOORDINATOR RETRIBUSI
+        if (auth()->user()->checkRole('retribusi')) {
+
+            $admin = User::role("Koordinator#$business_id")->get();
+
+            if ($admin->count() > 0) {
+                $emailList = $admin->pluck('email')->toArray();
+                \Mail::to($emailList)
+                    ->send(new \App\Mail\RetribusiInputMail($p));
+            }
+        }
+
+        $role = 'Retribusi#'.$business_id; // pastikan role tersedia
+
+        $tracking = PbgTracking::updateOrCreate(
+            [
+                'pengajuan_id' => $p->id,
+                'role' => $role
+            ],
+            [
+                'user_id' => auth()->id(),
+                'catatan' => "mengisi nilai retribusi",
+                'status' => "proses",
+                'verified_at' => now()
+            ]
+        );
+
         return response()->json(['status' => true]);
-    }  
+    }
+  
     
     function detail_data(Request $request, $id)
     {
@@ -758,9 +1116,13 @@ class DataController extends Controller
             $results[] = $sec;
         }
 
+        $business_id = auth()->user()->business->id;
+        $userList = User::where('business_id',$business_id)->orderByDesc('id')->get();
+
         return view('ciptakarya.detail_pbg', [
             'pengajuan' => $pengajuan,
-            'inspectionResults' => $results
+            'inspectionResults' => $results,
+            'userList'=>$userList
         ]);
     }
 
@@ -807,14 +1169,62 @@ class DataController extends Controller
             $admin = User::role("Retribusi#$business_id")->get();
             if($admin->count() > 0){
                 $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                    $pengajuan,
+                    $tracking
+                ));
             }
-            $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+        }
 
-            // Kirim email
-            \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
-                $pengajuan,
-                $tracking
-            ));
+        if ( auth()->user()->checkRole('retribusi') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Koordinator#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\RetribusiInputMail(
+                    $pengajuan
+                ));
+            }
+        }
+
+        if ( auth()->user()->checkRole('koordinator') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Kepala Bidang#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\KepalaBidangNotifMail(
+                    $pengajuan
+                ));
+            }
+        }
+
+        if ( auth()->user()->checkRole('kepala bidang') ) {
+            
+            $business_id = auth()->user()->business->id;
+            // Cari user admin_retribusi
+            $admin = User::role("Kepala Dinas#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email
+                \Mail::to($emailList)->send(new \App\Mail\KepalaDinasNotifMail(
+                    $pengajuan
+                ));
+            }
         }
 
         return response()->json([
@@ -825,56 +1235,59 @@ class DataController extends Controller
     }
 
     public function timeline($id)
-    {
-        // Data pengajuan
-        $pengajuan = PengajuanPBG::find($id);
+{
+    $pengajuan = PengajuanPBG::find($id);
 
-        if (!$pengajuan) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data pengajuan tidak ditemukan'
-            ]);
-        }
-
-        // load master step flow
-        $flow = config('pbgflow');
-
-        // load data tracking aktual di DB
-        $trackDB = PbgTracking::where('pengajuan_id', $id)
-                    ->get()
-                    ->keyBy('role'); // hasil -> role => data tracking
-
-        $timeline = [];
-
-        // Buat output final 7 item urut
-        foreach ($flow as $step) {
-
-            $role = $step['role'];
-            $row = [
-                'role' => $role,
-                'label' => $step['label'],
-                'desc'  => $step['desc'],
-                'status' => 'pending',   // default
-                'catatan' => null,
-                'verified_at' => null,
-                'user' => null
-            ];
-
-            if (isset($trackDB[$role])) {
-                $row['status'] = $trackDB[$role]->status;
-                $row['catatan'] = $trackDB[$role]->catatan;
-                $row['verified_at'] = $trackDB[$role]->verified_at;
-                $row['user'] = $trackDB[$role]->user->nama ?? null;
-            }
-
-            $timeline[] = $row;
-        }
-
+    if (!$pengajuan) {
         return response()->json([
-            'status' => true,
-            'timeline' => $timeline
+            'status' => false,
+            'message' => 'Data pengajuan tidak ditemukan'
         ]);
     }
+
+    $flow = config('pbgflow');
+
+    $timeline = [];
+
+    foreach ($flow as $step) {
+
+        // Normalisasi role flow: hilangkan spasi & lowercase
+        $searchKey = strtolower(str_replace(' ', '', $step['role']));
+
+        // Cari tracking berdasarkan LIKE
+        $track = PbgTracking::where('pengajuan_id', $id)
+            ->whereRaw("LOWER(REPLACE(role, ' ', '')) LIKE ?", ["%{$searchKey}%"])
+            ->first();
+
+        $row = [
+            'role' => $step['role'],
+            'label' => $step['label'],
+            'desc'  => $step['desc'],
+            'status' => 'pending',
+            'catatan' => null,
+            'verified_at' => null,
+            'user' => null,
+            'color' => 'red'
+        ];
+
+        if ($track) {
+            $row['status']      = $track->status;
+            $row['catatan']     = $track->catatan;
+            $row['verified_at'] = $track->verified_at;
+            $row['user']        = $track->user->username ?? null;
+            $row['color']       = 'green';
+        }
+
+        $timeline[] = $row;
+    }
+
+    return response()->json([
+        'status' => true,
+        'timeline' => $timeline
+    ]);
+}
+
+
 
     public function riwayatVerifikasi($id)
     {
@@ -896,5 +1309,58 @@ class DataController extends Controller
             'data' => $data
         ]);
     }
+
+    public function disposisi(Request $request, $id)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        $pengajuan = PengajuanPBG::findOrFail($id);
+        $tujuan    = User::find($request->user_id);
+        $pengirim  = auth()->user();
+
+        // // simpan disposisi
+        // $pengajuan->disposisi_ke = $tujuan->id;
+        // $pengajuan->save();
+
+        // kirim email
+        \Mail::to($tujuan->email)->send(
+            new \App\Mail\DisposisiPengajuanMail($pengajuan, $pengirim)
+        );
+
+        return response()->json(['status' => true]);
+    }
+
+    public function terbitkanDokumen($id)
+    {
+        $pengajuan = PengajuanPBG::findOrFail($id);
+
+        // Kirim ke semua admin_berkas (tanpa nama admin)
+        $business_id = auth()->user()->business->id;
+        $emailAdmin = User::role("Admin#$business_id")->get();
+        
+        if ($emailAdmin->count() > 0) {
+            $emailList = $emailAdmin->pluck('email')->toArray();
+            \Mail::to($emailList)->send(new \App\Mail\DokumenTerbitMail($pengajuan));
+        }
+
+
+        if ($pengajuan->status == 'terbit') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen sudah diterbitkan sebelumnya.'
+            ]);
+        }
+
+        // PROSES PENERBITAN (di sini bisa generate PDF / update status)
+        $pengajuan->status = 'terbit';
+        $pengajuan->tgl_terbit = now();
+        $pengajuan->save();
+
+        return response()->json(['status' => true]);
+    }
+
+
 
 }

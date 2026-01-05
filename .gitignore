@@ -10,6 +10,7 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 .env
+/public/uploads/retribusi/*
 /public/uploads/foto_tendik/*
 /public/uploads/business_logos/*
 /public/uploads/documents/*
@@ -20,13 +21,18 @@ npm-debug.log
 /public/uploads/temp/*
 /public/modules/
 /public/mix-manifest.json
+/public/CKverify.apk
 *.exe
 *.zip
 /composer.lock
 .DS_Store
+
+/public/uploads/files/*
 
 /public/uploads/file_ppdb
 /public/uploads/file_ppdb/*
 
 /public/uploads/file_ciptakarya
 /public/uploads/file_ciptakarya/*
+
+/public/CKverifyOld.apk

@@ -303,56 +303,117 @@
 
 @section('content')
 
+<div class="modal fade" id="modal_disposisi">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Disposisikan Pengajuan</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="pengajuan_id" value="{{ $pengajuan['id'] }}">
+
+                <div class="form-group">
+                    <label>Pilih Pengguna Tujuan</label>
+                    <select id="select_user_disposisi" class="form-control select2" style="width: 100%;">
+                        <option value="">-- Pilih User --</option>
+                        @foreach($userList as $u)
+                            <option value="{{ $u->id }}">{{ $u->username }} ({{ $u->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnKirimDisposisi">
+                    <i class="fa fa-paper-plane"></i> Kirim Disposisi
+                </button>
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <section class="content-header">
     <h1>Detail Pengajuan</h1>
 </section>
 
-<section class="content row">
-
-    <div class="detail-box col-md-12">
-        <div class="detail-title">Verifikasi Berkas</div>
-
-        <input type="hidden" id="pengajuan_id" value="{{ $pengajuan['id'] }}">
-
-        <div class="detail-title">Riwayat Verifikasi</div>
-
-        <div id="riwayat_verifikasi_list">
-            <div class="text-muted">Memuat riwayat...</div>
-        </div>
-
-        <div class="form-group detail-item">
-            <b>Keterangan / Catatan:</b>
-            <textarea id="catatan_verifikasi" class="form-control" 
-            rows="3"
-            placeholder="Tuliskan catatan atau keterangan pemeriksaan..."></textarea>
-        </div>
-
-        <div class="form-group detail-item">
-            <b>Hasil Verifikasi:</b><br>
-
-            <label style="margin-right:20px;">
-                <input type="radio" name="hasil_verifikasi" value="sesuai">
-                <span class="text-success"><b>Sesuai</b></span>
-            </label>
-
-            <label>
-                <input type="radio" name="hasil_verifikasi" value="tidak_sesuai">
-                <span class="text-danger"><b>Tidak Sesuai</b></span>
-            </label>
-        </div>
-
-        <!-- 🔥 TOMBOL SIMPAN BARU -->
-        <div class="text-right mt-3">
-            <button id="btn_simpan_verifikasi" class="btn btn-lg btn-success"
-                style="padding: 12px 30px; font-size: 18px; font-weight:bold; border-radius:10px;">
-                <i class="fa fa-save"></i> SIMPAN VERIFIKASI
-            </button>
-        </div>
-
+@if($pengajuan['status'] == 'terbit')
+    <div class="alert alert-success" style="font-weight:bold;">
+        DOKUMEN TELAH TERBIT
     </div>
+@endif
+
+<section class="content row">
+    @if ( !auth()->user()->checkRole('retribusi') )
+        <div class="detail-box col-md-12">
+            <div class="detail-title">Verifikasi Berkas</div>
+
+            <input type="hidden" id="pengajuan_id" value="{{ $pengajuan['id'] }}">
+
+            <div class="detail-title">Riwayat Verifikasi</div>
+
+            <div id="riwayat_verifikasi_list">
+                <div class="text-muted">Memuat riwayat...</div>
+            </div>
+
+            <div class="form-group detail-item">
+                <b>Keterangan / Catatan:</b>
+                <textarea id="catatan_verifikasi" class="form-control" 
+                rows="3"
+                placeholder="Tuliskan catatan atau keterangan pemeriksaan..."></textarea>
+            </div>
+
+            <div class="form-group detail-item">
+                <b>Hasil Verifikasi:</b><br>
+
+                <label style="margin-right:20px;">
+                    <input type="radio" name="hasil_verifikasi" value="sesuai">
+                    <span class="text-success"><b>Sesuai</b></span>
+                </label>
+
+                <label>
+                    <input type="radio" name="hasil_verifikasi" value="tidak_sesuai">
+                    <span class="text-danger"><b>Tidak Sesuai</b></span>
+                </label>
+            </div>
+
+            <!-- 🔥 TOMBOL SIMPAN BARU -->
+            <div class="text-right mt-3">
+                <button id="btn_simpan_verifikasi" class="btn btn-lg btn-success"
+                    style="padding: 12px 30px; font-size: 18px; font-weight:bold; border-radius:10px;">
+                    <i class="fa fa-save"></i> 
+                    @if(auth()->user()->checkRole('koordinator'))
+                    DISPOSISIKAN
+                    @else
+                    SIMPAN VERIFIKASI
+                    @endif
+                </button>
+                @if($pengajuan['status'] !== 'terbit' && auth()->user()->checkRole('kepala bidang'))
+                    <button id="btn_terbitkan" class="btn btn-lg btn-primary"
+                        style="padding: 12px 30px; font-size: 18px; font-weight:bold; border-radius:10px;">
+                        <i class="fa fa-file"></i> TERBITKAN DOKUMEN
+                    </button>
+                @endif
+            </div>
+
+        </div>
+    @endif
 
     <div class="detail-box col-md-12">
-        <div class="detail-title">Informasi Umum</div>
+        <div class="detail-title">Informasi Umum
+            @if(!auth()->user()->checkRole('koordinator'))
+                <button class="btn btn-sm btn-primary float-right" id="btnDisposisi">
+                    <i class="fa fa-share"></i> Disposisikan
+                </button>
+            @endif
+        </div>
 
         <div class="detail-item"><b>Nama Pemohon:</b> {{ $pengajuan['nama_pemohon'] }}</div>
         <div class="detail-item"><b>NIK:</b> {{ $pengajuan['nik'] }}</div>
@@ -384,6 +445,127 @@
         <div class="detail-item"><b>KDH Minimum:</b> {{ $pengajuan['kdh_min'] }}</div>
         <div class="detail-item"><b>GBS Minimum:</b> {{ $pengajuan['gbs_min'] }}</div>
         <div class="detail-item"><b>Koordinat:</b> {{ $pengajuan['koordinat_bangunan'] }}</div>
+
+        @if( isset($pengajuan['excel_retribusi']) && !empty($pengajuan['excel_retribusi']))
+            <div class="detail-title">Excel Retribusi</div>
+
+            <iframe 
+                src="https://view.officeapps.live.com/op/embed.aspx?src={{ url('/uploads/'.$pengajuan['excel_retribusi']) }}" 
+                width="100%" 
+                height="600px" 
+                frameborder="0">
+            </iframe>
+        @endif
+
+        @if( isset($pengajuan['pdf_retribusi']) && !empty($pengajuan['pdf_retribusi']))
+            <div class="detail-title">PDF Retribusi</div>
+
+            <iframe 
+                src="{{ url('/uploads/'.$pengajuan['pdf_retribusi']) }}" 
+                width="100%" 
+                height="600px" 
+                frameborder="0">
+            </iframe>
+            <div class="mt-2">
+                <a href="{{ url('/uploads/'.$pengajuan['pdf_retribusi']) }}" target="_blank" class="btn btn-primary">
+                    <i class="fa fa-download"></i> Download PDF
+                </a>
+            </div>
+        @endif
+
+        @if( isset($pengajuan['foto_retribusi']) && !empty($pengajuan['foto_retribusi']))
+            <div class="detail-title">Foto Retribusi</div>
+
+            <div class="text-center">
+                <img src="{{ url('/uploads/'.$pengajuan['foto_retribusi']) }}" 
+                     alt="Foto Retribusi" 
+                     style="max-width: 100%; max-height: 600px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            </div>
+            <div class="mt-2 text-center">
+                <a href="{{ url('/uploads/'.$pengajuan['foto_retribusi']) }}" target="_blank" class="btn btn-primary">
+                    <i class="fa fa-download"></i> Download Foto
+                </a>
+            </div>
+        @endif
+
+        @if( isset($pengajuan['zip_retribusi']) && !empty($pengajuan['zip_retribusi']))
+            <div class="detail-title">File ZIP Retribusi</div>
+
+            <div class="alert alert-info">
+                <i class="fa fa-file-archive-o fa-3x" style="float: left; margin-right: 15px;"></i>
+                <div>
+                    <strong>File ZIP tersedia untuk diunduh</strong><br>
+                    <small class="text-muted">{{ basename($pengajuan['zip_retribusi']) }}</small>
+                </div>
+            </div>
+            <div class="mt-2">
+                <a href="{{ url('/uploads/'.$pengajuan['zip_retribusi']) }}" download class="btn btn-primary">
+                    <i class="fa fa-download"></i> Download ZIP
+                </a>
+            </div>
+        @endif
+
+        @php
+            $uploadedFiles = [];
+            try {
+                if(isset($pengajuan['uploaded_files']) && !empty($pengajuan['uploaded_files'])) {
+                    $uploadedFiles = is_array($pengajuan['uploaded_files']) 
+                        ? $pengajuan['uploaded_files'] 
+                        : json_decode($pengajuan['uploaded_files'], true);
+                }
+            } catch (\Exception $e) {
+                $uploadedFiles = [];
+            }
+        @endphp
+
+        @if(!empty($uploadedFiles) && is_array($uploadedFiles))
+            <div class="detail-title">Lampiran Dokumen Pengajuan</div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="70%">Nama File</th>
+                            <th width="25%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($uploadedFiles as $index => $fileUrl)
+                            @php
+                                // Extract nama file dari URL
+                                $fileName = basename($fileUrl);
+                                $ext = strtoupper(pathinfo($fileName, PATHINFO_EXTENSION));
+                                
+                                // Icon berdasarkan extension
+                                $icon = 'fa-file-o';
+                                if(in_array($ext, ['PDF'])) $icon = 'fa-file-pdf-o';
+                                elseif(in_array($ext, ['JPG', 'JPEG', 'PNG', 'GIF'])) $icon = 'fa-file-image-o';
+                                elseif(in_array($ext, ['DOC', 'DOCX'])) $icon = 'fa-file-word-o';
+                                elseif(in_array($ext, ['XLS', 'XLSX'])) $icon = 'fa-file-excel-o';
+                                elseif(in_array($ext, ['ZIP', 'RAR'])) $icon = 'fa-file-archive-o';
+                            @endphp
+                            <tr>
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td>
+                                    <i class="fa {{ $icon }} text-primary"></i> 
+                                    {{ $fileName }}
+                                    <span class="badge bg-primary ml-2">{{ $ext }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ $fileUrl }}" 
+                                       target="_blank" 
+                                       class="btn btn-xs btn-primary" 
+                                       title="Lihat/Download">
+                                        <i class="fa fa-download"></i> Download
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 
     <div class="detail-box col-md-12">
@@ -537,6 +719,7 @@
 @endsection
 
 @section('javascript')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // --- Lightbox / preview untuk foto ---
     (function() {
@@ -673,6 +856,11 @@
                 if (res.status) {
                     toastr.success(res.message || "Verifikasi berhasil disimpan!");
                     loadRiwayat();
+
+                    @if(auth()->user()->checkRole('koordinator'))
+                        $('#modal_disposisi').modal('show');
+                    @endif
+
                 } else {
                     toastr.error(res.message || "Gagal menyimpan verifikasi!");
                 }
@@ -696,5 +884,121 @@
     $(function(){
         loadRiwayat();
     });
+
+    $(document).ready(function() {
+
+        // Aktifkan Select2
+        $('.select2').select2({
+            dropdownParent: $('#modal_disposisi')
+        });
+
+        // Tampilkan modal disposisi
+        $('#btnDisposisi').on('click', function () {
+            $('#modal_disposisi').modal('show');
+        });
+
+        // Kirim disposisi
+        $('#btnKirimDisposisi').on('click', function () {
+
+            let pengajuanId = $('#pengajuan_id').val();
+            let userId = $('#select_user_disposisi').val();
+
+            if (!userId) {
+                toastr.error('Pilih pengguna tujuan disposisi.');
+                return;
+            }
+
+            let btn = $(this);
+            let oldHtml = btn.html();
+            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Mengirim...');
+
+            $.ajax({
+                url: "{{ route('ciptakarya.disposisi',['id'=>$pengajuan['id']]) }}?user_id="+userId,
+                type: "GET",
+                data: {
+                    user_id: userId,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(res) {
+                    toastr.success('Disposisi berhasil dikirim.');
+                    $('#modal_disposisi').modal('hide');
+                },
+                error: function(err) {
+                    console.log(err);
+                    toastr.error('Gagal mengirim disposisi.');
+                },
+                complete: function() {
+                    btn.prop('disabled', false).html(oldHtml);
+                }
+            });
+
+        });
+
+    });
+
+    $('#btn_terbitkan').on('click', function () {
+
+        let pengajuanId = $('#pengajuan_id').val();
+
+        if (!pengajuanId) {
+            toastr.error('ID pengajuan tidak ditemukan.');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Terbitkan Dokumen?',
+            html: 'Setelah diterbitkan, dokumen tidak dapat diubah lagi.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Terbitkan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                let btn = $('#btn_terbitkan');
+                let oldHtml = btn.html();
+                btn.prop('disabled', true)
+                .html('<i class="fa fa-spinner fa-spin"></i> Menerbitkan...');
+
+                $.ajax({
+                    url: "{{ url('/ciptakarya/pengajuan/terbitkan') }}/" + pengajuanId,
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (res) {
+                        if (res.status) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Dokumen berhasil diterbitkan.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            toastr.error(res.message || 'Gagal menerbitkan dokumen.');
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error('Terjadi kesalahan proses.');
+                        console.log(err);
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html(oldHtml);
+                    }
+                });
+
+            }
+
+        });
+
+    });
+
+
+
 </script>
 @endsection

@@ -328,12 +328,12 @@ class PPDBSettingController extends Controller
             if ($type == 'IQ') {
                 $filled = DB::table('ppdb_test_schedules')
                     ->where('iq_date', $date)
-                    ->where('iq_start_time', $start . ':00')
+                    ->where(DB::raw('TIME(iq_start_time)'), '=', $start)
                     ->count();
             } elseif ($type == 'MAP') {
                 $filled = DB::table('ppdb_test_schedules')
                     ->where('map_date', $date)
-                    ->where('map_start_time', $start . ':00')
+                    ->where(DB::raw('TIME(map_start_time)'), '=', $start)
                     ->count();
             }
 

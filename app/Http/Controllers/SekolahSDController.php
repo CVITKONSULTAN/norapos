@@ -1874,12 +1874,41 @@ class SekolahSDController extends Controller
     }
 
     function ppdb_data(Request $request){
-        $query = PPDBSekolah::orderBy('id','desc');
+        $query = PPDBSekolah::orderBy('id','desc')
+            ->leftJoin('ppdb_test_schedules', 'p_p_d_b_sekolahs.kode_bayar', '=', 'ppdb_test_schedules.kode_bayar')
+            ->select(
+                'p_p_d_b_sekolahs.*',
+                'ppdb_test_schedules.iq_date',
+                'ppdb_test_schedules.iq_start_time',
+                'ppdb_test_schedules.iq_end_time',
+                'ppdb_test_schedules.map_date',
+                'ppdb_test_schedules.map_start_time',
+                'ppdb_test_schedules.map_end_time'
+            );
+            
         if($request->status_bayar){
-            $query = $query->where('status_bayar',$request->status_bayar);
+            $query = $query->where('p_p_d_b_sekolahs.status_bayar',$request->status_bayar);
         }
+        
         return DataTables::of($query)
             ->addColumn('detail', fn($row) => $row->detail ?? [])
+            ->addColumn('jadwal_iq', function($row) {
+                if ($row->iq_date && $row->iq_start_time) {
+                    $tanggal = Carbon::parse($row->iq_date)->translatedFormat('d M Y');
+                    $jam = Carbon::parse($row->iq_start_time)->format('H:i') . ' - ' . Carbon::parse($row->iq_end_time)->format('H:i');
+                    return $tanggal . '<br>' . $jam;
+                }
+                return '-';
+            })
+            ->addColumn('jadwal_map', function($row) {
+                if ($row->map_date && $row->map_start_time) {
+                    $tanggal = Carbon::parse($row->map_date)->translatedFormat('d M Y');
+                    $jam = Carbon::parse($row->map_start_time)->format('H:i') . ' - ' . Carbon::parse($row->map_end_time)->format('H:i');
+                    return $tanggal . '<br>' . $jam;
+                }
+                return '-';
+            })
+            ->rawColumns(['jadwal_iq', 'jadwal_map'])
             ->make(true);
     }
     

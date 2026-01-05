@@ -234,6 +234,89 @@ class PPDBSettingController extends Controller
             'dates'  => $availableDates
         ]);
     }
+
+    public function hariDetailAjax(Request $request)
+    {
+        // 1. Ambil semua tanggal (iq + map) tapi digabung jadi satu filter
+        $availableDates = DB::table('ppdb_test_schedules')
+            ->select('iq_date', 'map_date')
+            ->get()
+            ->flatMap(fn($x) => [$x->iq_date, $x->map_date])
+            ->unique()
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
+
+        if (count($availableDates) == 0) {
+            return response()->json([
+                'status' => true,
+                'data'   => [],
+                'filter' => null,
+                'dates'  => [],
+            ]);
+        }
+
+        // 2. Filter tanggal yang dipilih
+        $filter = $request->tanggal ?? $availableDates[0];
+
+        // 3. Ambil data peserta IQ atau MAP yang sesuai tanggal
+        $rows = DB::table('ppdb_test_schedules as s')
+            ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->select(
+                'p.nama', 'p.kode_bayar',
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                's.*'
+            )
+            ->where(function($q) use ($filter) {
+                $q->where('s.iq_date', $filter)
+                ->orWhere('s.map_date', $filter);
+            })
+            ->get();
+
+        // 4. Kembalikan format: IQ dan MAP dipisah sesi
+        $result = [];
+
+        foreach ($rows as $item) {
+
+            // IQ
+            if ($item->iq_date == $filter) {
+
+                $hari = Carbon::parse($item->iq_date)->translatedFormat('d F Y');
+                $jam  = Carbon::parse($item->iq_start_time)->format('H:i')
+                    ." - ".
+                    Carbon::parse($item->iq_end_time)->format('H:i');
+
+                $result[$hari]['IQ'][$jam][] = [
+                    'nama' => $item->nama,
+                    'kode_bayar' => $item->kode_bayar,
+                    'no_hp' => $item->no_hp,
+                ];
+            }
+
+            // MAP
+            if ($item->map_date == $filter) {
+
+                $hari = Carbon::parse($item->map_date)->translatedFormat('d F Y');
+                $jam  = Carbon::parse($item->map_start_time)->format('H:i')
+                    ." - ".
+                    Carbon::parse($item->map_end_time)->format('H:i');
+
+                $result[$hari]['MAP'][$jam][] = [
+                    'nama' => $item->nama,
+                    'kode_bayar' => $item->kode_bayar,
+                    'no_hp' => $item->no_hp,
+                ];
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'data'   => $result,
+            'filter' => $filter,
+            'dates'  => $availableDates
+        ]);
+    }
     
     public function exportExcelJadwalPPDB(Request $request)
     {

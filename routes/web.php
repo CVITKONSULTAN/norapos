@@ -380,6 +380,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('jadwal-harian-detail', 
             [PPDBSettingController::class, 'hariDetail'])
             ->name('sekolah_sd.ppdb.jadwal_harian.detail');
+        Route::get('jadwal-harian-detail/ajax', 
+            [PPDBSettingController::class, 'hariDetailAjax'])
+            ->name('sekolah_sd.ppdb.jadwal_harian.detail.ajax');
         Route::get('tidak-dapat-jadwal', 
             [PPDBSettingController::class, 'noSchedule'])
             ->name('sekolah_sd.ppdb.jadwal_harian.no_schedule');

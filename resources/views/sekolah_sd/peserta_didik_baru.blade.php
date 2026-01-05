@@ -222,6 +222,8 @@
                                         <th>Umur Saat masuk sekolah ({{ !empty($ppdb_setting->tgl_masuk_sekolah) ? $ppdb_setting->tgl_masuk_sekolah->format('d/m/Y') : '' }})</th>
                                         <th>Total Bayar</th>
                                         <th>Status Bayar</th>
+                                        <th>Jadwal IQ</th>
+                                        <th>Jadwal MAP</th>
                                         <th>Keterangan</th>
                                         <th>Validasi Oleh</th>
                                         <th>Tanggal Validasi</th>
@@ -466,6 +468,26 @@
                         const color = data === 'sudah' ? 'green' : (data === 'upload' ? 'orange' : 'red');
                         const label = data ? data.toUpperCase() : 'BELUM';
                         return `<span style="color:${color}; font-weight:bold;">${label}</span>`;
+                    }
+                },
+                {
+                    data:'jadwal_iq',
+                    render:(data, type, row)=>{
+                        // Hanya tampilkan jika status sudah bayar
+                        if (row.status_bayar === 'sudah') {
+                            return data || '<span class="text-muted">Belum dijadwalkan</span>';
+                        }
+                        return '<span class="text-muted">-</span>';
+                    }
+                },
+                {
+                    data:'jadwal_map',
+                    render:(data, type, row)=>{
+                        // Hanya tampilkan jika status sudah bayar
+                        if (row.status_bayar === 'sudah') {
+                            return data || '<span class="text-muted">Belum dijadwalkan</span>';
+                        }
+                        return '<span class="text-muted">-</span>';
                     }
                 },
                 {

@@ -55,6 +55,9 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
             Route::get('/cetak-karu-simuda', "SekolahSDController@cetak_kartutes_ppdb")
             ->middleware('visitor.counter')
             ->name("sekolah.cetak_kartutes_ppdb");
+            Route::get('/cetak-kartu-ppdb', "SekolahSDController@cetak_kartutes_ppdb")
+            ->middleware('visitor.counter')
+            ->name("sekolah.ppdb.cetak_kartu");
         }
     }
 });
@@ -389,6 +392,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah.ppdb.auto_assign');
         Route::get('ppdb-slot-peserta', [PPDBSettingController::class, 'getSlotPeserta'])
         ->name('sekolah.ppdb.slot_peserta');
+        Route::post('ppdb-send-schedule-email', [PPDBSettingController::class, 'sendScheduleEmail'])
+        ->name('sekolah.ppdb.send_schedule_email');
 
         Route::get('jadwal-harian/export', 
             [PPDBSettingController::class, 'exportExcelJadwalPPDB']

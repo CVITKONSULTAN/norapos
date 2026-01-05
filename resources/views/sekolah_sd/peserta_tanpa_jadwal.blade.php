@@ -327,10 +327,11 @@ $(document).ready(function() {
                     html += '<table class="table table-striped table-bordered">';
                     html += '<thead><tr>';
                     html += '<th width="5%">#</th>';
-                    html += '<th width="30%">Nama Peserta</th>';
-                    html += '<th width="20%">Kode Bayar</th>';
-                    html += '<th width="25%">No. HP</th>';
-                    html += '<th width="20%">Tgl Validasi</th>';
+                    html += '<th width="25%">Nama Peserta</th>';
+                    html += '<th width="15%">Kode Bayar</th>';
+                    html += '<th width="20%">No. HP</th>';
+                    html += '<th width="15%">Tgl Validasi</th>';
+                    html += '<th width="10%" class="text-center">Aksi</th>';
                     html += '</tr></thead>';
                     html += '<tbody>';
                     
@@ -341,6 +342,11 @@ $(document).ready(function() {
                         html += '<td><code>' + p.kode_bayar + '</code></td>';
                         html += '<td>' + (p.no_hp || '-') + '</td>';
                         html += '<td>' + p.validated_at + '</td>';
+                        html += '<td class="text-center">';
+                        html += '<button class="btn btn-xs btn-success btn-send-email" data-kode="' + p.kode_bayar + '" title="Kirim Email Jadwal">';
+                        html += '<i class="fa fa-envelope"></i>';
+                        html += '</button>';
+                        html += '</td>';
                         html += '</tr>';
                     });
                     
@@ -605,6 +611,51 @@ $(document).ready(function() {
             error: function(xhr) {
                 swal('Error!', 'Terjadi kesalahan saat menyimpan jadwal', 'error');
             }
+        });
+    });
+
+    // Handler untuk tombol kirim email (using event delegation)
+    $(document).on('click', '.btn-send-email', function() {
+        const kodeBayar = $(this).data('kode');
+        const btn = $(this);
+        
+        swal({
+            title: 'Kirim Email Jadwal?',
+            text: 'Email jadwal tes akan dikirim ke peserta dengan kode: ' + kodeBayar,
+            icon: 'info',
+            buttons: {
+                cancel: 'Batal',
+                confirm: 'Ya, Kirim!'
+            }
+        }).then((willSend) => {
+            if (!willSend) return;
+
+            // Disable button & show loading
+            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+
+            $.ajax({
+                url: '{{ route("sekolah.ppdb.send_schedule_email") }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    kode_bayar: kodeBayar
+                },
+                success: function(response) {
+                    if (response.status) {
+                        swal('Berhasil!', response.message, 'success');
+                    } else {
+                        swal('Gagal!', response.message, 'error');
+                    }
+                },
+                error: function(xhr) {
+                    const msg = xhr.responseJSON?.message || 'Terjadi kesalahan saat mengirim email';
+                    swal('Error!', msg, 'error');
+                },
+                complete: function() {
+                    // Re-enable button
+                    btn.prop('disabled', false).html('<i class="fa fa-envelope"></i>');
+                }
+            });
         });
     });
 

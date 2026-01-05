@@ -472,6 +472,35 @@ class PPDBSettingController extends Controller
                 'updated_at' => now(),
             ]);
 
+            // 🔔 Kirim email jadwal ke peserta
+            try {
+                $peserta = DB::table('p_p_d_b_sekolahs')
+                    ->where('kode_bayar', $request->kode_bayar)
+                    ->first();
+
+                if ($peserta) {
+                    $emailTujuan = json_decode($peserta->detail, true)['email'] ?? null;
+                    
+                    if ($emailTujuan) {
+                        $dataEmail = [
+                            'nama' => $peserta->nama,
+                            'kode_bayar' => $request->kode_bayar,
+                            'iq_date' => $request->iq_date,
+                            'iq_start_time' => $request->iq_start_time,
+                            'iq_end_time' => $request->iq_end_time,
+                            'map_date' => $request->map_date,
+                            'map_start_time' => $request->map_start_time,
+                            'map_end_time' => $request->map_end_time,
+                            'tempat_tes' => $setting->tempat_tes ?? 'SD Muhammadiyah 2 Pontianak'
+                        ];
+                        
+                        \Mail::to($emailTujuan)->send(new \App\Mail\PPDBTestScheduleNotification($dataEmail));
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim email jadwal PPDB: " . $e->getMessage());
+            }
+
             return response()->json([
                 'status' => true,
                 'message' => 'Jadwal tes berhasil disimpan!'
@@ -532,9 +561,10 @@ class PPDBSettingController extends Controller
                 // Cari slot IQ kosong
                 $selectedIQ = null;
                 foreach ($iqSlots as $slot) {
-                    $filled = DB::table('ppdb_test_schedules')
-                        ->where('iq_date', $slot['date'])
-                        ->where('iq_start_time', $slot['start'] . ':00')
+                    $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.iq_date', $slot['date'])
+                        ->where('s.iq_start_time', 'LIKE', $slot['start'] . '%')
                         ->count();
 
                     if ($filled < $slot['capacity']) {
@@ -551,9 +581,10 @@ class PPDBSettingController extends Controller
                 // Cari slot MAP kosong
                 $selectedMAP = null;
                 foreach ($mapSlots as $slot) {
-                    $filled = DB::table('ppdb_test_schedules')
-                        ->where('map_date', $slot['date'])
-                        ->where('map_start_time', $slot['start'] . ':00')
+                    $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.map_date', $slot['date'])
+                        ->where('s.map_start_time', 'LIKE', $slot['start'] . '%')
                         ->count();
 
                     if ($filled < $slot['capacity']) {
@@ -583,6 +614,35 @@ class PPDBSettingController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                // 🔔 Kirim email jadwal ke peserta
+                try {
+                    $peserta = DB::table('p_p_d_b_sekolahs')
+                        ->where('kode_bayar', $kodeBayar)
+                        ->first();
+
+                    if ($peserta) {
+                        $emailTujuan = json_decode($peserta->detail, true)['email'] ?? null;
+                        
+                        if ($emailTujuan) {
+                            $dataEmail = [
+                                'nama' => $peserta->nama,
+                                'kode_bayar' => $kodeBayar,
+                                'iq_date' => $selectedIQ['date'],
+                                'iq_start_time' => $selectedIQ['start'] . ':00',
+                                'iq_end_time' => $selectedIQ['end'] . ':00',
+                                'map_date' => $selectedMAP['date'],
+                                'map_start_time' => $selectedMAP['start'] ? $selectedMAP['start'] . ':00' : null,
+                                'map_end_time' => $selectedMAP['end'] ? $selectedMAP['end'] . ':00' : null,
+                                'tempat_tes' => $setting->tempat_tes ?? 'SD Muhammadiyah 2 Pontianak'
+                            ];
+                            
+                            \Mail::to($emailTujuan)->send(new \App\Mail\PPDBTestScheduleNotification($dataEmail));
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error("Gagal kirim email jadwal PPDB (auto-assign): " . $e->getMessage());
+                }
 
                 $assigned++;
             }
@@ -664,6 +724,82 @@ class PPDBSettingController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Kirim ulang email jadwal tes ke peserta
+     */
+    public function sendScheduleEmail(Request $request)
+    {
+        try {
+            $kodeBayar = $request->input('kode_bayar');
+
+            // Ambil data peserta
+            $peserta = DB::table('p_p_d_b_sekolahs')
+                ->where('kode_bayar', $kodeBayar)
+                ->first();
+
+            if (!$peserta) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data peserta tidak ditemukan'
+                ], 404);
+            }
+
+            // Ambil jadwal tes
+            $schedule = DB::table('ppdb_test_schedules')
+                ->where('kode_bayar', $kodeBayar)
+                ->first();
+
+            if (!$schedule) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Jadwal tes belum tersedia untuk peserta ini'
+                ], 404);
+            }
+
+            // Ambil email dari detail
+            $detail = json_decode($peserta->detail, true);
+            $emailTujuan = $detail['email'] ?? null;
+
+            if (!$emailTujuan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email peserta tidak ditemukan'
+                ], 404);
+            }
+
+            // Ambil setting untuk tempat tes
+            $setting = PPDBSetting::where('close_ppdb', false)->first();
+
+            // Siapkan data email
+            $dataEmail = [
+                'nama' => $peserta->nama,
+                'kode_bayar' => $kodeBayar,
+                'iq_date' => $schedule->iq_date,
+                'iq_start_time' => $schedule->iq_start_time,
+                'iq_end_time' => $schedule->iq_end_time,
+                'map_date' => $schedule->map_date,
+                'map_start_time' => $schedule->map_start_time,
+                'map_end_time' => $schedule->map_end_time,
+                'tempat_tes' => $setting->tempat_tes ?? 'SD Muhammadiyah 2 Pontianak'
+            ];
+
+            // Kirim email
+            \Mail::to($emailTujuan)->send(new \App\Mail\PPDBTestScheduleNotification($dataEmail));
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Email jadwal tes berhasil dikirim ke ' . $emailTujuan
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error("Gagal kirim email jadwal PPDB: " . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengirim email: ' . $e->getMessage()
             ], 500);
         }
     }

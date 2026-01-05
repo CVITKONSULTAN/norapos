@@ -2076,7 +2076,7 @@ class SekolahSDController extends Controller
                         ->where('iq_start_time', $slot['start'])
                         ->count();
 
-            if ($filled <= $slot['capacity']) {
+            if ($filled < $slot['capacity']) {
                 $selectedIQ = $slot;
                 break;
             }
@@ -2096,7 +2096,7 @@ class SekolahSDController extends Controller
                         ->where('map_start_time', $slot['start'])
                         ->count();
 
-            if ($filled <= $slot['capacity']) {
+            if ($filled < $slot['capacity']) {
                 $selectedMAP = $slot;
                 break;
             }

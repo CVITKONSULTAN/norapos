@@ -271,6 +271,34 @@ class PPDBSettingController extends Controller
         ]);
     }
 
+    public function getNoScheduleData(Request $request)
+    {
+        // Ambil peserta yang sudah bayar tapi belum dapat jadwal tes
+        $peserta = DB::table('p_p_d_b_sekolahs as p')
+            ->leftJoin('ppdb_test_schedules as s', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->select(
+                'p.id',
+                'p.nama',
+                'p.kode_bayar',
+                'p.status_bayar',
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.email')) as email")
+            )
+            ->where('p.status_bayar', 'sudah')
+            ->whereNull('s.id')
+            ->orderBy('p.created_at', 'desc')
+            ->get();
+
+        // Ambil statistik jadwal
+        $jadwalStats = $this->getJadwalStatistics();
+
+        return response()->json([
+            'status' => true,
+            'peserta' => $peserta,
+            'jadwalStats' => $jadwalStats
+        ]);
+    }
+
     private function getJadwalStatistics()
     {
         // Ambil setting aktif untuk mendapatkan kapasitas
@@ -300,12 +328,12 @@ class PPDBSettingController extends Controller
             if ($type == 'IQ') {
                 $filled = DB::table('ppdb_test_schedules')
                     ->where('iq_date', $date)
-                    ->where('iq_start_time', $start)
+                    ->where('iq_start_time', $start . ':00')
                     ->count();
             } elseif ($type == 'MAP') {
                 $filled = DB::table('ppdb_test_schedules')
                     ->where('map_date', $date)
-                    ->where('map_start_time', $start)
+                    ->where('map_start_time', $start . ':00')
                     ->count();
             }
 
@@ -334,103 +362,308 @@ class PPDBSettingController extends Controller
 
     public function assignJadwal(Request $request)
     {
-        $request->validate([
-            'kode_bayar' => 'required|string',
-            'iq_date' => 'required|date',
-            'iq_start_time' => 'required',
-            'iq_end_time' => 'required',
-            'map_date' => 'required|date',
-            'map_start_time' => 'required',
-            'map_end_time' => 'required',
-        ]);
-
-        // Cek apakah peserta sudah punya jadwal
-        $existing = DB::table('ppdb_test_schedules')
-            ->where('kode_bayar', $request->kode_bayar)
-            ->first();
-
-        if ($existing) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Peserta ini sudah memiliki jadwal tes.'
+        try {
+            $request->validate([
+                'kode_bayar' => 'required|string',
+                'iq_date' => 'required|date',
+                'iq_start_time' => 'required',
+                'iq_end_time' => 'required',
+                'map_date' => 'required|date',
+                'map_start_time' => 'required',
+                'map_end_time' => 'required',
             ]);
-        }
 
-        // Cek kapasitas slot IQ
-        $iqFilled = DB::table('ppdb_test_schedules')
-            ->where('iq_date', $request->iq_date)
-            ->where('iq_start_time', $request->iq_start_time)
-            ->count();
+            // Cek apakah peserta sudah punya jadwal
+            $existing = DB::table('ppdb_test_schedules')
+                ->where('kode_bayar', $request->kode_bayar)
+                ->first();
 
-        // Cek kapasitas slot MAP
-        $mapFilled = DB::table('ppdb_test_schedules')
-            ->where('map_date', $request->map_date)
-            ->where('map_start_time', $request->map_start_time)
-            ->count();
-
-        // Ambil kapasitas dari setting
-        $setting = PPDBSetting::where('close_ppdb', false)->first();
-        if (!$setting || !$setting->session_capacities) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Setting jadwal tidak ditemukan.'
-            ]);
-        }
-
-        // Cari kapasitas IQ
-        $iqCapacity = 0;
-        foreach ($setting->session_capacities as $slot) {
-            if ($slot['type'] == 'iq' && 
-                $slot['date'] == $request->iq_date && 
-                $slot['start'] == substr($request->iq_start_time, 0, 5)) {
-                $iqCapacity = $slot['capacity'];
-                break;
+            if ($existing) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Peserta ini sudah memiliki jadwal tes.'
+                ]);
             }
-        }
 
-        // Cari kapasitas MAP
-        $mapCapacity = 0;
-        foreach ($setting->session_capacities as $slot) {
-            if ($slot['type'] == 'map' && 
-                $slot['date'] == $request->map_date && 
-                $slot['start'] == substr($request->map_start_time, 0, 5)) {
-                $mapCapacity = $slot['capacity'];
-                break;
+            // Cek kapasitas slot IQ
+            $iqFilled = DB::table('ppdb_test_schedules')
+                ->where('iq_date', $request->iq_date)
+                ->where('iq_start_time', $request->iq_start_time)
+                ->count();
+
+            // Cek kapasitas slot MAP
+            $mapFilled = DB::table('ppdb_test_schedules')
+                ->where('map_date', $request->map_date)
+                ->where('map_start_time', $request->map_start_time)
+                ->count();
+
+            // Ambil kapasitas dari setting
+            $setting = PPDBSetting::where('close_ppdb', false)->first();
+            if (!$setting || !$setting->session_capacities) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Setting jadwal tidak ditemukan.'
+                ]);
             }
-        }
 
-        // Validasi kapasitas
-        if ($iqFilled >= $iqCapacity) {
+            // Cari kapasitas IQ
+            $iqCapacity = 0;
+            foreach ($setting->session_capacities as $slot) {
+                if ($slot['type'] == 'iq' && 
+                    $slot['date'] == $request->iq_date && 
+                    $slot['start'] == substr($request->iq_start_time, 0, 5)) {
+                    $iqCapacity = $slot['capacity'];
+                    break;
+                }
+            }
+
+            // Cari kapasitas MAP
+            $mapCapacity = 0;
+            foreach ($setting->session_capacities as $slot) {
+                if ($slot['type'] == 'map' && 
+                    $slot['date'] == $request->map_date && 
+                    $slot['start'] == substr($request->map_start_time, 0, 5)) {
+                    $mapCapacity = $slot['capacity'];
+                    break;
+                }
+            }
+
+            // Validasi kapasitas
+            if ($iqCapacity == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot IQ tidak ditemukan untuk tanggal dan waktu yang dipilih.'
+                ]);
+            }
+
+            if ($mapCapacity == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot MAP tidak ditemukan untuk tanggal dan waktu yang dipilih.'
+                ]);
+            }
+
+            if ($iqFilled >= $iqCapacity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot IQ sudah penuh. Silakan pilih slot lain.'
+                ]);
+            }
+
+            if ($mapFilled >= $mapCapacity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot MAP sudah penuh. Silakan pilih slot lain.'
+                ]);
+            }
+
+            // Insert jadwal
+            DB::table('ppdb_test_schedules')->insert([
+                'kode_bayar' => $request->kode_bayar,
+                'iq_date' => $request->iq_date,
+                'iq_start_time' => $request->iq_start_time,
+                'iq_end_time' => $request->iq_end_time,
+                'map_date' => $request->map_date,
+                'map_start_time' => $request->map_start_time,
+                'map_end_time' => $request->map_end_time,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jadwal tes berhasil disimpan!'
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Slot IQ sudah penuh. Silakan pilih slot lain.'
-            ]);
-        }
+                'message' => 'Validasi gagal: ' . implode(', ', array_map(fn($err) => implode(', ', $err), $e->errors()))
+            ], 422);
 
-        if ($mapFilled >= $mapCapacity) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Slot MAP sudah penuh. Silakan pilih slot lain.'
-            ]);
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
         }
+    }
 
-        // Insert jadwal
-        DB::table('ppdb_test_schedules')->insert([
-            'kode_bayar' => $request->kode_bayar,
-            'iq_date' => $request->iq_date,
-            'iq_start_time' => $request->iq_start_time,
-            'iq_end_time' => $request->iq_end_time,
-            'map_date' => $request->map_date,
-            'map_start_time' => $request->map_start_time,
-            'map_end_time' => $request->map_end_time,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+    public function autoAssignSchedules(Request $request)
+    {
+        try {
+            // Ambil peserta yang sudah bayar tapi belum dapat jadwal
+            $pesertaTanpaJadwal = DB::table('p_p_d_b_sekolahs as p')
+                ->leftJoin('ppdb_test_schedules as s', 'p.kode_bayar', '=', 's.kode_bayar')
+                ->where('p.status_bayar', 'sudah')
+                ->whereNull('s.id')
+                ->orderBy('p.validated_at', 'asc') // Prioritas: yang pertama bayar
+                ->pluck('p.kode_bayar')
+                ->toArray();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Jadwal tes berhasil disimpan!'
-        ]);
+            if (empty($pesertaTanpaJadwal)) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Tidak ada peserta yang perlu dijadwalkan.',
+                    'assigned' => 0,
+                    'failed' => 0
+                ]);
+            }
+
+            // Ambil setting aktif
+            $setting = PPDBSetting::where('close_ppdb', false)->first();
+            if (!$setting || !$setting->session_capacities) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Setting jadwal tidak ditemukan.'
+                ]);
+            }
+
+            $sessions = $setting->session_capacities;
+            $iqSlots  = array_filter($sessions, fn($s) => ($s['type'] ?? '') === 'iq');
+            $mapSlots = array_filter($sessions, fn($s) => ($s['type'] ?? '') === 'map');
+
+            $assigned = 0;
+            $failed = 0;
+
+            foreach ($pesertaTanpaJadwal as $kodeBayar) {
+                // Cari slot IQ kosong
+                $selectedIQ = null;
+                foreach ($iqSlots as $slot) {
+                    $filled = DB::table('ppdb_test_schedules')
+                        ->where('iq_date', $slot['date'])
+                        ->where('iq_start_time', $slot['start'] . ':00')
+                        ->count();
+
+                    if ($filled < $slot['capacity']) {
+                        $selectedIQ = $slot;
+                        break;
+                    }
+                }
+
+                if (!$selectedIQ) {
+                    $failed++;
+                    continue; // Tidak ada slot IQ kosong
+                }
+
+                // Cari slot MAP kosong
+                $selectedMAP = null;
+                foreach ($mapSlots as $slot) {
+                    $filled = DB::table('ppdb_test_schedules')
+                        ->where('map_date', $slot['date'])
+                        ->where('map_start_time', $slot['start'] . ':00')
+                        ->count();
+
+                    if ($filled < $slot['capacity']) {
+                        $selectedMAP = $slot;
+                        break;
+                    }
+                }
+
+                if (!$selectedMAP) {
+                    // MAP optional: tetap simpan dengan MAP kosong
+                    $selectedMAP = [
+                        "date" => null,
+                        "start" => null,
+                        "end" => null
+                    ];
+                }
+
+                // Simpan jadwal
+                DB::table('ppdb_test_schedules')->insert([
+                    'kode_bayar' => $kodeBayar,
+                    'iq_date' => $selectedIQ['date'],
+                    'iq_start_time' => $selectedIQ['start'] . ':00',
+                    'iq_end_time' => $selectedIQ['end'] . ':00',
+                    'map_date' => $selectedMAP['date'],
+                    'map_start_time' => $selectedMAP['start'] ? $selectedMAP['start'] . ':00' : null,
+                    'map_end_time' => $selectedMAP['end'] ? $selectedMAP['end'] . ':00' : null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $assigned++;
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => "Berhasil menjadwalkan {$assigned} peserta." . ($failed > 0 ? " {$failed} peserta gagal (slot penuh)." : ""),
+                'assigned' => $assigned,
+                'failed' => $failed
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get list of peserta in a specific slot
+     */
+    public function getSlotPeserta(Request $request)
+    {
+        try {
+            $type = $request->input('type'); // 'IQ' or 'MAP'
+            $date = $request->input('date'); // YYYY-MM-DD
+            $session = $request->input('session'); // HH:MM - HH:MM
+
+            // Parse session times
+            $times = explode(' - ', $session);
+            if (count($times) != 2) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Format sesi tidak valid'
+                ], 400);
+            }
+
+            $startTime = trim($times[0]) . ':00';
+            $endTime = trim($times[1]) . ':00';
+
+            // Query peserta based on test type - JOIN dengan ppdb_test_schedules
+            $query = DB::table('ppdb_test_schedules as s')
+                ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                ->select(
+                    'p.kode_bayar',
+                    'p.nama',
+                    DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                    'p.validated_at'
+                );
+
+            if ($type == 'IQ') {
+                $query->where('s.iq_date', $date)
+                      ->where('s.iq_start_time', $startTime)
+                      ->where('s.iq_end_time', $endTime);
+            } else {
+                $query->where('s.map_date', $date)
+                      ->where('s.map_start_time', $startTime)
+                      ->where('s.map_end_time', $endTime);
+            }
+
+            $peserta = $query->orderBy('p.validated_at', 'asc')->get();
+
+            // Format dates
+            $peserta = $peserta->map(function($p) {
+                $p->validated_at = $p->validated_at 
+                    ? Carbon::parse($p->validated_at)->format('d/m/Y H:i') 
+                    : '-';
+                return $p;
+            });
+
+            return response()->json([
+                'status' => true,
+                'peserta' => $peserta,
+                'count' => $peserta->count()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }

@@ -36,7 +36,12 @@
                         </thead>
                         <tbody>
                             @foreach ($jadwalStats as $stat)
-                            <tr>
+                            <tr class="slot-row" style="cursor: pointer;"
+                                data-type="{{ $stat['type'] }}"
+                                data-date="{{ $stat['date'] }}"
+                                data-session="{{ $stat['session'] }}"
+                                data-filled="{{ $stat['filled'] }}"
+                                title="Klik untuk lihat daftar peserta">
                                 <td class="text-center">
                                     @if ($stat['type'] == 'IQ')
                                         <span class="label label-primary">IQ</span>
@@ -93,6 +98,9 @@
                     Peserta Belum Dijadwalkan
                 </h3>
                 <div class="box-tools pull-right">
+                    <button class="btn btn-success btn-sm" id="btnAutoAssign" style="margin-right:10px;">
+                        <i class="fa fa-magic"></i> Auto-Assign Semua
+                    </button>
                     <span class="label label-warning" style="font-size:14px;">
                         Total: {{ count($peserta) }} Peserta
                     </span>
@@ -165,6 +173,42 @@
 </div>
 </section>
 
+<!-- Modal untuk lihat peserta di slot -->
+<div class="modal fade" id="modalPesertaSlot" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    <i class="fa fa-users"></i> Daftar Peserta di Slot
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <strong>Tipe Tes:</strong> <span id="slot_type"></span><br>
+                    <strong>Tanggal:</strong> <span id="slot_date"></span><br>
+                    <strong>Sesi:</strong> <span id="slot_session"></span><br>
+                    <strong>Total Peserta:</strong> <span id="slot_count"></span>
+                </div>
+
+                <div id="peserta_list_container">
+                    <div class="text-center">
+                        <i class="fa fa-spinner fa-spin fa-2x"></i>
+                        <p>Memuat data...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL ASSIGN JADWAL -->
 <div class="modal fade" id="modalAssignJadwal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -191,10 +235,13 @@
                         <option value="">-- Pilih Slot IQ --</option>
                         @foreach ($jadwalStats as $stat)
                             @if ($stat['type'] == 'IQ' && $stat['filled'] < $stat['capacity'])
+                                @php
+                                    $times = explode(' - ', $stat['session']);
+                                @endphp
                                 <option value="{{ $stat['date'] }}|{{ $stat['session'] }}"
                                         data-date="{{ $stat['date'] }}"
-                                        data-start="{{ explode(' - ', $stat['session'])[0] }}"
-                                        data-end="{{ explode(' - ', $stat['session'])[1] }}">
+                                        data-start="{{ $times[0] }}"
+                                        data-end="{{ $times[1] }}">
                                     {{ $stat['date_formatted'] }} | {{ $stat['session'] }} 
                                     ({{ $stat['filled'] }}/{{ $stat['capacity'] }})
                                 </option>
@@ -209,10 +256,13 @@
                         <option value="">-- Pilih Slot MAP --</option>
                         @foreach ($jadwalStats as $stat)
                             @if ($stat['type'] == 'MAP' && $stat['filled'] < $stat['capacity'])
+                                @php
+                                    $times = explode(' - ', $stat['session']);
+                                @endphp
                                 <option value="{{ $stat['date'] }}|{{ $stat['session'] }}"
                                         data-date="{{ $stat['date'] }}"
-                                        data-start="{{ explode(' - ', $stat['session'])[0] }}"
-                                        data-end="{{ explode(' - ', $stat['session'])[1] }}">
+                                        data-start="{{ $times[0] }}"
+                                        data-end="{{ $times[1] }}">
                                     {{ $stat['date_formatted'] }} | {{ $stat['session'] }} 
                                     ({{ $stat['filled'] }}/{{ $stat['capacity'] }})
                                 </option>
@@ -239,8 +289,260 @@
 <script>
 $(document).ready(function() {
     
-    // Open modal untuk assign jadwal
-    $('.btn-assign-jadwal').click(function() {
+    // Click baris statistik untuk lihat peserta
+    $(document).on('click', '.slot-row', function() {
+        var type = $(this).data('type');
+        var date = $(this).data('date');
+        var session = $(this).data('session');
+        var filled = $(this).data('filled');
+
+        if (filled == 0) {
+            swal('Info', 'Slot ini masih kosong, belum ada peserta', 'info');
+            return;
+        }
+
+        // Set info di modal
+        $('#slot_type').html('<span class="label label-' + (type == 'IQ' ? 'primary' : 'info') + '">' + type + '</span>');
+        $('#slot_date').text(date);
+        $('#slot_session').text(session);
+        $('#slot_count').html('<strong>' + filled + '</strong>');
+
+        // Show loading
+        $('#peserta_list_container').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x"></i><p>Memuat data...</p></div>');
+        
+        $('#modalPesertaSlot').modal('show');
+
+        // Load peserta data
+        $.ajax({
+            url: '{{ route("sekolah.ppdb.slot_peserta") }}',
+            method: 'GET',
+            data: {
+                type: type,
+                date: date,
+                session: session
+            },
+            success: function(response) {
+                if (response.status && response.peserta.length > 0) {
+                    var html = '<div class="table-responsive">';
+                    html += '<table class="table table-striped table-bordered">';
+                    html += '<thead><tr>';
+                    html += '<th width="5%">#</th>';
+                    html += '<th width="30%">Nama Peserta</th>';
+                    html += '<th width="20%">Kode Bayar</th>';
+                    html += '<th width="25%">No. HP</th>';
+                    html += '<th width="20%">Tgl Validasi</th>';
+                    html += '</tr></thead>';
+                    html += '<tbody>';
+                    
+                    $.each(response.peserta, function(index, p) {
+                        html += '<tr>';
+                        html += '<td>' + (index + 1) + '</td>';
+                        html += '<td>' + p.nama + '</td>';
+                        html += '<td><code>' + p.kode_bayar + '</code></td>';
+                        html += '<td>' + (p.no_hp || '-') + '</td>';
+                        html += '<td>' + p.validated_at + '</td>';
+                        html += '</tr>';
+                    });
+                    
+                    html += '</tbody></table></div>';
+                    $('#peserta_list_container').html(html);
+                } else {
+                    $('#peserta_list_container').html('<div class="alert alert-warning"><i class="fa fa-info-circle"></i> Tidak ada data peserta</div>');
+                }
+            },
+            error: function() {
+                $('#peserta_list_container').html('<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Gagal memuat data peserta</div>');
+            }
+        });
+    });
+
+    // Auto-assign semua peserta
+    $('#btnAutoAssign').click(function() {
+        swal({
+            title: 'Auto-Assign Jadwal?',
+            text: 'Sistem akan otomatis menjadwalkan semua peserta yang belum dapat jadwal ke slot yang tersedia.',
+            icon: 'info',
+            buttons: {
+                cancel: 'Batal',
+                confirm: 'Ya, Proses!'
+            }
+        }).then((willProceed) => {
+            if (!willProceed) return;
+
+            // Show loading
+            swal({
+                title: 'Sedang Memproses...',
+                text: 'Mohon tunggu',
+                icon: 'info',
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false
+            });
+
+            $.ajax({
+                url: '{{ route("sekolah.ppdb.auto_assign") }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    swal({
+                        title: response.status ? 'Berhasil!' : 'Gagal!',
+                        text: response.message,
+                        icon: response.status ? 'success' : 'error'
+                    });
+
+                    if (response.status) {
+                        // Reload data via AJAX
+                        $.ajax({
+                            url: '{{ route("sekolah.ppdb.no_schedule.data") }}',
+                            method: 'GET',
+                            success: function(resp) {
+                                if (resp.status) {
+                                    updateStatisticsTable(resp.jadwalStats);
+                                    updatePesertaTable(resp.peserta);
+                                    updateDropdowns(resp.jadwalStats);
+                                }
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    swal('Error!', 'Terjadi kesalahan saat auto-assign', 'error');
+                }
+            });
+        });
+    });
+    
+    // Function reload data
+    function reloadData() {
+        $.ajax({
+            url: '{{ route("sekolah.ppdb.no_schedule.data") }}',
+            method: 'GET',
+            success: function(response) {
+                if (response.status) {
+                    updateStatisticsTable(response.jadwalStats);
+                    updatePesertaTable(response.peserta);
+                }
+            }
+        });
+    }
+
+    // Update statistics table
+    function updateStatisticsTable(stats) {
+        let html = '';
+        stats.forEach(function(stat) {
+            let labelType = stat.type == 'IQ' ? 'label-primary' : 'label-info';
+            let percentage = stat.capacity > 0 ? (stat.filled / stat.capacity) * 100 : 0;
+            let statusLabel = '';
+            
+            if (stat.filled >= stat.capacity) {
+                statusLabel = '<span class="label label-danger">PENUH</span>';
+            } else if (percentage >= 80) {
+                statusLabel = '<span class="label label-warning">' + Math.round(percentage) + '%</span>';
+            } else {
+                statusLabel = '<span class="label label-success">' + Math.round(percentage) + '%</span>';
+            }
+
+            html += `
+                <tr>
+                    <td class="text-center">
+                        <span class="label ${labelType}">${stat.type}</span>
+                    </td>
+                    <td>${stat.date_formatted}</td>
+                    <td>${stat.session}</td>
+                    <td class="text-center"><strong>${stat.filled}</strong></td>
+                    <td class="text-center"><strong>${stat.capacity}</strong></td>
+                    <td class="text-center">${statusLabel}</td>
+                </tr>
+            `;
+        });
+        
+        $('table tbody').first().html(html);
+    }
+
+    // Update peserta table
+    function updatePesertaTable(peserta) {
+        let html = '';
+        
+        if (peserta.length == 0) {
+            html = `
+                <tr>
+                    <td colspan="7" class="text-center">
+                        <div class="alert alert-success" style="margin:0;">
+                            <i class="fa fa-check-circle"></i>
+                            <b>Semua peserta yang sudah bayar telah mendapat jadwal tes.</b>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        } else {
+            peserta.forEach(function(p, index) {
+                html += `
+                    <tr>
+                        <td class="text-center">${index + 1}</td>
+                        <td><strong>${p.nama}</strong></td>
+                        <td><code>${p.kode_bayar}</code></td>
+                        <td>${p.no_hp || '-'}</td>
+                        <td>${p.email || '-'}</td>
+                        <td class="text-center">
+                            <span class="label label-success">${p.status_bayar.toUpperCase()}</span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-primary btn-assign-jadwal" 
+                                    data-kode="${p.kode_bayar}"
+                                    data-nama="${p.nama}">
+                                <i class="fa fa-calendar-plus-o"></i> Jadwalkan
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        $('table tbody').last().html(html);
+        
+        // Update counter
+        $('.box-tools .label-warning').text('Total: ' + peserta.length + ' Peserta');
+    }
+
+    // Update dropdown options
+    function updateDropdowns(stats) {
+        let iqOptions = '<option value="">-- Pilih Slot IQ --</option>';
+        let mapOptions = '<option value="">-- Pilih Slot MAP --</option>';
+        
+        stats.forEach(function(stat) {
+            if (stat.type == 'IQ' && stat.filled < stat.capacity) {
+                let times = stat.session.split(' - ');
+                iqOptions += `
+                    <option value="${stat.date}|${stat.session}"
+                            data-date="${stat.date}"
+                            data-start="${times[0]}"
+                            data-end="${times[1]}">
+                        ${stat.date_formatted} | ${stat.session} 
+                        (${stat.filled}/${stat.capacity})
+                    </option>
+                `;
+            } else if (stat.type == 'MAP' && stat.filled < stat.capacity) {
+                let times = stat.session.split(' - ');
+                mapOptions += `
+                    <option value="${stat.date}|${stat.session}"
+                            data-date="${stat.date}"
+                            data-start="${times[0]}"
+                            data-end="${times[1]}">
+                        ${stat.date_formatted} | ${stat.session} 
+                        (${stat.filled}/${stat.capacity})
+                    </option>
+                `;
+            }
+        });
+        
+        $('#assign_iq_slot').html(iqOptions);
+        $('#assign_map_slot').html(mapOptions);
+    }
+    
+    // Open modal untuk assign jadwal (using event delegation)
+    $(document).on('click', '.btn-assign-jadwal', function() {
         const kodeBayar = $(this).data('kode');
         const nama = $(this).data('nama');
         
@@ -283,7 +585,19 @@ $(document).ready(function() {
                 if (response.status) {
                     swal('Berhasil!', response.message, 'success');
                     $('#modalAssignJadwal').modal('hide');
-                    setTimeout(() => location.reload(), 1500);
+                    
+                    // Reload data via AJAX
+                    $.ajax({
+                        url: '{{ route("sekolah.ppdb.no_schedule.data") }}',
+                        method: 'GET',
+                        success: function(resp) {
+                            if (resp.status) {
+                                updateStatisticsTable(resp.jadwalStats);
+                                updatePesertaTable(resp.peserta);
+                                updateDropdowns(resp.jadwalStats);
+                            }
+                        }
+                    });
                 } else {
                     swal('Gagal!', response.message, 'error');
                 }

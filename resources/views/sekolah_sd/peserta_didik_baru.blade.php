@@ -123,6 +123,56 @@
         </div>
     </div>
 
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>{{ $totalVisitorCount ?? 0 }}</h3>
+                    <p>Total Kunjungan</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-users"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ $totalPendaftarCount ?? 0 }}</h3>
+                    <p>Total Peserta Didik Baru</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-graduation-cap"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $totalSudahBayar ?? 0 }}</h3>
+                    <p>Total Sudah Bayar</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>Rp {{ number_format($totalPendapatan ?? 0, 0, ',', '.') }}</h3>
+                    <p>Total Pendapatan</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-money"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- 🔹 Modal Detail Data --}}
     <div id="detail_ppdb_popup" class="modal fade">
         <div class="modal-dialog">

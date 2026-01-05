@@ -18,6 +18,7 @@ npm-debug.log
 /public/uploads/invoice_logos/*
 /public/uploads/UltimatePOS/*
 /public/uploads/temp/*
+/public/uploads/file_ppdb/*
 /public/modules/
 /public/mix-manifest.json
 *.exe

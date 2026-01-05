@@ -169,7 +169,7 @@
                                         <th>Nama</th>
                                         <th>Jenis Kelamin</th>
                                         <th>Tempat / Tgl Lahir</th>
-                                        <th>Umur Saat masuk sekolah ({{ $ppdb_setting->tgl_masuk_sekolah->format('d/m/Y') ?? '' }})</th>
+                                        <th>Umur Saat masuk sekolah ({{ !empty($ppdb_setting->tgl_masuk_sekolah) ? $ppdb_setting->tgl_masuk_sekolah->format('d/m/Y') : '' }})</th>
                                         <th>Total Bayar</th>
                                         <th>Status Bayar</th>
                                         <th>Keterangan</th>

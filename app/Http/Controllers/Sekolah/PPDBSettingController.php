@@ -262,8 +262,174 @@ class PPDBSettingController extends Controller
             ->orderBy('p.created_at', 'desc')
             ->get();
 
+        // Ambil statistik jadwal
+        $jadwalStats = $this->getJadwalStatistics();
+
         return view('sekolah_sd.peserta_tanpa_jadwal', [
-            'peserta' => $peserta
+            'peserta' => $peserta,
+            'jadwalStats' => $jadwalStats
+        ]);
+    }
+
+    private function getJadwalStatistics()
+    {
+        // Ambil setting aktif untuk mendapatkan kapasitas
+        $setting = PPDBSetting::where('close_ppdb', false)->first();
+        if (!$setting || !$setting->session_capacities) {
+            return [];
+        }
+
+        $sessionCapacities = $setting->session_capacities;
+        $stats = [];
+
+        // Loop semua slot yang tersedia dari session_capacities
+        foreach ($sessionCapacities as $slot) {
+            $date = $slot['date'] ?? null;
+            $type = strtoupper($slot['type'] ?? '');
+            $start = $slot['start'] ?? null;
+            $end = $slot['end'] ?? null;
+            $capacity = $slot['capacity'] ?? 0;
+
+            if (!$date || !$type || !$start || !$end) continue;
+
+            $session = Carbon::parse($start)->format('H:i') . ' - ' . Carbon::parse($end)->format('H:i');
+            $key = "{$type}|{$date}|{$session}";
+
+            // Hitung berapa yang sudah terisi
+            $filled = 0;
+            if ($type == 'IQ') {
+                $filled = DB::table('ppdb_test_schedules')
+                    ->where('iq_date', $date)
+                    ->where('iq_start_time', $start)
+                    ->count();
+            } elseif ($type == 'MAP') {
+                $filled = DB::table('ppdb_test_schedules')
+                    ->where('map_date', $date)
+                    ->where('map_start_time', $start)
+                    ->count();
+            }
+
+            // Simpan ke stats
+            $stats[$key] = [
+                'type' => $type,
+                'date' => $date,
+                'date_formatted' => Carbon::parse($date)->translatedFormat('d F Y'),
+                'session' => $session,
+                'filled' => $filled,
+                'capacity' => $capacity
+            ];
+        }
+
+        // Sort by date and type
+        $stats = array_values($stats);
+        usort($stats, function($a, $b) {
+            if ($a['date'] != $b['date']) {
+                return $a['date'] <=> $b['date'];
+            }
+            return $a['type'] <=> $b['type'];
+        });
+
+        return $stats;
+    }
+
+    public function assignJadwal(Request $request)
+    {
+        $request->validate([
+            'kode_bayar' => 'required|string',
+            'iq_date' => 'required|date',
+            'iq_start_time' => 'required',
+            'iq_end_time' => 'required',
+            'map_date' => 'required|date',
+            'map_start_time' => 'required',
+            'map_end_time' => 'required',
+        ]);
+
+        // Cek apakah peserta sudah punya jadwal
+        $existing = DB::table('ppdb_test_schedules')
+            ->where('kode_bayar', $request->kode_bayar)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Peserta ini sudah memiliki jadwal tes.'
+            ]);
+        }
+
+        // Cek kapasitas slot IQ
+        $iqFilled = DB::table('ppdb_test_schedules')
+            ->where('iq_date', $request->iq_date)
+            ->where('iq_start_time', $request->iq_start_time)
+            ->count();
+
+        // Cek kapasitas slot MAP
+        $mapFilled = DB::table('ppdb_test_schedules')
+            ->where('map_date', $request->map_date)
+            ->where('map_start_time', $request->map_start_time)
+            ->count();
+
+        // Ambil kapasitas dari setting
+        $setting = PPDBSetting::where('close_ppdb', false)->first();
+        if (!$setting || !$setting->session_capacities) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Setting jadwal tidak ditemukan.'
+            ]);
+        }
+
+        // Cari kapasitas IQ
+        $iqCapacity = 0;
+        foreach ($setting->session_capacities as $slot) {
+            if ($slot['type'] == 'iq' && 
+                $slot['date'] == $request->iq_date && 
+                $slot['start'] == substr($request->iq_start_time, 0, 5)) {
+                $iqCapacity = $slot['capacity'];
+                break;
+            }
+        }
+
+        // Cari kapasitas MAP
+        $mapCapacity = 0;
+        foreach ($setting->session_capacities as $slot) {
+            if ($slot['type'] == 'map' && 
+                $slot['date'] == $request->map_date && 
+                $slot['start'] == substr($request->map_start_time, 0, 5)) {
+                $mapCapacity = $slot['capacity'];
+                break;
+            }
+        }
+
+        // Validasi kapasitas
+        if ($iqFilled >= $iqCapacity) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Slot IQ sudah penuh. Silakan pilih slot lain.'
+            ]);
+        }
+
+        if ($mapFilled >= $mapCapacity) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Slot MAP sudah penuh. Silakan pilih slot lain.'
+            ]);
+        }
+
+        // Insert jadwal
+        DB::table('ppdb_test_schedules')->insert([
+            'kode_bayar' => $request->kode_bayar,
+            'iq_date' => $request->iq_date,
+            'iq_start_time' => $request->iq_start_time,
+            'iq_end_time' => $request->iq_end_time,
+            'map_date' => $request->map_date,
+            'map_start_time' => $request->map_start_time,
+            'map_end_time' => $request->map_end_time,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Jadwal tes berhasil disimpan!'
         ]);
     }
 

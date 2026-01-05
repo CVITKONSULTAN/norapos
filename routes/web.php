@@ -380,6 +380,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('tidak-dapat-jadwal', 
             [PPDBSettingController::class, 'noSchedule'])
             ->name('sekolah_sd.ppdb.jadwal_harian.no_schedule');
+        Route::post('ppdb/assign-jadwal', [PPDBSettingController::class, 'assignJadwal'])
+        ->name('sekolah.ppdb.assign_jadwal');
 
         Route::get('jadwal-harian/export', 
             [PPDBSettingController::class, 'exportExcelJadwalPPDB']

@@ -323,17 +323,19 @@ class PPDBSettingController extends Controller
             $session = Carbon::parse($start)->format('H:i') . ' - ' . Carbon::parse($end)->format('H:i');
             $key = "{$type}|{$date}|{$session}";
 
-            // Hitung berapa yang sudah terisi
+            // Hitung berapa yang sudah terisi (hanya hitung yang pesertanya masih ada)
             $filled = 0;
             if ($type == 'IQ') {
-                $filled = DB::table('ppdb_test_schedules')
-                    ->where('iq_date', $date)
-                    ->where('iq_start_time', 'LIKE', $start . '%')
+                $filled = DB::table('ppdb_test_schedules as s')
+                    ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                    ->where('s.iq_date', $date)
+                    ->where('s.iq_start_time', 'LIKE', $start . '%')
                     ->count();
             } elseif ($type == 'MAP') {
-                $filled = DB::table('ppdb_test_schedules')
-                    ->where('map_date', $date)
-                    ->where('map_start_time', 'LIKE', $start . '%')
+                $filled = DB::table('ppdb_test_schedules as s')
+                    ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                    ->where('s.map_date', $date)
+                    ->where('s.map_start_time', 'LIKE', $start . '%')
                     ->count();
             }
 

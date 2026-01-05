@@ -328,12 +328,12 @@ class PPDBSettingController extends Controller
             if ($type == 'IQ') {
                 $filled = DB::table('ppdb_test_schedules')
                     ->where('iq_date', $date)
-                    ->where(DB::raw('TIME(iq_start_time)'), '=', $start)
+                    ->where('iq_start_time', 'LIKE', $start . '%')
                     ->count();
             } elseif ($type == 'MAP') {
                 $filled = DB::table('ppdb_test_schedules')
                     ->where('map_date', $date)
-                    ->where(DB::raw('TIME(map_start_time)'), '=', $start)
+                    ->where('map_start_time', 'LIKE', $start . '%')
                     ->count();
             }
 
@@ -634,12 +634,12 @@ class PPDBSettingController extends Controller
 
             if ($type == 'IQ') {
                 $query->where('s.iq_date', $date)
-                      ->where(DB::raw('TIME(s.iq_start_time)'), '=', $startTime)
-                      ->where(DB::raw('TIME(s.iq_end_time)'), '=', $endTime);
+                      ->where('s.iq_start_time', 'LIKE', $startTime . '%')
+                      ->where('s.iq_end_time', 'LIKE', $endTime . '%');
             } else {
                 $query->where('s.map_date', $date)
-                      ->where(DB::raw('TIME(s.map_start_time)'), '=', $startTime)
-                      ->where(DB::raw('TIME(s.map_end_time)'), '=', $endTime);
+                      ->where('s.map_start_time', 'LIKE', $startTime . '%')
+                      ->where('s.map_end_time', 'LIKE', $endTime . '%');
             }
 
             $peserta = $query->orderBy('p.validated_at', 'asc')->get();

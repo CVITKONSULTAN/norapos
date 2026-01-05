@@ -56,6 +56,9 @@
                         <th>@lang('lang_v1.sell_due')</th>
                         <th>@lang('lang_v1.sell_return_due')</th>
                         <th>Status</th>
+                        <th>Durasi</th>
+                        <th>Waktu Checkout</th>
+                        <th>Booking ID</th>
                         <th>Deposit</th>
                         <th>OTA</th>
                         <th>@lang('lang_v1.total_items')</th>
@@ -175,6 +178,31 @@ $(document).ready( function(){
                 @if(auth()->user()->business->id == 11) "visible":false @endif
             },
             { data: 'shipping_status', name: 'shipping_status'},
+            @if(auth()->user()->business->id == 11)
+            { 
+                data: 'deposit', 
+                name: 'checkout',
+                render: function (data, type, row) {
+                    const start = moment(row.created_at);
+                    const end = moment(row.updated_at);
+
+                    // hitung selisih dalam milidetik
+                    const diff = moment.duration(end.diff(start)).asMinutes().toFixed(2);
+                    return `${diff} menit`;
+                }
+            },
+            { 
+                data: 'updated_at', 
+                name: 'updated_at',
+                render: function (data, type, row) {
+                    return row.shipping_status != "" ? data : "";
+                }
+            },
+            { 
+                data: 'booking_id', 
+                name: 'booking_id'
+            },
+            @endif
             { data: 'deposit', name: 'deposit'},
             { data: 'OTA', name: 'OTA'},
             { data: 'total_items', name: 'total_items', "searchable": false,
@@ -202,7 +230,6 @@ $(document).ready( function(){
             for (var r in data){
                 let total_paid_row = typeof($(data[r].total_paid).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_paid).data('orig-value')) : 0;
                 total_paid_row = isNaN(total_paid_row) ? 0 : total_paid_row;
-                console.log("total_paid_row",r,total_paid_row);
                 footer_sale_total += typeof($(data[r].final_total).data('orig-value')) != 'undefined' ? parseFloat($(data[r].final_total).data('orig-value')) : 0;
                 footer_total_paid += total_paid_row;
                 footer_total_remaining += typeof($(data[r].total_remaining).data('orig-value')) != 'undefined' ? parseFloat($(data[r].total_remaining).data('orig-value')) : 0;

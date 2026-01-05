@@ -1,985 +1,1315 @@
+{{-- resources/views/ppdb_revamp.blade.php --}}
 <!DOCTYPE html>
-<html lang="id" translate="no">
+<html lang="id">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Platform pendidikan yang mempermudah administrasi, pengelolaan, dan komunikasi di lingkungan pendidikan."
-    />
-    <meta
-      name="keywords"
-      content="platform pendidikan, administrasi sekolah, KoneksiEdu, manajemen sekolah, pendidikan Indonesia"
-    />
-    <title>PPDB SD MUHAMMADIYAH 2</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPMB SD Muhammadiyah 2 Pontianak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
     <style>
-      /* Default background image for desktop */
-      section.hero {
-        background-image: url("/compro/koneksiedu/assets/images/herodesktop.png");
-        background-size: cover;
-        background-position: center;
+      body {
+        background-color: #f5f7f8;
+        font-family: "Poppins", sans-serif;
       }
-      .help-block{
+      .card {
+        border-radius: 1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+      .form-section-title {
+        background-color: #286D6B;
+        color: white;
+        padding: .75rem 1rem;
+        border-radius: .5rem .5rem 0 0;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      .btn-submit {
+        background-color: #286D6B;
+        color: white;
+        font-weight: 600;
+      }
+      .btn-submit:hover {
+        background-color: #1f5755;
+      }
+      .required::after {
+        content: "*";
         color: red;
+        margin-left: 4px;
       }
-      img.close_icon{
-        width: 150px;
-        text-align: center;
+      .ppdb-header {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
       }
-      /* Background image for mobile devices */
-      @media (max-width: 768px) {
-        section.hero {
-          background-image: url("/compro/koneksiedu/assets/images/heromobile.png");
-        }
+      .ppdb-header img {
+        width: 80px;
+        height: auto;
       }
+      .ppdb-header h5 {
+        font-weight: 700;
+        color: #000;
+        text-transform: uppercase;
+        margin: 0;
+        line-height: 1.4;
+      }
+      #popupPembayaranPPDB .modal-content {
+        background: #fafafa;
+        border-radius: 1.25rem;
+      }
+
+      #popupPembayaranPPDB h4 {
+        letter-spacing: 0.5px;
+      }
+
+      #popupPembayaranPPDB .text-uppercase {
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+      }
+
+      #popupPembayaranPPDB .letter-spacing-1 {
+        letter-spacing: 0.05em;
+      }
+
+      #popupPembayaranPPDB .border-start {
+        border-color: #dc3545 !important; /* merah Bootstrap */
+      }
+
+      #popupPembayaranPPDB .btn-success {
+        background: linear-gradient(135deg, #28a745, #218838);
+        border: none;
+        transition: all 0.2s ease-in-out;
+      }
+
+      #popupPembayaranPPDB .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      #popupPembayaranPPDB .bg-light {
+        background-color: #f9f9f9 !important;
+      }
+
+      #popupPembayaranPPDB .shadow-sm {
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+      }
+
+      #popupUploadBukti .modal-content,
+      #popupMenungguValidasi .modal-content {
+        background-color: #fafafa;
+        border-radius: 1.25rem;
+      }
+
+      #popupMenungguValidasi img {
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+      }
+
+      #popupMenungguValidasi h5 {
+        line-height: 1.5;
+      }
+
+      #popupMenungguValidasi .btn-secondary {
+        background-color: #e5e5e5;
+        border: none;
+        color: #555;
+        font-weight: 600;
+      }
+
+      #popupUploadBukti input[type="file"] {
+        background-color: #fff;
+      }
+
     </style>
   </head>
   <body>
-    <!-- Header / Navigation -->
-    <header>
-      <nav class="sticky top-0 w-full z-20 bg-[#FAF8F4] shadow-md z-30">
-        <div
-          class="mx-auto px-4 md:px-10 py-4 md:py-5 flex justify-between items-center"
-        >
-          <a href="/">
-            <img
-              src="/compro/koneksiedu/assets/images/logo.png"
-              class="w-40 md:w-48"
-              alt="KoneksiEdu Logo"
-            />
-          </a>
 
-          <!-- Desktop Menu -->
-          <div
-            class="hidden md:flex justify-between items-center gap-6 lg:gap-12"
-          >
-            <a
-              href="/"
-              class="text-gray-800 hover:text-[#286D6B] transition-colors"
-              >Home</a
-            >
-            <a
-              href="#"
-              class="text-gray-800 hover:text-[#286D6B] transition-colors"
-              >About Us</a
-            >
-            <a
-              href="#"
-              class="text-gray-800 hover:text-[#286D6B] transition-colors"
-              >Contact</a
-            >
-            <a
-              href="/login"
-              class="text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-4 lg:px-8 rounded-md"
-              >Login</a
-            >
+    <div class="container py-5">
+      @if($close_ppdb)
+         <div class="d-flex align-items-center justify-content-center vh-100">
+          <div class="text-center p-5 bg-white rounded-4 shadow" style="max-width: 480px;">
+            <div style="font-size: 64px; color: #e63946;">🚫</div>
+            <h3 class="fw-bold mt-3 mb-2 text-danger">Pendaftaran SPMB Telah Ditutup</h3>
+            <p class="text-muted mb-4">
+              Terima kasih atas antusiasme dan partisipasi Anda.<br>
+              Pendaftaran peserta didik baru untuk tahun ajaran 
+              <b>{{ $tahun_ajaran }}</b> telah <span class="text-danger fw-semibold">ditutup</span>.
+            </p>
+
+            <div class="alert alert-warning text-start shadow-sm border-0">
+              <i class="bi bi-info-circle me-2"></i>
+              Silakan pantau informasi pembukaan SPMB selanjutnya melalui website resmi atau media sosial sekolah.
+            </div>
+
+            <a href="/" class="btn btn-outline-success px-4 mt-3 rounded-pill">
+              <i class="bi bi-house-door me-2"></i> Kembali ke Beranda
+            </a>
+
+            <div class="mt-4 text-secondary small">
+              © {{ date('Y') }} SD Muhammadiyah 2 Pontianak<br>
+              Panitia SPMB
+            </div>
           </div>
-
-          <!-- Mobile Menu Button -->
-          <button id="burgerMenu" class="md:hidden text-[#286D6B] text-2xl">
-            ☰
-          </button>
         </div>
-
-        <!-- Mobile Navigation Menu -->
-        <div
-          id="mobileMenu"
-          class="mobile-menu bg-[#FAF8F4] max-h-0 overflow-hidden"
-        >
-          <ul class="flex flex-col items-center space-y-4 py-6">
-            <li>
-              <a
-                href="/"
-                class="text-gray-800 hover:text-[#286D6B] transition-colors"
-                >Home</a
-              >
-            </li>
-            <li>
-              <a
-                href="#"
-                class="text-gray-800 hover:text-[#286D6B] transition-colors"
-                >About Us</a
-              >
-            </li>
-            <li>
-              <a
-                href="#"
-                class="text-gray-800 hover:text-[#286D6B] transition-colors"
-                >Contact</a
-              >
-            </li>
-            <li class="w-full px-4">
-              <a
-                href="/login"
-                class="flex items-center justify-center text-white bg-[#286D6B] hover:opacity-80 transition-colors py-2 px-8 rounded-md"
-                >Login</a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
-
-    <main class="container mx-auto px-4 py-8">
-      <h1 class="text-xl md:text-2xl font-bold text-center text-[#286D6B] mb-8">
-        Formulir Registrasi Calon Peserta Didik Baru
-      </h1>
-
-      <div>
-        <h2 class="text-xl font-bold text-[#286D6B] mb-4" style="text-align: center;">
-          Anak anda sudah terdaftar dan ingin print bukti pendaftaran? <a style="color: blue;" href="javascript:void(0)" onclick="popupCetakBukti()">Klik Disini</a>
-        </h2>
-      </div>
-
-      @if(true)
-        <h1 class="text-xl font-bold text-[#286D6B] mb-4" style="color: rgb(155, 0, 0); text-align:center; margin-top:50px;">
-          <div style="display: flex;justify-content: center;">
-            {{-- <img src="/sekolah/promote.png" class="close_icon" /> --}}
-            <dotlottie-player src="https://lottie.host/c00e3e17-42f9-4793-b0f4-05e130ecac3c/8n0iB3jsFO.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
-          </div>
-          Pendaftaran sudah di tutup pada tanggal 14 Februari 2025 pukul 14.00 WIB
-        </h1>
       @else
-        <form
-          onsubmit="submitPPDB(event)"
-          class="bg-white p-6 rounded-lg shadow-md space-y-6"
-        >
-          <!-- Bagian A -->
-          <div>
-            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-              A. Jenis Pendaftaran
-            </h2>
 
-            <div class="space-y-4">
-              <div>
-                <label for="jenis-pendaftaran" class="block font-medium"
-                  >Jenis Pendaftaran</label
+        <div class="ppdb-header mb-4">
+          <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2 Pontianak">
+          <h5>
+            SELEKSI PENERIMAAN MURID BARU (SPMB)<br>
+            SD MUHAMMADIYAH 2 PONTIANAK<br>
+            TAHUN AJARAN {{$tahun_ajaran}}
+          </h5>
+        </div>
+
+        <!-- Modal Pembayaran PPDB -->
+        <div class="modal fade" id="popupPembayaranPPDB" tabindex="-1" aria-labelledby="popupPembayaranLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+              <div class="modal-body text-center p-5">
+
+                <h4 class="fw-bold text-dark mb-3">PEMBAYARAN FORMULIR PENDAFTARAN</h4>
+
+                <p class="text-muted mb-4">
+                  Seleksi Penerimaan Murid Baru (SPMB) <b>SD Muhammadiyah 2 Pontianak</b>,<br>
+                  Tahun Ajaran <span id="tahun-ajaran">{{$tahun_ajaran}}</span> sebesar 
+                  <b id="nominal-pembayaran" class="text-dark">Rp {{ number_format($jumlah_tagihan,0,',','.') }},-</b>
+                </p>
+
+                <!-- Tombol Lihat Kwitansi -->
+                <a
+                  href="#"
+                  target="_blank"
+                  class="btn btn-outline-primary px-4 rounded-pill mb-3 btnLihatKwitansi"
                 >
-                <select
-                  id="jenis-pendaftaran"
-                  class="w-full border rounded-lg px-4 py-2"
-                  required
-                >
-                  <option value="siswa-baru">Siswa Baru</option>
-                  <option value="mutasi">Mutasi</option>
+                  <i class="bi bi-receipt-cutoff me-2"></i> Lihat Kwitansi Pembayaran
+                </a>
+
+                <div class="bg-light rounded-4 py-3 px-4 mb-4 shadow-sm border-start border-4 border-danger">
+                  <p class="text-danger fw-semibold mb-1 fs-6 text-uppercase letter-spacing-1">
+                    Batas Pembayaran Terakhir
+                  </p>
+
+                  <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                    <div class="bg-white shadow-sm rounded-pill px-4 py-2">
+                      <span class="text-dark fw-semibold">
+                        Sisa waktu: <span id="countdown-value" class="text-danger fw-bold">00:00:00</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <p class="fw-bold text-danger fs-5 mt-3 mb-0">
+                    <span id="hari-batas">-</span>,
+                    <span id="tanggal-batas">00/00/0000</span> &nbsp;
+                    Waktu: <span id="waktu-batas">00:00</span> WIB
+                  </p>
+                </div>
+
+                <div class="bg-white border rounded-4 p-4 shadow-sm mb-4">
+                  <p class="mb-2 fw-semibold text-secondary">Nomor Kode Bayar / Rekening {{$nama_bank}}</p>
+                  <h2 class="fw-bold text-dark mb-3" id="kode-bayar">{{ $no_rek }}</h2>
+                  <p class="small text-muted mb-0">
+                    Pembayaran dilakukan ke {{$nama_bank}} dengan kode akhir nominal <b class="text-dark" id="kode_unik">0</b>.<br>
+                    Contoh transfer: <b id="contoh-transfer" class="text-dark">Rp 0,-</b>
+                  </p>
+                </div>
+
+                <p class="text-muted mb-4">
+                  Silakan upload bukti pembayaran formulir pendaftaran anda di bawah ini.
+                </p>
+
+                <div class="border rounded-4 p-4 bg-light mb-3 text-center">
+                  <input type="file" id="buktiPembayaranFile" class="form-control mb-3" accept="image/*,application/pdf">
+                  
+                  <!-- Indikator upload -->
+                  <div id="loader-bukti" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2 fw-semibold text-success">Sedang mengupload bukti pembayaran...</span>
+                  </div>
+
+                  <!-- Preview -->
+                  <div class="mt-3" id="preview-bukti-container" style="display: none;">
+                    <p class="fw-semibold text-dark mb-2">Preview Bukti Pembayaran:</p>
+                    <img id="preview-bukti" class="img-thumbnail" style="max-width: 250px; border-radius: 8px;">
+                    <div id="upload-success" class="text-success mt-2 fw-semibold d-none">✅ Bukti pembayaran berhasil diupload</div>
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <button id="button-submit-bukti" class="btn btn-submit py-2">
+                    <i class="bi bi-upload"></i> Kirim & Upload Bukti Bayar
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal 2: Menunggu Validasi -->
+        <div class="modal fade" id="popupMenungguValidasi" tabindex="-1" aria-labelledby="popupMenungguValidasiLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+              <div class="modal-body text-center p-5">
+                <h5 class="fw-bold mb-3">
+                  Seleksi Penerimaan Murid Baru (SPMB)<br>
+                  SD Muhammadiyah 2 Pontianak, Tahun Ajaran <span id="tahunAjaranValidasi">{{ $tahun_ajaran }}</span>
+                </h5>
+
+                <p class="text-danger fw-semibold mb-4">
+                  Mohon menunggu proses admin memvalidasi pembayaran anda.
+                </p>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <img src="/img/svg/sdm2_logo.svg" alt="Logo SD Muhammadiyah 2" width="180" class="mb-4">
+                  </div>
+                  <div class="col-md-12">
+                    <button type="button" class="btn btn-secondary btn-lg w-50 rounded-pill py-2">
+                      Cetak Kartu Nomor Test Murid
+                    </button>
+                  </div>
+                  <div class="col-md-12">
+                    <a
+                      href="#"
+                      target="_blank"
+                      class="btn btn-warning px-4 rounded-pill mt-3 btnLihatKwitansi"
+                    >
+                      <i class="bi bi-receipt-cutoff me-2"></i> Cetak Kwitansi Bukti Pembayaran Saya
+                    </a>
+                  </div>
+                </div>
+
+
+
+                <p class="mt-3 text-muted fst-italic small">
+                  Anda dapat menekan tombol cetak kartu test murid saat proses validasi pembayaran berhasil.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mx-auto" style="max-width: 720px;">
+          <div class="card-body p-4">
+
+            {{-- <h2 class="text-center fw-bold mb-4 text-danger">
+              Cetak Kartu Tes ? 
+              <a href="#" onclick="promptKodeBayar()">Klik disini</a>
+            </h2> --}}
+
+            <h5 class="text-center fw-bold mb-4 text-success">Data Calon Murid</h5>
+
+            <form onsubmit="submitPPDB(event)">
+              {{-- Nama --}}
+              <div class="mb-3">
+                <label for="nama-lengkap" class="form-label required">Nama Lengkap</label>
+                <input name="nama" type="text" id="nama-lengkap" class="form-control" placeholder="Nama Lengkap" required>
+              </div>
+
+              {{-- Jenis Kelamin --}}
+              <div class="mb-3">
+                <label class="form-label required">Jenis Kelamin</label>
+                <select name="jenis-kelamin" id="jenis-kelamin" class="form-select" required>
+                  <option value="">Pilih jenis kelamin</option>
+                  <option value="Laki-Laki">Laki-Laki</option>
+                  <option value="Perempuan">Perempuan</option>
                 </select>
               </div>
-              <div id="input-nama-asal-sekolah" class="invisible">
-                <label for="nama-asal-sekolah" class="block font-medium"
-                  >Nama Asal Sekolah</label
-                >
-                <input
-                  type="text"
-                  id="nama-asal-sekolah"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Nama Asal Sekolah"
-                />
-              </div>
-              <div id="input-npsn-asal-sekolah" class="invisible">
-                <label for="npsn-asal-sekolah" class="block font-medium"
-                  >NPSN Asal Sekolah</label
-                >
-                <input
-                  type="text"
-                  id="npsn-asal-sekolah"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="NPSN Asal Sekolah"
-                />
-              </div>
-            </div>
-          </div>
 
-          <!-- Bagian B -->
-          <div>
-            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-              B. Identitas Calon Peserta Didik Baru
-            </h2>
+              {{-- Tempat dan Tanggal Lahir --}}
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="tempat-lahir" class="form-label required">Tempat Lahir</label>
+                  <input name="tempat-lahir" type="text" id="tempat-lahir" class="form-control" placeholder="Tempat Lahir" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label required">Tanggal Lahir</label>
+                  <div class="d-flex gap-2">
+                    <select id="tanggal-lahir-day" class="form-select" style="width:100px;">
+                      <option value="">Tgl</option>
+                    </select>
 
-            <div class="space-y-4">
-              <div>
-                <label for="nama-lengkap" class="block font-medium"
-                  >Nama Lengkap</label
-                >
-                <input
-                  type="text"
-                  id="nama-lengkap"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Nama Lengkap"
-                  required
-                />
-              </div>
+                    <select id="tanggal-lahir-month" class="form-select" style="width:140px;">
+                      <option value="">Bulan</option>
+                      <option value="01">Januari</option>
+                      <option value="02">Februari</option>
+                      <option value="03">Maret</option>
+                      <option value="04">April</option>
+                      <option value="05">Mei</option>
+                      <option value="06">Juni</option>
+                      <option value="07">Juli</option>
+                      <option value="08">Agustus</option>
+                      <option value="09">September</option>
+                      <option value="10">Oktober</option>
+                      <option value="11">Nopember</option>
+                      <option value="12">Desember</option>
+                    </select>
 
-              <div>
-                <label class="block font-medium">Jenis Kelamin</label>
-                <div class="flex items-center space-x-4">
-                  <label class="flex items-center">
-                    <input
-                      type="radio"
-                      name="jenis-kelamin"
-                      value="Laki-Laki"
-                      class="mr-2"
-                      required
-                    />
-                    Laki-Laki
-                  </label>
-                  <label class="flex items-center">
-                    <input
-                      type="radio"
-                      name="jenis-kelamin"
-                      value="Perempuan"
-                      class="mr-2"
-                    />
-                    Perempuan
-                  </label>
+                    <select id="tanggal-lahir-year" class="form-select" style="width:140px;">
+                      <option value="">Tahun</option>
+                    </select>
+                  </div>
+
+                  <!-- Hidden input untuk menjaga kompatibilitas dengan script lama -->
+                  <input type="hidden" id="tanggal-lahir" name="tanggal-lahir" />
                 </div>
               </div>
 
-              <div id="input-nisn" class="invisible">
-                <label for="nisn" name="nisn" class="block font-medium"
-                  >NISN</label
-                >
-                <input
-                  type="text"
-                  name="nisn"
-                  id="nisn"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="NISN"
-                />
-              </div>
-
-              <div>
-                <label for="nik" class="block font-medium">NIK</label>
-                <input
-                  type="text"
-                  id="nik"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="NIK"
-                  required
-                />
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label for="tempat-lahir" class="block font-medium"
-                    >Tempat Lahir</label
-                  >
-                  <input
-                    type="text"
-                    id="tempat-lahir"
-                    class="w-full border rounded-lg px-4 py-2"
-                    placeholder="Tempat Lahir"
-                    required
-                  />
-                </div>
-                <div>
-                  <label for="tanggal-lahir" class="block font-medium"
-                    >Tanggal Lahir</label
-                  >
-                  <input
-                    type="date"
-                    id="tanggal-lahir"
-                    class="w-full border rounded-lg px-4 py-2"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label for="agama" class="block font-medium">Agama</label>
-                <select
-                  id="agama"
-                  class="w-full border rounded-lg px-4 py-2"
-                  required
-                >
-                  <option value="islam">Islam</option>
-                  <option value="kristen">Kristen</option>
-                  <option value="buddha">Buddha</option>
-                  <option value="hindu">Hindu</option>
-                  <option value="konghucu">Konghucu</option>
+              {{-- Agama --}}
+              <div class="mb-3">
+                <label for="agama" class="form-label required">Agama</label>
+                <select id="agama" class="form-select" required>
+                  <option value="Islam">Islam</option>
+                  <option value="Kristen">Kristen</option>
+                  <option value="Hindu">Hindu</option>
+                  <option value="Buddha">Buddha</option>
+                  <option value="Konghucu">Konghucu</option>
                 </select>
               </div>
 
-              <div>
-                <label for="kebutuhan-khusus" class="block font-medium"
-                  >Berkebutuhan Khusus</label
-                >
-                <input
-                  type="text"
-                  id="kebutuhan-khusus"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Berkebutuhan Khusus"
-                  required
-                />
+              {{-- Alamat --}}
+              <div class="mb-3">
+                <label for="alamat" class="form-label required">Alamat Lengkap</label>
+                <textarea id="alamat" rows="2" class="form-control" 
+                {{-- placeholder="Jl. Ahmad Yani No. 01, Kota Pontianak"  --}}
+                required></textarea>
               </div>
 
-              <div>
-                <label for="alamat" class="block font-medium">Alamat Rumah</label>
-                <textarea
-                  id="alamat"
-                  class="w-full border rounded-lg px-4 py-2"
-                  rows="3"
-                  placeholder="Alamat Rumah"
-                  required
-                ></textarea>
+              {{-- No HP --}}
+              <div class="mb-3">
+                <label for="telpon-hape" class="form-label required">No. HP / WhatsApp</label>
+                <input name="no_hp" type="text" id="telpon-hape" class="form-control" 
+                {{-- placeholder="081122334455"  --}}
+                required>
               </div>
 
-              <div>
-                <label for="dusun" class="block font-medium">Dusun</label>
-                <input
-                  type="text"
-                  id="dusun"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Nama Dusun"
-                  required
-                />
-              </div>
+              {{-- Upload Berkas --}}
+              <h6 class="form-section-title mt-4">Upload Berkas Pendukung</h6>
+              <div class="p-3 border rounded-bottom bg-light mb-4">
 
-              <div>
-                <label for="kelurahan" class="block font-medium"
-                  >Kelurahan/Desa</label
-                >
-                <input
-                  type="text"
-                  id="kelurahan"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Nama Kelurahan/Desa"
-                  required
-                />
-              </div>
+                {{-- KK --}}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">Scan / Foto Kartu Keluarga (KK)</label>
+                  <input type="file" id="kartu-keluarga" class="form-control" accept=".jpeg, .jpg, .png">
+                  <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
 
-              <div>
-                <label for="kecamatan" class="block font-medium">Kecamatan</label>
-                <input
-                  type="text"
-                  id="kecamatan"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Nama Kecamatan"
-                  required
-                />
-              </div>
+                  <div class="mt-3 text-center" id="loader-kartu-keluarga" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2">Sedang memproses dan mengupload...</span>
+                  </div>
 
-              <div>
-                <label for="kabupaten" class="block font-medium"
-                  >Kabupaten/Kota</label
-                >
-                <input
-                  type="text"
-                  id="kabupaten"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Nama Kabupaten/Kota"
-                  required
-                />
-              </div>
-
-              <div>
-                <label for="provinsi" class="block font-medium">Provinsi</label>
-                <input
-                  type="text"
-                  id="provinsi"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Nama Provinsi"
-                  required
-                />
-              </div>
-
-              <div>
-                <label for="transportasi" class="block font-medium"
-                  >Alat Transportasi ke Sekolah</label
-                >
-                <input
-                  type="text"
-                  id="transportasi"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Alat Transportasi ke Sekolah"
-                  required
-                />
-              </div>
-
-              <div>
-                <label for="jenis-tinggal" class="block font-medium"
-                  >Jenis Tinggal</label
-                >
-                <input
-                  type="text"
-                  id="jenis-tinggal"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Jenis Tinggal"
-                  required
-                />
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label for="telpon-rumah" class="block font-medium"
-                    >No. Telp Rumah</label
-                  >
-                  <input
-                    type="text"
-                    id="telpon-rumah"
-                    class="w-full border rounded-lg px-4 py-2"
-                    placeholder="No. Telp Rumah"
-                    required
-                  />
+                  <div class="mt-3 text-center">
+                    <img id="preview-kartu-keluarga" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
+                    <div id="success-kartu-keluarga" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
+                  </div>
                 </div>
-                <div>
-                  <label for="telpon-hape" class="block font-medium"
-                    >No. HP</label
-                  >
-                  <input
-                    type="text"
-                    id="telpon-hape"
-                    class="w-full border rounded-lg px-4 py-2"
-                    placeholder="No. HP"
-                    required
-                  />
+
+                {{-- Akta Lahir --}}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">Scan / Foto Akta Lahir Calon Murid</label>
+                  <input type="file" id="akta-lahir" class="form-control" accept=".jpeg, .jpg, .png">
+                  <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
+
+                  <div class="mt-3 text-center" id="loader-akta-lahir" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2">Sedang memproses dan mengupload...</span>
+                  </div>
+
+                  <div class="mt-3 text-center">
+                    <img id="preview-akta-lahir" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
+                    <div id="success-akta-lahir" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
+                  </div>
+                </div>
+
+                {{-- KIA --}}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">
+                    Scan / Foto Kartu Identitas Anak (KIA)
+                    <span class="text-muted">(opsional)</span>
+                  </label>
+                  <input type="file" id="kartu-anak" class="form-control" accept=".jpeg, .jpg, .png">
+                  <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG — Maksimal 500KB</small>
+
+                  <div class="mt-3 text-center" id="loader-kartu-anak" style="display: none;">
+                    <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;"></div>
+                    <span class="ms-2">Sedang memproses dan mengupload...</span>
+                  </div>
+
+                  <div class="mt-3 text-center">
+                    <img id="preview-kartu-anak" class="img-thumbnail d-none" style="max-width: 200px; border-radius: 8px;">
+                    <div id="success-kartu-anak" class="text-success fw-semibold mt-2 d-none">✅ Berhasil diupload</div>
+                  </div>
+                </div>
+
+              </div>
+
+
+              {{-- Persetujuan --}}
+              <h6 class="form-section-title">Pernyataan dan Persetujuan</h6>
+              <div class="p-3 border rounded-bottom bg-light mb-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="check-identitas">
+                  <label class="form-check-label" for="check-identitas">
+                    Identitas anak di atas adalah benar.
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="check-usia">
+                  <label class="form-check-label" for="check-usia">
+                    Usia anak tidak kurang dari usia yang dipersyaratkan (minimal 5 tahun 6 bulan).
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="check-tanggungjawab">
+                  <label class="form-check-label" for="check-tanggungjawab">
+                    Saya menyetujui bahwa segala kesalahan penginputan data menjadi tanggung jawab saya pribadi, dan pihak sekolah berhak mengambil tindakan sesuai kebijakan.
+                  </label>
                 </div>
               </div>
 
-              <div>
-                <label for="email-pribadi" class="block font-medium"
-                  >Email Pribadi</label
-                >
-                <input
-                  type="email"
-                  id="email-pribadi"
-                  class="w-full border rounded-lg px-4 py-2"
-                  placeholder="Email Pribadi"
-                  required
-                />
+              <div class="d-grid">
+                <button id="button-submit" type="submit" class="btn btn-submit py-2">
+                  <i class="bi bi-upload"></i> Upload dan Kirim Pendaftaran
+                </button>
               </div>
+              {{-- <div class="d-grid">
+                <button onclick="check()" type="button" class="btn btn-submit py-2">
+                  <i class="bi bi-upload"></i> test
+                </button>
+              </div> --}}
+            </form>
 
-              <div>
-                <label for="pas-foto" class="block font-medium">
-                  Pas Foto Siswa (Format: .jpeg, .jpg, .png)
-                </label>
-                <input
-                  type="file"
-                  id="pas-foto"
-                  class="w-full border rounded-lg px-4 py-2"
-                  accept=".jpeg, .jpg, .png"
-                  required
-                  onchange="validateAndCompressFile(this, 'pas-foto')"
-                />
-                <div id="pas-foto-loading" class="hidden">Loading...</div>
-                <img
-                  id="pas-foto-preview"
-                  class="hidden w-32 mt-2"
-                  alt="Preview"
-                />
-              </div>
-            </div>
           </div>
+        </div>
 
-          <!-- Bagian C -->
-          <div class="space-y-4">
-            <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-              C. Data Orangtua/Wali
-            </h2>
-            <!-- Ayah -->
-            <div>
-              <label for="ayah-nama" class="block font-medium">Nama Ayah</label>
-              <input
-                placeholder="Nama Ayah"
-                type="text"
-                id="ayah-nama"
-                class="w-full border rounded-lg px-4 py-2"
-              />
-            </div>
-            <div>
-              <label for="ayah-tahun-lahir" class="block font-medium"
-                >Tahun Lahir Ayah:</label
-              >
-              <input
-                placeholder="Tahun Lahir Ayah"
-                type="text"
-                name="ayah-tahun-lahir"
-                id="ayah-tahun-lahir"
-                class="w-full border rounded-lg px-4 py-2"
-              />
-            </div>
-            <div>
-              <label class="block font-medium">Pekerjaan Ayah:</label>
-              <input
-                placeholder="Pekerjaan Ayah"
-                type="text"
-                name="pekerjaan-ayah"
-                id="pekerjaan-ayah"
-                class="w-full border rounded-lg px-4 py-2"
-              />
-            </div>
-            <div>
-              <label for="pendidikan-ayah" class="block font-medium"
-                >Pendidikan Ayah</label
-              >
-              <select
-                placeholder="Pendidikan Ayah"
-                id="pendidikan-ayah"
-                class="w-full border rounded-lg px-4 py-2"
-              >
-                <option value="">Pilih Pendidikan</option>
-                <option>S3</option>
-                <option>S2</option>
-                <option>D4/S1</option>
-                <option>D3</option>
-                <option>D2</option>
-                <option>D1</option>
-                <option>SMA Sederajat</option>
-                <option>SMP Sederajat</option>
-                <option>SD Sederajat</option>
-                <option>Putus SD</option>
-                <option>Tidak Sekolah</option>
-              </select>
-            </div>
-            <div>
-              <label for="kebutuhan-khusus-ayah" class="block font-medium"
-                >Berkebutuhan Khusus</label
-              >
-              <input
-                type="text"
-                id="kebutuhan-khusus-ayah"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Berkebutuhan Khusus"
-              />
-            </div>
-            <div>
-              <label class="block font-medium">Penghasilan Bulanan Ayah</label>
-              <input
-                type="text"
-                id="penghasilan-ayah"
-                name="penghasilan-ayah"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Penghasilan Bulanan Ayah"
-              />
-            </div>
-            <!-- Ibu -->
-            <div>
-              <label for="ibu-nama" class="block font-medium">Nama Ibu</label>
-              <input
-                type="text"
-                id="ibu-nama"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Ibu"
-              />
-            </div>
-            <div>
-              <label for="ibu-tahun-lahir" class="block font-medium"
-                >Tahun Lahir Ibu:</label
-              >
-              <input
-                type="text"
-                name="ibu-tahun-lahir"
-                id="ibu-tahun-lahir"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Tahun Lahir Ibu"
-              />
-            </div>
-            <div>
-              <label class="block font-medium">Pekerjaan Ibu:</label>
-              <input
-                type="text"
-                name="pekerjaan-ibu"
-                id="pekerjaan-ibu"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Pekerjaan Ibu"
-              />
-            </div>
-            <div>
-              <label for="pendidikan-ibu" class="block font-medium"
-                >Pendidikan Ibu</label
-              >
-              <select
-                id="pendidikan-ibu"
-                class="w-full border rounded-lg px-4 py-2"
-              >
-                <option value="">Pilih Pendidikan</option>
-                <option>S3</option>
-                <option>S2</option>
-                <option>D4/S1</option>
-                <option>D3</option>
-                <option>D2</option>
-                <option>D1</option>
-                <option>SMA Sederajat</option>
-                <option>SMP Sederajat</option>
-                <option>SD Sederajat</option>
-                <option>Putus SD</option>
-                <option>Tidak Sekolah</option>
-              </select>
-            </div>
-            <div>
-              <label for="kebutuhan-khusus-ibu" class="block font-medium"
-                >Berkebutuhan Khusus</label
-              >
-              <input
-                type="text"
-                id="kebutuhan-khusus-ibu"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Berkebutuhan Khusus"
-              />
-            </div>
-            <div>
-              <label class="block font-medium">Penghasilan Bulanan Ibu</label>
-              <input
-                type="text"
-                id="penghasilan-ibu"
-                name="penghasilan-ibu"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Penghasilan Bulanan Ibu"
-              />
-            </div>
-            <!-- Wali -->
-            <div>
-              <label for="wali-nama" class="block font-medium">Nama Wali</label>
-              <input
-                type="text"
-                id="wali-nama"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Nama Wali"
-              />
-            </div>
-            <div>
-              <label for="wali-tahun-lahir" class="block font-medium"
-                >Tahun Lahir Wali:</label
-              >
-              <input
-                type="text"
-                id="wali-tahun-lahir"
-                name="wali-tahun-lahir"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Tahun Lahir Wali"
-              />
-            </div>
-            <div>
-              <label class="block font-medium">Pekerjaan Wali:</label>
-              <input
-                type="text"
-                id="pekerjaan-wali"
-                name="pekerjaan-wali"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Pekerjaan Wali"
-              />
-            </div>
-            <div>
-              <label for="pendidikan-wali" class="block font-medium"
-                >Pendidikan Wali</label
-              >
-              <select
-                id="pendidikan-wali"
-                class="w-full border rounded-lg px-4 py-2"
-              >
-                <option value="">Pilih Pendidikan</option>
-                <option>S3</option>
-                <option>S2</option>
-                <option>D4/S1</option>
-                <option>D3</option>
-                <option>D2</option>
-                <option>D1</option>
-                <option>SMA Sederajat</option>
-                <option>SMP Sederajat</option>
-                <option>SD Sederajat</option>
-                <option>Putus SD</option>
-                <option>Tidak Sekolah</option>
-              </select>
-            </div>
-            <div>
-              <label for="kebutuhan-khusus-wali" class="block font-medium"
-                >Berkebutuhan Khusus</label
-              >
-              <input
-                type="text"
-                id="kebutuhan-khusus-wali"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Berkebutuhan Khusus"
-              />
-            </div>
-            <div>
-              <label class="block font-medium">Penghasilan Bulanan Wali</label>
-              <input
-                type="text"
-                id="penghasilan-wali"
-                name="penghasilan-wali"
-                class="w-full border rounded-lg px-4 py-2"
-                placeholder="Penghasilan Bulanan Wali"
-              />
-            </div>
-
-            <!-- Bagian D -->
-            <div>
-              <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-                D. Data Periodik Calon Peserta Didik
-              </h2>
-              <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label for="tinggi-badan" class="block font-medium"
-                      >Tinggi Badan</label
-                    >
-                    <input
-                      type="number"
-                      id="tinggi-badan"
-                      class="w-full border rounded-lg px-4 py-2"
-                      placeholder="Tinggi Badan (cm)"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label for="berat-bedan" class="block font-medium"
-                      >Berat Badan</label
-                    >
-                    <input
-                      type="number"
-                      id="berat-badan"
-                      class="w-full border rounded-lg px-4 py-2"
-                      placeholder="Berat Badan (kg)"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label for="jarak-ke-sekolah" class="block font-medium"
-                    >Jarak Tempat Tinggal Ke Sekolah</label
-                  >
-                  <input
-                    placeholder="Jarak Tempat Tinggal Ke Sekolah"
-                    type="text"
-                    id="jarak-ke-sekolah"
-                    class="w-full border rounded-lg px-4 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label for="waktu-ke-sekolah" class="block font-medium"
-                    >Waktu Tempuh Berangkat Ke Sekolah</label
-                  >
-                  <input
-                    placeholder="Waktu Tempuh Berangkat Ke Sekolah"
-                    type="text"
-                    id="waktu-ke-sekolah"
-                    class="w-full border rounded-lg px-4 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label for="prestasi-peserta" class="block font-medium"
-                    >Prestasi Calon Peserta Didik</label
-                  >
-                  <textarea
-                    id="prestasi"
-                    class="w-full border rounded-lg px-4 py-2"
-                    rows="3"
-                    placeholder="Prestasi Calon Peserta Didik"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-            <!-- Bagian E -->
-            <div>
-              <h2 class="text-xl font-bold text-[#286D6B] mb-4">
-                E. Berkas Persyaratan
-              </h2>
-
-              <div class="space-y-4">
-                <div>
-                  <label for="bukti-pembayaran" class="block font-medium">
-                    Bukti Pembayaran PPDB (Format: .jpeg, .jpg, .png)
-                  </label>
-                  <input
-                    type="file"
-                    id="bukti-pembayaran"
-                    class="w-full border rounded-lg px-4 py-2"
-                    accept=".jpeg, .jpg, .png"
-                    required
-                    onchange="validateAndCompressFile(this, 'bukti-pembayaran')"
-                  />
-                  <div id="bukti-pembayaran-loading" class="hidden">
-                    Loading...
-                  </div>
-                  <img
-                    id="bukti-pembayaran-preview"
-                    class="hidden w-32 mt-2"
-                    alt="Preview"
-                  />
-                </div>
-                <div>
-                  <label for="kartu-keluarga" class="block font-medium">
-                    Kartu Keluarga (Format: .jpeg, .jpg, .png)
-                  </label>
-                  <input
-                    type="file"
-                    id="kartu-keluarga"
-                    class="w-full border rounded-lg px-4 py-2"
-                    accept=".jpeg, .jpg, .png"
-                    required
-                    onchange="validateAndCompressFile(this, 'kartu-keluarga')"
-                  />
-                  <div id="kartu-keluarga-loading" class="hidden">Loading...</div>
-                  <img
-                    id="kartu-keluarga-preview"
-                    class="hidden w-32 mt-2"
-                    alt="Preview"
-                  />
-                </div>
-                <div>
-                  <label for="akta-lahir" class="block font-medium">
-                    Akta Kelahiran Siswa (Format: .jpeg, .jpg, .png)
-                  </label>
-                  <input
-                    type="file"
-                    id="akta-lahir"
-                    class="w-full border rounded-lg px-4 py-2"
-                    accept=".jpeg, .jpg, .png"
-                    required
-                    onchange="validateAndCompressFile(this, 'akta-lahir')"
-                  />
-                  <div id="akta-lahir-loading" class="hidden">Loading...</div>
-                  <img
-                    id="akta-lahir-preview"
-                    class="hidden w-32 mt-2"
-                    alt="Preview"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="w-full flex justify-center mt-6">
-              <button
-                id="button-submit"
-                type="submit"
-                class="bg-[#286D6B] w-full text-white text-lg font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-[#1d524f] transition duration-300 ease-in-out transform hover:-translate-y-1"
-              >
-                Kirim
-              </button>
-            </div>
-            <!-- end form -->
-          </div>
-        </form>
       @endif
 
-    </main>
+      <h2 class="text-center fw-bold my-4 text-danger">
+        Cetak Kartu Tes ? 
+        <a href="#" onclick="promptKodeBayar()">Klik disini</a>
+      </h2>
+      
+      <h1 class="text-center mt-5">Statistik Kunjungan</h1>
+      <div class="row text-center mb-4">
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h6 class="text-muted mb-1">Hari Ini</h6>
+              <h4 class="fw-bold text-success">{{ $statistik['hari_ini'] }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h6 class="text-muted mb-1">Bulan Ini</h6>
+              <h4 class="fw-bold text-success">{{ $statistik['bulan_ini'] }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h6 class="text-muted mb-1">Total Kunjungan</h6>
+              <h4 class="fw-bold text-success">{{ $statistik['total'] }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/compro/koneksiedu/script.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
+
     <script>
-      const changeNIK = (input,print) => {
-        let val = $("#nik").val();
-        if(input) val = input;
-        if(!val) return;
-        $.ajax({
-          url:"{{route('sekolah_sd.ppdb.cek_nik')}}",
-          data:{nik:val},
-          success:(response)=>{
-            if(!response.status) {
-              $("#button-submit").removeAttr('disabled')
-              if(print){
-                Swal.fire({
-                  title: 'Info',
-                  text: 'Nik belum pernah terdaftar',
-                  icon: 'info',
-                  background: '#fef2c0',
-                  confirmButtonColor: '#3085d6',
-                  cancelButtonColor: '#d33',
-                  confirmButtonText: 'OK',
-                });
-              }
-              return;
-            }
-            if(response.status){
-              if(print){
-                Swal.fire({
-                  title: 'Info',
-                  text: 'NIK terdaftar, tunggu sebentar...',
-                  icon: 'info',
-                  background: '#fef2c0',
-                  confirmButtonColor: '#3085d6',
-                  cancelButtonColor: '#d33',
-                  confirmButtonText: 'OK',
-                });
-                const id = response.data.id;
-                const url = `/ppdb-simuda/print/${id}`;
-                window.location.href = url;
-                return;
-              }
-              Swal.fire({
-                title: 'Info',
-                text: 'NIK ini telah terdaftar',
-                icon: 'info',
-                background: '#fef2c0',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'OK',
-              });
-            }
-              
-              $("#button-submit").attr('disabled',true)
-          }
-        })
-      }
-      $("#nik").change(changeNIK)
-      // $("#nik").keyup(changeNIK)
 
       const HitungTglLahir = (tgl_lahir) => {
-        if(!tgl_lahir || tgl_lahir == null) return '-';
-        // Tanggal lahir
+        if (!tgl_lahir) return '-';
+
         const birthDate = moment(tgl_lahir, 'YYYY-MM-DD');
-        // Tanggal saat ini
-        const currentDate = moment();
+        const currentDate = moment("{{$tgl_penerimaan}}", 'YYYY-MM-DD');
 
         // Hitung selisih tahun dan bulan
         const years = currentDate.diff(birthDate, 'years');
         const months = currentDate.diff(birthDate.add(years, 'years'), 'months');
 
-        // Output
-        // console.log(`Umur: ${years} tahun dan ${months} bulan.`);
-        // return `${years} tahun ${months} bulan`;
-        // return {tahun:years,bulan:months}
-        return months
-      }
+        // Total bulan usia
+        const totalMonths = (years * 12) + months;
 
-      $("#tanggal-lahir").change(function(){
-        const val = $(this).val()
-        const res = HitungTglLahir(val)
-        if(res < 66){
-          Swal.fire({
-            title: 'Info',
-            text: 'Umur kurang dari 5 Tahun 6 Bulan',
-            icon: 'info',
-            background: '#fef2c0',
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'OK',
-          });
-          
-          $("#button-submit").attr('disabled',true)
-          return;
+        return totalMonths;
+      };
+
+      (function(){
+
+        const minYears = {{$min_tahun}};
+        const minMonths = {{$min_bulan}};
+
+        const $day = $("#tanggal-lahir-day");
+        const $month = $("#tanggal-lahir-month");
+        const $year = $("#tanggal-lahir-year");
+        const $hidden = $("#tanggal-lahir");
+
+        // Isi hari (1..31)
+        function populateDays(maxDay = 31) {
+          $day.empty();
+          $day.append('<option value="">Tgl</option>');
+          for (let d = 1; d <= maxDay; d++) {
+            const dv = d < 10 ? '0' + d : '' + d;
+            $day.append(`<option value="${dv}">${d}</option>`);
+          }
         }
-        $("#button-submit").removeAttr('disabled')
-        return;
-      })
 
-      const popupCetakBukti = () => {
-        Swal.fire({
-          title: 'Masukkan NIK',
-          input: 'text',
-          inputPlaceholder: '...',
-          showCancelButton: true,
-          confirmButtonText: 'Submit',
-          preConfirm: (value) => {
-            if (!value) {
-              Swal.showValidationMessage('NIK tidak boleh kosong!');
+        // Isi tahun: dari currentYear ke (currentYear - 20)
+        function populateYears() {
+          const now = moment();
+          const currentYear = now.year();
+
+          // Batas maksimum tahun lahir (harus <= tanggal yang memenuhi syarat)
+          const maxAllowed = moment().subtract(minYears, 'years').subtract(minMonths, 'months');
+          const maxAllowedYear = maxAllowed.year();
+
+          const minYear = currentYear - 20;
+          $year.empty();
+          $year.append('<option value="">Tahun</option>');
+          for (let y = currentYear; y >= minYear; y--) {
+            if (y > maxAllowedYear) {
+              $year.append(`<option value="${y}" disabled>${y} (terlalu muda)</option>`);
+            } else {
+              $year.append(`<option value="${y}">${y}</option>`);
             }
-            return value; // Jika validasi berhasil, kembalikan nilai
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            changeNIK(result.value,true);
+          }
+        }
+
+        // Sesuaikan jumlah hari
+        function adjustDays() {
+          const m = $month.val();
+          const y = $year.val();
+          if (!m) {
+            populateDays(31);
+            return;
+          }
+          const yy = y ? parseInt(y,10) : 2000;
+          const daysInMonth = moment(`${yy}-${m}`, 'YYYY-MM').daysInMonth();
+          const prevVal = $day.val();
+          populateDays(daysInMonth);
+          if (prevVal && parseInt(prevVal,10) <= daysInMonth) {
+            $day.val(prevVal);
+          }
+        }
+
+        // Gabungkan dan isi hidden field
+        function syncHiddenAndValidate() {
+          const d = $day.val();
+          const m = $month.val();
+          const y = $year.val();
+          if (!d || !m || !y) {
+            $hidden.val('');
+            $hidden.trigger('change');
+            return;
+          }
+          const iso = `${y}-${m}-${d}`;
+          $hidden.val(iso);
+          $hidden.trigger('change');
+        }
+
+        // Deteksi perubahan dan beri peringatan umur
+        $hidden.on('change', function(){
+          const val = $(this).val();
+          if(!val) return;
+
+          const totalMonths = HitungTglLahir(val);
+
+          // Hitung batas minimum (misal 5 tahun 6 bulan = 66 bulan)
+          const minMonthsTotal = (minYears * 12) + minMonths;
+
+          if (typeof totalMonths === 'number' && totalMonths < minMonthsTotal) {
+            Swal.fire({
+              title: 'Info',
+              text: 'Umur kurang dari 5 Tahun 6 Bulan',
+              icon: 'info',
+              background: '#fef2c0',
+              confirmButtonColor: '#3085d6',
+            });
           }
         });
+
+
+        // Event listeners
+        $day.on('change', syncHiddenAndValidate);
+        $month.on('change', function(){ adjustDays(); syncHiddenAndValidate(); });
+        $year.on('change', function(){ adjustDays(); syncHiddenAndValidate(); });
+
+        // Init saat load
+        $(document).ready(function(){
+          populateDays();
+          populateYears();
+          const existing = $hidden.val();
+          if (existing) {
+            const m = moment(existing, 'YYYY-MM-DD');
+            if (m.isValid()) {
+              $year.val(m.format('YYYY'));
+              $month.val(m.format('MM'));
+              adjustDays();
+              $day.val(m.format('DD'));
+            }
+          }
+        });
+      })();
+
+      const baseURL = window.location.origin;
+      const linkBerkasPPDB = {
+        link_kartu_keluarga: "",
+        link_akta_lahir: "",
+        link_kartu_anak: ""
+      };
+
+      // 🚀 Fungsi utama untuk handle kompresi dan upload
+      async function handleFileInput(event, previewId) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const previewElement = document.getElementById(`preview-${previewId}`);
+        const loader = document.getElementById(`loader-${previewId}`);
+        const success = document.getElementById(`success-${previewId}`);
+
+        // Reset state
+        loader.style.display = "block";
+        success.classList.add("d-none");
+        previewElement.classList.add("d-none");
+
+        try {
+          // Validasi ekstensi
+          if (!file.type.startsWith("image/")) {
+            loader.style.display = "none";
+            Swal.fire("Format Tidak Valid", "Hanya file gambar (jpg, jpeg, png) yang diperbolehkan.", "error");
+            return;
+          }
+
+          // 🔧 Opsi kompresi
+          const options = {
+            maxSizeMB: 0.45,         // target 450KB
+            maxWidthOrHeight: 1280,  // resize kalau besar
+            useWebWorker: true,
+          };
+
+          // Kompres file
+          const compressedBlob = await imageCompression(file, options);
+          const compressedFile = new File([compressedBlob], file.name, { type: file.type });
+
+          console.log(
+            `Asli: ${(file.size / 1024).toFixed(1)}KB → Kompres: ${(compressedFile.size / 1024).toFixed(1)}KB`
+          );
+
+          // Validasi ukuran setelah kompres
+          if (compressedFile.size > 524288) {
+            loader.style.display = "none";
+            Swal.fire("File Terlalu Besar", "Setelah kompres masih > 500KB. Gunakan gambar lain.", "error");
+            return;
+          }
+
+          // Upload file yang sudah dikonversi ulang ke File (bukan Blob)
+          await uploadFileToServer(compressedFile, previewId, previewElement, loader, success);
+
+        } catch (err) {
+          loader.style.display = "none";
+          console.error("Error Kompresi:", err);
+          Swal.fire("Error", "Terjadi kesalahan saat mengompres file.", "error");
+        }
       }
+
+      // 🚀 Fungsi Upload ke Server + Preview + Status
+      async function uploadFileToServer(file, previewId, previewElement, loader, success) {
+        const formData = new FormData();
+        formData.append("file_data", file);
+
+        try {
+          const response = await axios.post(`${baseURL}/api/sekolah_sd/upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: function(progressEvent) {
+              const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+              loader.querySelector("span").innerText = `Mengupload... ${percent}%`;
+            }
+          });
+
+          if (response.data.status) {
+            loader.style.display = "none";
+
+            // Tampilkan preview
+            const url = URL.createObjectURL(file);
+            previewElement.src = url;
+            previewElement.classList.remove("d-none");
+
+            // Tampilkan sukses
+            success.classList.remove("d-none");
+            setTimeout(() => success.classList.add("d-none"), 3000);
+
+            // Simpan ke object global
+            const data = response.data.data;
+            switch (previewId) {
+              case "kartu-keluarga":
+                linkBerkasPPDB.link_kartu_keluarga = data;
+                break;
+              case "akta-lahir":
+                linkBerkasPPDB.link_akta_lahir = data;
+                break;
+              case "kartu-anak":
+                linkBerkasPPDB.link_kartu_anak = data;
+                break;
+            }
+          } else {
+            loader.style.display = "none";
+            Swal.fire("Gagal", response.data.message || "Upload gagal.", "error");
+          }
+        } catch (error) {
+          loader.style.display = "none";
+          console.error(error);
+          Swal.fire({
+            title: "Error Upload",
+            text: error.response?.data?.message || error.message,
+            icon: "error"
+          });
+        }
+      }
+
+      // 🎧 Event listener untuk tiap input
+      document.getElementById("kartu-keluarga").addEventListener("change", (e) => handleFileInput(e, "kartu-keluarga"));
+      document.getElementById("akta-lahir").addEventListener("change", (e) => handleFileInput(e, "akta-lahir"));
+      document.getElementById("kartu-anak").addEventListener("change", (e) => handleFileInput(e, "kartu-anak"));
+
+      let kode_bayar;
+      let emailGlobal;
+
+      async function submitPPDB(event) {
+        event.preventDefault();
+
+        const buttonSubmit = document.getElementById("button-submit");
+        const originalButtonText = buttonSubmit.innerHTML;
+
+        try {
+          // 📨 Tampilkan input email via SweetAlert
+          const { value: email } = await Swal.fire({
+            title: "Masukkan Email Anda",
+            text: "email akan digunakan untuk mengirimkan kartu test peserta",
+            input: "email",
+            inputPlaceholder: "contoh: nama@email.com",
+            confirmButtonText: "Lanjutkan",
+            showCancelButton: true,
+            cancelButtonText: "Batal",
+            inputValidator: (value) => {
+              if (!value) return "Email wajib diisi.";
+              const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!regex.test(value)) return "Format email tidak valid.";
+            },
+          });
+
+          if (!email) return; // jika user batal
+
+          emailGlobal = email;
+
+          // 🌀 Aktifkan animasi loading
+          buttonSubmit.disabled = true;
+          buttonSubmit.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Menyimpan data...
+          `;
+
+          // Ambil semua input dari form
+          const formData = new FormData(event.target);
+          const payload = Object.fromEntries(formData.entries());
+
+          // Tambahkan link file hasil upload
+          payload.link_kartu_keluarga = linkBerkasPPDB.link_kartu_keluarga;
+          payload.link_akta_lahir = linkBerkasPPDB.link_akta_lahir;
+          payload.link_kartu_anak = linkBerkasPPDB.link_kartu_anak;
+
+          // Tambahkan data bank pembayaran
+          payload.bank_pembayaran = {
+            nama_bank: "{{$nama_bank}}",
+            no_rek: "{{$no_rek}}",
+            atas_nama: "{{$atas_nama}}"
+          };
+
+          // Tambahkan email dari input Swal
+          payload.email = email;
+
+          // ✅ Validasi field wajib
+          if (!payload.nama) {
+            Swal.fire("Peringatan", "Nama Lengkap wajib diisi!", "warning");
+            return;
+          }
+
+          if (!payload.link_kartu_keluarga) {
+            Swal.fire({
+              title: "Peringatan",
+              text: "Berkas Kartu Keluarga wajib diunggah!",
+              icon: "warning",
+              background: "#fff3cd",
+              confirmButtonColor: "#3085d6",
+            });
+            return;
+          }
+
+          if (!payload.link_akta_lahir) {
+            Swal.fire({
+              title: "Peringatan",
+              text: "Berkas Akta Lahir wajib diunggah!",
+              icon: "warning",
+              background: "#fff3cd",
+              confirmButtonColor: "#3085d6",
+            });
+            return;
+          }
+
+          // ✅ Validasi checkbox
+          const checkIdentitas = document.getElementById("check-identitas").checked;
+          const checkUsia = document.getElementById("check-usia").checked;
+          const checkTanggungjawab = document.getElementById("check-tanggungjawab").checked;
+
+          if (!checkIdentitas || !checkUsia || !checkTanggungjawab) {
+            Swal.fire({
+              title: "Validasi Gagal",
+              text: "Harap centang semua pernyataan dan persetujuan terlebih dahulu sebelum melanjutkan.",
+              icon: "warning",
+              background: "#fff3cd",
+              confirmButtonColor: "#3085d6",
+            });
+            return;
+          }
+
+          // 🚀 Kirim ke server
+          const res = await axios.post(`${baseURL}/api/sekolah_sd/ppdb/store`, payload);
+
+          if (res.data.status) {
+            Swal.fire({
+              title: "Berhasil!",
+              text: "Data berhasil disimpan, silakan lanjut ke pembayaran.",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+
+            kode_bayar = res.data.data.kode_bayar;
+
+            showPopupPembayaran({
+              kode_bayar: res.data.data.kode_bayar,
+              biaya_dasar: res.data.data.biaya_dasar,
+              nominal: res.data.data.total_bayar,
+              kodeAkhir: res.data.data.kode_unik,
+            });
+
+          } else {
+            Swal.fire("Gagal", res.data.message || "Terjadi kesalahan saat menyimpan.", "error");
+          }
+
+        } catch (err) {
+          console.error(err);
+          Swal.fire("Error", err.response?.data?.message || err.message, "error");
+        } finally {
+          // 🔁 Kembalikan tombol ke keadaan semula
+          buttonSubmit.disabled = false;
+          buttonSubmit.innerHTML = originalButtonText;
+        }
+
+      }
+
+
+      // Mapping hari agar "Sunday" jadi "Ahad"
+      const hariMap = {
+        Sunday: "Ahad",
+        Monday: "Senin",
+        Tuesday: "Selasa",
+        Wednesday: "Rabu",
+        Thursday: "Kamis",
+        Friday: "Jumat",
+        Saturday: "Sabtu"
+      };
+
+      let modal;
+
+      function showPopupPembayaran({ 
+        kode_bayar = "",
+        biaya_dasar = 350000,
+        nominal = 350000,
+        kodeAkhir = 0,
+      }) {
+        // Hitung batas waktu pembayaran (1 jam dari sekarang)
+        const deadline = moment().add(1, 'hours');
+
+        const hariEnglish = deadline.format('dddd');
+        const hari = hariMap[hariEnglish] || hariEnglish;
+
+        const tanggal = deadline.format('DD/MM/YYYY');
+        const waktu = deadline.format('HH:mm');
+
+        // Format nominal + contoh transfer
+        const nominalStr = `Rp${biaya_dasar.toLocaleString('id-ID')},-`;
+        const contohTransfer = `Rp${(nominal).toLocaleString('id-ID')}`;
+
+        const url = `/kwitansi-ppdb-simuda?kode_bayar=${kode_bayar}`
+        $(".btnLihatKwitansi").attr('href',url);
+
+        // Isi data ke elemen
+        document.getElementById("nominal-pembayaran").textContent = nominalStr;
+        document.getElementById("hari-batas").textContent = hari;
+        document.getElementById("tanggal-batas").textContent = tanggal;
+        document.getElementById("waktu-batas").textContent = waktu;
+        document.getElementById("contoh-transfer").textContent = contohTransfer;
+        document.getElementById("kode_unik").textContent = kodeAkhir;
+
+        // ✅ Countdown timer setup
+        const countdownValue = document.getElementById("countdown-value");
+
+        // Bersihkan timer lama kalau ada
+        if (window.ppdbCountdownInterval) clearInterval(window.ppdbCountdownInterval);
+
+        window.ppdbCountdownInterval = setInterval(() => {
+          const now = moment();
+          const diff = moment.duration(deadline.diff(now));
+
+          if (diff.asMinutes() <= 10) {
+            countdownValue.classList.add("text-danger");
+          } else {
+            countdownValue.classList.remove("text-danger");
+          }
+
+
+          if (diff.asSeconds() <= 0) {
+            clearInterval(window.ppdbCountdownInterval);
+            countdownValue.textContent = "00:00:00";
+            countdownValue.classList.add("text-danger");
+            Swal.fire({
+              title: "Waktu Habis!",
+              text: "Batas waktu pembayaran sudah berakhir. Silakan lakukan pendaftaran ulang.",
+              icon: "warning",
+              confirmButtonText: "Tutup",
+            });
+            return;
+          }
+
+          const hours = String(Math.floor(diff.asHours())).padStart(2, "0");
+          const minutes = String(diff.minutes()).padStart(2, "0");
+          const seconds = String(diff.seconds()).padStart(2, "0");
+          countdownValue.textContent = `${hours}:${minutes}:${seconds}`;
+        }, 1000);
+
+        // ✅ Tampilkan modal dengan Bootstrap API
+        const modalEl = document.getElementById("popupPembayaranPPDB");
+        modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+      }
+
+      if (typeof linkBerkasPPDB === "undefined") {
+        window.linkBerkasPPDB = {};
+      }
+
+      const buktiFileInput = document.getElementById("buktiPembayaranFile");
+      const loader = document.getElementById("loader-bukti");
+      const previewContainer = document.getElementById("preview-bukti-container");
+      const previewImage = document.getElementById("preview-bukti");
+      const uploadSuccess = document.getElementById("upload-success");
+
+      // ✅ Event utama: otomatis upload saat file diganti
+      buktiFileInput.addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        loader.style.display = "block";
+        uploadSuccess.classList.add("d-none");
+        previewContainer.style.display = "none";
+
+        try {
+          let uploadFile = file;
+
+          // Kompres gambar jika formatnya image/*
+          if (file.type.startsWith("image/")) {
+            const options = {
+              maxSizeMB: 0.45,         // target 450KB
+              maxWidthOrHeight: 1280,  // resize jika besar
+              useWebWorker: true,
+            };
+            // uploadFile = await imageCompression(file, options);
+            const compressedBlob = await imageCompression(file, options);
+            uploadFile = new File([compressedBlob], file.name, { type: file.type });
+            console.log(
+              `Kompresi Bukti: ${(file.size / 1024).toFixed(1)}KB → ${(uploadFile.size / 1024).toFixed(1)}KB`
+            );
+          }
+
+          // Validasi ukuran setelah kompres
+          if (uploadFile.size > 524288) {
+            loader.style.display = "none";
+            Swal.fire("File Terlalu Besar", "Ukuran file melebihi 500KB setelah kompresi.", "error");
+            return;
+          }
+
+          // Upload ke server
+          const formData = new FormData();
+          formData.append("file_data", uploadFile);
+
+          const response = await axios.post(`${baseURL}/api/sekolah_sd/upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: (progressEvent) => {
+              const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+              loader.querySelector("span").innerText = `Mengupload... ${percent}%`;
+            },
+          });
+
+          loader.style.display = "none";
+
+          if (response.data.status) {
+            const data = response.data.data;
+            linkBerkasPPDB.link_pembayaran_ppdb = data;
+
+            // Preview file
+            if (file.type.startsWith("image/")) {
+              previewImage.src = URL.createObjectURL(uploadFile);
+              previewContainer.style.display = "block";
+              previewImage.classList.remove("d-none");
+            } else {
+              previewContainer.innerHTML = `
+                <div class="alert alert-success fw-semibold">
+                  ✅ File bukti pembayaran (PDF) berhasil diupload
+                </div>`;
+              previewContainer.style.display = "block";
+            }
+
+            uploadSuccess.classList.remove("d-none");
+
+
+          } else {
+            Swal.fire("Gagal", response.data.message || "Upload gagal.", "error");
+          }
+        } catch (error) {
+          loader.style.display = "none";
+          btnUpload.disabled = false;
+          btnUpload.innerHTML = `<i class="bi bi-upload me-2"></i> Upload Gagal`;
+          console.error("Upload Error:", error);
+          Swal.fire("Error", error.response?.data?.message || error.message, "error");
+        }
+      });
+
+      // 🧾 Trigger kirim bukti pembayaran ke database (setelah file sudah terupload)
+      const btnSubmitBukti = document.getElementById("button-submit-bukti");
+
+      btnSubmitBukti.addEventListener("click", async () => {
+        const kodeBayar = kode_bayar;
+        const buktiUrl = linkBerkasPPDB.link_pembayaran_ppdb;
+
+        if (!kodeBayar) {
+          Swal.fire("Error", "Kode bayar tidak ditemukan di halaman.", "error");
+          return;
+        }
+
+        if (!buktiUrl) {
+          Swal.fire("Belum Ada File", "Silakan upload file bukti pembayaran terlebih dahulu.", "warning");
+          return;
+        }
+
+        // 🔁 Update data ke database
+        btnSubmitBukti.disabled = true;
+        btnSubmitBukti.innerHTML = `
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          Mengirim data...
+        `;
+
+        try {
+          const payload = {
+            update_bukti: 1,
+            kode_bayar: kodeBayar,
+            bukti_pembayaran: buktiUrl
+          };
+
+          const res = await axios.post(`${baseURL}/api/sekolah_sd/ppdb/store`, payload);
+
+          if (res.data.status) {
+            Swal.fire({
+              title: "Berhasil!",
+              text: "Bukti pembayaran berhasil disimpan ke database.",
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+
+            // ✅ Tutup modal pembayaran jika masih terbuka
+            const modalPembayaranEl = document.getElementById("popupPembayaranPPDB");
+            const modalPembayaran = bootstrap.Modal.getInstance(modalPembayaranEl);
+            if (modalPembayaran) modalPembayaran.hide();
+
+            // ✅ Tampilkan popup menunggu validasi
+            const modalEl = document.getElementById("popupMenungguValidasi");
+
+            // Cegah user menutup modal dengan klik luar atau tombol ESC
+            const menungguModal = new bootstrap.Modal(modalEl, {
+              backdrop: "static",
+              keyboard: false
+            });
+
+            // Tampilkan modal
+            menungguModal.show();
+
+          } else {
+            Swal.fire("Gagal", res.data.message || "Gagal menyimpan ke database.", "error");
+          }
+        } catch (err) {
+          console.error("Update Error:", err);
+          Swal.fire("Error", err.response?.data?.message || err.message, "error");
+        } finally {
+          btnSubmitBukti.disabled = false;
+          btnSubmitBukti.innerHTML = `<i class="bi bi-upload me-2"></i> Upload Sekarang`;
+        }
+      });
+
+
+      // 🔍 Fungsi bantu untuk ambil parameter dari URL
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const isUploadPembayaran = getQueryParam("upload_pembayaran");
+        const kodeBayar = getQueryParam("kode_bayar");
+        kode_bayar = kodeBayar;
+
+        if (isUploadPembayaran && kodeBayar) {
+          try {
+            Swal.fire({
+              title: "Memuat Data...",
+              text: "Mohon tunggu sebentar.",
+              allowOutsideClick: false,
+              didOpen: () => Swal.showLoading(),
+            });
+
+            // 🔁 Ambil data PPDB berdasarkan kode bayar
+            const response = await axios.get(`${baseURL}/ppdb-show/${kodeBayar}`);
+            Swal.close();
+
+            if (response.data.status) {
+              const data = response.data.data;
+
+              // Format nominal total bayar
+              const nominal = data?.detail?.total_bayar || 0;
+              const kodeUnik = data?.detail?.kode_unik || 0;
+              const biayaDasar = nominal - kodeUnik;
+
+              // 🧾 Tampilkan modal pembayaran
+              showPopupPembayaran({
+                kode_bayar: kodeBayar,
+                biaya_dasar: biayaDasar,
+                nominal: nominal,
+                kodeAkhir: kodeUnik,
+              });
+
+              // 💳 Isi elemen lain dari data
+              if (data?.bank_pembayaran) {
+                const { nama_bank, no_rek } = data.bank_pembayaran;
+                document.querySelector("#kode-bayar").textContent = no_rek;
+                document.querySelector(".fw-semibold.text-secondary").textContent =
+                  `Nomor Kode Bayar / Rekening (${nama_bank})`;
+              }
+
+              // 🔗 Jika sudah pernah upload bukti, tampilkan preview
+              if (data.detail?.link_pembayaran_ppdb) {
+                const previewContainer = document.getElementById("preview-bukti-container");
+                const previewImage = document.getElementById("preview-bukti");
+                previewContainer.style.display = "block";
+
+                if (data.detail.link_pembayaran_ppdb.endsWith(".pdf")) {
+                  previewContainer.innerHTML = `
+                    <div class="alert alert-success fw-semibold">
+                      ✅ Bukti pembayaran (PDF) sudah diupload
+                    </div>`;
+                } else {
+                  previewImage.src = data.detail.link_pembayaran_ppdb;
+                  previewImage.classList.remove("d-none");
+                }
+
+                document.getElementById("upload-success").classList.remove("d-none");
+              }
+            } else {
+              Swal.fire("Data Tidak Ditemukan", "Kode bayar tidak valid.", "error");
+            }
+          } catch (err) {
+            console.error(err);
+            Swal.fire("Error", "Gagal memuat data pendaftaran.", "error");
+          }
+        }
+        
+      });
+
+      const check = () => {
+        // ✅ Tampilkan popup menunggu validasi
+        const modalEl = document.getElementById("popupMenungguValidasi");
+
+        // Cegah user menutup modal dengan klik luar atau tombol ESC
+        const menungguModal = new bootstrap.Modal(modalEl, {
+          backdrop: "static",
+          keyboard: false
+        });
+
+        // Tampilkan modal
+        menungguModal.show();
+      }
+
+      async function promptKodeBayar() {
+        const { value: kode } = await Swal.fire({
+            title: "Masukkan Kode Bayar",
+            text: "Masukkan kode bayar untuk melihat status atau mencetak kwitansi.",
+            input: "text",
+            inputPlaceholder: "",
+            confirmButtonText: "Lanjutkan",
+            showCancelButton: true,
+            cancelButtonText: "Batal",
+            inputAttributes: {
+                maxlength: 20,
+                autocapitalize: "off",
+                autocorrect: "off",
+            },
+            inputValidator: (value) => {
+                if (!value) return "Kode bayar wajib diisi!";
+            }
+        });
+
+        if (!kode) return;
+
+        // 🔄 Loading
+        Swal.fire({
+            title: "Memeriksa kode...",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            const res = await axios.get(`${baseURL}/ppdb-show/${kode}`);
+
+            Swal.close();
+
+            if (!res.data.status) {
+                return Swal.fire("Tidak ditemukan", "Kode bayar tidak valid.", "error");
+            }
+
+            // 🔀 Redirect ke halaman upload pembayaran
+            window.location.href = `/cetak-karu-simuda?kode_bayar=${kode}`;
+
+        } catch (err) {
+            Swal.close();
+            Swal.fire("Error", err.response?.data?.message || "Terjadi kesalahan.", "error");
+        }
+    }
+
+
     </script>
+
+
   </body>
 </html>

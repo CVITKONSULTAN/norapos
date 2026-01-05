@@ -17,10 +17,14 @@ class Kelas extends Model
         'nbm_wali_kelas',
         'wali_kelas_id',
         'kelas',
-        'dimensi_list'
+        'dimensi_list',
+        'tema_kokurikuler',
     ];
 
-    protected $casts = ['dimensi_list'=>'array'];
+    protected $casts = [
+        'dimensi_list'=>'array',
+        'tema_kokurikuler'=>'array',
+    ];
 
     public static function getGroupBy($column){
         return self::groupBy($column)->select($column)->get()->pluck($column);

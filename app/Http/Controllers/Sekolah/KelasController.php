@@ -62,7 +62,8 @@ class KelasController extends Controller
                 );
             },
         ])
-        ->orderBy('id', 'desc');
+        // ->orderBy('id', 'desc');
+        ->orderBy('id', 'asc');
 
         if(
             $request->has('filter_tahun_ajaran')&&

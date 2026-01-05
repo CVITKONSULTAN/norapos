@@ -34,7 +34,7 @@ class NilaiSiswaController extends Controller
 
         $format = $check->formatter_string ?? "";
         if (strpos($format, "@nama@") !== false) {
-            $format = str_replace("@nama@",$data->siswa->nama,$format);
+            $format = str_replace("@nama@", ucwords($data->siswa->nama) ,$format);
         }
         if (strpos($format, "@tp_nama@") !== false) {
             $format = str_replace("@tp_nama@",$data->tp_keterangan,$format);

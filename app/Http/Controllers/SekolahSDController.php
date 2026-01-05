@@ -18,14 +18,24 @@ use \App\Models\Sekolah\RaporProjek;
 use \App\Models\Sekolah\DimensiProjek;
 use \App\Models\Sekolah\DataDimensiID;
 use \App\Models\Sekolah\PPDBSekolah;
+use \App\Models\Sekolah\PPDBSetting;
+use \App\Models\Sekolah\PpdbTestSchedule;
+use \App\Models\Sekolah\NilaiIntervalKeyword;
+
 use \App\User;
+use \App\Visitor;
 
 use Spatie\Permission\Models\Role;
 use App\Helpers\Helper;
 use DB;
 use Log;
+use Str;
 use DataTables;
-use Storage;;
+use Storage;
+use Mail;
+use Carbon;
+use Validator;
+
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PPDBExport;
 use Illuminate\Support\Facades\Password;
@@ -50,7 +60,9 @@ class SekolahSDController extends Controller
     ];
 
     function dashboard(Request $request){
-        return view('sekolah_sd.dashboard');
+        $data['tahun_ajaran'] = Kelas::getGroupBy('tahun_ajaran');
+        $data['semester'] = Kelas::getGroupBy('semester');
+        return view('sekolah_sd.dashboard',$data);
     }
     
     function kelas_index(Request $request){
@@ -141,7 +153,7 @@ class SekolahSDController extends Controller
             $data['kelas_wali'] = Kelas::where('wali_kelas_id',$user->id)->get();
         }
         if($user->checkAdmin()){
-            $data['kelas_wali'] = Kelas::all();
+            $data['kelas_wali'] = Kelas::orderByDesc('id')->get();
         }
 
 
@@ -407,6 +419,21 @@ class SekolahSDController extends Controller
         $data['index_projek'] = $request->index_projek ?? 0;
         return view('sekolah_sd.project',$data);
     }
+
+    function kokurikuler_index(Request $request){
+        $kelas = Kelas::find($request->kelas_id);
+        $data['level_kelas'] = $this->level_kelas;
+        $data['kelas'] = $kelas;
+        $data['tema_kokurikuler'] = [];
+        if(!empty($kelas) && $request->has('index_projek')){
+            $data['tema_kokurikuler'] = $kelas->tema_kokurikuler[$request->index_projek];
+        }
+        $data['kelas_siswa'] = KelasSiswa::where('kelas_id',$request->kelas_id)
+        ->get();
+        $data['index_projek'] = $request->index_projek ?? 0;
+        return view('sekolah_sd.kokurikuler',$data);
+    }
+
     function project_create(Request $request){
         return view('sekolah_sd.input.project.create');
     }
@@ -497,11 +524,13 @@ class SekolahSDController extends Controller
             'kelas_id'=> $data['kelas_siswa']->kelas_id,
             'siswa_id'=> $data['kelas_siswa']->siswa_id,
         ])
-        ->whereHas('mapel')
+        // ->whereHas('mapel')
         ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
         ->orderBy('mapels.orders','asc')
         ->with('mapel')
         ->get();
+
+        // dd($data['nilai_list']->toArray());
         
         $data['fase'] = null;
         $kelas = $data['kelas_siswa']->kelas;
@@ -515,18 +544,109 @@ class SekolahSDController extends Controller
             $data['fase'] = "C";
         }
 
+        // Urutan ranking nilai kokurikuler
+        // $ranking = ["SB" => 4, "B" => 3, "C" => 2, "K" => 1];
+        // $descrip = ["SB" => "sangat baik", "B" => "baik", "C" => "cukup", "K" => "kurang"];
+        $ranking = ["M" => 3, "C" => 2, "B" => 1];
+        $descrip = ["M" => "mahir", "C" => "cakap", "B" => "berkembang"];
+
+        $nilai_kokurikuler = $data['kelas_siswa']->nilai_kokurikuler ?? [];
+        $nama_siswa = $data['kelas_siswa']->siswa->nama ?? "";
+
+        try {
+            foreach ($nilai_kokurikuler as $key => $value) {
+    
+                // $nilai_tertinggi = collect($value['dimensi'])
+                // ->sortByDesc(fn($d) => $ranking[$d['nilai']])
+                // ->first();
+        
+                // $nilai_terendah = collect($value['dimensi'])
+                // ->sortBy(fn($d) => $ranking[$d['nilai']])
+                // ->first();
+    
+                // $tema = $value['kokurikuler_tema'] ?? '';
+                // $min = strtolower($nilai_terendah['nama'] ?? '');
+                // $max = strtolower($nilai_tertinggi['nama'] ?? '');
+                // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+    
+                // $nilai_kokurikuler[$key]['kokurikuler_desc'] = "";
+                // dd(
+                //     count($value['dimensi']),
+                //     $value['dimensi']
+                // );
+                // if( count($value['dimensi']) == 1){
+                //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                // }
+                // if( count($value['dimensi']) > 1){
+                //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                // }
+    
+                $tema = $value['kokurikuler_tema'] ?? '';
+                $dimensi = collect($value['dimensi']);
+                $nilai_unik = $dimensi->pluck('nilai')->unique();
+
+    
+                if ($nilai_unik->count() === 1) {
+                    // Semua nilai sama
+                    $nilai = $nilai_unik->first(); // M / C / B
+                    $nilai_desc = $descrip[$nilai] ?? '';
+    
+                    // $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
+                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' , ');
+    
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
+                } else {
+                    // // Ada nilai tertinggi & terendah berbeda (logika lama)
+                    // $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
+                    // $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
+    
+                    // $min = $nilai_terendah['nama'] ?? '';
+                    // $max = $nilai_tertinggi['nama'] ?? '';
+                    // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                    // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+
+                    // if ($dimensi->count() === 1) {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                    // } else {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                    // }
+
+                    // ===============================
+                    // Menampilkan SEMUA aspek dimensi
+                    // ===============================
+                    $aspek_deskripsi = $dimensi->map(function ($d) use ($descrip) {
+                        $desc = $descrip[$d['nilai']] ?? '';
+                        return "$desc dalam aspek {$d['nama']}";
+                    })->implode(', ');
+
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $aspek_deskripsi pada tema $tema";
+                }
+    
+            }
+        } catch (\Throwable $th) {
+            Log::info("Error raport akhir index :".$th->getMessage());
+            Log::info(json_encode($data));
+        }
+
+        $data['nilai_kokurikuler'] = $nilai_kokurikuler;
+
+        // @NAMA@ sudah @NILAIMAX@ dalam @DIMENSI@ dan masih perlu berlatih dalam @NILAIMIN@ dalam tema @TEMA@
+
         //  if( 
-        //     $data['kelas_siswa']->siswa->nisn == "0136321795" ||
-        //     $data['kelas_siswa']->siswa->nisn == "3133538726" ||
-        //     $data['kelas_siswa']->siswa->nisn == "0139092677" 
+        //     $data['kelas_siswa']->siswa->nisn == "0153381467"
         //  ){
 
         //     $nilai_list = NilaiSiswa::where([
         //         'kelas_id'=> $data['kelas_siswa']->kelas_id,
         //     ])
         //     ->whereHas('mapel',function($q){
-        //         $q->where('nama',"Seni dan Budaya")
-        //         ->where('kelas','!=','6');
+        //         $q->where('nama',"Matematika")
+        //         ->where('kelas','!=','3 CI');
         //     })
         //     ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
         //     ->delete();
@@ -537,8 +657,8 @@ class SekolahSDController extends Controller
 
         //     Log::info("OK");
         //     // Log::info("row affected >> ". $nilai_list->count() );
-        //     // Log::info("nilai_list >> ". $nilai_list );
-        //     // Log::info("nilai_list >> ". json_encode($nilai_list) );
+        // //     // Log::info("nilai_list >> ". $nilai_list );
+        // //     // Log::info("nilai_list >> ". json_encode($nilai_list) );
         // }
 
         return view('sekolah_sd.raport_akhir',$data);
@@ -581,7 +701,7 @@ class SekolahSDController extends Controller
         ];
 
         $data['nilai_list'] = NilaiSiswa::where($where)
-        ->whereHas('mapel')
+        // ->whereHas('mapel')
         ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
         ->orderBy('mapels.orders','asc')
         ->with('mapel')
@@ -590,6 +710,103 @@ class SekolahSDController extends Controller
         $data['ekskul_siswa'] = EkskulSiswa::where($where)
         ->with('ekskul')
         ->get();
+
+        $lvlkelas = $kelas->kelas;
+        $lvlkelas = preg_replace('/\D+/', '', $lvlkelas);
+        $lvlkelas = $lvlkelas+1;
+        // Log::info("kelas >> ". $kelas->kelas." -> ". $lvlkelas);
+
+        $data['naik_kelas'] = angkaKeRomawi( $lvlkelas ). " (".ucfirst( angkaKeHuruf($lvlkelas) ).")";
+
+        // Urutan ranking nilai kokurikuler
+        // $ranking = ["SB" => 4, "B" => 3, "C" => 2, "K" => 1];
+        // $descrip = ["SB" => "sangat baik", "B" => "baik", "C" => "cukup", "K" => "kurang"];
+        $ranking = ["M" => 3, "C" => 2, "B" => 1];
+        $descrip = ["M" => "mahir", "C" => "cakap", "B" => "berkembang"];
+
+        $nilai_kokurikuler = $data['kelas_siswa']->nilai_kokurikuler ?? [];
+        $nama_siswa = $data['kelas_siswa']->siswa->nama ?? "";
+
+        try {
+            foreach ($nilai_kokurikuler as $key => $value) {
+    
+                // $nilai_tertinggi = collect($value['dimensi'])
+                // ->sortByDesc(fn($d) => $ranking[$d['nilai']])
+                // ->first();
+        
+                // $nilai_terendah = collect($value['dimensi'])
+                // ->sortBy(fn($d) => $ranking[$d['nilai']])
+                // ->first();
+    
+                // $tema = $value['kokurikuler_tema'] ?? '';
+                // $min = strtolower($nilai_terendah['nama'] ?? '');
+                // $max = strtolower($nilai_tertinggi['nama'] ?? '');
+                // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+    
+                // $nilai_kokurikuler[$key]['kokurikuler_desc'] = "";
+                // dd(
+                //     count($value['dimensi']),
+                //     $value['dimensi']
+                // );
+                // if( count($value['dimensi']) == 1){
+                //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                // }
+                // if( count($value['dimensi']) > 1){
+                //     $nilai_kokurikuler[$key]['kokurikuler_desc'] = "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                // }
+    
+                $tema = $value['kokurikuler_tema'] ?? '';
+                $dimensi = collect($value['dimensi']);
+                $nilai_unik = $dimensi->pluck('nilai')->unique();
+    
+                if ($nilai_unik->count() === 1) {
+                    // Semua nilai sama
+                    $nilai = $nilai_unik->first(); // M / C / B
+                    $nilai_desc = $descrip[$nilai] ?? '';
+    
+                    // $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' dan ');
+                    $aspek_list = $dimensi->pluck('nama')->map(fn($n) => $n)->implode(' , ');
+    
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $nilai_desc dalam aspek $aspek_list pada tema $tema";
+                } else {
+                    // // Ada nilai tertinggi & terendah berbeda (logika lama)
+                    // $nilai_tertinggi = $dimensi->sortByDesc(fn($d) => $ranking[$d['nilai']])->first();
+                    // $nilai_terendah = $dimensi->sortBy(fn($d) => $ranking[$d['nilai']])->first();
+    
+                    // $min = $nilai_terendah['nama'] ?? '';
+                    // $max = $nilai_tertinggi['nama'] ?? '';
+                    // $min_desc = $descrip[$nilai_terendah['nilai']] ?? '';
+                    // $max_desc = $descrip[$nilai_tertinggi['nilai']] ?? '';
+
+                    // if ($dimensi->count() === 1) {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max pada tema $tema";
+                    // } else {
+                    //     $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                    //         "$nama_siswa sudah $max_desc dalam aspek $max serta $min_desc dalam aspek $min pada tema $tema";
+                    // }
+
+                    // ===============================
+                    // Menampilkan SEMUA aspek dimensi
+                    // ===============================
+                    $aspek_deskripsi = $dimensi->map(function ($d) use ($descrip) {
+                        $desc = $descrip[$d['nilai']] ?? '';
+                        return "$desc dalam aspek {$d['nama']}";
+                    })->implode(', ');
+
+                    $nilai_kokurikuler[$key]['kokurikuler_desc'] =
+                        "$nama_siswa sudah $aspek_deskripsi pada tema $tema";
+                }
+    
+            }
+        } catch (\Throwable $th) {
+            Log::info("Error raport akhir index :".$th->getMessage());
+        }
+
+
+        $data['nilai_kokurikuler'] = $nilai_kokurikuler;
 
         return view('sekolah_sd.prints.akhir',$data);
     }
@@ -789,8 +1006,8 @@ class SekolahSDController extends Controller
         200); 
     }
 
-    private function getDataTahunanSiswa() {
-        $tahun = [2024];
+    private function getDataTahunanSiswa($year) {
+        $tahun = [$year];
         $data['list_tahun_interval'] = [];
         foreach ($tahun as $key => $value) {
             $period_tahun = [];
@@ -849,8 +1066,8 @@ class SekolahSDController extends Controller
         $data['total_siswa'] = Siswa::count();
         $data['total_tendik'] = TenagaPendidik::count();
 
-        $data['list_jumlah_siswa_perkelas'] = $this->getKelasSiswaTahunan("2023/2024");
-        $data['list_tahun_interval'] = $this->getDataTahunanSiswa();
+        $data['list_jumlah_siswa_perkelas'] = $this->getKelasSiswaTahunan($request->tahun_ajaran ?? "2023/2024");
+        $data['list_tahun_interval'] = $this->getDataTahunanSiswa($request->tahun ?? 2024);
 
         return response()->json(
             Helper::DataReturn(true,"OK",$data), 
@@ -1384,26 +1601,220 @@ class SekolahSDController extends Controller
     }
 
     function ppdb(Request $request){
-        return view('compro.koneksiedu.ppdb');
+
+        // Ambil pengaturan pertama (biasanya cuma ada 1)
+        $setting = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
+
+        // Jika belum ada di database, isi default
+        if (!$setting) {
+            $setting = new PPDBSetting([
+                'close_ppdb' => true,
+                'tgl_penerimaan' => '2026-01-01',
+                'min_bulan' => 6,
+                'min_tahun' => 5,
+                'tahun_ajaran' => '2025/2026',
+                'jumlah_tagihan' => 350000,
+                'nama_bank' => 'Bank Kalbar',
+                'no_rek' => '00000',
+                'atas_nama' => 'SD Muhammadiyah 2',
+            ]);
+        }
+
+        // Kirim data ke view (dengan key yang sama seperti sebelumnya)
+        $data = [
+            'close_ppdb' => $setting->close_ppdb,
+            'tgl_penerimaan' => $setting->tgl_penerimaan,
+            'min_bulan' => $setting->min_bulan,
+            'min_tahun' => $setting->min_tahun,
+            'tahun_ajaran' => $setting->tahun_ajaran,
+            'jumlah_tagihan' => $setting->jumlah_tagihan,
+            'nama_bank' => $setting->nama_bank,
+            'no_rek' => $setting->no_rek,
+            'atas_nama' => $setting->atas_nama,
+        ];
+
+        $today = Carbon::today();
+        $data['statistik']['hari_ini'] = Visitor::whereDate('created_at', $today)->count();
+        $data['statistik']['bulan_ini'] = Visitor::whereMonth('created_at', $today->month)->count();
+        $data['statistik']['total'] = Visitor::count();
+
+        return view('compro.koneksiedu.ppdb', $data);
+    }
+
+    public function validasiBayar($id)
+    {
+        $data = PPDBSekolah::find($id);
+        if (!$data) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+
+        if ($data->status_bayar === 'sudah') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Pembayaran sudah divalidasi sebelumnya.'
+            ]);
+        }
+
+        $data->update([
+            'status_bayar' => 'sudah',
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+            'keterangan' => 'Pembayaran divalidasi oleh ' . (auth()->user()->name ?? 'Admin') . ' pada ' . now()->translatedFormat('d F Y H:i'),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Pembayaran berhasil divalidasi.'
+        ]);
+    }
+
+
+    function peserta_didik_baru(Request $request){
+        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',0)->latest()->first();
+        $startDate = Carbon::now()->subDays(30);
+        $endDate = Carbon::now();
+
+        // 🔹 Hitung kunjungan ke halaman PPDB (selama 30 hari)
+        $data['visitorCount'] = Visitor::where('page', 'ppdb-simuda')
+            ->whereBetween('visited_date', [$startDate, $endDate])
+            ->count();
+
+        // 🔹 Hitung jumlah pendaftar baru (30 hari terakhir)
+        $data['pendaftarCount'] = PPDBSekolah::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        return view('sekolah_sd.peserta_didik_baru',$data);
+    }
+    function peserta_didik_baru_config(Request $request){
+        $data['ppdb_setting'] = PPDBSetting::where('close_ppdb',0)->latest()->first();
+        return view('sekolah_sd.peserta_didik_baru_config',$data);
+    }
+
+    function kwitansi_ppdb(Request $request){
+
+        $data['ppdb'] = PPDBSekolah::where('kode_bayar',$request->kode_bayar ?? '')->firstorfail();
+
+        // Ambil pengaturan pertama (biasanya cuma ada 1)
+        $setting = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
+
+        // Jika belum ada di database, isi default
+        if (!$setting) {
+            $setting = new PPDBSetting([
+                'close_ppdb' => false,
+                'tgl_penerimaan' => '2026-01-01',
+                'min_bulan' => 6,
+                'min_tahun' => 5,
+                'tahun_ajaran' => '2025/2026',
+                'jumlah_tagihan' => 350000,
+                'nama_bank' => 'Bank Kalbar',
+                'no_rek' => '00000',
+                'atas_nama' => 'SD Muhammadiyah 2',
+            ]);
+        }
+
+        $data['jumlah_tagihan'] = $setting->jumlah_tagihan;
+        $data['nama_bank'] = $setting->nama_bank;
+        $data['no_rek'] = $setting->no_rek;
+        $data['atas_nama'] = $setting->atas_nama;
+
+        return view('compro.koneksiedu.kwitansi_ppdb',$data);
+    }
+
+    function cetak_kartutes_ppdb(Request $request){
+
+        // Data peserta berdasarkan kode bayar
+        $ppdb = PPDBSekolah::where('kode_bayar', $request->kode_bayar ?? '')->firstOrFail();
+
+        // PPDB setting aktif
+        $setting = PPDBSetting::where('close_ppdb', 0)->orderBy('id','desc')->first();
+
+        // Ambil jadwal tes peserta (IQ & Pemetaan)
+        $schedule = PpdbTestSchedule::where('kode_bayar', $ppdb->kode_bayar)->first();
+
+        return view('compro.koneksiedu.cetak_kartu_ppdb', [
+            'ppdb'     => $ppdb,
+            'setting'  => $setting,
+            'schedule' => $schedule
+        ]);
     }
 
     function ppdb_store(Request $request){
         try{
+
+            if($request->update_bukti && $request->kode_bayar){
+                
+                $data = PPDBSekolah::where('kode_bayar',$request->kode_bayar)->firstorfail();
+                $data->bukti_pembayaran = $request->bukti_pembayaran ?? null;
+                $data->status_bayar = 'upload';
+                $data->save();
+
+                 // 🔹 Kirim email ke semua STAFF TU
+                $business_id = 13;
+                $staffTU = User::role("Staff TU#$business_id")->pluck('email')->toArray();
+
+                if (!empty($staffTU)) {
+                    Mail::to($staffTU)->send(new \App\Mail\AdminUploadBuktiNotification($data));
+                }
+                
+                return [
+                    'status'=>true,
+                    'message'=>"OK",
+                    "data"=>$data
+                ];
+            }
 
             $input = $request->all();
             $nama = $request->nama ?? "";
             if($request->nama_lengkap){
                 $nama = $request->nama_lengkap;
             }
-            PPDBSekolah::create([
+
+            $setting = PPDBSetting::orderBy('id','desc')->where('close_ppdb',0)->first();
+
+            // Tentukan biaya dasar pendaftaran
+            $biayaDasar = $setting->jumlah_tagihan ?? 350000;
+
+            // Generate 3 angka unik (antara 001 - 999)
+            $kodeUnik = random_int(1, 999);
+            $kodeUnikStr = str_pad($kodeUnik, 3, '0', STR_PAD_LEFT);
+
+            // Total yang harus dibayar
+            $totalBayar = $biayaDasar + $kodeUnik;
+
+            $input['total_bayar'] = $totalBayar;
+            $input['kode_unik'] = $kodeUnik;
+            $input['kode_unik'] = $kodeUnik;
+
+            $qry = [
                 'nama'=>$nama,
-                'detail'=>$input
-            ]);
+                'kode_bayar' => 'PPDB-' . strtoupper(Str::random(2)) . $kodeUnikStr,
+                'status_bayar' => 'belum',
+                'biaya_dasar' => $biayaDasar,
+                'total_bayar' => $totalBayar,
+                'kode_unik' => $kodeUnik,
+                'bank_pembayaran' =>$input['bank_pembayaran']
+            ];
+            
+
+            $in = $qry;
+            $in['detail'] = $input;
+            $data = PPDBSekolah::create($in);
+
+
+            // send to orang tua pendaftar email
+            if(isset($input['email'])){
+                Mail::to($input['email'])->send(new \App\Mail\NewPPDBNotification($data));
+            }
+
+            // // send to admin sekolah
+            // Mail::to("itkonsultanindonesia@gmail.com")->send(new \App\Mail\AdminNewPPDBNotification($data));
 
             return [
                 "status" => true,
                 "message" =>"Data berhasil disimpan terimakasih...",
-                "data" => null
+                "data" => $qry
             ];
 
         } catch (\Throwable $th) {
@@ -1419,13 +1830,14 @@ class SekolahSDController extends Controller
 
             // Validasi file upload
             $validated = $request->validate([
-                'file_data' => 'required|image|max:512', // ukuran dalam kilobyte (500KB)
+                // 'file_data' => 'required|image|max:512', // ukuran dalam kilobyte (500KB)
+                'file_data' => 'required|mimes:jpeg,jpg,png|max:600', // 600 KB aman
             ]);
 
             if (!$request->hasFile('file_data') || !$request->file('file_data')->isValid()) {
                 return [
                     "status"=>false,
-                    'message' => "Format data hanya boleh image, dan maksimal ukuran 500KB"
+                    'message' => "Format data hanya boleh image, dan maksimal ukuran 600KB"
                 ];
             }
 
@@ -1447,12 +1859,20 @@ class SekolahSDController extends Controller
 
     function ppdb_data(Request $request){
         $query = PPDBSekolah::orderBy('id','desc');
+        if($request->status_bayar){
+            $query = $query->where('status_bayar',$request->status_bayar);
+        }
         return DataTables::of($query)
-        ->make(true);
+            ->addColumn('detail', fn($row) => $row->detail ?? [])
+            ->make(true);
     }
-
+    
     function ppdb_data_show($id){
         $data = PPDBSekolah::find($id);
+        if(empty($data)){
+            $data = PPDBSekolah::where('kode_bayar',$id)->first();
+        }
+        
         if(empty($data)){
             return [
                 'status'=>false,
@@ -1508,6 +1928,45 @@ class SekolahSDController extends Controller
             ];
         }
 
+        // 🔸 Validasi pembayaran (Sesuai)
+        if ($request->has('validasi')) {
+            $data->status_bayar = 'sudah';
+            $data->validated_by = auth()->id();
+            $data->validated_at = now();
+            $data->keterangan = null;
+            $data->save();
+
+            $this->generateScheduleFor($data->kode_bayar);
+
+            // 🔔 Kirim email ke pendaftar
+            try {
+                $emailTujuan = $data->detail['email'] ?? null;
+                if ($emailTujuan) {
+                    Mail::to($emailTujuan)->send(new \App\Mail\PPDBPaymentValidated($data));
+                }
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim email validasi PPDB: " . $e->getMessage());
+            }
+
+            return ['status' => true, 'message' => 'Pembayaran divalidasi'];
+        }
+
+        // 🔸 Tanggapan jika Tidak Sesuai
+        if ($request->has('tanggapan')) {
+            $alasan = trim($request->input('alasan', ''));
+            if ($alasan == '') {
+                return ['status' => false, 'message' => 'Alasan wajib diisi'];
+            }
+
+            $data->status_bayar = 'tidak sesuai';
+            $data->keterangan = $alasan;
+            $data->validated_by = auth()->id();
+            $data->validated_at = now();
+            $data->save();
+
+            return ['status' => true, 'message' => 'Tanggapan berhasil disimpan'];
+        }
+
         return ['status'=>false];
     }
 
@@ -1530,8 +1989,8 @@ class SekolahSDController extends Controller
 
     function ppdb_print(Request $request,$id){
         $data['data'] = PPDBSekolah::findorfail($id);
-        // $data['kolom'] = array_keys($data['data']->detail);
-        return view('sekolah_sd.prints.ppdb_print',$data);
+        // return view('sekolah_sd.prints.cetak_ppdb',$data);
+        return view('compro.koneksiedu.cetak_detail_ppdb',$data);
     }
 
     function simudaPrivacy(Request $request){
@@ -1565,5 +2024,214 @@ class SekolahSDController extends Controller
         }
 
     }
+
+    function test_email() {
+        // Cek apakah ada 1 data PPDB untuk contoh
+        $ppdb = \App\Models\Sekolah\PPDBSekolah::latest()->first();
+
+        if (!$ppdb) {
+            return '❌ Belum ada data PPDB di database. Isi dulu minimal 1 data pendaftar.';
+        }
+
+        try {
+             // 🔹 Kirim email ke semua STAFF TU
+            $business_id = 13;
+            // $staffTU = User::role("Staff TU#$business_id")->pluck('email')->toArray();
+            $staffTU = ['itkonsultanindonesia@gmail.com'];
+
+            if (!empty($staffTU)) {
+                Mail::to($staffTU)->send(new \App\Mail\NewPPDBNotification($ppdb));
+            }
+            return '✅ Test email PPDB berhasil dikirim ke ' . implode(', ', $staffTU);
+        } catch (Exception $e) {
+            return '❌ Gagal kirim email: ' . $e->getMessage();
+        }
+    }
+
+    private function generateScheduleFor($kodeBayar)
+    {
+        // Jika sudah punya jadwal → langsung return
+        $existing = PpdbTestSchedule::where('kode_bayar', $kodeBayar)->first();
+        if ($existing) return $existing;
+
+        // Ambil periode aktif
+        $setting = PPDBSetting::where('close_ppdb', 0)->first();
+        if (!$setting || !$setting->session_capacities) return null;
+
+        $sessions = $setting->session_capacities;
+
+        // Pisahkan slot IQ dan MAP
+        $iqSlots  = array_filter($sessions, fn($s) => $s['type'] === 'iq');
+        $mapSlots = array_filter($sessions, fn($s) => $s['type'] === 'map');
+
+        // ===============================
+        // 1. Cari slot IQ yang masih ada kuota
+        // ===============================
+        $selectedIQ = null;
+
+        foreach ($iqSlots as $slot) {
+
+            // Hitung jumlah peserta yang sudah terisi di slot ini
+            $filled = PpdbTestSchedule::where('iq_date', $slot['date'])
+                        ->where('iq_start_time', $slot['start'])
+                        ->count();
+
+            if ($filled < $slot['capacity']) {
+                $selectedIQ = $slot;
+                break;
+            }
+        }
+
+        // Jika tidak ada slot IQ kosong → tidak bisa assign
+        if (!$selectedIQ) return null;
+
+        // ===============================
+        // 2. Cari slot MAP yang masih ada kuota
+        // ===============================
+        $selectedMAP = null;
+
+        foreach ($mapSlots as $slot) {
+
+            $filled = PpdbTestSchedule::where('map_date', $slot['date'])
+                        ->where('map_start_time', $slot['start'])
+                        ->count();
+
+            if ($filled < $slot['capacity']) {
+                $selectedMAP = $slot;
+                break;
+            }
+        }
+
+        // Kalau tidak ada slot MAP → jadwal IQ tetap masuk, MAP kosong
+        // (opsional: bisa dibuat wajib MAP, tapi saya ikuti logika default)
+        if (!$selectedMAP) {
+            $selectedMAP = [
+                "date" => null,
+                "start" => null,
+                "end" => null
+            ];
+        }
+
+        // ===============================
+        // 3. SIMPAN JADWAL
+        // ===============================
+        return PpdbTestSchedule::create([
+            'kode_bayar' => $kodeBayar,
+
+            'iq_date'       => $selectedIQ['date'],
+            'iq_start_time' => $selectedIQ['start'],
+            'iq_end_time'   => $selectedIQ['end'],
+
+            'map_date'       => $selectedMAP['date'],
+            'map_start_time' => $selectedMAP['start'],
+            'map_end_time'   => $selectedMAP['end'],
+        ]);
+    }
+
+    public function intervalIndex(Request $request){
+        return view('sekolah_sd.nilai_interval');
+    }
+
+    public function intervalNilaiStore(Request $request){
+         // Validasi input
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:nilai_interval_keywords,id',
+            'nilai_minimum' => 'required|numeric',
+            'nilai_maksimum' => 'required|numeric|gte:nilai_minimum',
+            'formatter_string' => 'required|string',
+            'tipe' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Ambil model
+        $interval = NilaiIntervalKeyword::findOrFail($request->id);
+
+        // Update data
+        $interval->update([
+            'nilai_minimum'     => $request->nilai_minimum,
+            'nilai_maksimum'    => $request->nilai_maksimum,
+            'formatter_string'  => $request->formatter_string,
+            'tipe'              => $request->tipe
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Interval nilai berhasil diperbarui',
+            'data' => $interval
+        ]);
+    }
+
+    public function intervalNilaiData(Request $request){
+        $query = NilaiIntervalKeyword::query();
+        if($request->id){
+            $query = $query->where('id',$request->id);
+        }
+        return DataTables::of($query)->make(true);
+    }
+
+    // private function generateScheduleFor($kodeBayar)
+    // {
+    //     // Cek apakah jadwal sudah ada
+    //     $existing = PpdbTestSchedule::where('kode_bayar', $kodeBayar)->first();
+    //     if ($existing) return $existing;
+
+    //     // Ambil setting PPDB aktif
+    //     $setting = PPDBSetting::where('close_ppdb', 0)->first();
+    //     if (!$setting) return null; // tidak ada periode aktif = skip
+
+    //     // Aturan dinamis
+    //     $iqDays  = $setting->iq_days ?? [];
+    //     $mapDays = $setting->map_days ?? [];
+    //     $sessions = $setting->sessions ?? [];
+    //     $perSesi = $setting->capacity_per_session ?? 14;
+
+    //     $slotPerHari = count($sessions);
+    //     $hariJumlah  = count($iqDays);
+    //     $perHari     = $perSesi * $slotPerHari;
+
+    //     // Ambil semua peserta yang sudah divalidasi
+    //     $validated = PPDBSekolah::where('status_bayar', 'sudah')
+    //                 ->orderBy('validated_at')
+    //                 ->pluck('kode_bayar')
+    //                 ->toArray();
+
+    //     $index = array_search($kodeBayar, $validated);
+    //     if ($index === false) return null;
+
+    //     // Hitung hari
+    //     $hariKe = floor($index / $perHari);
+    //     if ($hariKe >= $hariJumlah) $hariKe = $hariJumlah - 1;
+
+    //     // Hitung sesi
+    //     $sisa = $index % $perHari;
+    //     $sesiKe = floor($sisa / $perSesi);
+
+    //     // Ambil tanggal & jam berdasarkan index
+    //     $iqDate = $iqDays[$hariKe] ?? null;
+    //     $mapDate = $mapDays[$hariKe] ?? null;
+
+    //     [$iqStart, $iqEnd] = $sessions[$sesiKe] ?? [null, null];
+    //     [$mapStart, $mapEnd] = $sessions[$sesiKe] ?? [null, null];
+
+    //     // Simpan jadwal
+    //     return PpdbTestSchedule::create([
+    //         'kode_bayar' => $kodeBayar,
+
+    //         'iq_date' => $iqDate,
+    //         'iq_start_time' => $iqStart,
+    //         'iq_end_time' => $iqEnd,
+
+    //         'map_date' => $mapDate,
+    //         'map_start_time' => $mapStart,
+    //         'map_end_time' => $mapEnd,
+    //     ]);
+    // }
     
 }

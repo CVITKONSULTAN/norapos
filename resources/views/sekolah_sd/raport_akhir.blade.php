@@ -214,7 +214,8 @@
                                         @foreach ($nilai_list as $key => $item)
                                             <tr>
                                                 <td class="text-center">{{ $key+1 }}</td>
-                                                <td>{{ $item->mapel->nama ?? "" }}</td>
+                                                {{-- <td>{{ $item->mapel->nama ?? "" }}</td> --}}
+                                                <td>{{ $item->nama ?? "" }}</td>
                                                 <td class="text-center">{{ $item->nilai_rapor }}</td>
                                                 <td style="padding:0px;">
                                                     @if(!empty($item->catatan_max_tp))
@@ -237,6 +238,24 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+
+                                <table class="tabel_penilaian">
+                                    <thead>
+                                        <tr>
+                                            <th>Kokurikuler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>
+                                                    @foreach ($nilai_kokurikuler as $item)    
+                                                        <p>{{ $item['kokurikuler_desc'] ?? "" }}</p>
+                                                    @endforeach
+                                                </td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+
                                 <div class="text-right" style="margin-top: 10px;">
                                     <button onclick="tambahEkskul()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Ekskul</button>
                                 </div>
@@ -514,6 +533,25 @@
 
         $("#nilai_ekskul").change(function(){
             const val = $(this).val();
+            let str = '';
+            switch (val) {
+                case "A":
+                    str += "Sangat aktif dalam mengikuti ekskul"
+                    break;
+                case "B":
+                    str += "Aktif mengikuti ekskul"
+                    break;
+                case "C":
+                    str += "Kurang aktif dalam mengikuti ekskul"
+                    break;
+            }
+            const nama_ekskul = $("#nama_ekskul option:selected").text();
+            str += " "+nama_ekskul;
+            $("#keterangan_ekskul").text(str)
+        })
+
+        $("#nama_ekskul").change(function(){
+            const val = $("#nilai_ekskul").val();
             let str = '';
             switch (val) {
                 case "A":

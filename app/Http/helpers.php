@@ -154,3 +154,64 @@ function KartikaSetup()
         'logo_white' => "/hotel/img/logo_white.png"
     ];
 }
+
+function angkaKeRomawi($angka) {
+    // Validasi input
+    if (!is_numeric($angka) || $angka < 1 || $angka > 3999) {
+        return "Angka harus antara 1 sampai 3999";
+    }
+
+    $angkaRomawi = [
+        1000 => 'M',
+        900  => 'CM',
+        500  => 'D',
+        400  => 'CD',
+        100  => 'C',
+        90   => 'XC',
+        50   => 'L',
+        40   => 'XL',
+        10   => 'X',
+        9    => 'IX',
+        5    => 'V',
+        4    => 'IV',
+        1    => 'I'
+    ];
+
+    $hasil = '';
+
+    foreach ($angkaRomawi as $nilai => $simbol) {
+        while ($angka >= $nilai) {
+            $hasil .= $simbol;
+            $angka -= $nilai;
+        }
+    }
+
+    return $hasil;
+}
+
+function angkaKeHuruf($angka) {
+    $huruf = [
+        "", "satu", "dua", "tiga", "empat", "lima",
+        "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"
+    ];
+
+    if ($angka < 12) {
+        return $huruf[$angka];
+    } elseif ($angka < 20) {
+        return $huruf[$angka - 10] . " belas";
+    } elseif ($angka < 100) {
+        return angkaKeHuruf(floor($angka / 10)) . " puluh " . angkaKeHuruf($angka % 10);
+    } elseif ($angka < 200) {
+        return "seratus " . angkaKeHuruf($angka - 100);
+    } elseif ($angka < 1000) {
+        return angkaKeHuruf(floor($angka / 100)) . " ratus " . angkaKeHuruf($angka % 100);
+    } elseif ($angka < 2000) {
+        return "seribu " . angkaKeHuruf($angka - 1000);
+    } elseif ($angka < 1000000) {
+        return angkaKeHuruf(floor($angka / 1000)) . " ribu " . angkaKeHuruf($angka % 1000);
+    } elseif ($angka < 1000000000) {
+        return angkaKeHuruf(floor($angka / 1000000)) . " juta " . angkaKeHuruf($angka % 1000000);
+    } else {
+        return "Angka terlalu besar";
+    }
+}

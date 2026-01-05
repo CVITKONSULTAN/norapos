@@ -14,6 +14,81 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
         ]
     );
 
+    if($user->checkRole('Staff TU')){
+        $menu->dropdown(
+            "Peserta Didik Baru",
+            function ($sub) {
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru'),
+                    "Daftar Data",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.ppdb.jadwal_harian.detail'),
+                    "Jadwal Test Perhari",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'jadwal-harian-detail'
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru.config'),
+                    "Pengaturan Penerimaan",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru-config'
+                    ]
+                );
+            },
+            ['icon' => 'fa fas fa-user-plus']
+        );
+        $menu->url(
+            route('admin.visitor.index',['domain'=>['koneksiedu.com','si-muda.com']]),
+            "Statistik Pengunjung",
+            [
+                'icon' => 'fa fas fa-circle', 
+                'active' => 
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'statistik-pengunjung' 
+            ]
+        )->order(1);
+    } else {
+        $menu->url(
+            action('SekolahSDController@jurnal_kelas'),
+            "Jurnal Kelas",
+            [
+                'icon' => 'fa fas fa-address-book', 
+                'active' => 
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'jurnal-kelas' 
+            ]
+        );
+
+        //Absensi dropdown
+        $menu->dropdown(
+            "Absensi",
+            function ($sub) {
+                $sub->url(
+                    route('absensi.list'),
+                    "Daftar Absensi",
+                    ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
+                );
+                $sub->url(
+                    route('absensi.create'),
+                    "Tambah",
+                    ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
+                );
+            },
+            ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
+        )->order(12);
+    }
+
     if($user->checkAdmin()){
         $menu->dropdown(
             "Rekap Nilai Siswa",
@@ -97,15 +172,38 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
                 request()->segment(2) == 'data-siswa' 
             ]
         );
-        $menu->url(
-            route('sekolah_sd.peserta_didik_baru'),
+        $menu->dropdown(
             "Peserta Didik Baru",
-            [
-                'icon' => 'fa fas fa-user-plus', 
-                'active' => 
-                request()->segment(1) == 'sekolah_sd' &&
-                request()->segment(2) == 'peserta-didik-baru' 
-            ]
+            function ($sub) {
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru'),
+                    "Daftar Data",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru' 
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.ppdb.jadwal_harian.detail'),
+                    "Jadwal Test Perhari",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'jadwal-harian-detail'
+                    ]
+                );
+                $sub->url(
+                    route('sekolah_sd.peserta_didik_baru.config'),
+                    "Pengaturan Penerimaan",
+                    [
+                        'active' => 
+                        request()->segment(1) == 'sekolah_sd' &&
+                        request()->segment(2) == 'peserta-didik-baru-config'
+                    ]
+                );
+            },
+            ['icon' => 'fa fas fa-user-plus']
         );
         if($user->checkAdmin()){
             $menu->url(
@@ -154,12 +252,20 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
         $menu->dropdown(
             "E-Raport",
             function ($sub) {
+                // $sub->url(
+                //     action('SekolahSDController@rapor_project_index'),
+                //     "Raport Project Siswa",
+                //     ['icon' => 'fa fas fa-user', 'active' => 
+                //         request()->segment(1) == 'sekolah_sd' &&
+                //         request()->segment(2) == 'project-rapor' 
+                //     ]
+                // );
                 $sub->url(
-                    action('SekolahSDController@rapor_project_index'),
-                    "Raport Project Siswa",
+                    route('sekolah_sd.interval.index'),
+                    "Rentang Penilaian",
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'project-rapor' 
+                        request()->segment(2) == 'interval' 
                     ]
                 );
                 $sub->url(
@@ -193,34 +299,78 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             ['icon' => 'fa fas fa-address-book']
         )->order(1);
         $menu->dropdown(
-            "Projek Siswa",
+            "Kokurikuler",
             function ($sub) {
                 $sub->url(
-                    action('SekolahSDController@dimensi_projek'),
+                    route('kokurikuler.dimensi.index'),
                     "Dimensi",
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'dimensi-projek' 
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'dimensi'
                     ]
                 );
                 $sub->url(
-                    action('SekolahSDController@skenario_projek'),
-                    "Skenario Projek",
+                    route('kokurikuler.tema.index'),
+                    "Tema",
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'skenario-projek' 
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'tema'
                     ]
                 );
                 $sub->url(
-                    action('SekolahSDController@project_index'),
-                    "Penilaian Projek",
+                    route('kokurikuler.index'),
+                    "Penilaian Kokurikuler",
                     ['icon' => 'fa fas fa-user', 'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
-                    request()->segment(2) == 'project' 
+                    request()->segment(2) == 'kokurikuler' 
                     ]
                 );
             },
-            ['icon' => 'fa fas fa-archive']
+            ['icon' => 'fa fas fa-star']
+        )->order(1);
+
+        // $menu->dropdown(
+        //     "Projek Siswa",
+        //     function ($sub) {
+        //         $sub->url(
+        //             action('SekolahSDController@dimensi_projek'),
+        //             "Dimensi",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //                 request()->segment(1) == 'sekolah_sd' &&
+        //                 request()->segment(2) == 'dimensi-projek' 
+        //             ]
+        //         );
+        //         $sub->url(
+        //             action('SekolahSDController@skenario_projek'),
+        //             "Skenario Projek",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //                 request()->segment(1) == 'sekolah_sd' &&
+        //                 request()->segment(2) == 'skenario-projek' 
+        //             ]
+        //         );
+        //         $sub->url(
+        //             action('SekolahSDController@project_index'),
+        //             "Penilaian Projek",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //             request()->segment(1) == 'sekolah_sd' &&
+        //             request()->segment(2) == 'project' 
+        //             ]
+        //         );
+        //     },
+        //     ['icon' => 'fa fas fa-archive']
+        // )->order(1);
+
+        $menu->url(
+            route('admin.visitor.index',['domain'=>['koneksiedu.com','si-muda.com']]),
+            "Statistik Pengunjung",
+            [
+                'icon' => 'fa fas fa-circle', 
+                'active' => 
+                request()->segment(1) == 'sekolah_sd' &&
+                request()->segment(2) == 'statistik-pengunjung' 
+            ]
         )->order(1);
     }
 
@@ -251,14 +401,14 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
         $menu->dropdown(
             "E-Raport",
             function ($sub) {
-                $sub->url(
-                    action('SekolahSDController@rapor_project_index'),
-                    "Raport Project Siswa",
-                    ['icon' => 'fa fas fa-user', 'active' => 
-                        request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'project-rapor' 
-                    ]
-                );
+                // $sub->url(
+                //     action('SekolahSDController@rapor_project_index'),
+                //     "Raport Project Siswa",
+                //     ['icon' => 'fa fas fa-user', 'active' => 
+                //         request()->segment(1) == 'sekolah_sd' &&
+                //         request()->segment(2) == 'project-rapor' 
+                //     ]
+                // );
                 $sub->url(
                     action('SekolahSDController@raport_akhir_index'),
                     "Raport Akhir",
@@ -300,35 +450,68 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
         )->order(1);
 
         $menu->dropdown(
-            "Projek Siswa",
+            "Kokurikuler",
             function ($sub) {
                 $sub->url(
-                    action('SekolahSDController@dimensi_projek'),
+                    route('kokurikuler.dimensi.index'),
                     "Dimensi",
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'dimensi-projek' 
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'dimensi'
                     ]
                 );
                 $sub->url(
-                    action('SekolahSDController@skenario_projek'),
-                    "Skenario Projek",
+                    route('kokurikuler.tema.index'),
+                    "Tema",
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'skenario-projek' 
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'tema'
                     ]
                 );
                 $sub->url(
-                    action('SekolahSDController@project_index'),
-                    "Penilaian Projek",
+                    route('kokurikuler.index'),
+                    "Penilaian Kokurikuler",
                     ['icon' => 'fa fas fa-user', 'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'project' 
                     ]
                 );
             },
-            ['icon' => 'fa fas fa-archive']
+            ['icon' => 'fa fas fa-star']
         )->order(1);
+
+        // $menu->dropdown(
+        //     "Projek Siswa",
+        //     function ($sub) {
+        //         $sub->url(
+        //             action('SekolahSDController@dimensi_projek'),
+        //             "Dimensi",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //                 request()->segment(1) == 'sekolah_sd' &&
+        //                 request()->segment(2) == 'dimensi-projek' 
+        //             ]
+        //         );
+        //         $sub->url(
+        //             action('SekolahSDController@skenario_projek'),
+        //             "Skenario Projek",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //                 request()->segment(1) == 'sekolah_sd' &&
+        //                 request()->segment(2) == 'skenario-projek' 
+        //             ]
+        //         );
+        //         $sub->url(
+        //             action('SekolahSDController@project_index'),
+        //             "Penilaian Projek",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //             request()->segment(1) == 'sekolah_sd' &&
+        //             request()->segment(2) == 'project' 
+        //             ]
+        //         );
+        //     },
+        //     ['icon' => 'fa fas fa-archive']
+        // )->order(1);
     }
 
     if($user->checkGuruWalikelas()){
@@ -365,14 +548,14 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
         $menu->dropdown(
             "E-Raport",
             function ($sub) {
-                $sub->url(
-                    action('SekolahSDController@rapor_project_index'),
-                    "Raport Project Siswa",
-                    ['icon' => 'fa fas fa-user', 'active' => 
-                        request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'project-rapor' 
-                    ]
-                );
+                // $sub->url(
+                //     action('SekolahSDController@rapor_project_index'),
+                //     "Raport Project Siswa",
+                //     ['icon' => 'fa fas fa-user', 'active' => 
+                //         request()->segment(1) == 'sekolah_sd' &&
+                //         request()->segment(2) == 'project-rapor' 
+                //     ]
+                // );
                 $sub->url(
                     action('SekolahSDController@raport_akhir_index'),
                     "Raport Akhir",
@@ -449,35 +632,69 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             ['icon' => 'fa fas fa-server']
         )->order(1);
         $menu->dropdown(
-            "Projek Siswa",
+            "Kokurikuler",
             function ($sub) {
                 $sub->url(
-                    action('SekolahSDController@dimensi_projek'),
+                    route('kokurikuler.dimensi.index'),
                     "Dimensi",
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'dimensi-projek' 
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'dimensi'
                     ]
                 );
                 $sub->url(
-                    action('SekolahSDController@skenario_projek'),
-                    "Skenario Projek",
+                    route('kokurikuler.tema.index'),
+                    "Tema",
                     ['icon' => 'fa fas fa-user', 'active' => 
                         request()->segment(1) == 'sekolah_sd' &&
-                        request()->segment(2) == 'skenario-projek' 
+                        request()->segment(2) == 'kokurikuler' &&
+                        request()->segment(3) == 'tema'
                     ]
                 );
                 $sub->url(
-                    action('SekolahSDController@project_index'),
-                    "Penilaian Projek",
+                    route('kokurikuler.index'),
+                    "Penilaian Kokurikuler",
                     ['icon' => 'fa fas fa-user', 'active' => 
                     request()->segment(1) == 'sekolah_sd' &&
                     request()->segment(2) == 'project' 
                     ]
                 );
             },
-            ['icon' => 'fa fas fa-archive']
+            ['icon' => 'fa fas fa-star']
         )->order(1);
+
+        // $menu->dropdown(
+        //     "Projek Siswa",
+        //     function ($sub) {
+        //         $sub->url(
+        //             action('SekolahSDController@dimensi_projek'),
+        //             "Dimensi",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //                 request()->segment(1) == 'sekolah_sd' &&
+        //                 request()->segment(2) == 'dimensi-projek' 
+        //             ]
+        //         );
+        //         $sub->url(
+        //             action('SekolahSDController@skenario_projek'),
+        //             "Skenario Projek",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //                 request()->segment(1) == 'sekolah_sd' &&
+        //                 request()->segment(2) == 'skenario-projek' 
+        //             ]
+        //         );
+        //         $sub->url(
+        //             action('SekolahSDController@project_index'),
+        //             "Penilaian Projek",
+        //             ['icon' => 'fa fas fa-user', 'active' => 
+        //             request()->segment(1) == 'sekolah_sd' &&
+        //             request()->segment(2) == 'project' 
+        //             ]
+        //         );
+        //     },
+        //     ['icon' => 'fa fas fa-archive']
+        // )->order(1);
+
         $menu->url(
             action('SekolahSDController@kelas_index'),
             "Data Kelas",
@@ -489,35 +706,6 @@ Menu::create('admin-sidebar-sekolah_sd', function ($menu) {
             ]
         );
     }
-
-    $menu->url(
-        action('SekolahSDController@jurnal_kelas'),
-        "Jurnal Kelas",
-        [
-            'icon' => 'fa fas fa-address-book', 
-            'active' => 
-            request()->segment(1) == 'sekolah_sd' &&
-            request()->segment(2) == 'jurnal-kelas' 
-        ]
-    );
-
-    //Absensi dropdown
-    $menu->dropdown(
-        "Absensi",
-        function ($sub) {
-            $sub->url(
-                route('absensi.list'),
-                "Daftar Absensi",
-                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi/list')]
-            );
-            $sub->url(
-                route('absensi.create'),
-                "Tambah",
-                ['icon' => 'fa fas fa-star', 'active' => request()->is('absensi')]
-            );
-        },
-        ['icon' => 'fa fas fa-user', 'id' => "tour_step9"]
-    )->order(12);
 
 });
 

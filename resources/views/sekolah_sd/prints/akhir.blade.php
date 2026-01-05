@@ -122,7 +122,8 @@
                     <tr>
                         <td class="text-center">{{ $key+1 }}</td>
                         {{-- <td class="text-center">{{ $i+1 }}</td> --}}
-                        <td>{{ $item->mapel->nama ?? "" }}</td>
+                        {{-- <td>{{ $item->mapel->nama ?? "" }}</td> --}}
+                        <td>{{ $item->nama ?? "" }}</td>
                         <td class="text-center">{{ $item->nilai_rapor }}</td>
                         <td style="padding:0px;">
                             @if(!empty($item->catatan_max_tp))
@@ -146,6 +147,25 @@
             {{-- @endfor --}}
         </tbody>
     </table>
+    
+    @if( count($nilai_kokurikuler) > 0)
+    <table class="tabel_penilaian">
+        <thead>
+            <tr>
+                <th>Kokurikuler</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                    <td>
+                        @foreach ($nilai_kokurikuler as $item)    
+                            <p>{{ $item['kokurikuler_desc'] ?? "" }}</p>
+                        @endforeach
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    @endif
 
     <table class="tabel_penilaian">
         <thead>
@@ -207,57 +227,105 @@
         </tbody>
     </table> --}}
 
-    <table class="tabel_penilaian tabel_kehadiran">
-        <thead>
-            <tr>
-                <th colspan="3">Ketidakhadiran</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Sakit</td>
-                <td>:</td>
-                <td>{{$kelas_siswa->sakit ?? 0}} hari</td>
-            </tr>
-            <tr>
-                <td>Izin</td>
-                <td>:</td>
-                <td>{{$kelas_siswa->izin ?? 0}} hari</td>
-            </tr>
-            <tr>
-                <td>Tanpa Keterangan</td>
-                <td>:</td>
-                <td>{{$kelas_siswa->tanpa_keterangan ?? 0}} hari</td>
-            </tr>
-        </tbody>
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 50%;vertical-align:top;">
+                <table class="tabel_penilaian tabel_kehadiran"
+                @if($kelas_siswa->kelas->semester == 1)
+                    style="width:35%;"
+                @endif
+                >
+                    <thead>
+                        <tr>
+                            <th colspan="3">Ketidakhadiran</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sakit</td>
+                            <td>:</td>
+                            <td>{{$kelas_siswa->sakit ?? 0}} hari</td>
+                        </tr>
+                        <tr>
+                            <td>Izin</td>
+                            <td>:</td>
+                            <td>{{$kelas_siswa->izin ?? 0}} hari</td>
+                        </tr>
+                        <tr>
+                            <td>Tanpa Keterangan</td>
+                            <td>:</td>
+                            <td>{{$kelas_siswa->tanpa_keterangan ?? 0}} hari</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            @if($kelas_siswa->kelas->semester == 2)
+            <td style="width: 50%;vertical-align:top;">
+                <table class="tabel_penilaian">
+                    <thead>
+                        <tr>
+                            <th>Keputusan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                Berdasarkan pencapaian kompetensi pada semester ke-1 dan ke-2, peserta didik <br />
+                                <table class="no_border" style="margin-left: -10px;">
+                                    <tr>
+                                        <td>Naik ke kelas</td>
+                                        <td>:</td>
+                                        <td>{{ $naik_kelas }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tinggal di kelas</td>
+                                        <td>:</td>
+                                        <td>-</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            @endif
+        </tr>
     </table>
 
     <table class="table_ttd">
         <tr>
             <td style="text-align: center;">
+                <p>
+                    {{-- Mengetahui,<br /> --}}
+                    Orangtua/Wali
+                </p>
+                <br />
+                <br />
+                {{-- <p class="ttd">{{$kelas_siswa->siswa->detail['nama_ayah'] ?? ''}}</p> --}}
+                <p class="ttd">.................................</p>
+            </td>
+            <td style="text-align: center;">
                 {{-- {{dd()}} --}}
                 <p>
-                    Mengetahui,<br />
+                    @if($kelas_siswa->kelas->semester == 2)
+                    Pontianak, 20 Juni 2025<br />
+                    @endif
+                    @if($kelas_siswa->kelas->semester == 1)
+                    {{-- Pontianak, 13 Desember 2024<br /> --}}
+                    Pontianak, 12 Desember 2025<br />
+                    @endif
+                    {{-- Mengetahui,<br /> --}}
                     Wali Kelas
                 </p>
                 <br />
                 <p class="ttd">{{$kelas_siswa->kelas->nama_wali_kelas}}</p>
                 <p style="margin:0px;">NBM. {{$kelas_siswa->kelas->nbm_wali_kelas}}</p>
             </td>
-            <td style="text-align: center;">
-                <p>
-                    Mengetahui,<br />
-                    Orangtua/Wali
-                </p>
-                <br />
-                {{-- <p class="ttd">{{$kelas_siswa->siswa->detail['nama_ayah'] ?? ''}}</p> --}}
-                <p class="ttd">.................................</p>
-            </td>
         </tr>
         <tr>
             <td colspan="2" style="text-align: center;">
                 <p>
-                    <br />
+                    Mengetahui,<br />
                     Kepala Sekolah
                 </p>
                 <br />

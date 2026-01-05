@@ -1,0 +1,73 @@
+﻿jenis_prasarana;bangunan;satuan;harga_satuan;pembangunan_baru;rusak_berat;rusak_sedang
+Konstruksi pendukung bangunan;Teras;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Tempat Cuci;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Teras Depan;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Teras Belakang;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Teras Samping Kanan;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Teras Samping Kiri;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Selasar;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Balkon;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Balkon Samping Kanan;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Balkon Samping Kiri;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Area Jemur;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Dak Terbuka;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Halaman Berkanopi;/ m²;3000;1;0.325;0.225
+Konstruksi pendukung bangunan;Halaman Perkerasan;/ m²;500;1;0.325;0.225
+Konstruksi pembatas/penahan/pengaman;Pagar Tinggi ≤ 1.5M;/ m;1000;1;0.325;0.225
+Konstruksi pembatas/penahan/pengaman;Pagar Tinggi = 1.5M;/ m;1000;1;0.325;0.225
+Konstruksi pembatas/penahan/pengaman;Pagar Tinggi = 2.5M;/ m;1500;1;0.325;0.225
+Konstruksi pembatas/penahan/pengaman;Pagar Tinggi = 2M;/ m;1500;1;0.325;0.225
+Konstruksi pembatas/penahan/pengaman;Pagar Tinggi > 1.5M;/ m;1500;1;0.325;0.225
+Konstruksi pembatas/penahan/pengaman;Turap;/ m;1000;1;0.325;0.225
+Konstruksi pembatas/penahan/pengaman;Barau;/ m;1000;1;0.325;0.225
+Konstruksi penanda masuk lokasi;Gapura;/ unit;2000;1;0.325;0.225
+Konstruksi penanda masuk lokasi;Gerbang;/ unit;3000;1;0.325;0.225
+Konstruksi perkerasan;Jalan;/ m²;500;1;0.325;0.225
+Konstruksi perkerasan;Jalan Perkerasan;/ m²;500;1;0.325;0.225
+Konstruksi perkerasan;Lapangan;/ m²;500;1;0.325;0.225
+Konstruksi perkerasan;Halaman;/ m²;500;1;0.325;0.225
+Konstruksi perkerasan;Lahan Parkir;/ m²;500;1;0.325;0.225
+Konstruksi penghubung;Jembatan;/ m²;50000;1;0.325;0.225
+Konstruksi penghubung;Jembatan 1;/ m²;50000;1;0.325;0.225
+Konstruksi penghubung;Jembatan 2;/ m²;50000;1;0.325;0.225
+Konstruksi penghubung;Jembatan 3;/ m²;50000;1;0.325;0.225
+Konstruksi penghubung;Box Culvert;/ m²;50000;1;0.325;0.225
+Konstruksi penghubung;Jembatan Penyeberangan Orang;/ m²;50000;1;0.325;0.225
+Konstruksi penghubung;Jembatan Penyeberangan Barang;/ m²;50000;1;0.325;0.225
+Konstruksi kolam/reservoir;Kolam Renang;/ m³;7500;1;0.325;0.225
+Konstruksi kolam/reservoir;Kolam Terbuka;/ m³;7500;1;0.325;0.225
+Konstruksi kolam/reservoir;Bak Penyimpanan Air;/ m³;5000;1;0.325;0.225
+Konstruksi kolam/reservoir;Bak Pengolahan Air;/ m³;5000;1;0.325;0.225
+Konstruksi kolam/reservoir;Bak Pengolahan Air Limbah;/ m³;5000;1;0.325;0.225
+Konstruksi septictank;Septictank;/ m³;3000;1;0.325;0.225
+Konstruksi menara/cerobong;Menara;/ m;10000;1;0.325;0.225
+Konstruksi menara/cerobong;Cerobong;/ m;10000;1;0.325;0.225
+Konstruksi monumen;Tugu;/ unit;100000;1;0.325;0.225
+Konstruksi monumen;Patung;/ unit;100000;1;0.325;0.225
+Konstruksi instalasi;Konstruksi Instalasi Listrik;/ m²;50000;1;0.325;0.225
+Konstruksi instalasi;Konstruksi Instalasi Komunikasi;/ m²;50000;1;0.325;0.225
+Konstruksi instalasi;Konstruksi Instalasi Pengolahan;/ m²;50000;1;0.325;0.225
+Konstruksi reklame/papan nama;Konstruksi Billboard Papan Iklan;/ m²;100000;1;0.325;0.225
+Konstruksi reklame/papan nama;Konstruksi Videotron;/ m²;200000;1;0.325;0.225
+Konstruksi reklame/papan nama;Konstruksi Megatron;/ m²;200000;1;0.325;0.225
+Konstruksi reklame/papan nama;Konstruksi Papan Nama (Berdiri Sendiri Atau Menempel Di Bangunan;/ m²;50000;1;0.325;0.225
+Pondasi mesin (diluar bangunan);Pondasi Mesin (Diluar Bangunan);/ m²;200000;1;0.325;0.225
+Pondasi mesin (diluar bangunan);Pondasi BTS;/ m²;200000;1;0.325;0.225
+Konstruksi antena bangunan;Antena Ketinggian ≤ 30 m;/ unit;2500000;1;0.325;0.225
+Konstruksi antena bangunan;Antena Ketinggian 30 m < t ≤ 50 m;/ unit;3750000;1;0.325;0.225
+Konstruksi antena bangunan;Antena Ketinggian > 50 M;/ unit;5000000;1;0.325;0.225
+Konstruksi tower telekomunikasi/televisi;Tower Ketinggian ≤ 30 m;/ unit;15000000;1;0.325;0.225
+Konstruksi tower telekomunikasi/televisi;Tower Ketinggian 30 m < t ≤ 50 m;/ unit;20000000;1;0.325;0.225
+Konstruksi tower telekomunikasi/televisi;Tower Ketinggian > 50 M;/ unit;25000000;1;0.325;0.225
+Tangki tanam bahan bakar;Tangki Tanam Bahan Bakar;/ m³;500000;1;0.325;0.225
+Pekerjaan drainase (dalam parsil);Drainase;/ m²;500;1;0.325;0.225
+Konstruksi penyimpanan;Silo;/ m³;10000;1;0.325;0.225
+Konstruksi penyimpanan;Clarified Watertank;/ m³;10000;1;0.325;0.225
+Konstruksi penyimpanan;Treated Watertank;/ m³;10000;1;0.325;0.225
+Konstruksi penyimpanan;Unreated Watertank;/ m³;10000;1;0.325;0.225
+Konstruksi penyimpanan;Water Clarified Tank;/ m³;10000;1;0.325;0.225
+Konstruksi penyimpanan;Presure Send Filter Tank;/ m³;10000;1;0.325;0.225
+Konstruksi penyimpanan;Priming Tank;/ m³;10000;1;0.325;0.225
+Konstruksi penyimpanan;Oil Storage Station;/ m³;10000;1;0.325;0.225
+Konstruksi pos jaga/ATM;Pos Jaga;/ m²;50000;1;0.325;0.225
+;ATM;/ m²;50000;1;0.325;0.225

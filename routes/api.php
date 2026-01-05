@@ -105,7 +105,6 @@ Route::post('forget-password',"APIController@forget_password")->name('api.forget
 Route::middleware(['Cors'])->group(function () {
     Route::get("data","APIController@data");
     Route::post('/sekolah_sd/upload','SekolahSDController@upload')->name('sekolah_sd.upload');
-    // Route::post('/sekolah_sd/upload','SekolahSDController@upload')->name('sekolah_sd.upload');
     Route::post('/sekolah_sd/ppdb/store','SekolahSDController@ppdb_store');
 
 });
@@ -144,6 +143,18 @@ Route::group(['prefix'=>'itkonsultan'],function(){
     Route::post('transaction','itkonsultan\DataController@store_transaction')->name('itko.trx_store');
     Route::post('history-transaction','itkonsultan\DataController@history_transaction')->name('itko.trx_history');
     
+});
+
+Route::group(['prefix'=>'ciptakarya'],function(){
+    Route::post('login','CiptaKarya\DataController@login_mobile');
+    Route::group(['middleware'=>'ciptakarya.mobile'],function(){
+        Route::get('statistic','CiptaKarya\DataController@statistic_mobile');
+        Route::get('pengajuan', 'CiptaKarya\DataController@list_pengajuan');
+        Route::get('pengajuan/{id}', 'CiptaKarya\DataController@show_pengajuan');
+        Route::post('answer/{id}', 'CiptaKarya\DataController@store_question_answer');
+        Route::post('upload','CiptaKarya\DataController@upload');
+        Route::post('delete-account','CiptaKarya\DataController@delete_account');
+    });
 });
 
 // Route::get('test',function(){

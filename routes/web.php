@@ -10,7 +10,12 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\Sekolah\PPDBSettingController;
+use App\Http\Controllers\Sekolah\VisitorController;
+use App\Http\Controllers\Models\Sekolah\Kokurikuler\TemaController;
+use App\Http\Controllers\Models\Sekolah\Kokurikuler\DimensiController;
 
+include_once('ciptakarya.php');
 include_once('install_r.php');
 
 use Illuminate\Support\Facades\Artisan;
@@ -41,13 +46,35 @@ Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
             $host == 'si-muda.com'
         ){
             Route::get('/login', "MultiDomainController@login")->name("multi.login");
-            Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
+            Route::get('/ppdb-simuda', "SekolahSDController@ppdb")
+            ->middleware('visitor.counter')
+            ->name("sekolah.ppdb");
+            Route::get('/kwitansi-ppdb-simuda', "SekolahSDController@kwitansi_ppdb")
+            ->middleware('visitor.counter')
+            ->name("sekolah.kwitansi_ppdb");
+            Route::get('/cetak-karu-simuda', "SekolahSDController@cetak_kartutes_ppdb")
+            ->middleware('visitor.counter')
+            ->name("sekolah.cetak_kartutes_ppdb");
         }
     }
 });
 
 Route::get('/hotel/available', "HotelController@avail_display")->name("hotel.avail.display");
-Route::get('/ppdb-simuda', "SekolahSDController@ppdb")->name("sekolah.ppdb");
+
+Route::get('/test_email', "SekolahSDController@test_email");
+
+Route::get('/ppdb-simuda', "SekolahSDController@ppdb")
+->middleware('visitor.counter')
+->name("sekolah.ppdb");
+Route::get('/kwitansi-ppdb-simuda', "SekolahSDController@kwitansi_ppdb")
+->middleware('visitor.counter')
+->name("sekolah.kwitansi_ppdb");
+Route::get('/cetak-karu-simuda', "SekolahSDController@cetak_kartutes_ppdb")
+->middleware('visitor.counter')
+->name("sekolah.cetak_kartutes_ppdb");
+
+Route::get('/ppdb-show/{id}','SekolahSDController@ppdb_data_show');
+
 Route::get('/ppdb-simuda/print/{id}', "SekolahSDController@ppdb_print")->name("sekolah.ppdb_print");
 
 
@@ -99,6 +126,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/log_activity/data', "LogActivityController@data")->name('log.data');
 
     Route::post('/upload', "FileUploadController@upload")->name('upload');
+    Route::post('/uploadAny', "FileUploadController@uploadAny")->name('uploadAny');
 
     Route::get('/reservasi', "ReservasiController@index");
     Route::get('/reservasi/data', "HotelController@reservasi_list");
@@ -118,6 +146,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     });
 
     Route::group(['prefix'=>'sekolah_sd'],function(){
+
+        Route::get('interval','SekolahSDController@intervalIndex')
+        ->name('sekolah_sd.interval.index');
+        Route::get('interval/data','SekolahSDController@intervalNilaiData')
+        ->name('sekolah_sd.interval.data');
+        Route::post('interval/store','SekolahSDController@intervalNilaiStore')
+        ->name('sekolah_sd.interval.store');
 
         Route::get('ppdb/update','SekolahSDController@update_nama_ppdb')
         ->name('sekolah_sd.ppdb.update');
@@ -222,6 +257,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.mapel.import');
         Route::post('data-mapel/apply',"Sekolah\MapelController@applyKelas")
         ->name('sekolah_sd.mapel.apply');
+
+        Route::get('data-mapel/activity-log', 'Sekolah\MapelController@activityLog')
+        ->name('sekolah_sd.mapel.activity_log');
 
         Route::post('data-mapel/update-show-mapel',"Sekolah\MapelController@update_show_mapel")
         ->name('sekolah_sd.mapel.update_show_mapel');
@@ -334,10 +372,51 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('peserta-didik-baru/export',"SekolahSDController@export_ppdb")->name('sekolah_sd.ppdb.export');
         Route::get('peserta-didik-baru/cetak',"SekolahSDController@export_cetak")->name('sekolah_sd.ppdb.cetak');
 
-        Route::get('peserta-didik-baru',function(){
-            return view('sekolah_sd.peserta_didik_baru');
-        })
-        ->name('sekolah_sd.peserta_didik_baru');
+        Route::get('peserta-didik-baru',"SekolahSDController@peserta_didik_baru")->name('sekolah_sd.peserta_didik_baru');
+        Route::get('peserta-didik-baru-config',"SekolahSDController@peserta_didik_baru_config")->name('sekolah_sd.peserta_didik_baru.config');
+        Route::get('jadwal-harian-detail', 
+            [PPDBSettingController::class, 'hariDetail'])
+            ->name('sekolah_sd.ppdb.jadwal_harian.detail');
+
+        Route::get('jadwal-harian/export', 
+            [PPDBSettingController::class, 'exportExcelJadwalPPDB']
+        )->name('sekolah_sd.ppdb.jadwal_harian.export');
+
+
+        Route::prefix('ppdb/setting')->group(function() {
+            Route::get('/', [PPDBSettingController::class, 'index'])->name('sekolah_sd.ppdb.setting.index');
+            Route::get('/data', [PPDBSettingController::class, 'data'])->name('sekolah_sd.ppdb.setting.data');
+            Route::get('/{id}', [PPDBSettingController::class, 'show']);
+            Route::post('/store_data', [PPDBSettingController::class, 'store'])->name('sekolah_sd.ppdb.setting.store');
+            Route::post('/toggle', [PPDBSettingController::class, 'toggle'])->name('sekolah_sd.ppdb.setting.toggle');
+            Route::delete('/{id}', [PPDBSettingController::class, 'destroy']);
+        });
+
+        Route::get('/kokurikuler', "SekolahSDController@kokurikuler_index")->name('kokurikuler.index');
+        Route::post('/kokurikuler/store', [TemaController::class, 'storeNilai'])->name('kokurikuler.storeNilai');
+        
+        Route::prefix('kokurikuler/tema')->group(function() {
+            Route::get('/', [TemaController::class, 'index'])->name('kokurikuler.tema.index');
+            Route::get('/data', [TemaController::class, 'data'])->name('kokurikuler.tema.data');
+            Route::get('/{id}', [TemaController::class, 'show'])->name('kokurikuler.tema.show');
+            Route::post('/store', [TemaController::class, 'store'])->name('kokurikuler.tema.store');
+            Route::put('/{id}', [TemaController::class, 'update'])->name('kokurikuler.tema.update');
+            Route::delete('/{id}', [TemaController::class, 'destroy'])->name('kokurikuler.tema.delete');
+            Route::post('/apply', [TemaController::class, 'apply'])->name('kokurikuler.tema.apply');
+        });
+
+        Route::prefix('kokurikuler/dimensi')->group(function() {
+            Route::get('/', [DimensiController::class, 'index'])->name('kokurikuler.dimensi.index');
+            Route::get('/data', [DimensiController::class, 'data'])->name('kokurikuler.dimensi.data');
+            Route::get('/{id}', [DimensiController::class, 'show'])->name('kokurikuler.dimensi.show');
+            Route::post('/store', [DimensiController::class, 'store'])->name('kokurikuler.dimensi.store');
+            Route::put('/{id}', [DimensiController::class, 'update'])->name('kokurikuler.dimensi.update');
+            Route::delete('/{id}', [DimensiController::class, 'destroy'])->name('kokurikuler.dimensi.delete');
+        });
+
+        Route::get('/statistik-pengunjung', [VisitorController::class, 'index'])->name('admin.visitor.index');
+        Route::get('/statistik-pengunjung/data', [VisitorController::class, 'data'])->name('admin.visitor.data');
+
         
         Route::get('dashboard/api',"SekolahSDController@dashboard_api")
         ->name('sekolah_sd.dashboard.api');

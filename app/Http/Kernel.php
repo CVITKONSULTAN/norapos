@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+        \App\Http\Middleware\VisitorCounter::class,
         // \App\Http\Middleware\Cors::class,
     ];
 
@@ -69,6 +70,8 @@ class Kernel extends HttpKernel
         'superadmin' => \App\Http\Middleware\Superadmin::class,
         'CheckUserLogin' => \App\Http\Middleware\CheckUserLogin::class,        
         'Cors' => \App\Http\Middleware\Cors::class,
+        'visitor.counter' => \App\Http\Middleware\VisitorCounter::class,
+        'ciptakarya.mobile' => \App\Http\Middleware\CiptakaryaAuth::class,
     ];
     /**
      * The priority-sorted list of middleware.

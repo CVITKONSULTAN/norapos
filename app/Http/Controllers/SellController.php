@@ -359,6 +359,9 @@ class SellController extends Controller
                 ->addColumn('deposit',function($row){
                     return number_format($row->service_custom_field_3,0,',','.');
                 })
+                ->addColumn('booking_id',function($row){
+                    return $row->service_custom_field_4;
+                })
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',

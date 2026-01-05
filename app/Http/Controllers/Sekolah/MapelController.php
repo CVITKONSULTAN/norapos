@@ -14,8 +14,12 @@ use \App\Models\Sekolah\Mapel;
 use \App\Models\Sekolah\Kelas;
 use \App\Models\Sekolah\KelasSiswa;
 use \App\Models\Sekolah\NilaiSiswa;
+use \App\Models\Sekolah\SekolahActivity;
+
 use \App\Http\Controllers\Sekolah\KelasController;
 use \App\Http\Controllers\SekolahSDController;
+
+use App\Helpers\Helper;
 
 class MapelController extends Controller
 {
@@ -84,10 +88,10 @@ class MapelController extends Controller
             return $q->kelas->nama_kelas;
         })
         ->addColumn('nama_mapel',function($q){
-            return $q->mapel->nama;
+            return $q->mapel->nama ?? "";
         })
         ->addColumn('kategori_mapel',function($q){
-            return $q->mapel->kategori;
+            return $q->mapel->kategori ?? "";
         })
         ->make(true);
     }
@@ -241,9 +245,33 @@ class MapelController extends Controller
             ]);
         })->delete();
         foreach($kelasSiswa as $k => $item){
-            $kelas = new KelasController();
-            $kelas->storeKelasMapel($item,$item->kelas->kelas);
+            $kelasCtrl = new KelasController();
+            $kelasCtrl->storeKelasMapel($item,$item->kelas->kelas);
         }
+
+         /*
+            |--------------------------------------------------------------------------
+            |  LOG SEKOLAH ACTIVITY
+            |--------------------------------------------------------------------------
+            |  module  : mapel
+            |  action  : apply_kelas
+            |  ref_id  : null (karena ini apply semua mapel)
+            |  payload : info kelas + tahun ajaran + jumlah siswa
+            */
+            Helper::logSekolahActivity(
+                $request->user()->id,
+                'mapel',
+                'apply_kelas',
+                null,
+                'apply_all_mapel',
+                [
+                    'kelas'         => $kelas,
+                    'tahun_ajaran'  => $request->tahun_ajaran,
+                    'semester'      => $request->semester,
+                    'total_siswa'   => $kelasSiswa->count(),
+                ]
+            );
+
         return redirect()
         ->route('sekolah_sd.mapel.index',['kelas'=>$kelas])
         ->with('success', 'All good!');
@@ -331,6 +359,31 @@ class MapelController extends Controller
             }
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | LOG SEKOLAH ACTIVITY
+        |--------------------------------------------------------------------------
+        */
+        Helper::logSekolahActivity(
+            $request->user()->id,
+            'mapel',
+            'apply_perkelas',
+            $mapel->id,
+            Mapel::class,
+            [
+                'mapel_id'     => $mapel->id,
+                'mapel'        => $mapel->nama,
+                'kelas_id'     => $kelas->id,
+                'kelas'        => $kelas->kelas,
+                'nama_kelas'   => $kelas->nama_kelas,
+                'tahun_ajaran' => $kelas->tahun_ajaran,
+                'semester'     => $kelas->semester,
+                'total_siswa'  => KelasSiswa::where('kelas_id', $kelas_id)->count(),
+            ]
+        );
+        // ------------------------------------------------------------------------
+
+
 
         return redirect()
         ->route('sekolah_sd.mapel.index')
@@ -350,5 +403,35 @@ class MapelController extends Controller
             'business'=>$user->business->show_mapel
         ];
     }
+
+    public function activityLog(Request $request)
+    {
+        $business_id = $request->user()->business->id;
+
+        $query = SekolahActivity::where('module', 'mapel')
+            ->where('business_id', $business_id)
+            ->orderBy('id', 'desc')
+            ->with(['user']);
+
+        if ($request->kelas) {
+            $query->whereJsonContains('payload->kelas', $request->kelas);
+        }
+
+        return DataTables::of($query)
+            ->addColumn('user_name', function($q){
+                return $q->user->name ?? '-';
+            })
+            ->addColumn('kelas', function($q){
+                return $q->payload['kelas'] ?? '-';
+            })
+            ->addColumn('tahun_ajaran', function($q){
+                return $q->payload['tahun_ajaran'] ?? '-';
+            })
+            ->addColumn('semester', function($q){
+                return $q->payload['semester'] ?? '-';
+            })
+            ->make(true);
+    }
+
 
 }

@@ -97,6 +97,18 @@
                     Grafik siswa/siswai SD Muhammadiyah 2 Pontianak
                 </div>
                 <div class="box-body">
+                    <label>
+                        Pilih tahun:
+                        <select id="tahun_siswa">
+                            <option>2024</option>
+                            <option>2025</option>
+                            <option>2026</option>
+                            <option>2027</option>
+                            <option>2028</option>
+                            <option>2029</option>
+                            <option>2030</option>
+                        </select>
+                    </label>
                     <div id="chart"></div>
                 </div>
                 <!-- /.box-body -->
@@ -107,15 +119,11 @@
                 </div>
                 <div class="box-body">
                     <label>
-                        Pilih tahun:
-                        <select>
-                            <option>2024</option>
-                            <option>2025</option>
-                            <option>2026</option>
-                            <option>2027</option>
-                            <option>2028</option>
-                            <option>2029</option>
-                            <option>2030</option>
+                        Pilih tahun ajaran:
+                        <select id="filter_perkelas">
+                            @foreach ($tahun_ajaran as $item)
+                                <option>{{$item}}</option>
+                            @endforeach
                         </select>
                     </label>
                     <div id="chart_kelas"></div>
@@ -361,7 +369,7 @@
         },
         yaxis: [
             {
-                seriesName: 'Laki-laki',
+                seriesName: 'Siswa',
                 axisTicks: {
                     show: true,
                 },
@@ -375,7 +383,7 @@
                     }
                 },
                 title: {
-                    text: "Laki-laki",
+                    text: "Siswa",
                     style: {
                     color: '#008FFB',
                     }
@@ -403,12 +411,34 @@
         chartKelas.render();
 
         $(document).ready(function(){
-            getDataDashboard();
+            
+            // Ambil nilai awal dari UI
+            const tahun = $("#tahun_siswa").val();
+            const tahun_ajaran = $("#filter_perkelas").val();
+
+            // 🔹 Panggil pertama kali dengan filter UI
+            getDataDashboard({
+                tahun,
+                tahun_ajaran
+            });
+
+            // 🔹 Filter tahun siswa (grafik tahunan)
+            $("#tahun_siswa").on("change", function() {
+                const tahun = $(this).val();
+                getDataDashboard({ tahun });
+            });
+
+            // 🔹 Filter per kelas (grafik jumlah per kelas)
+            $("#filter_perkelas").on("change", function() {
+                const tahun_ajaran = $(this).val();
+                getDataDashboard({ tahun_ajaran });
+            });
         });
 
-        const getDataDashboard = () => {
+        const getDataDashboard = (filter = {}) => {
             $.ajax({
                 url:"{{route('sekolah_sd.dashboard.api')}}",
+                data: filter, // kirim param tahun/tahun_ajaran ke controller
                 beforeSend:() => {
                     $('.total_murid').html('<i class="fas fa-sync fa-spin fa-fw margin-bottom"></i>');
                 },

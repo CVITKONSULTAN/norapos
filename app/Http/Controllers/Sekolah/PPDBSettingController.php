@@ -234,6 +234,89 @@ class PPDBSettingController extends Controller
             'dates'  => $availableDates
         ]);
     }
+
+    public function hariDetailAjax(Request $request)
+    {
+        // 1. Ambil semua tanggal (iq + map) tapi digabung jadi satu filter
+        $availableDates = DB::table('ppdb_test_schedules')
+            ->select('iq_date', 'map_date')
+            ->get()
+            ->flatMap(fn($x) => [$x->iq_date, $x->map_date])
+            ->unique()
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
+
+        if (count($availableDates) == 0) {
+            return response()->json([
+                'status' => true,
+                'data'   => [],
+                'filter' => null,
+                'dates'  => [],
+            ]);
+        }
+
+        // 2. Filter tanggal yang dipilih
+        $filter = $request->tanggal ?? $availableDates[0];
+
+        // 3. Ambil data peserta IQ atau MAP yang sesuai tanggal
+        $rows = DB::table('ppdb_test_schedules as s')
+            ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->select(
+                'p.nama', 'p.kode_bayar',
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                's.*'
+            )
+            ->where(function($q) use ($filter) {
+                $q->where('s.iq_date', $filter)
+                ->orWhere('s.map_date', $filter);
+            })
+            ->get();
+
+        // 4. Kembalikan format: IQ dan MAP dipisah sesi
+        $result = [];
+
+        foreach ($rows as $item) {
+
+            // IQ
+            if ($item->iq_date == $filter) {
+
+                $hari = Carbon::parse($item->iq_date)->translatedFormat('d F Y');
+                $jam  = Carbon::parse($item->iq_start_time)->format('H:i')
+                    ." - ".
+                    Carbon::parse($item->iq_end_time)->format('H:i');
+
+                $result[$hari]['IQ'][$jam][] = [
+                    'nama' => $item->nama,
+                    'kode_bayar' => $item->kode_bayar,
+                    'no_hp' => $item->no_hp,
+                ];
+            }
+
+            // MAP
+            if ($item->map_date == $filter) {
+
+                $hari = Carbon::parse($item->map_date)->translatedFormat('d F Y');
+                $jam  = Carbon::parse($item->map_start_time)->format('H:i')
+                    ." - ".
+                    Carbon::parse($item->map_end_time)->format('H:i');
+
+                $result[$hari]['MAP'][$jam][] = [
+                    'nama' => $item->nama,
+                    'kode_bayar' => $item->kode_bayar,
+                    'no_hp' => $item->no_hp,
+                ];
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'data'   => $result,
+            'filter' => $filter,
+            'dates'  => $availableDates
+        ]);
+    }
     
     public function exportExcelJadwalPPDB(Request $request)
     {
@@ -242,6 +325,572 @@ class PPDBSettingController extends Controller
         $namaFile = "Jadwal-Test-PPDB-$tanggal.xlsx";
 
         return Excel::download(new JadwalTesExport($tanggal), $namaFile);
+    }
+
+    public function noSchedule(Request $request)
+    {
+        // Ambil peserta yang sudah bayar tapi belum dapat jadwal tes
+        $peserta = DB::table('p_p_d_b_sekolahs as p')
+            ->leftJoin('ppdb_test_schedules as s', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->select(
+                'p.id',
+                'p.nama',
+                'p.kode_bayar',
+                'p.status_bayar',
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.email')) as email")
+            )
+            ->where('p.status_bayar', 'sudah')
+            ->whereNull('s.id') // Tidak memiliki jadwal
+            ->orderBy('p.created_at', 'desc')
+            ->get();
+
+        // Ambil statistik jadwal
+        $jadwalStats = $this->getJadwalStatistics();
+
+        return view('sekolah_sd.peserta_tanpa_jadwal', [
+            'peserta' => $peserta,
+            'jadwalStats' => $jadwalStats
+        ]);
+    }
+
+    public function getNoScheduleData(Request $request)
+    {
+        // Ambil peserta yang sudah bayar tapi belum dapat jadwal tes
+        $peserta = DB::table('p_p_d_b_sekolahs as p')
+            ->leftJoin('ppdb_test_schedules as s', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->select(
+                'p.id',
+                'p.nama',
+                'p.kode_bayar',
+                'p.status_bayar',
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.email')) as email")
+            )
+            ->where('p.status_bayar', 'sudah')
+            ->whereNull('s.id')
+            ->orderBy('p.created_at', 'desc')
+            ->get();
+
+        // Ambil statistik jadwal
+        $jadwalStats = $this->getJadwalStatistics();
+
+        return response()->json([
+            'status' => true,
+            'peserta' => $peserta,
+            'jadwalStats' => $jadwalStats
+        ]);
+    }
+
+    private function getJadwalStatistics()
+    {
+        // Ambil setting aktif untuk mendapatkan kapasitas
+        $setting = PPDBSetting::where('close_ppdb', false)->first();
+        if (!$setting || !$setting->session_capacities) {
+            return [];
+        }
+
+        $sessionCapacities = $setting->session_capacities;
+        $stats = [];
+
+        // Loop semua slot yang tersedia dari session_capacities
+        foreach ($sessionCapacities as $slot) {
+            $date = $slot['date'] ?? null;
+            $type = strtoupper($slot['type'] ?? '');
+            $start = $slot['start'] ?? null;
+            $end = $slot['end'] ?? null;
+            $capacity = $slot['capacity'] ?? 0;
+
+            if (!$date || !$type || !$start || !$end) continue;
+
+            $session = Carbon::parse($start)->format('H:i') . ' - ' . Carbon::parse($end)->format('H:i');
+            $key = "{$type}|{$date}|{$session}";
+
+            // Hitung berapa yang sudah terisi (hanya hitung yang pesertanya masih ada)
+            $filled = 0;
+            if ($type == 'IQ') {
+                $filled = DB::table('ppdb_test_schedules as s')
+                    ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                    ->where('s.iq_date', $date)
+                    ->where('s.iq_start_time', 'LIKE', $start . '%')
+                    ->count();
+            } elseif ($type == 'MAP') {
+                $filled = DB::table('ppdb_test_schedules as s')
+                    ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                    ->where('s.map_date', $date)
+                    ->where('s.map_start_time', 'LIKE', $start . '%')
+                    ->count();
+            }
+
+            // Simpan ke stats
+            $stats[$key] = [
+                'type' => $type,
+                'date' => $date,
+                'date_formatted' => Carbon::parse($date)->translatedFormat('d F Y'),
+                'session' => $session,
+                'filled' => $filled,
+                'capacity' => $capacity
+            ];
+        }
+
+        // Sort by date and type
+        $stats = array_values($stats);
+        usort($stats, function($a, $b) {
+            if ($a['date'] != $b['date']) {
+                return $a['date'] <=> $b['date'];
+            }
+            return $a['type'] <=> $b['type'];
+        });
+
+        return $stats;
+    }
+
+    public function assignJadwal(Request $request)
+    {
+        try {
+            $request->validate([
+                'kode_bayar' => 'required|string',
+                'iq_date' => 'required|date',
+                'iq_start_time' => 'required',
+                'iq_end_time' => 'required',
+                'map_date' => 'required|date',
+                'map_start_time' => 'required',
+                'map_end_time' => 'required',
+            ]);
+
+            // Cek apakah peserta sudah punya jadwal
+            $existing = DB::table('ppdb_test_schedules')
+                ->where('kode_bayar', $request->kode_bayar)
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Peserta ini sudah memiliki jadwal tes.'
+                ]);
+            }
+
+// Ambil kapasitas dari setting terlebih dahulu
+        $setting = PPDBSetting::where('close_ppdb', false)->first();
+        if (!$setting || !$setting->session_capacities) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Setting jadwal tidak ditemukan.'
+            ]);
+        }
+
+        // Ambil substring waktu untuk matching (HH:MM)
+        $iqStartShort = substr($request->iq_start_time, 0, 5);
+        $mapStartShort = substr($request->map_start_time, 0, 5);
+
+        // Cari kapasitas IQ
+        $iqCapacity = 0;
+        foreach ($setting->session_capacities as $slot) {
+            if ($slot['type'] == 'iq' && 
+                $slot['date'] == $request->iq_date && 
+                $slot['start'] == $iqStartShort) {
+                $iqCapacity = $slot['capacity'];
+                break;
+            }
+        }
+
+        // Cari kapasitas MAP
+        $mapCapacity = 0;
+        foreach ($setting->session_capacities as $slot) {
+            if ($slot['type'] == 'map' && 
+                $slot['date'] == $request->map_date && 
+                $slot['start'] == $mapStartShort) {
+                $mapCapacity = $slot['capacity'];
+                break;
+            }
+        }
+
+        // Cek kapasitas slot IQ (gunakan LIKE untuk matching dan JOIN dengan peserta)
+        $iqFilled = DB::table('ppdb_test_schedules as s')
+            ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->where('s.iq_date', $request->iq_date)
+            ->where('s.iq_start_time', 'LIKE', $iqStartShort . '%')
+            ->count();
+
+        // Cek kapasitas slot MAP (gunakan LIKE untuk matching dan JOIN dengan peserta)
+        $mapFilled = DB::table('ppdb_test_schedules as s')
+            ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+            ->where('s.map_date', $request->map_date)
+            ->where('s.map_start_time', 'LIKE', $mapStartShort . '%')
+            ->count();
+
+            // Validasi kapasitas
+            if ($iqCapacity == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot IQ tidak ditemukan untuk tanggal dan waktu yang dipilih.'
+                ]);
+            }
+
+            if ($mapCapacity == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot MAP tidak ditemukan untuk tanggal dan waktu yang dipilih.'
+                ]);
+            }
+
+            if ($iqFilled >= $iqCapacity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot IQ sudah penuh. Silakan pilih slot lain.'
+                ]);
+            }
+
+            if ($mapFilled >= $mapCapacity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Slot MAP sudah penuh. Silakan pilih slot lain.'
+                ]);
+            }
+
+            // Insert jadwal
+            DB::table('ppdb_test_schedules')->insert([
+                'kode_bayar' => $request->kode_bayar,
+                'iq_date' => $request->iq_date,
+                'iq_start_time' => $request->iq_start_time,
+                'iq_end_time' => $request->iq_end_time,
+                'map_date' => $request->map_date,
+                'map_start_time' => $request->map_start_time,
+                'map_end_time' => $request->map_end_time,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // 🔔 Kirim email jadwal ke peserta
+            try {
+                $peserta = DB::table('p_p_d_b_sekolahs')
+                    ->where('kode_bayar', $request->kode_bayar)
+                    ->first();
+
+                if ($peserta) {
+                    $emailTujuan = json_decode($peserta->detail, true)['email'] ?? null;
+                    
+                    if ($emailTujuan) {
+                        $dataEmail = [
+                            'nama' => $peserta->nama,
+                            'kode_bayar' => $request->kode_bayar,
+                            'iq_date' => $request->iq_date,
+                            'iq_start_time' => $request->iq_start_time,
+                            'iq_end_time' => $request->iq_end_time,
+                            'map_date' => $request->map_date,
+                            'map_start_time' => $request->map_start_time,
+                            'map_end_time' => $request->map_end_time,
+                            'tempat_tes' => $setting->tempat_tes ?? 'SD Muhammadiyah 2 Pontianak'
+                        ];
+                        
+                        \Mail::to($emailTujuan)->send(new \App\Mail\PPDBTestScheduleNotification($dataEmail));
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error("Gagal kirim email jadwal PPDB: " . $e->getMessage());
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jadwal tes berhasil disimpan!'
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi gagal: ' . implode(', ', array_map(fn($err) => implode(', ', $err), $e->errors()))
+            ], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function autoAssignSchedules(Request $request)
+    {
+        try {
+            // Ambil peserta yang sudah bayar tapi belum dapat jadwal
+            $pesertaTanpaJadwal = DB::table('p_p_d_b_sekolahs as p')
+                ->leftJoin('ppdb_test_schedules as s', 'p.kode_bayar', '=', 's.kode_bayar')
+                ->where('p.status_bayar', 'sudah')
+                ->whereNull('s.id')
+                ->orderBy('p.validated_at', 'asc') // Prioritas: yang pertama bayar
+                ->pluck('p.kode_bayar')
+                ->toArray();
+
+            if (empty($pesertaTanpaJadwal)) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Tidak ada peserta yang perlu dijadwalkan.',
+                    'assigned' => 0,
+                    'failed' => 0
+                ]);
+            }
+
+            // Ambil setting aktif
+            $setting = PPDBSetting::where('close_ppdb', false)->first();
+            if (!$setting || !$setting->session_capacities) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Setting jadwal tidak ditemukan.'
+                ]);
+            }
+
+            $sessions = $setting->session_capacities;
+            $iqSlots  = array_filter($sessions, fn($s) => ($s['type'] ?? '') === 'iq');
+            $mapSlots = array_filter($sessions, fn($s) => ($s['type'] ?? '') === 'map');
+
+            $assigned = 0;
+            $failed = 0;
+
+            foreach ($pesertaTanpaJadwal as $kodeBayar) {
+                // Cari slot IQ kosong
+                $selectedIQ = null;
+                foreach ($iqSlots as $slot) {
+                    $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.iq_date', $slot['date'])
+                        ->where('s.iq_start_time', 'LIKE', $slot['start'] . '%')
+                        ->count();
+
+                    if ($filled < $slot['capacity']) {
+                        $selectedIQ = $slot;
+                        break;
+                    }
+                }
+
+                if (!$selectedIQ) {
+                    $failed++;
+                    continue; // Tidak ada slot IQ kosong
+                }
+
+                // Cari slot MAP kosong
+                $selectedMAP = null;
+                foreach ($mapSlots as $slot) {
+                    $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.map_date', $slot['date'])
+                        ->where('s.map_start_time', 'LIKE', $slot['start'] . '%')
+                        ->count();
+
+                    if ($filled < $slot['capacity']) {
+                        $selectedMAP = $slot;
+                        break;
+                    }
+                }
+
+                if (!$selectedMAP) {
+                    // MAP optional: tetap simpan dengan MAP kosong
+                    $selectedMAP = [
+                        "date" => null,
+                        "start" => null,
+                        "end" => null
+                    ];
+                }
+
+                // Simpan jadwal
+                DB::table('ppdb_test_schedules')->insert([
+                    'kode_bayar' => $kodeBayar,
+                    'iq_date' => $selectedIQ['date'],
+                    'iq_start_time' => $selectedIQ['start'] . ':00',
+                    'iq_end_time' => $selectedIQ['end'] . ':00',
+                    'map_date' => $selectedMAP['date'],
+                    'map_start_time' => $selectedMAP['start'] ? $selectedMAP['start'] . ':00' : null,
+                    'map_end_time' => $selectedMAP['end'] ? $selectedMAP['end'] . ':00' : null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // 🔔 Kirim email jadwal ke peserta
+                try {
+                    $peserta = DB::table('p_p_d_b_sekolahs')
+                        ->where('kode_bayar', $kodeBayar)
+                        ->first();
+
+                    if ($peserta) {
+                        $emailTujuan = json_decode($peserta->detail, true)['email'] ?? null;
+                        
+                        if ($emailTujuan) {
+                            $dataEmail = [
+                                'nama' => $peserta->nama,
+                                'kode_bayar' => $kodeBayar,
+                                'iq_date' => $selectedIQ['date'],
+                                'iq_start_time' => $selectedIQ['start'] . ':00',
+                                'iq_end_time' => $selectedIQ['end'] . ':00',
+                                'map_date' => $selectedMAP['date'],
+                                'map_start_time' => $selectedMAP['start'] ? $selectedMAP['start'] . ':00' : null,
+                                'map_end_time' => $selectedMAP['end'] ? $selectedMAP['end'] . ':00' : null,
+                                'tempat_tes' => $setting->tempat_tes ?? 'SD Muhammadiyah 2 Pontianak'
+                            ];
+                            
+                            \Mail::to($emailTujuan)->send(new \App\Mail\PPDBTestScheduleNotification($dataEmail));
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error("Gagal kirim email jadwal PPDB (auto-assign): " . $e->getMessage());
+                }
+
+                $assigned++;
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => "Berhasil menjadwalkan {$assigned} peserta." . ($failed > 0 ? " {$failed} peserta gagal (slot penuh)." : ""),
+                'assigned' => $assigned,
+                'failed' => $failed
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get list of peserta in a specific slot
+     */
+    public function getSlotPeserta(Request $request)
+    {
+        try {
+            $type = $request->input('type'); // 'IQ' or 'MAP'
+            $date = $request->input('date'); // YYYY-MM-DD
+            $session = $request->input('session'); // HH:MM - HH:MM
+
+            // Parse session times
+            $times = explode(' - ', $session);
+            if (count($times) != 2) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Format sesi tidak valid'
+                ], 400);
+            }
+
+            $startTime = trim($times[0]);
+            $endTime = trim($times[1]);
+
+            // Query peserta based on test type - JOIN dengan ppdb_test_schedules
+            $query = DB::table('ppdb_test_schedules as s')
+                ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                ->select(
+                    'p.kode_bayar',
+                    'p.nama',
+                    DB::raw("JSON_UNQUOTE(JSON_EXTRACT(p.detail, '$.no_hp')) as no_hp"),
+                    'p.validated_at'
+                );
+
+            if ($type == 'IQ') {
+                $query->where('s.iq_date', $date)
+                      ->where('s.iq_start_time', 'LIKE', $startTime . '%')
+                      ->where('s.iq_end_time', 'LIKE', $endTime . '%');
+            } else {
+                $query->where('s.map_date', $date)
+                      ->where('s.map_start_time', 'LIKE', $startTime . '%')
+                      ->where('s.map_end_time', 'LIKE', $endTime . '%');
+            }
+
+            $peserta = $query->orderBy('p.validated_at', 'asc')->get();
+
+            // Format dates
+            $peserta = $peserta->map(function($p) {
+                $p->validated_at = $p->validated_at 
+                    ? Carbon::parse($p->validated_at)->format('d/m/Y H:i') 
+                    : '-';
+                return $p;
+            });
+
+            return response()->json([
+                'status' => true,
+                'peserta' => $peserta,
+                'count' => $peserta->count()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Kirim ulang email jadwal tes ke peserta
+     */
+    public function sendScheduleEmail(Request $request)
+    {
+        try {
+            $kodeBayar = $request->input('kode_bayar');
+
+            // Ambil data peserta
+            $peserta = DB::table('p_p_d_b_sekolahs')
+                ->where('kode_bayar', $kodeBayar)
+                ->first();
+
+            if (!$peserta) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data peserta tidak ditemukan'
+                ], 404);
+            }
+
+            // Ambil jadwal tes
+            $schedule = DB::table('ppdb_test_schedules')
+                ->where('kode_bayar', $kodeBayar)
+                ->first();
+
+            if (!$schedule) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Jadwal tes belum tersedia untuk peserta ini'
+                ], 404);
+            }
+
+            // Ambil email dari detail
+            $detail = json_decode($peserta->detail, true);
+            $emailTujuan = $detail['email'] ?? null;
+
+            if (!$emailTujuan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email peserta tidak ditemukan'
+                ], 404);
+            }
+
+            // Ambil setting untuk tempat tes
+            $setting = PPDBSetting::where('close_ppdb', false)->first();
+
+            // Siapkan data email
+            $dataEmail = [
+                'nama' => $peserta->nama,
+                'kode_bayar' => $kodeBayar,
+                'iq_date' => $schedule->iq_date,
+                'iq_start_time' => $schedule->iq_start_time,
+                'iq_end_time' => $schedule->iq_end_time,
+                'map_date' => $schedule->map_date,
+                'map_start_time' => $schedule->map_start_time,
+                'map_end_time' => $schedule->map_end_time,
+                'tempat_tes' => $setting->tempat_tes ?? 'SD Muhammadiyah 2 Pontianak'
+            ];
+
+            // Kirim email
+            \Mail::to($emailTujuan)->send(new \App\Mail\PPDBTestScheduleNotification($dataEmail));
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Email jadwal tes berhasil dikirim ke ' . $emailTujuan
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error("Gagal kirim email jadwal PPDB: " . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengirim email: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }

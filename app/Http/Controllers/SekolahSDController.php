@@ -1685,6 +1685,22 @@ class SekolahSDController extends Controller
         // 🔹 Hitung jumlah pendaftar baru (30 hari terakhir)
         $data['pendaftarCount'] = PPDBSekolah::whereBetween('created_at', [$startDate, $endDate])->count();
 
+        // 🔹 Hitung total kunjungan
+        $data['totalVisitorCount'] = Visitor::where('page', 'ppdb-simuda')->count();
+
+        // 🔹 Hitung total peserta didik baru
+        $data['totalPendaftarCount'] = PPDBSekolah::count();
+
+        // 🔹 Hitung total yang sudah bayar
+        $data['totalSudahBayar'] = PPDBSekolah::where('status_bayar', 'sudah')->count();
+
+        // 🔹 Hitung total pendapatan
+        $data['totalPendapatan'] = PPDBSekolah::where('status_bayar', 'sudah')
+            ->get()
+            ->sum(function($item) {
+                return $item->detail['total_bayar'] ?? 0;
+            });
+
         return view('sekolah_sd.peserta_didik_baru',$data);
     }
     function peserta_didik_baru_config(Request $request){
@@ -1858,12 +1874,41 @@ class SekolahSDController extends Controller
     }
 
     function ppdb_data(Request $request){
-        $query = PPDBSekolah::orderBy('id','desc');
+        $query = PPDBSekolah::orderBy('id','desc')
+            ->leftJoin('ppdb_test_schedules', 'p_p_d_b_sekolahs.kode_bayar', '=', 'ppdb_test_schedules.kode_bayar')
+            ->select(
+                'p_p_d_b_sekolahs.*',
+                'ppdb_test_schedules.iq_date',
+                'ppdb_test_schedules.iq_start_time',
+                'ppdb_test_schedules.iq_end_time',
+                'ppdb_test_schedules.map_date',
+                'ppdb_test_schedules.map_start_time',
+                'ppdb_test_schedules.map_end_time'
+            );
+            
         if($request->status_bayar){
-            $query = $query->where('status_bayar',$request->status_bayar);
+            $query = $query->where('p_p_d_b_sekolahs.status_bayar',$request->status_bayar);
         }
+        
         return DataTables::of($query)
             ->addColumn('detail', fn($row) => $row->detail ?? [])
+            ->addColumn('jadwal_iq', function($row) {
+                if ($row->iq_date && $row->iq_start_time) {
+                    $tanggal = Carbon::parse($row->iq_date)->translatedFormat('d M Y');
+                    $jam = Carbon::parse($row->iq_start_time)->format('H:i') . ' - ' . Carbon::parse($row->iq_end_time)->format('H:i');
+                    return $tanggal . '<br>' . $jam;
+                }
+                return '-';
+            })
+            ->addColumn('jadwal_map', function($row) {
+                if ($row->map_date && $row->map_start_time) {
+                    $tanggal = Carbon::parse($row->map_date)->translatedFormat('d M Y');
+                    $jam = Carbon::parse($row->map_start_time)->format('H:i') . ' - ' . Carbon::parse($row->map_end_time)->format('H:i');
+                    return $tanggal . '<br>' . $jam;
+                }
+                return '-';
+            })
+            ->rawColumns(['jadwal_iq', 'jadwal_map'])
             ->make(true);
     }
     
@@ -2071,9 +2116,11 @@ class SekolahSDController extends Controller
 
         foreach ($iqSlots as $slot) {
 
-            // Hitung jumlah peserta yang sudah terisi di slot ini
-            $filled = PpdbTestSchedule::where('iq_date', $slot['date'])
-                        ->where('iq_start_time', $slot['start'])
+            // Hitung jumlah peserta yang sudah terisi di slot ini (dengan JOIN ke peserta)
+            $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.iq_date', $slot['date'])
+                        ->where('s.iq_start_time', 'LIKE', $slot['start'] . '%')
                         ->count();
 
             if ($filled < $slot['capacity']) {
@@ -2092,8 +2139,10 @@ class SekolahSDController extends Controller
 
         foreach ($mapSlots as $slot) {
 
-            $filled = PpdbTestSchedule::where('map_date', $slot['date'])
-                        ->where('map_start_time', $slot['start'])
+            $filled = DB::table('ppdb_test_schedules as s')
+                        ->join('p_p_d_b_sekolahs as p', 'p.kode_bayar', '=', 's.kode_bayar')
+                        ->where('s.map_date', $slot['date'])
+                        ->where('s.map_start_time', 'LIKE', $slot['start'] . '%')
                         ->count();
 
             if ($filled < $slot['capacity']) {
@@ -2113,18 +2162,18 @@ class SekolahSDController extends Controller
         }
 
         // ===============================
-        // 3. SIMPAN JADWAL
+        // 3. SIMPAN JADWAL (dengan format waktu lengkap HH:MM:SS)
         // ===============================
         return PpdbTestSchedule::create([
             'kode_bayar' => $kodeBayar,
 
             'iq_date'       => $selectedIQ['date'],
-            'iq_start_time' => $selectedIQ['start'],
-            'iq_end_time'   => $selectedIQ['end'],
+            'iq_start_time' => $selectedIQ['start'] . ':00',
+            'iq_end_time'   => $selectedIQ['end'] . ':00',
 
             'map_date'       => $selectedMAP['date'],
-            'map_start_time' => $selectedMAP['start'],
-            'map_end_time'   => $selectedMAP['end'],
+            'map_start_time' => $selectedMAP['start'] ? $selectedMAP['start'] . ':00' : null,
+            'map_end_time'   => $selectedMAP['end'] ? $selectedMAP['end'] . ':00' : null,
         ]);
     }
 

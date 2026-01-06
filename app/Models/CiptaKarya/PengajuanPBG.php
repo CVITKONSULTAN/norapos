@@ -12,6 +12,7 @@ class PengajuanPBG extends Model
     protected $table = 'pengajuan'; // Jika tabel tidak otomatis plural
 
     protected $fillable = [
+        'uid',
         'tipe',
         'no_permohonan',
         'no_krk',

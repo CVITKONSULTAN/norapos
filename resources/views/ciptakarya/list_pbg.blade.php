@@ -438,6 +438,45 @@
     </div>
 </div>
 
+<!-- MODAL LOG SINKRONISASI -->
+<div id="modal_sync_logs" class="modal fade">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fa fa-list-alt"></i> Log Sinkronisasi SIMBG</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="sync_logs_table">
+                        <thead>
+                            <tr>
+                                <th width="150px">Waktu</th>
+                                <th width="100px">Status</th>
+                                <th width="120px">Total Data</th>
+                                <th>Pesan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sync_logs_tbody">
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    <i class="fa fa-spinner fa-spin"></i> Memuat data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <!-- Main content -->
 <section class="content">
@@ -455,6 +494,11 @@
             </div>
             <div class="col-sm-3">
                 <button onclick="syncSimbg()" class="btn btn-warning btn-block btn-lg"><i class="fa fa-refresh" aria-hidden="true"></i> Syncron SIMBG</button>
+                <div class="text-center mt-2">
+                    <a href="javascript:void(0)" onclick="showSyncLogs()" class="text-primary">
+                        <i class="fa fa-list-alt"></i> Lihat Log Sinkronisasi
+                    </a>
+                </div>
             </div>
         </div>
     @endif
@@ -853,8 +897,14 @@
         };
 
         $(document).on('click', '.edit_pengajuan', function () {
+            const btn = $(this);
             const id = $(this).data('id');
             const url = `{{ route('ciptakarya.list_data_pbg') }}/${id}/detail`;
+
+            // Show loading state
+            btn.prop('disabled', true);
+            const originalHtml = btn.html();
+            btn.html('<i class="fa fa-spinner fa-spin"></i> Loading...');
 
             $.get(url, function(res) {
                 if (res.status) {
@@ -862,6 +912,12 @@
                 } else {
                     swal("Gagal", "Data tidak ditemukan", "error");
                 }
+            }).fail(function() {
+                swal("Error", "Gagal mengambil data", "error");
+            }).always(function() {
+                // Reset button state
+                btn.prop('disabled', false);
+                btn.html(originalHtml);
             });
         });
 
@@ -903,9 +959,25 @@
 
             // Jika ada file lama
             if (data.uploaded_files && data.uploaded_files.length > 0) {
-                data.uploaded_files.forEach((fileUrl) => {
+                data.uploaded_files.forEach((fileItem) => {
+                    // Handle both string URLs and object structure from SIMBG
+                    let fileUrl, fileName;
+                    
+                    if (typeof fileItem === 'string') {
+                        // Legacy format: simple string URL
+                        fileUrl = fileItem;
+                        fileName = fileItem.split('/').pop();
+                    } else if (typeof fileItem === 'object' && fileItem.file) {
+                        // SIMBG format: object with file, name, type properties
+                        fileUrl = fileItem.file;
+                        fileName = fileItem.name || fileItem.file.split('/').pop();
+                    } else {
+                        return; // Skip invalid items
+                    }
+                    
+                    // Simpan URL saja (normalisasi untuk backend)
                     uploadedFiles.push(fileUrl);
-                    addFileToList(fileUrl.split('/').pop(), fileUrl);
+                    addFileToList(fileName, fileUrl);
                 });
             }
 
@@ -1039,8 +1111,18 @@
                     }
                 });
 
-                // Tambahkan hasil Dropzone
-                formData.uploaded_files = uploadedFiles;
+                // Normalisasi uploaded_files: convert semua jadi string URL
+                // Agar backend selalu terima array of strings, bukan mixed array
+                const normalizedFiles = uploadedFiles.map(fileItem => {
+                    if (typeof fileItem === 'string') {
+                        return fileItem; // sudah string URL
+                    } else if (typeof fileItem === 'object' && fileItem.file) {
+                        return fileItem.file; // ambil URL dari object SIMBG
+                    }
+                    return null;
+                }).filter(f => f !== null); // hapus null
+
+                formData.uploaded_files = normalizedFiles;
 
                 // Kirim via AJAX
                 $.ajax({
@@ -1395,6 +1477,141 @@
     html += `</div>`;
 
     return html;
+}
+
+// ===================== SYNC SIMBG =====================
+function syncSimbg() {
+    swal({
+        title: "Sinkronisasi SIMBG",
+        text: "Proses ini akan mengambil data pengajuan terbaru dari SIMBG. Lanjutkan?",
+        icon: "info",
+        buttons: {
+            cancel: "Batal",
+            confirm: {
+                text: "Ya, Sync Sekarang",
+                value: true,
+            }
+        },
+    }).then((willSync) => {
+        if (willSync) {
+            // Show loading
+            swal({
+                title: "Sedang melakukan sinkronisasi...",
+                text: "Mohon tunggu, proses ini mungkin memakan waktu beberapa saat.",
+                icon: "info",
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+            });
+
+            $.ajax({
+                url: "{{ route('ciptakarya.sync_simbg') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.status) {
+                        swal({
+                            title: "Berhasil!",
+                            text: response.message,
+                            icon: "success",
+                            button: "OK",
+                        }).then(() => {
+                            // Reload datatable untuk lihat data baru
+                            product_table.ajax.reload();
+                        });
+                    } else {
+                        swal({
+                            title: "Peringatan",
+                            text: response.message,
+                            icon: "warning",
+                            button: "OK",
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let message = "Terjadi kesalahan saat melakukan sinkronisasi.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    
+                    swal({
+                        title: "Gagal!",
+                        text: message,
+                        icon: "error",
+                        button: "OK",
+                    });
+                }
+            });
+        }
+    });
+}
+
+// ===================== TAMPILKAN LOG SINKRONISASI =====================
+function showSyncLogs() {
+    // Tampilkan modal
+    $('#modal_sync_logs').modal('show');
+    
+    // Reset isi tabel
+    $('#sync_logs_tbody').html(`
+        <tr>
+            <td colspan="4" class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Memuat data...
+            </td>
+        </tr>
+    `);
+    
+    // Ambil data log dari server
+    $.ajax({
+        url: "{{ route('ciptakarya.get_sync_logs') }}",
+        type: "GET",
+        success: function(response) {
+            if (response.status && response.data.length > 0) {
+                let html = '';
+                
+                response.data.forEach(function(log) {
+                    let statusBadge = '';
+                    if (log.status === 'success') {
+                        statusBadge = '<span class="badge bg-green">Berhasil</span>';
+                    } else if (log.status === 'error') {
+                        statusBadge = '<span class="badge bg-red">Gagal</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-blue">Proses</span>';
+                    }
+                    
+                    html += `
+                        <tr>
+                            <td>${moment(log.created_at).format('DD/MM/YYYY HH:mm')}</td>
+                            <td>${statusBadge}</td>
+                            <td class="text-center">${log.total_synced || 0}</td>
+                            <td>${log.message || '-'}</td>
+                        </tr>
+                    `;
+                });
+                
+                $('#sync_logs_tbody').html(html);
+            } else {
+                $('#sync_logs_tbody').html(`
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            <i class="fa fa-info-circle"></i> Belum ada log sinkronisasi
+                        </td>
+                    </tr>
+                `);
+            }
+        },
+        error: function() {
+            $('#sync_logs_tbody').html(`
+                <tr>
+                    <td colspan="4" class="text-center text-danger">
+                        <i class="fa fa-exclamation-triangle"></i> Gagal memuat data log
+                    </td>
+                </tr>
+            `);
+        }
+    });
 }
 
 

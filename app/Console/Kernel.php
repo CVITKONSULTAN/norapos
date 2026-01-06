@@ -27,6 +27,17 @@ class Kernel extends ConsoleKernel
         $env = config('app.env');
         $email = config('mail.username');
 
+        // SIMBG Sync - Setiap hari jam 1 pagi
+        $schedule->command('simbg:sync')
+            ->dailyAt('01:00')
+            ->withoutOverlapping()
+            ->onSuccess(function () {
+                \Log::info('SIMBG Sync Cron: Completed successfully');
+            })
+            ->onFailure(function () {
+                \Log::error('SIMBG Sync Cron: Failed to execute');
+            });
+
         if ($env === 'live') {
             //Scheduling backup, specify the time when the backup will get cleaned & time when it will run.
             $schedule->command('backup:run')->dailyAt('23:50');

@@ -1361,6 +1361,71 @@ class DataController extends Controller
         return response()->json(['status' => true]);
     }
 
+    /**
+     * Proxy endpoint untuk fetch SIMBG data (mengatasi CORS)
+     */
+    public function getSimbgDetail(Request $request)
+    {
+        try {
+            $uid = $request->input('uid');
+            
+            if (!$uid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'UID tidak ditemukan'
+                ], 400);
+            }
 
+            // Build URL untuk SIMBG API
+            $url = "https://simbg.simtek-menanjak.com/api/data/pengajuan/batch-details";
+            $queryString = http_build_query(['uids' => [$uid]]);
+            $fullUrl = $url . '?' . $queryString;
+
+            // Request ke SIMBG API menggunakan cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $fullUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+
+            if ($error) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal terhubung ke SIMBG: ' . $error
+                ], 500);
+            }
+
+            if ($httpCode !== 200) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'SIMBG API error: HTTP ' . $httpCode
+                ], 500);
+            }
+
+            $data = json_decode($response, true);
+            
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid response from SIMBG'
+                ], 500);
+            }
+
+            return response()->json($data);
+
+        } catch (\Exception $e) {
+            Log::error('SIMBG Proxy Error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
 }

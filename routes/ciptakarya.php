@@ -39,6 +39,14 @@ Route::group([
 
     Route::post('update-retribusi/{id}', 'CiptaKarya\DataController@updateRetribusi');
 
+    // SIMBG Sync Routes
+    Route::post('sync-simbg', 'CiptaKarya\SimbgSyncController@sync')->name('ciptakarya.sync_simbg');
+    Route::get('last-sync', 'CiptaKarya\SimbgSyncController@getLastSync')->name('ciptakarya.last_sync');
+    Route::get('sync-logs', 'CiptaKarya\SimbgSyncController@getLogs')->name('ciptakarya.get_sync_logs');
+    
+    // SIMBG Detail Proxy (untuk mengatasi CORS)
+    Route::get('simbg-detail', 'CiptaKarya\DataController@getSimbgDetail')->name('ciptakarya.simbg_detail');
+
     Route::get('/pengajuan/disposisi/{id}', 'CiptaKarya\DataController@disposisi')->name('ciptakarya.disposisi');
     Route::post('/pengajuan/terbitkan/{id}', 'CiptaKarya\DataController@terbitkanDokumen')->name('ciptakarya.terbitkanDokumen');
 

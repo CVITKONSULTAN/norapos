@@ -444,14 +444,17 @@
     @component('components.widget', ['class' => 'box-primary', 'title' => ""])
     @if( auth()->user()->checkRole('admin') )
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <button onclick="addPengajuan('PBG')" class="btn btn-success btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG</button>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <button onclick="addPengajuan('SLF')" class="btn btn-danger btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan SLF</button>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <button onclick="addPengajuan('PBG/SLF')" class="btn btn-primary btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG & SLF</button>
+            </div>
+            <div class="col-sm-3">
+                <button onclick="syncSimbg()" class="btn btn-warning btn-block btn-lg"><i class="fa fa-refresh" aria-hidden="true"></i> Syncron SIMBG</button>
             </div>
         </div>
     @endif

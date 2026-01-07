@@ -39,6 +39,9 @@ Route::group([
 
     Route::post('update-retribusi/{id}', 'CiptaKarya\DataController@updateRetribusi');
 
+    // Public Routes (outside auth middleware)
+    Route::get('statistics', 'CiptaKarya\DataController@getStatistics')->name('ciptakarya.statistics');
+
     // SIMBG Sync Routes
     Route::post('sync-simbg', 'CiptaKarya\SimbgSyncController@sync')->name('ciptakarya.sync_simbg');
     Route::get('last-sync', 'CiptaKarya\SimbgSyncController@getLastSync')->name('ciptakarya.last_sync');
@@ -59,3 +62,11 @@ Route::group([
     });
 
 });
+
+// Public Tracking Route (tanpa auth middleware)
+Route::post('ciptakarya/public-tracking', 'CiptaKarya\DataController@publicTracking')
+    ->name('ciptakarya.public_tracking');
+
+// Public Visitor Statistics Route
+Route::get('visitor-statistics', 'CiptaKarya\DataController@getVisitorStatistics')
+    ->name('visitor.statistics');

@@ -567,6 +567,7 @@
                             <th>Fungsi Bangunan</th>
                             <th>Kecamatan</th>
                             <th>Tgl Pengajuan</th>
+                            <th>Hari Ke-</th>
                             <th>Status</th>
                             <th>Nilai Retribusi</th>
                             <th>Petugas</th>
@@ -626,6 +627,16 @@
                 { searchable: false,
                     data: 'created_at',
                     render: (data) => moment(data).format('DD/MM/YYYY HH:mm') 
+                },
+                { 
+                    searchable: false,
+                    data: 'hari_kerja',
+                    render: (data, type, row) => {
+                        if (!data) return '-';
+                        let color = data > 15 ? 'red' : (data > 10 ? 'orange' : 'green');
+                        let weight = data > 15 ? 'bold' : 'normal';
+                        return `<span style="color: ${color}; font-weight: ${weight};">Hari ke-${data}</span>`;
+                    }
                 },
                 { 
                     searchable: true,

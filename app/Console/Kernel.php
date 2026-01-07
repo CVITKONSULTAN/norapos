@@ -38,6 +38,17 @@ class Kernel extends ConsoleKernel
                 \Log::error('SIMBG Sync Cron: Failed to execute');
             });
 
+        // Daily Pengajuan Reminder - Setiap hari jam 8 pagi
+        $schedule->command('pengajuan:reminder')
+            ->dailyAt('08:00')
+            ->withoutOverlapping()
+            ->onSuccess(function () {
+                \Log::info('Daily Pengajuan Reminder Cron: Completed successfully');
+            })
+            ->onFailure(function () {
+                \Log::error('Daily Pengajuan Reminder Cron: Failed to execute');
+            });
+
         if ($env === 'live') {
             //Scheduling backup, specify the time when the backup will get cleaned & time when it will run.
             $schedule->command('backup:run')->dailyAt('23:50');

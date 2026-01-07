@@ -231,7 +231,33 @@ class DataController extends Controller
             $query->where('kecamatan_id', $request->kecamatan_id);
         }
 
-        return DataTables::of($query)->make(true);
+        return DataTables::of($query)
+            ->addColumn('hari_kerja', function($row) {
+                // Hitung hari kerja (exclude Sabtu & Minggu)
+                return $this->hitungHariKerja($row->created_at, now());
+            })
+            ->make(true);
+    }
+
+    /**
+     * Hitung hari kerja (tidak termasuk Sabtu & Minggu)
+     */
+    private function hitungHariKerja($startDate, $endDate)
+    {
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+        
+        $hariKerja = 0;
+        
+        while ($start->lte($end)) {
+            // 6 = Sabtu, 0 = Minggu
+            if ($start->dayOfWeek !== 6 && $start->dayOfWeek !== 0) {
+                $hariKerja++;
+            }
+            $start->addDay();
+        }
+        
+        return $hariKerja;
     }
 
     /**
@@ -1424,6 +1450,167 @@ class DataController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get statistics for public display
+     */
+    public function getStatistics()
+    {
+        try {
+            $stats = [
+                'pbg' => [
+                    'proses' => PengajuanPBG::where('tipe', 'LIKE', '%PBG%')
+                        ->whereNotIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                    'terbit' => PengajuanPBG::where('tipe', 'LIKE', '%PBG%')
+                        ->whereIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                ],
+                'slf' => [
+                    'proses' => PengajuanPBG::where('tipe', 'LIKE', '%SLF%')
+                        ->whereNotIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                    'terbit' => PengajuanPBG::where('tipe', 'LIKE', '%SLF%')
+                        ->whereIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                ]
+            ];
+
+            return response()->json([
+                'status' => true,
+                'data' => $stats
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengambil statistik: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Public tracking untuk visitor (tanpa login)
+     */
+    public function publicTracking(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'no_permohonan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Nomor permohonan harus diisi'
+            ]);
+        }
+
+        $pengajuan = PengajuanPBG::where('no_permohonan', $request->no_permohonan)
+            ->first();
+
+        if (!$pengajuan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Nomor permohonan tidak ditemukan dalam sistem'
+            ]);
+        }
+
+        // Ambil tracking history
+        $tracking = PbgTracking::where('pengajuan_id', $pengajuan->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Simplified flow untuk visitor
+        $simplifiedFlow = $this->getSimplifiedFlow($tracking, $pengajuan->status);
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'no_permohonan' => $pengajuan->no_permohonan,
+                'nama_pemohon' => $pengajuan->nama_pemohon,
+                'tipe' => $pengajuan->tipe,
+                'status' => $pengajuan->status,
+                'flow' => $simplifiedFlow
+            ]
+        ]);
+    }
+
+    /**
+     * Generate simplified flow untuk visitor
+     */
+    private function getSimplifiedFlow($tracking, $currentStatus)
+    {
+        $stages = [
+            ['name' => 'Pengajuan Diterima', 'icon' => 'fa-check-circle'],
+            ['name' => 'Verifikasi Berkas', 'icon' => 'fa-file-text'],
+            ['name' => 'Survey Lapangan', 'icon' => 'fa-map-marker'],
+            ['name' => 'Perhitungan Retribusi', 'icon' => 'fa-calculator'],
+            ['name' => 'Pemeriksaan Akhir', 'icon' => 'fa-clipboard-check'],
+            ['name' => 'Penerbitan Sertifikat', 'icon' => 'fa-certificate'],
+        ];
+
+        $currentStageIndex = 0;
+
+        // Tentukan stage berdasarkan status
+        if (stripos($currentStatus, 'terbit') !== false) {
+            $currentStageIndex = 5; // Semua tahap selesai
+        } else if ($tracking->count() > 0) {
+            $lastTracking = $tracking->last();
+            
+            if (stripos($lastTracking->status, 'verifikasi') !== false) {
+                $currentStageIndex = 1;
+            } else if (stripos($lastTracking->status, 'survey') !== false) {
+                $currentStageIndex = 2;
+            } else if (stripos($lastTracking->status, 'retribusi') !== false) {
+                $currentStageIndex = 3;
+            } else if (stripos($lastTracking->status, 'pemeriksaan') !== false) {
+                $currentStageIndex = 4;
+            }
+        }
+
+        $flow = [];
+        foreach ($stages as $index => $stage) {
+            $flow[] = [
+                'name' => $stage['name'],
+                'icon' => $stage['icon'],
+                'status' => $index <= $currentStageIndex ? 'completed' : 'pending',
+                'color' => $index <= $currentStageIndex ? 'green' : 'gray'
+            ];
+        }
+
+        return $flow;
+    }
+
+    /**
+     * Get visitor statistics
+     */
+    public function getVisitorStatistics()
+    {
+        try {
+            $domain = request()->getHost();
+            
+            // Kunjungan hari ini
+            $today = \App\Visitor::where('domain', $domain)
+                ->whereDate('visited_date', today())
+                ->count();
+            
+            // Total kunjungan
+            $total = \App\Visitor::where('domain', $domain)
+                ->count();
+
+            return response()->json([
+                'status' => true,
+                'data' => [
+                    'today' => $today,
+                    'total' => $total
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengambil statistik kunjungan: ' . $e->getMessage()
             ], 500);
         }
     }

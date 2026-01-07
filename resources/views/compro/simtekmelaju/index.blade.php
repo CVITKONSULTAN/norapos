@@ -475,6 +475,210 @@
                 max-width: 300px;
             }
         }
+
+        /* Statistics Section */
+        .stats-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-box:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-number {
+            font-size: 56px;
+            font-weight: 900;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-label {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.95;
+        }
+
+        .stat-icon {
+            font-size: 40px;
+            opacity: 0.8;
+        }
+
+        /* Tracking Section */
+        .tracking-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .tracking-card {
+            background: linear-gradient(135deg, var(--light-blue) 0%, #ffffff 100%);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0, 102, 204, 0.1);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .tracking-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .tracking-input {
+            width: 100%;
+            padding: 20px 25px;
+            font-size: 18px;
+            border: 3px solid #e0e0e0;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .tracking-input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+
+        .btn-track {
+            width: 100%;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-track:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+        }
+
+        .tracking-result {
+            margin-top: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-table {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .info-table th {
+            padding: 12px;
+            text-align: left;
+            color: #666;
+            font-weight: 600;
+            width: 180px;
+        }
+
+        .info-table td {
+            padding: 12px;
+            color: #333;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .badge-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #FF9800;
+            color: white;
+        }
+
+        .badge-info {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .progress-timeline {
+            margin-top: 30px;
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .timeline-step::before {
+            content: '';
+            position: absolute;
+            left: 25px;
+            top: 50px;
+            width: 3px;
+            height: calc(100% + 25px);
+            background: #e0e0e0;
+        }
+
+        .timeline-step:last-child::before {
+            display: none;
+        }
+
+        .timeline-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 20px;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .timeline-icon.completed {
+            background: linear-gradient(135deg, #4CAF50, #43e97b);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .timeline-icon.pending {
+            background: #e0e0e0;
+            color: #999;
+        }
+
+        .timeline-content h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .timeline-status {
+            font-size: 13px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -598,6 +802,16 @@
                     <div style="margin-top: 20px;">
                         <span style="font-size: 20px; font-weight: 600; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">SISTEM SURVEY SLF & PBG KUBU RAYA</span>
                     </div>
+                    <!-- PUPR Badge -->
+                    <div style="margin-top: 30px; padding: 15px 30px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 50px; display: inline-block; border: 2px solid rgba(255,255,255,0.3);">
+                        <a href="https://pupr.kuburayakab.go.id/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: white; display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-building" style="font-size: 24px;"></i>
+                            <div style="text-align: left;">
+                                <div style="font-size: 11px; opacity: 0.9; letter-spacing: 1px;">BAGIAN DARI</div>
+                                <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.5px;">DINAS PUPR PRKP - BIDANG CIPTA KARYA</div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -616,6 +830,88 @@
                         <i class="fas fa-info-circle"></i> Pelajari Lebih Lanjut
                     </a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="section-title">
+                <h2 style="color: white;">Statistik Real-Time</h2>
+                <p style="color: rgba(255,255,255,0.9);">Data terkini pengajuan dan kunjungan website di Kabupaten Kubu Raya</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-spinner"></i></div>
+                        <div class="stat-number" id="stat-pbg-proses">-</div>
+                        <div class="stat-label">PBG Diproses</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-number" id="stat-pbg-terbit">-</div>
+                        <div class="stat-label">PBG Terbit</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-spinner"></i></div>
+                        <div class="stat-number" id="stat-slf-proses">-</div>
+                        <div class="stat-label">SLF Diproses</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-number" id="stat-slf-terbit">-</div>
+                        <div class="stat-label">SLF Terbit</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                        <div class="stat-number" id="stat-visitor-today">-</div>
+                        <div class="stat-label">Kunjungan Hari Ini</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-number" id="stat-visitor-total">-</div>
+                        <div class="stat-label">Total Kunjungan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tracking Section -->
+    <section class="tracking-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Lacak Status Pengajuan Anda</h2>
+                <p>Cek progress pengajuan PBG/SLF Anda secara real-time</p>
+            </div>
+            <div class="tracking-card">
+                <h3 style="text-align: center; color: var(--primary-blue); margin-bottom: 30px;">
+                    <i class="fas fa-search"></i> Tracking Pengajuan
+                </h3>
+                <div class="tracking-input-group">
+                    <input 
+                        type="text" 
+                        id="no_permohonan_tracking" 
+                        class="tracking-input" 
+                        placeholder="Masukkan Nomor Permohonan (contoh: PBG/2025/001)"
+                        onkeypress="if(event.key === 'Enter') trackStatus()"
+                    />
+                </div>
+                <button class="btn-track" onclick="trackStatus()">
+                    <i class="fas fa-search"></i> Cek Status Sekarang
+                </button>
+                <div id="tracking-result" style="display: none;"></div>
             </div>
         </div>
     </section>
@@ -850,7 +1146,7 @@
     <footer class="footer">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <h5>SIMTEK MELAJU</h5>
                     <p>
                         Sistem Informasi Manajemen Teknis untuk Survey SLF & PBG Kabupaten Kubu Raya.
@@ -862,7 +1158,7 @@
                         <a href="#"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <h5>Link Cepat</h5>
                     <p><a href="#beranda">Beranda</a></p>
                     <p><a href="#tentang">Tentang</a></p>
@@ -870,11 +1166,31 @@
                     <p><a href="#layanan">Layanan</a></p>
                     <p><a href="/login">Login</a></p>
                 </div>
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <h5>Kontak</h5>
                     <p><i class="fas fa-map-marker-alt"></i> Kabupaten Kubu Raya, Kalimantan Barat</p>
                     <p><i class="fas fa-phone"></i> +6282255985321 </p>
                     <p><i class="fas fa-envelope"></i> admin@simtekmelaju.com</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Dinas Terkait</h5>
+                    <div style="padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 2px solid rgba(255,255,255,0.1);">
+                        <a href="https://pupr.kuburayakab.go.id/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                            <div style="text-align: center; margin-bottom: 10px;">
+                                <i class="fas fa-building" style="font-size: 40px; color: var(--orange);"></i>
+                            </div>
+                            <p style="margin: 0; font-size: 12px; line-height: 1.5; text-align: center; color: #ccc;">
+                                <strong style="color: var(--orange);">DINAS PUPR PRKP</strong><br>
+                                Kabupaten Kubu Raya<br>
+                                <span style="font-size: 11px;">Bidang Cipta Karya</span>
+                            </p>
+                        </a>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 12px; text-align: center;">
+                        <a href="https://pupr.kuburayakab.go.id/" target="_blank" rel="noopener noreferrer" style="color: var(--orange);">
+                            <i class="fas fa-external-link-alt"></i> Kunjungi Website Resmi
+                        </a>
+                    </p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -885,6 +1201,183 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Load Statistics on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStatistics();
+            loadVisitorStatistics();
+        });
+
+        function loadStatistics() {
+            fetch('/ciptakarya/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        document.getElementById('stat-pbg-proses').textContent = data.data.pbg.proses;
+                        document.getElementById('stat-pbg-terbit').textContent = data.data.pbg.terbit;
+                        document.getElementById('stat-slf-proses').textContent = data.data.slf.proses;
+                        document.getElementById('stat-slf-terbit').textContent = data.data.slf.terbit;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading statistics:', error);
+                    document.querySelectorAll('.stat-number').forEach(el => {
+                        if (el.id.includes('pbg') || el.id.includes('slf')) {
+                            el.textContent = '0';
+                        }
+                    });
+                });
+        }
+
+        function loadVisitorStatistics() {
+            fetch('/visitor-statistics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        document.getElementById('stat-visitor-today').textContent = formatNumber(data.data.today);
+                        document.getElementById('stat-visitor-total').textContent = formatNumber(data.data.total);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading visitor statistics:', error);
+                    document.getElementById('stat-visitor-today').textContent = '0';
+                    document.getElementById('stat-visitor-total').textContent = '0';
+                });
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function trackStatus() {
+            const noPermohonan = document.getElementById('no_permohonan_tracking').value.trim();
+            const resultDiv = document.getElementById('tracking-result');
+
+            if (!noPermohonan) {
+                alert('Silakan masukkan nomor permohonan');
+                return;
+            }
+
+            // Show loading
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-blue);"></i><p style="margin-top: 20px; color: #666;">Mencari data pengajuan...</p></div>';
+
+            // Fetch tracking data
+            fetch('/ciptakarya/public-tracking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ no_permohonan: noPermohonan })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    displayTrackingResult(data.data);
+                } else {
+                    resultDiv.innerHTML = `
+                        <div style="text-align: center; padding: 30px; background: #fff3cd; border-radius: 10px; border-left: 5px solid #ffc107;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: #ffc107; margin-bottom: 15px;"></i>
+                            <h4 style="color: #856404; margin-bottom: 10px;">Data Tidak Ditemukan</h4>
+                            <p style="color: #856404; margin: 0;">${data.message}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = `
+                    <div style="text-align: center; padding: 30px; background: #f8d7da; border-radius: 10px; border-left: 5px solid #dc3545;">
+                        <i class="fas fa-times-circle" style="font-size: 50px; color: #dc3545; margin-bottom: 15px;"></i>
+                        <h4 style="color: #721c24; margin-bottom: 10px;">Terjadi Kesalahan</h4>
+                        <p style="color: #721c24; margin: 0;">Gagal mengambil data. Silakan coba lagi.</p>
+                    </div>
+                `;
+            });
+        }
+
+        function displayTrackingResult(data) {
+            const resultDiv = document.getElementById('tracking-result');
+            
+            let statusClass = 'badge-info';
+            if (data.status.toLowerCase().includes('terbit')) {
+                statusClass = 'badge-success';
+            } else if (data.status.toLowerCase().includes('proses') || data.status.toLowerCase().includes('pending')) {
+                statusClass = 'badge-warning';
+            }
+
+            let html = `
+                <div class="tracking-result">
+                    <h4 style="color: var(--primary-blue); margin-bottom: 25px; text-align: center;">
+                        <i class="fas fa-check-circle"></i> Informasi Pengajuan Ditemukan
+                    </h4>
+                    <table class="info-table">
+                        <tr>
+                            <th><i class="fas fa-file-alt"></i> No. Permohonan</th>
+                            <td><strong>${data.no_permohonan}</strong></td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-user"></i> Nama Pemohon</th>
+                            <td>${data.nama_pemohon}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-building"></i> Tipe Pengajuan</th>
+                            <td><span class="status-badge badge-info">${data.tipe}</span></td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-info-circle"></i> Status</th>
+                            <td><span class="status-badge ${statusClass}">${data.status}</span></td>
+                        </tr>
+                    </table>
+
+                    <hr style="border-color: #e0e0e0; margin: 30px 0;">
+
+                    <h4 style="color: #333; margin-bottom: 25px; text-align: center;">
+                        <i class="fas fa-tasks"></i> Progress Tahapan
+                    </h4>
+                    <div class="progress-timeline">
+            `;
+
+            data.flow.forEach((step, index) => {
+                const iconClass = step.status === 'completed' ? 'completed' : 'pending';
+                const statusText = step.status === 'completed' ? '✓ Selesai' : 'Menunggu';
+                const statusColor = step.status === 'completed' ? '#4CAF50' : '#999';
+
+                html += `
+                    <div class="timeline-step">
+                        <div class="timeline-icon ${iconClass}">
+                            <i class="fas ${step.icon}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>${step.name}</h4>
+                            <div class="timeline-status" style="color: ${statusColor}; font-weight: 600;">
+                                ${statusText}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center;">
+                        <p style="margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-info-circle"></i> 
+                            <em>Data diperbarui secara otomatis. Refresh halaman untuk melihat update terbaru.</em>
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            resultDiv.innerHTML = html;
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {

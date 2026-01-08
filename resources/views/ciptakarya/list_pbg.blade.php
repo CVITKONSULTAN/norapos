@@ -628,7 +628,7 @@
                 { searchable: false, data: 'tipe', render: (data) =>{
                     let status = "gray";
                     if(data == "PBG") status = "blue"
-                    if(data == "SLF") status = "yellow"
+                    if(data == "SLF") status = "red"
                     if(data == "PBG/SLF") status = "green"
                     return `<span class="badge bg-${status}">${data || '-'}</span>`
                 }

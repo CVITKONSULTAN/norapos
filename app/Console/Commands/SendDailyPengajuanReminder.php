@@ -135,7 +135,7 @@ class SendDailyPengajuanReminder extends Command
             // Cek di tracking apakah pengajuan ini masih di tahap stepName
             // dan belum di-approve
             $tracking = PbgTracking::where('pengajuan_id', $pengajuan->id)
-                ->where('step', $stepName)
+                ->where('role', $stepName)
                 ->first();
 
             // Jika tracking belum ada atau status masih pending

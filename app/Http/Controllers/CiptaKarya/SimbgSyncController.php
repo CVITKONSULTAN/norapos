@@ -22,7 +22,7 @@ class SimbgSyncController extends Controller
     public function sync(Request $request)
     {
         try {
-            Log::info('🔄 Manual sync triggered by user: ' . auth()->id());
+            // Log::info('🔄 Manual sync triggered by user: ' . auth()->id());
 
             // Run sync
             $result = $this->syncService->sync(auth()->id());
@@ -43,7 +43,7 @@ class SimbgSyncController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Sync failed: ' . $e->getMessage());
+            // Log::error('Sync failed: ' . $e->getMessage());
 
             return response()->json([
                 'status' => false,

@@ -350,100 +350,6 @@
         Berdasarkan hasil pemeriksaan kesesuaian dokumen rencana teknis yang disampaikan dan dengan memperhatikan berita acara konsultansi oleh TPA/TPT, bersama ini kami menyatakan bahwa dokumen rencana teknis telah memenuhi standar teknis dengan data sebagai berikut :
     </p>
 
-    {{-- <table class="tabel_surat_pernyataan">
-        <tr>
-            <td><strong>Nomor Permohonan</strong></td>
-            <td>611201-01092025-011</td>
-        </tr>
-        <tr>
-            <td><strong>Nomor KRK / KKPR</strong></td>
-            <td>600.3.3.2/167/DPUPRPKP-TR/2025</td>
-        </tr>
-        <tr>
-            <td><strong>Nama Pemohon</strong></td>
-            <td>SUSANTO<br>an. PT. Cemerlang Interplast Nusantara</td>
-        </tr>
-        <tr>
-            <td><strong>NIK</strong></td>
-            <td>6102071812860001</td>
-        </tr>
-        <tr>
-            <td><strong>Alamat</strong></td>
-            <td>
-            Jl. Sungai Raya Dalam, Komplek Sungai Raya Lestari 2,<br>
-            RT.012/RW.001, Desa Sungai Raya Dalam, Kecamatan Sungai Raya,<br>
-            Kabupaten Kubu Raya, Provinsi Kalimantan Barat
-            </td>
-        </tr>
-        <tr>
-            <td><strong>Fungsi Bangunan</strong></td>
-            <td>Usaha</td>
-        </tr>
-        <tr>
-            <td><strong>Nama Bangunan</strong></td>
-            <td>Gudang</td>
-        </tr>
-        <tr>
-            <td><strong>Jumlah Bangunan</strong></td>
-            <td>1 (satu) Unit</td>
-        </tr>
-        <tr>
-            <td><strong>Jumlah Lantai</strong></td>
-            <td>1 (satu) Lantai</td>
-        </tr>
-        <tr>
-            <td><strong>Luas Bangunan</strong></td>
-            <td>Bangunan Induk = 321,00 m²</td>
-        </tr>
-        <tr>
-            <td><strong>Ketinggian Bangunan</strong></td>
-            <td>8,90 m</td>
-        </tr>
-        <tr>
-            <td><strong>Lokasi Bangunan</strong></td>
-            <td>
-            Jl. Sungai Raya Dalam, Desa Sungai Raya Dalam,<br>
-            Kecamatan Sungai Raya, Kabupaten Kubu Raya,<br>
-            Provinsi Kalimantan Barat
-            </td>
-        </tr>
-        <tr>
-            <td><strong>Di Atas Tanah No. Persil</strong></td>
-            <td>
-            SHM No. 48084, Tanggal Penerbitan Sertipikat 18 Juli 2018<br>
-            SHM No. 48083, Tanggal Penerbitan Sertipikat 16 Desember 2015
-            </td>
-        </tr>
-        <tr>
-            <td><strong>Luas Tanah</strong></td>
-            <td>653 m², 141 m²</td>
-        </tr>
-        <tr>
-            <td><strong>Atas Nama/Pemilik Tanah</strong></td>
-            <td>Masing-masing an. Susanto</td>
-        </tr>
-        <tr>
-            <td><strong>Garis Sempadan Bangunan (GSB) Minimum</strong></td>
-            <td>Depan 15.00 m, Samping 2.00 m</td>
-        </tr>
-        <tr>
-            <td><strong>Koefisien Daerah Hijau (KDH) Minimum</strong></td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td><strong>Koefisien Dasar Bangunan (KDB) Maksimum</strong></td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td><strong>Koefisien Lantai Bangunan (KLB) Maksimum</strong></td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td><strong>Koordinat Bangunan</strong></td>
-            <td>-</td>
-        </tr>
-    </table> --}}
-
     <table class="tabel_surat_pernyataan">
 
     <tr>
@@ -495,8 +401,7 @@
 
     <tr>
         <td>Luas Bangunan</td>
-        {{-- <td>{{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td> --}}
-        <td>{{ $pengajuan['luas_bangunan'] ?? '-' }}</td>
+        <td>{{ str_replace('m2', 'm²', $pengajuan['luas_bangunan'] ?? '-') }}</td>
     </tr>
 
     <tr>

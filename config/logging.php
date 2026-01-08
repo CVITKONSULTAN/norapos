@@ -47,10 +47,12 @@ return [
         ],
 
         'daily' => [
-            'driver' => 'daily',
+            'driver' => 'custom',
+            'via' => \App\Logging\CreateCustomLogger::class,
             'path' => storage_path('logs/laravel.log'),
             'level' => 'debug',
             'days' => 14,
+            'permission' => 0664,
         ],
 
         'slack' => [

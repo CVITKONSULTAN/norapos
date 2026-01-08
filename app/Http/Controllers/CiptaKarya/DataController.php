@@ -1543,33 +1543,37 @@ class DataController extends Controller
     private function getSimplifiedFlow($tracking, $currentStatus)
     {
         $stages = [
-            ['name' => 'Pengajuan Diterima', 'icon' => 'fa-check-circle'],
-            ['name' => 'Verifikasi Berkas', 'icon' => 'fa-file-text'],
-            ['name' => 'Survey Lapangan', 'icon' => 'fa-map-marker'],
-            ['name' => 'Perhitungan Retribusi', 'icon' => 'fa-calculator'],
-            ['name' => 'Pemeriksaan Akhir', 'icon' => 'fa-clipboard-check'],
-            ['name' => 'Penerbitan Sertifikat', 'icon' => 'fa-certificate'],
+            ['name' => 'Pengajuan Diterima', 'icon' => 'fa-check-circle', 'role_keyword' => 'admin'],
+            ['name' => 'Verifikasi Berkas', 'icon' => 'fa-file-text', 'role_keyword' => 'petugas'],
+            ['name' => 'Pemeriksaan Teknis', 'icon' => 'fa-clipboard-check', 'role_keyword' => 'pemeriksa'],
+            ['name' => 'Perhitungan Retribusi', 'icon' => 'fa-calculator', 'role_keyword' => 'retribusi'],
+            ['name' => 'Verifikasi Koordinator', 'icon' => 'fa-user-check', 'role_keyword' => 'koordinator'],
+            ['name' => 'Penerbitan Sertifikat', 'icon' => 'fa-certificate', 'role_keyword' => 'kepala'],
         ];
 
         $currentStageIndex = 0;
 
-        // Tentukan stage berdasarkan status
+        // Jika status terbit, semua tahap selesai
         if (stripos($currentStatus, 'terbit') !== false) {
-            $currentStageIndex = 5; // Semua tahap selesai
+            $currentStageIndex = 5;
         } else if ($tracking->count() > 0) {
-            $lastTracking = $tracking->last();
-            
-            if (stripos($lastTracking->status, 'verifikasi') !== false) {
-                $currentStageIndex = 1;
-            } else if (stripos($lastTracking->status, 'survey') !== false) {
-                $currentStageIndex = 2;
-            } else if (stripos($lastTracking->status, 'retribusi') !== false) {
-                $currentStageIndex = 3;
-            } else if (stripos($lastTracking->status, 'pemeriksaan') !== false) {
-                $currentStageIndex = 4;
+            // Cari tahap tertinggi berdasarkan role tracking
+            foreach ($tracking as $track) {
+                $roleLower = strtolower($track->role);
+                
+                // Cek setiap stage dan update currentStageIndex jika match
+                foreach ($stages as $index => $stage) {
+                    if (stripos($roleLower, $stage['role_keyword']) !== false) {
+                        // Update ke stage tertinggi yang ditemukan
+                        if ($index > $currentStageIndex) {
+                            $currentStageIndex = $index;
+                        }
+                    }
+                }
             }
         }
 
+        // Build flow result
         $flow = [];
         foreach ($stages as $index => $stage) {
             $flow[] = [

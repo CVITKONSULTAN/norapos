@@ -224,11 +224,21 @@
             action="{{route('ciptakarya.store_pbg')}}"
             >
                 @csrf
-                <input type="hidden" name="tipe" value="PBG" />
                 <input type="hidden" name="insert" value="1" />
                 <input type="hidden" name="update" value="0" />
                 <input type="hidden" name="id" value="0" />
                 <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Tipe Izin <span class="text-danger">*</span>:</label>
+                        <div class="col-sm-9">
+                            <select name="tipe" class="form-control" required>
+                                <option value="">-- Pilih Tipe Izin --</option>
+                                <option value="PBG">PBG</option>
+                                <option value="SLF">SLF</option>
+                                <option value="PBG/SLF">PBG/SLF</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Nomor Permohonan :</label>
                         <div class="col-sm-9">
@@ -258,19 +268,6 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Kecamatan :</label>
-                        <div class="col-sm-9">
-                            <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
-                                <option value="">-- Pilih --</option>
-                                @foreach($kecamatan as $kec)
-                                    <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
-                                @endforeach
-                            </select>
-                            <input type="hidden" name="nama_kecamatan" id="nama_kecamatan" />
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Alamat :</label>
                         <div class="col-sm-9">
                         <textarea name="alamat" rows="3" class="form-control"></textarea>
@@ -287,6 +284,7 @@
                                 <option value="Hunian">Hunian </option>
                                 <option value="Usaha">Usaha </option>
                                 <option value="Keagamaan">Keagamaan </option>
+                                <option value="Prasarana">Prasarana </option>
                             </select>
                         </div>
                     </div>
@@ -330,6 +328,19 @@
                         <label class="col-sm-3 col-form-label">Lokasi Bangunan :</label>
                         <div class="col-sm-9">
                         <textarea name="lokasi_bangunan" rows="3" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Kecamatan :</label>
+                        <div class="col-sm-9">
+                            <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
+                                <option value="">-- Pilih --</option>
+                                @foreach($kecamatan as $kec)
+                                    <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="nama_kecamatan" id="nama_kecamatan" />
                         </div>
                     </div>
 
@@ -484,13 +495,13 @@
     @if( auth()->user()->checkRole('admin') )
         <div class="row">
             <div class="col-sm-3">
-                <button onclick="addPengajuan('PBG')" class="btn btn-success btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG</button>
+                <button onclick="addPengajuan('PBG')" class="btn btn-primary btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG</button>
             </div>
             <div class="col-sm-3">
                 <button onclick="addPengajuan('SLF')" class="btn btn-danger btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan SLF</button>
             </div>
             <div class="col-sm-3">
-                <button onclick="addPengajuan('PBG/SLF')" class="btn btn-primary btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG & SLF</button>
+                <button onclick="addPengajuan('PBG/SLF')" class="btn btn-success btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG & SLF</button>
             </div>
             <div class="col-sm-3">
                 <button onclick="syncSimbg()" class="btn btn-warning btn-block btn-lg"><i class="fa fa-refresh" aria-hidden="true"></i> Syncron SIMBG</button>
@@ -886,9 +897,10 @@
             // ✅ Reset hanya input & textarea biasa (jaga hidden)
             modals.find('input:not([type=hidden])').val("");
             modals.find('textarea').val("");
+            modals.find('select').val("");
 
-            // ✅ Atur state hidden input
-            modals.find('input[name=tipe]').val(tipe);
+            // ✅ Atur state hidden input dan select tipe
+            modals.find('select[name=tipe]').val(tipe);
             modals.find('input[name=insert]').val(1);
             modals.find('input[name=update]').val(0);
             modals.find('input[name=id]').val(0);
@@ -939,7 +951,7 @@
             modals.find('.modal-title').html(`Edit Data Pengajuan <b>${data.tipe}</b>`);
 
             // Set state
-            modals.find('input[name=tipe]').val(data.tipe);
+            modals.find('select[name=tipe]').val(data.tipe);
             modals.find('input[name=insert]').val(0);
             modals.find('input[name=update]').val(1);
             modals.find('input[name=id]').val(data.id);
@@ -1450,45 +1462,45 @@
 
         function renderFullTimeline(flow) {
 
-    let html = `<div class="timeline">`;
+            let html = `<div class="timeline">`;
 
-    flow.forEach((step, index) => {
+            flow.forEach((step, index) => {
 
-        // gunakan warna dari backend: green / red
-        const bg = step.color === 'green' ? '#4CAF50' : '#FF5252';
-        const textColor = 'white';
+                // gunakan warna dari backend: green / red
+                const bg = step.color === 'green' ? '#4CAF50' : '#FF5252';
+                const textColor = 'white';
 
-        html += `
-            <div class="timeline-item">
-                <div class="timeline-year">${index + 1}</div>
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-year">${index + 1}</div>
 
-                <div class="timeline-icon" style="
-                    background: ${bg};
-                    color: ${textColor};
-                    border-color: ${bg};
-                ">
-                    <span style="font-size:22px">✔️</span>
-                </div>
+                        <div class="timeline-icon" style="
+                            background: ${bg};
+                            color: ${textColor};
+                            border-color: ${bg};
+                        ">
+                            <span style="font-size:22px">✔️</span>
+                        </div>
 
-                <div class="timeline-content">
-                    <h3><strong>${step.label}</strong></h3>
-                    <p>${step.desc}</p>
-                    
-                    <p style="margin-top:4px;">
-                        <b>Status:</b> ${step.status.toUpperCase()} <br>
-                        <b>Catatan:</b> ${step.catatan ?? '-'} <br>
-                        <b>Tanggal:</b> ${step.verified_at ? moment(step.verified_at).format("DD MMMM YYYY HH:mm") : '-'} <br>
-                        <b>User:</b> ${step.user ?? '-'}
-                    </p>
-                </div>
-            </div>
-        `;
-    });
+                        <div class="timeline-content">
+                            <h3><strong>${step.label}</strong></h3>
+                            <p>${step.desc}</p>
+                            
+                            <p style="margin-top:4px;">
+                                <b>Status:</b> ${step.status.toUpperCase()} <br>
+                                <b>Catatan:</b> ${step.catatan ?? '-'} <br>
+                                <b>Tanggal:</b> ${step.verified_at ? moment(step.verified_at).format("DD MMMM YYYY HH:mm") : '-'} <br>
+                                <b>User:</b> ${step.user ?? '-'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
 
-    html += `</div>`;
+            html += `</div>`;
 
-    return html;
-}
+            return html;
+        }
 
 // ===================== SYNC SIMBG =====================
 function syncSimbg() {

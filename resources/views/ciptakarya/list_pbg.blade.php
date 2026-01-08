@@ -1279,6 +1279,7 @@
                 {title: "Admin", desc: "Input data permohonan & penentuan jenis izin", icon: "🚀"},
                 {title: "Petugas Lapangan", desc: "Verifikasi gambar teknis & survey lokasi", icon: "📍"},
                 {title: "Pemeriksa", desc: "Pemeriksaan dokumen teknis", icon: "🧭"},
+                {title: "Pemeriksa 2", desc: "Pemeriksaan dokumen teknis", icon: "🧭"},
                 {title: "Admin Retribusi", desc: "Perhitungan retribusi & rekom teknis", icon: "💰"},
                 {title: "Koordinator", desc: "Verifikasi keseluruhan data", icon: "📊"},
                 {title: "Kabid", desc: "Validasi teknis lanjutan", icon: "📑"},

@@ -1191,13 +1191,31 @@ class DataController extends Controller
         if ( auth()->user()->checkRole('pemeriksa') ) {
             
             $business_id = auth()->user()->business->id;
+            // Cari user pemeriksa 2
+            $admin = User::role("Pemeriksa2#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email ke Pemeriksa 2
+                \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                    $pengajuan,
+                    $tracking
+                ));
+            }
+        }
+
+        // === KIRIM EMAIL OTOMATIS JIKA ROLE = PEMERIKSA 2 ===
+        if ( auth()->user()->checkRole('pemeriksa 2') ) {
+            
+            $business_id = auth()->user()->business->id;
             // Cari user admin_retribusi
             $admin = User::role("Retribusi#$business_id")->get();
             if($admin->count() > 0){
                 $emailList = $admin->pluck('email')->toArray();
                 $pengajuan = PengajuanPBG::findorfail($pengajuanId);
     
-                // Kirim email
+                // Kirim email ke Retribusi
                 \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
                     $pengajuan,
                     $tracking
@@ -1261,59 +1279,57 @@ class DataController extends Controller
     }
 
     public function timeline($id)
-{
-    $pengajuan = PengajuanPBG::find($id);
+    {
+        $pengajuan = PengajuanPBG::find($id);
 
-    if (!$pengajuan) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Data pengajuan tidak ditemukan'
-        ]);
-    }
-
-    $flow = config('pbgflow');
-
-    $timeline = [];
-
-    foreach ($flow as $step) {
-
-        // Normalisasi role flow: hilangkan spasi & lowercase
-        $searchKey = strtolower(str_replace(' ', '', $step['role']));
-
-        // Cari tracking berdasarkan LIKE
-        $track = PbgTracking::where('pengajuan_id', $id)
-            ->whereRaw("LOWER(REPLACE(role, ' ', '')) LIKE ?", ["%{$searchKey}%"])
-            ->first();
-
-        $row = [
-            'role' => $step['role'],
-            'label' => $step['label'],
-            'desc'  => $step['desc'],
-            'status' => 'pending',
-            'catatan' => null,
-            'verified_at' => null,
-            'user' => null,
-            'color' => 'red'
-        ];
-
-        if ($track) {
-            $row['status']      = $track->status;
-            $row['catatan']     = $track->catatan;
-            $row['verified_at'] = $track->verified_at;
-            $row['user']        = $track->user->username ?? null;
-            $row['color']       = 'green';
+        if (!$pengajuan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data pengajuan tidak ditemukan'
+            ]);
         }
 
-        $timeline[] = $row;
+        $flow = config('pbgflow');
+
+        $timeline = [];
+
+        foreach ($flow as $step) {
+
+            // Normalisasi role flow: hilangkan spasi & lowercase
+            $searchKey = strtolower(str_replace(' ', '', $step['role']));
+
+            // Cari tracking berdasarkan LIKE
+            $track = PbgTracking::where('pengajuan_id', $id)
+                ->whereRaw("LOWER(REPLACE(role, ' ', '')) LIKE ?", ["%{$searchKey}%"])
+                ->first();
+
+            $row = [
+                'role' => $step['role'],
+                'label' => $step['label'],
+                'desc'  => $step['desc'],
+                'status' => 'pending',
+                'catatan' => null,
+                'verified_at' => null,
+                'user' => null,
+                'color' => 'red'
+            ];
+
+            if ($track) {
+                $row['status']      = $track->status;
+                $row['catatan']     = $track->catatan;
+                $row['verified_at'] = $track->verified_at;
+                $row['user']        = $track->user->username ?? null;
+                $row['color']       = 'green';
+            }
+
+            $timeline[] = $row;
+        }
+
+        return response()->json([
+            'status' => true,
+            'timeline' => $timeline
+        ]);
     }
-
-    return response()->json([
-        'status' => true,
-        'timeline' => $timeline
-    ]);
-}
-
-
 
     public function riwayatVerifikasi($id)
     {

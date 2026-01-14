@@ -735,6 +735,9 @@
                             `;
                         @elseif(auth()->user()->checkRole('retribusi'))
                             buttons += `
+                                <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </button>
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>

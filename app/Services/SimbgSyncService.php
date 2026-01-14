@@ -50,6 +50,7 @@ class SimbgSyncService
             // 1. Fetch data from Robot API
             Log::info('🤖 Starting SIMBG sync...');
             $pengajuanData = $this->fetchFromRobot();
+            // dd(count($pengajuanData));
             
             if (empty($pengajuanData)) {
                 Log::info('✅ No new data from SIMBG (already up to date)');
@@ -124,12 +125,14 @@ class SimbgSyncService
     {
         try {
             // Check if we should use incremental sync
-            $lastSync = $this->getLastSync();
+            // $lastSync = $this->getLastSync();
             
-            if ($lastSync && $lastSync->status === 'success') {
-                // Use incremental sync
-                return $this->fetchIncremental($lastSync->synced_at);
-            }
+            // if ($lastSync && $lastSync->status === 'success') {
+            //     // Use incremental sync
+            //     return $this->fetchIncremental($lastSync->synced_at);
+            // }
+
+            // dd($lastSync);
 
             // Fall back to full fetch
             return $this->fetchFull();
@@ -204,25 +207,70 @@ class SimbgSyncService
             return ['action' => 'skipped', 'id' => null];
         }
 
-        // Check if already exists
-        $existing = PengajuanPBG::where('uid', $uid)->first();
-
-        if ($existing) {
-            // Optional: Update existing data
-            // For now, we skip
-            Log::debug("Skipping existing UID: {$uid}");
-            return ['action' => 'skipped', 'id' => $existing->id];
-        }
-
         // Map Robot data to Laravel model
         $mapped = $this->mapRobotToLaravel($data);
 
-        // Create new pengajuan
-        $pengajuan = PengajuanPBG::create($mapped);
+        // Check if already exists by UID
+        $existing = PengajuanPBG::where('uid', $uid)->first();
 
-        Log::info("✅ Created new pengajuan: {$pengajuan->id} (UID: {$uid})");
+        if ($existing) {
+            // Update existing data
+            $existing->update($mapped);
+            Log::info("🔄 Updated existing pengajuan: {$existing->id} (UID: {$uid})");
+            return ['action' => 'updated', 'id' => $existing->id];
+        }
 
-        return ['action' => 'created', 'id' => $pengajuan->id];
+        // Check if no_permohonan already exists (to avoid duplicate key error)
+        if (!empty($mapped['no_permohonan'])) {
+            $existingByNoPermohonan = PengajuanPBG::where('no_permohonan', $mapped['no_permohonan'])->first();
+            
+            if ($existingByNoPermohonan) {
+                // Update the existing record with new UID and data
+                $existingByNoPermohonan->update($mapped);
+                Log::info("🔄 Updated pengajuan by no_permohonan: {$existingByNoPermohonan->id} (No: {$mapped['no_permohonan']}, New UID: {$uid})");
+                return ['action' => 'updated', 'id' => $existingByNoPermohonan->id];
+            }
+        }
+
+        try {
+            // Create new pengajuan
+            $pengajuan = PengajuanPBG::create($mapped);
+
+            Log::info("✅ Created new pengajuan: {$pengajuan->id} (UID: {$uid})");
+
+            return ['action' => 'created', 'id' => $pengajuan->id];
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle duplicate entry error
+            if ($e->getCode() == 23000 || strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                Log::warning("⚠️ Duplicate entry detected, attempting to update instead for UID: {$uid}");
+                
+                // Try to find by no_permohonan again (race condition handling)
+                if (!empty($mapped['no_permohonan'])) {
+                    $existingByNoPermohonan = PengajuanPBG::where('no_permohonan', $mapped['no_permohonan'])->first();
+                    
+                    if ($existingByNoPermohonan) {
+                        $existingByNoPermohonan->update($mapped);
+                        Log::info("🔄 Updated pengajuan after duplicate error: {$existingByNoPermohonan->id} (UID: {$uid})");
+                        return ['action' => 'updated', 'id' => $existingByNoPermohonan->id];
+                    }
+                }
+                
+                // If still can't find, try by UID one more time
+                $existingByUid = PengajuanPBG::where('uid', $uid)->first();
+                if ($existingByUid) {
+                    $existingByUid->update($mapped);
+                    Log::info("🔄 Updated pengajuan after duplicate error (by UID): {$existingByUid->id} (UID: {$uid})");
+                    return ['action' => 'updated', 'id' => $existingByUid->id];
+                }
+                
+                // If still can't find, skip this record
+                Log::error("❌ Could not resolve duplicate entry for UID: {$uid}, No: {$mapped['no_permohonan']}");
+                return ['action' => 'skipped', 'id' => null];
+            }
+            
+            // Re-throw if it's not a duplicate entry error
+            throw $e;
+        }
     }
 
     /**

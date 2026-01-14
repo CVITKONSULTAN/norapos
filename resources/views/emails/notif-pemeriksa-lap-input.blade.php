@@ -34,7 +34,7 @@
             </tr>
             <tr>
                 <td style="padding:6px 0; color:#555;">Alamat Bangunan</td>
-                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->alamat }}</td>
+                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->lokasi_bangunan ?? "-" }}</td>
             </tr>
             <tr>
                 <td style="padding:6px 0; color:#555;">Tanggal Pemeriksaan</td>

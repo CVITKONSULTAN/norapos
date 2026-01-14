@@ -168,7 +168,7 @@
                     </h4>
                     <p><strong>No. Permohonan:</strong> {{ $pengajuan->no_permohonan ?? '-' }}</p>
                     <p><strong>Fungsi Bangunan:</strong> {{ $pengajuan->fungsi_bangunan ?? '-' }}</p>
-                    <p><strong>Alamat:</strong> {{ $pengajuan->alamat ?? '-' }}</p>
+                    <p><strong>Alamat:</strong> {{ $pengajuan->lokasi_bangunan ?? '-' }}</p>
                     @if($pengajuan->luas_bangunan)
                     <p><strong>Luas Bangunan:</strong> {{ $pengajuan->luas_bangunan }} m²</p>
                     @endif

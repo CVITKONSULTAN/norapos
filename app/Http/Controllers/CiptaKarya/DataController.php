@@ -81,20 +81,33 @@ class DataController extends Controller
         // ========== INSERT ==========
         if ($request->insert == 1) {
 
-            // Validasi simple
+            // Validasi simple (ignore yang sudah deleted)
             $validator = Validator::make($request->all(), [
-                'no_permohonan' => 'required|unique:pengajuan,no_permohonan',
+                'no_permohonan' => 'required|unique:pengajuan,no_permohonan,NULL,id,deleted_at,NULL',
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }
 
-            $input = $request->except(['_token', 'insert', 'update', 'delete']);
-            $input['answers'] = json_encode([]);
-            $input['questions'] = json_encode([]);
+            // Cek apakah ada data dengan no_permohonan yang sama tapi sudah deleted
+            $existingDeleted = PengajuanPBG::withTrashed()
+                ->where('no_permohonan', $request->no_permohonan)
+                ->whereNotNull('deleted_at')
+                ->first();
 
-            $data = PengajuanPBG::create($input);
+            if ($existingDeleted) {
+                // Restore dan update data yang sudah deleted
+                $existingDeleted->deleted_at = null;
+                $existingDeleted->update($request->except(['_token', 'insert', 'update', 'delete']));
+                $data = $existingDeleted;
+            } else {
+                // Create data baru
+                $input = $request->except(['_token', 'insert', 'update', 'delete']);
+                $input['answers'] = json_encode([]);
+                $input['questions'] = json_encode([]);
+                $data = PengajuanPBG::create($input);
+            }
 
             $role = auth()->user()->roles->first()->name ?? 'admin'; // pastikan role tersedia
 

@@ -631,7 +631,14 @@
         <div class="detail-title">Foto Lapangan</div>
 
         @php
-            $fotos = json_decode($pengajuan['list_foto'] ?? "[]", true);
+            // Prioritas: photoMaps (dari mobile/web baru), fallback ke list_foto
+            $fotos = $pengajuan['photoMaps'] ?? $pengajuan['list_foto'] ?? [];
+            if (is_string($fotos)) {
+                $fotos = json_decode($fotos, true) ?? [];
+            }
+            if (!is_array($fotos)) {
+                $fotos = [];
+            }
             // if(count($fotos) > 0)
             // $fotos = array_slice($fotos, 0, 10); // ambil 10 item pertama
         @endphp

@@ -83,11 +83,31 @@ Route::group(['prefix' => 'ciptakarya/petugas', 'middleware' => 'auth.petugas'],
     Route::get('api/tugas', 'CiptaKarya\PetugasController@apiListTugas')
         ->name('petugas.api.tugas');
     
+    // Detail tugas
     Route::get('tugas/{id}', 'CiptaKarya\PetugasController@detailTugas')
         ->name('petugas.tugas.detail');
     
-    Route::post('tugas/{id}/verifikasi', 'CiptaKarya\PetugasController@submitVerifikasi')
+    // Foto Lapangan
+    Route::get('tugas/{id}/foto', 'CiptaKarya\PetugasController@fotoLapangan')
+        ->name('petugas.tugas.foto');
+    Route::post('tugas/{id}/save-photos', 'CiptaKarya\PetugasController@savePhotos')
+        ->name('petugas.tugas.save-photos');
+    
+    // Kuesioner
+    Route::get('tugas/{id}/kuesioner', 'CiptaKarya\PetugasController@kuesioner')
+        ->name('petugas.tugas.kuesioner');
+    Route::post('tugas/{id}/save-answers', 'CiptaKarya\PetugasController@saveAnswers')
+        ->name('petugas.tugas.save-answers');
+    
+    // Submit Verifikasi
+    Route::get('tugas/{id}/submit', 'CiptaKarya\PetugasController@showSubmitVerifikasi')
+        ->name('petugas.tugas.submit');
+    Route::post('tugas/{id}/submit', 'CiptaKarya\PetugasController@submitVerifikasi')
         ->name('petugas.tugas.verifikasi');
+    
+    // Upload foto
+    Route::post('upload-photo', 'CiptaKarya\PetugasController@uploadPhoto')
+        ->name('petugas.upload-photo');
     
     Route::get('profil', 'CiptaKarya\PetugasController@profil')
         ->name('petugas.profil');

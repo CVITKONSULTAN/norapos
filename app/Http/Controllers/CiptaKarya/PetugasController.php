@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CiptaKarya;
 use App\Http\Controllers\Controller;
 use App\Models\CiptaKarya\PetugasLapangan;
 use App\Models\CiptaKarya\PengajuanPBG;
+use App\Models\CiptaKarya\PbgTracking;
 use App\Mail\MagicLinkMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -191,27 +192,245 @@ class PetugasController extends Controller
             ], 404);
         }
 
-        // Update data verifikasi (sesuaikan dengan field yang ada)
-        $updateData = [];
-        
-        if ($request->has('answers')) {
-            $updateData['answers'] = $request->answers;
-        }
+        // Update data verifikasi - status tetap 'proses', diteruskan ke Pemeriksa
+        $updateData = [
+            'status' => 'proses',
+            'verified_at' => now(),
+            'verified_by' => $petugas->id,
+        ];
         
         if ($request->has('list_foto')) {
             $updateData['list_foto'] = $request->list_foto;
         }
 
-        if ($request->has('photoMaps')) {
-            $updateData['photoMaps'] = $request->photoMaps;
+        if ($request->has('notes')) {
+            $updateData['notes'] = $request->notes;
+        }
+
+        $pengajuan->update($updateData);
+
+        // $business_id = 15; //local
+        $business_id = 18; //server
+        
+        // Catat tracking petugas lapangan
+        $role = 'Petugas Lapangan#' . $business_id;
+        
+        PbgTracking::updateOrCreate(
+            [
+                'pengajuan_id' => $pengajuan->id,
+                'role' => $role
+            ],
+            [
+                'user_id' => null, // petugas bukan user sistem
+                'catatan' => "Petugas {$petugas->nama} menyelesaikan verifikasi lapangan",
+                'status' => "proses",
+                'verified_at' => now()
+            ]
+        );
+
+        // Cari user Pemeriksa untuk notifikasi email
+        $admin = \App\User::role("Pemeriksa#$business_id")->get();
+
+        if ($admin->count() > 0) {
+            $emailList = $admin->pluck('email')->toArray();
+
+            // Kirim email ke Pemeriksa
+            \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                $pengajuan,
+                PbgTracking::where('pengajuan_id', $pengajuan->id)->where('role', $role)->first()
+            ));
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Verifikasi berhasil dikirim ke Pemeriksa'
+        ]);
+    }
+
+    /**
+     * Halaman foto lapangan
+     */
+    public function fotoLapangan(Request $request, $id)
+    {
+        $petugas = $request->petugas;
+        
+        $pengajuan = PengajuanPBG::where('id', $id)
+            ->where('petugas_id', $petugas->id)
+            ->first();
+
+        if (!$pengajuan) {
+            return redirect()->route('petugas.dashboard')
+                ->with('error', 'Tugas tidak ditemukan');
+        }
+
+        return view('petugas.foto_lapangan', compact('petugas', 'pengajuan'));
+    }
+
+    /**
+     * Simpan foto lapangan
+     */
+    public function savePhotos(Request $request, $id)
+    {
+        $petugas = $request->petugas;
+        
+        $pengajuan = PengajuanPBG::where('id', $id)
+            ->where('petugas_id', $petugas->id)
+            ->first();
+
+        if (!$pengajuan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tugas tidak ditemukan'
+            ], 404);
+        }
+
+        $photoMaps = $request->photoMaps;
+        
+        // Sync list_foto with photoMaps (same data)
+        $pengajuan->update([
+            'photoMaps' => $photoMaps,
+            'list_foto' => $photoMaps
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Foto berhasil disimpan'
+        ]);
+    }
+
+    /**
+     * Halaman kuesioner
+     */
+    public function kuesioner(Request $request, $id)
+    {
+        $petugas = $request->petugas;
+        
+        $pengajuan = PengajuanPBG::where('id', $id)
+            ->where('petugas_id', $petugas->id)
+            ->first();
+
+        if (!$pengajuan) {
+            return redirect()->route('petugas.dashboard')
+                ->with('error', 'Tugas tidak ditemukan');
+        }
+
+        return view('petugas.kuesioner', compact('petugas', 'pengajuan'));
+    }
+
+    /**
+     * Simpan jawaban kuesioner
+     */
+    public function saveAnswers(Request $request, $id)
+    {
+        $petugas = $request->petugas;
+        
+        $pengajuan = PengajuanPBG::where('id', $id)
+            ->where('petugas_id', $petugas->id)
+            ->first();
+
+        if (!$pengajuan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tugas tidak ditemukan'
+            ], 404);
+        }
+
+        // Get answers from request - handle both json and form data
+        $answersData = $request->input('answers');
+        $questionsData = $request->input('questions');
+        
+        // If input is null, try to get from raw JSON
+        if ($answersData === null) {
+            $content = $request->getContent();
+            $decoded = json_decode($content, true);
+            $answersData = $decoded['answers'] ?? [];
+            $questionsData = $decoded['questions'] ?? null;
+        }
+        
+        // Log for debugging
+        \Log::info('Saving answers for pengajuan ' . $id, [
+            'answers_count' => is_array($answersData) ? count($answersData) : 'not_array',
+            'answers_type' => gettype($answersData),
+            'has_questions' => $questionsData ? 'yes' : 'no'
+        ]);
+
+        if (empty($answersData)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada jawaban yang dikirim'
+            ], 400);
+        }
+
+        $updateData = [
+            'answers' => $answersData
+        ];
+        
+        // Also save questions if provided
+        if ($questionsData) {
+            $updateData['questions'] = $questionsData;
         }
 
         $pengajuan->update($updateData);
 
         return response()->json([
             'status' => true,
-            'message' => 'Verifikasi berhasil disimpan'
+            'message' => 'Jawaban berhasil disimpan'
         ]);
+    }
+
+    /**
+     * Halaman submit verifikasi
+     */
+    public function showSubmitVerifikasi(Request $request, $id)
+    {
+        $petugas = $request->petugas;
+        
+        $pengajuan = PengajuanPBG::where('id', $id)
+            ->where('petugas_id', $petugas->id)
+            ->first();
+
+        if (!$pengajuan) {
+            return redirect()->route('petugas.dashboard')
+                ->with('error', 'Tugas tidak ditemukan');
+        }
+
+        return view('petugas.submit_verifikasi', compact('petugas', 'pengajuan'));
+    }
+
+    /**
+     * Upload foto
+     */
+    public function uploadPhoto(Request $request)
+    {
+        try {
+            if (!$request->hasFile('file_data')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No file uploaded'
+                ], 400);
+            }
+
+            $file = $request->file('file_data');
+            $filename = 'verifikasi_' . time() . '_' . uniqid() . '.jpg';
+            
+            // Store in public storage
+            $path = $file->storeAs('uploads/verifikasi', $filename, 'public');
+            
+            // Generate URL
+            $url = asset('storage/' . $path);
+
+            return response()->json([
+                'status' => true,
+                'url' => $url,
+                'path' => $path
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

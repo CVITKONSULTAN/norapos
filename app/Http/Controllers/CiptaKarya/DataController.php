@@ -693,6 +693,8 @@ class DataController extends Controller
 
         if($request->photoMaps){
             $data->photoMaps = json_encode($request->photoMaps);
+            // Sync list_foto dengan photoMaps agar caption tersimpan
+            $data->list_foto = json_encode($request->photoMaps);
             $tracking = PbgTracking::updateOrCreate(
                 [
                     'pengajuan_id' => $data->id,
@@ -707,13 +709,9 @@ class DataController extends Controller
             );
         }
 
-        if($request->list_foto){
+        // list_foto hanya disimpan jika photoMaps tidak ada (backward compatibility)
+        if($request->list_foto && !$request->photoMaps){
             $data->list_foto = json_encode($request->list_foto);
-            // $data->save();
-            // return response()->json([
-            //     'status' => true,
-            //     'message' => 'Photo saved',
-            // ]);
         }
 
         if($request->answers)
@@ -805,9 +803,23 @@ class DataController extends Controller
             abort(403, 'Dokumen belum terbit');
         }
 
-        // Decode answers
-        $answers = json_decode($pengajuan['answers'], true) ?? [];
-        $sections = json_decode($pengajuan['questions'], true) ?? [];
+        // Handle answers - bisa array (dari cast) atau string JSON
+        $answers = $pengajuan['answers'] ?? [];
+        if (is_string($answers)) {
+            $answers = json_decode($answers, true) ?? [];
+        }
+        if (!is_array($answers)) {
+            $answers = [];
+        }
+        
+        // Handle questions - bisa array (dari cast) atau string JSON
+        $sections = $pengajuan['questions'] ?? [];
+        if (is_string($sections)) {
+            $sections = json_decode($sections, true) ?? [];
+        }
+        if (!is_array($sections)) {
+            $sections = [];
+        }
 
         $results = [];
 
@@ -932,13 +944,20 @@ class DataController extends Controller
         /* ======================================================
         * FOTO MAPPING
         ====================================================== */
-        $photos = json_decode($pengajuan['photoMaps'] ?? '[]', true);
+        // Handle photoMaps - bisa array (dari cast) atau string JSON
+        $photos = $pengajuan['photoMaps'] ?? [];
+        if (is_string($photos)) {
+            $photos = json_decode($photos, true) ?? [];
+        }
+        if (!is_array($photos)) {
+            $photos = [];
+        }
 
         $sectionPhotos = [];
 
         foreach ($photos as $p) {
 
-            preg_match('/^(\d+)-/', $p['caption'], $match);
+            preg_match('/^(\d+)-/', $p['caption'] ?? '', $match);
 
             if (!isset($match[1])) continue;
 
@@ -1049,9 +1068,23 @@ class DataController extends Controller
     {
         $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
 
-        // Decode answers
-        $answers = json_decode($pengajuan['answers'], true) ?? [];
-        $sections = json_decode($pengajuan['questions'], true) ?? [];
+        // Handle answers - bisa array (dari cast) atau string JSON
+        $answers = $pengajuan['answers'] ?? [];
+        if (is_string($answers)) {
+            $answers = json_decode($answers, true) ?? [];
+        }
+        if (!is_array($answers)) {
+            $answers = [];
+        }
+        
+        // Handle questions - bisa array (dari cast) atau string JSON
+        $sections = $pengajuan['questions'] ?? [];
+        if (is_string($sections)) {
+            $sections = json_decode($sections, true) ?? [];
+        }
+        if (!is_array($sections)) {
+            $sections = [];
+        }
 
         $results = [];
 

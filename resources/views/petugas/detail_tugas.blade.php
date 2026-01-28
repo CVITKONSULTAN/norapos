@@ -223,29 +223,199 @@
         </div>
         @endif
 
-        <!-- Tombol Aksi -->
+        <!-- Menu Verifikasi -->
+        @if($pengajuan->status === 'proses')
         <div class="info-card">
-            <h5><i class="fas fa-tasks"></i> Aksi</h5>
+            <h5><i class="fas fa-tasks"></i> Menu Verifikasi</h5>
             
-            @if($pengajuan->status === 'proses')
-                <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
-                    <i class="fas fa-info-circle"></i> Gunakan aplikasi mobile untuk melakukan verifikasi lapangan dan upload foto.
-                </p>
+            @php
+                // Handle double-encoded JSON from mobile app
+                $photoMapsData = is_string($pengajuan->photoMaps) 
+                    ? json_decode($pengajuan->photoMaps, true) ?? [] 
+                    : ($pengajuan->photoMaps ?? []);
+                $answersData = is_string($pengajuan->answers)
+                    ? json_decode($pengajuan->answers, true) ?? []
+                    : ($pengajuan->answers ?? []);
                 
-                <a href="{{ route('petugas.dashboard') }}" class="btn btn-primary-custom">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
-                </a>
-            @else
-                <p style="color: #666; font-size: 14px; text-align: center;">
-                    Status: <strong>{{ strtoupper($pengajuan->status) }}</strong>
-                </p>
+                // React Native format: array of objects [{ caption: "...", url: "..." }, ...]
+                $hasPhotos = !empty($photoMapsData) && is_array($photoMapsData);
+                $photoCount = 0;
+                if ($hasPhotos) {
+                    // Check if it's React Native format (array with caption)
+                    if (isset($photoMapsData[0]) && isset($photoMapsData[0]['caption'])) {
+                        $photoCount = count($photoMapsData);
+                    } else {
+                        // Legacy format: object with segment keys
+                        foreach ($photoMapsData as $photos) {
+                            if (is_array($photos)) {
+                                $photoCount += count($photos);
+                            }
+                        }
+                    }
+                }
+                $photosComplete = $photoCount > 0;
                 
-                <a href="{{ route('petugas.dashboard') }}" class="btn btn-primary-custom">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                $hasAnswers = !empty($answersData) && is_array($answersData);
+                $answerCount = $hasAnswers ? count($answersData) : 0;
+                $answersComplete = $answerCount > 0; // Kuesioner opsional
+            @endphp
+
+            <div class="menu-list">
+                <!-- Foto Lapangan -->
+                <a href="{{ route('petugas.tugas.foto', $pengajuan->id) }}" class="menu-item">
+                    <div class="menu-icon {{ $photosComplete ? 'complete' : '' }}">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="menu-text">
+                        <h6>Foto Lapangan</h6>
+                        <small>{{ $photoCount > 0 ? $photoCount . ' foto diupload' : 'Belum ada foto' }}</small>
+                    </div>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
                 </a>
+
+                <!-- Kuesioner -->
+                <a href="{{ route('petugas.tugas.kuesioner', $pengajuan->id) }}" class="menu-item">
+                    <div class="menu-icon {{ $answerCount > 0 ? 'complete' : '' }}">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="menu-text">
+                        <h6>Kuesioner Verifikasi <span style="font-size: 10px; color: #888;">(Opsional)</span></h6>
+                        <small>{{ $answerCount > 0 ? $answerCount . ' pertanyaan terjawab' : 'Belum diisi' }}</small>
+                    </div>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </a>
+
+                <!-- Submit Verifikasi -->
+                <a href="{{ route('petugas.tugas.submit', $pengajuan->id) }}" class="menu-item {{ !$photosComplete ? 'disabled' : 'submit-ready' }}">
+                    <div class="menu-icon submit">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <div class="menu-text">
+                        <h6>Submit Verifikasi</h6>
+                        <small>{{ $photosComplete ? 'Siap dikirim' : 'Upload minimal 1 foto' }}</small>
+                    </div>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </a>
+            </div>
+        </div>
+        @else
+        <div class="info-card">
+            <h5><i class="fas fa-check-circle"></i> Status Verifikasi</h5>
+            <div class="status-complete-box">
+                <i class="fas {{ $pengajuan->status === 'terbit' ? 'fa-check-circle text-success' : 'fa-times-circle text-danger' }}"></i>
+                <p>Verifikasi telah selesai dengan status: <strong>{{ strtoupper($pengajuan->status) }}</strong></p>
+            </div>
+            
+            @if(!empty($pengajuan->notes))
+            <div class="notes-box">
+                <strong>Catatan:</strong>
+                <p>{{ $pengajuan->notes }}</p>
+            </div>
             @endif
         </div>
+        @endif
+
+        <!-- Tombol Kembali -->
+        <div style="margin-top: 15px;">
+            <a href="{{ route('petugas.dashboard') }}" class="btn btn-primary-custom">
+                <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+            </a>
+        </div>
     </div>
+
+    <style>
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+        .menu-item:hover {
+            background: #f0f7ff;
+            transform: translateX(5px);
+        }
+        .menu-item.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .menu-item.submit-ready {
+            background: #e8f5e9;
+        }
+        .menu-item.submit-ready:hover {
+            background: #c8e6c9;
+        }
+        .menu-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: #2F80ED;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        .menu-icon.complete {
+            background: #00b809;
+        }
+        .menu-icon.submit {
+            background: #FFC107;
+        }
+        .menu-text {
+            flex-grow: 1;
+        }
+        .menu-text h6 {
+            margin: 0 0 3px 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        .menu-text small {
+            color: #666;
+            font-size: 12px;
+        }
+        .menu-arrow {
+            color: #999;
+            font-size: 14px;
+        }
+        .status-complete-box {
+            text-align: center;
+            padding: 20px;
+        }
+        .status-complete-box i {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .status-complete-box p {
+            margin: 0;
+            color: #666;
+        }
+        .notes-box {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .notes-box strong {
+            font-size: 13px;
+            color: #333;
+        }
+        .notes-box p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </body>

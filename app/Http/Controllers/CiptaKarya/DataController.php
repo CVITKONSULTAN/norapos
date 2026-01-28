@@ -138,6 +138,11 @@ class DataController extends Controller
                 return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
             }
 
+            // Cek apakah dokumen sudah terbit
+            if(strtolower($data->status) === 'terbit') {
+                return response()->json(['status' => false, 'message' => 'Dokumen sudah terbit, tidak dapat diedit lagi']);
+            }
+
             // Validasi unik kecuali data sendiri
             $validator = Validator::make($request->all(), [
                 'no_permohonan' => 'required|unique:pengajuan,no_permohonan,' . $request->id,
@@ -691,6 +696,13 @@ class DataController extends Controller
                 'message' => "data not found"
             ]);
 
+        // Cek apakah dokumen sudah terbit
+        if(strtolower($data->status) === 'terbit')
+            return response()->json([
+                'status' => false,
+                'message' => "Dokumen sudah terbit, tidak dapat diedit lagi"
+            ]);
+
         if($request->photoMaps){
             $data->photoMaps = json_encode($request->photoMaps);
             // Sync list_foto dengan photoMaps agar caption tersimpan
@@ -987,6 +999,14 @@ class DataController extends Controller
     {
         $p = PengajuanPBG::findOrFail($id);
 
+        // Cek apakah dokumen sudah terbit
+        if(strtolower($p->status) === 'terbit') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen sudah terbit, tidak dapat diedit lagi'
+            ]);
+        }
+
         // VALIDASI
         $request->validate([
             'nilai_retribusi' => 'required',
@@ -1207,6 +1227,16 @@ class DataController extends Controller
         ]);
 
         $pengajuanId = $request->pengajuan_id;
+
+        // Cek apakah dokumen sudah terbit
+        $pengajuanCheck = PengajuanPBG::find($pengajuanId);
+        if($pengajuanCheck && strtolower($pengajuanCheck->status) === 'terbit') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen sudah terbit, tidak dapat diverifikasi lagi'
+            ]);
+        }
+
         $rawHasil = $request->hasil; // 'sesuai' / 'tidak_sesuai'
 
         // map ke status yang konsisten di DB (optional)

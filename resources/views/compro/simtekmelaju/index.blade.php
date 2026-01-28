@@ -707,7 +707,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn-login-nav" href="/login">
-                            <i class="fas fa-sign-in-alt"></i> Login
+                            <i class="fas fa-sign-in-alt"></i> Login Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ciptakarya/petugas/login" style="background: linear-gradient(135deg, #4CAF50, #43a047); color: white !important; padding: 8px 25px; border-radius: 25px; font-weight: 600; margin-left: 5px;">
+                            <i class="fas fa-user-hard-hat"></i> Login Petugas
                         </a>
                     </li>
                 </ul>
@@ -824,7 +829,10 @@
                 </p>
                 <div class="hero-buttons">
                     <a href="/login" class="btn-hero btn-primary-hero">
-                        <i class="fas fa-sign-in-alt"></i> Masuk Sistem
+                        <i class="fas fa-sign-in-alt"></i> Login Admin
+                    </a>
+                    <a href="/ciptakarya/petugas/login" class="btn-hero" style="background: linear-gradient(135deg, #4CAF50, #43a047); color: white; border: 2px solid #4CAF50;">
+                        <i class="fas fa-user-hard-hat"></i> Login Petugas Lapangan
                     </a>
                     <a href="#tentang" class="btn-hero btn-outline-hero">
                         <i class="fas fa-info-circle"></i> Pelajari Lebih Lanjut
@@ -1136,9 +1144,14 @@
         <div class="container">
             <h2>Siap Menggunakan SIMTEK MELAJU?</h2>
             <p>Bergabunglah dengan sistem pengelolaan survey yang modern dan efisien</p>
-            <a href="/login" class="btn-hero btn-primary-hero">
-                <i class="fas fa-rocket"></i> Mulai Sekarang
-            </a>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="/login" class="btn-hero btn-primary-hero">
+                    <i class="fas fa-rocket"></i> Login Admin
+                </a>
+                <a href="/ciptakarya/petugas/login" class="btn-hero" style="background: #4CAF50; color: white; border: 2px solid #4CAF50;">
+                    <i class="fas fa-user-hard-hat"></i> Login Petugas Lapangan
+                </a>
+            </div>
         </div>
     </section>
 

@@ -63,6 +63,39 @@ Route::group([
 
 });
 
+// =========================================
+// ROUTES PETUGAS LAPANGAN (PASSWORDLESS LOGIN)
+// =========================================
+
+// Login Routes (tanpa auth middleware)
+Route::get('ciptakarya/petugas/login', 'CiptaKarya\PetugasController@showLogin')
+    ->name('petugas.login');
+Route::post('ciptakarya/petugas/login', 'CiptaKarya\PetugasController@sendMagicLink')
+    ->name('petugas.login.send');
+Route::get('ciptakarya/petugas/verify/{token}', 'CiptaKarya\PetugasController@verifyMagicLink')
+    ->name('petugas.login.verify');
+
+// Protected Routes (dengan middleware auth.petugas)
+Route::group(['prefix' => 'ciptakarya/petugas', 'middleware' => 'auth.petugas'], function() {
+    Route::get('dashboard', 'CiptaKarya\PetugasController@dashboard')
+        ->name('petugas.dashboard');
+    
+    Route::get('api/tugas', 'CiptaKarya\PetugasController@apiListTugas')
+        ->name('petugas.api.tugas');
+    
+    Route::get('tugas/{id}', 'CiptaKarya\PetugasController@detailTugas')
+        ->name('petugas.tugas.detail');
+    
+    Route::post('tugas/{id}/verifikasi', 'CiptaKarya\PetugasController@submitVerifikasi')
+        ->name('petugas.tugas.verifikasi');
+    
+    Route::get('profil', 'CiptaKarya\PetugasController@profil')
+        ->name('petugas.profil');
+    
+    Route::post('logout', 'CiptaKarya\PetugasController@logout')
+        ->name('petugas.logout');
+});
+
 // Public Tracking Route (tanpa auth middleware)
 Route::post('ciptakarya/public-tracking', 'CiptaKarya\DataController@publicTracking')
     ->name('ciptakarya.public_tracking');

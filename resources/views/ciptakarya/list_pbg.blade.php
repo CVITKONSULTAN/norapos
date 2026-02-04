@@ -580,6 +580,7 @@
                             <th>Tgl Pengajuan</th>
                             <th>Hari Ke-</th>
                             <th>Status</th>
+                            <th>Posisi</th>
                             <th>Nilai Retribusi</th>
                             <th>Petugas</th>
                             <th>@lang( 'messages.action' )</th>
@@ -658,6 +659,32 @@
                         let color = data === 'terbit' ? 'green' : (data === 'tolak' ? 'red' : 'blue');
                         return `<span class="badge bg-${color}">${label}</span>`;
                     } 
+                },
+                {
+                    searchable: false,
+                    data: 'posisi_terakhir',
+                    render: (data) => {
+                        if (!data || data === '-') return '-';
+                        
+                        let statusColor = 'gray';
+                        let statusLabel = '';
+                        
+                        if (data.status === 'approved') {
+                            statusColor = 'green';
+                            statusLabel = '✓';
+                        } else if (data.status === 'rejected') {
+                            statusColor = 'red';
+                            statusLabel = '✗';
+                        } else {
+                            statusColor = 'orange';
+                            statusLabel = '⏳';
+                        }
+                        
+                        // Hilangkan #angka dari role (misal: Admin#18 -> Admin)
+                        let roleName = data.role ? data.role.replace(/#\d+$/, '').trim() : '-';
+                        
+                        return `<span class="badge bg-${statusColor}">${statusLabel} ${roleName}</span>`;
+                    }
                 },
                 {
                     searchable: false,

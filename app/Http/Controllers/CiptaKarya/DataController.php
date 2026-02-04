@@ -254,6 +254,37 @@ class DataController extends Controller
                 // Hitung hari kerja (exclude Sabtu & Minggu)
                 return $this->hitungHariKerja($row->created_at, now());
             })
+            ->addColumn('posisi_terakhir', function($row) {
+                // Ambil tracking terakhir berdasarkan verified_at atau created_at
+                $lastTracking = PbgTracking::where('pengajuan_id', $row->id)
+                    ->orderBy('id', 'desc')
+                    ->first();
+                
+                if (!$lastTracking) {
+                    return '-';
+                }
+                
+                // Mapping role ke nama yang lebih readable
+                $roleNames = [
+                    'admin' => 'Admin',
+                    'petugas' => 'Petugas Lapangan',
+                    'pemeriksa' => 'Pemeriksa',
+                    'pemeriksa2' => 'Pemeriksa 2',
+                    'retribusi' => 'Admin Retribusi',
+                    'koordinator' => 'Koordinator',
+                    'kabid' => 'Kabid',
+                    'kadis' => 'Kadis',
+                ];
+                
+                $roleName = $roleNames[$lastTracking->role] ?? ucfirst($lastTracking->role);
+                $status = $lastTracking->status;
+                
+                return [
+                    'role' => $roleName,
+                    'status' => $status,
+                    'verified_at' => $lastTracking->verified_at,
+                ];
+            })
             ->make(true);
     }
 

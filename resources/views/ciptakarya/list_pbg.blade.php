@@ -735,6 +735,9 @@
                             `;
                         @elseif(auth()->user()->checkRole('retribusi'))
                             buttons += `
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
                                 <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
                                     <i class="fa fa-pencil"></i> Edit
                                 </button>

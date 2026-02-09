@@ -285,6 +285,7 @@
                                 <option value="Usaha">Usaha </option>
                                 <option value="Keagamaan">Keagamaan </option>
                                 <option value="Prasarana">Prasarana </option>
+                                <option value="Campuran">Campuran </option>
                             </select>
                         </div>
                     </div>

@@ -81,20 +81,33 @@ class DataController extends Controller
         // ========== INSERT ==========
         if ($request->insert == 1) {
 
-            // Validasi simple
+            // Validasi simple (ignore yang sudah deleted)
             $validator = Validator::make($request->all(), [
-                'no_permohonan' => 'required|unique:pengajuan,no_permohonan',
+                'no_permohonan' => 'required|unique:pengajuan,no_permohonan,NULL,id,deleted_at,NULL',
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }
 
-            $input = $request->except(['_token', 'insert', 'update', 'delete']);
-            $input['answers'] = json_encode([]);
-            $input['questions'] = json_encode([]);
+            // Cek apakah ada data dengan no_permohonan yang sama tapi sudah deleted
+            $existingDeleted = PengajuanPBG::withTrashed()
+                ->where('no_permohonan', $request->no_permohonan)
+                ->whereNotNull('deleted_at')
+                ->first();
 
-            $data = PengajuanPBG::create($input);
+            if ($existingDeleted) {
+                // Restore dan update data yang sudah deleted
+                $existingDeleted->deleted_at = null;
+                $existingDeleted->update($request->except(['_token', 'insert', 'update', 'delete']));
+                $data = $existingDeleted;
+            } else {
+                // Create data baru
+                $input = $request->except(['_token', 'insert', 'update', 'delete']);
+                $input['answers'] = json_encode([]);
+                $input['questions'] = json_encode([]);
+                $data = PengajuanPBG::create($input);
+            }
 
             $role = auth()->user()->roles->first()->name ?? 'admin'; // pastikan role tersedia
 
@@ -123,6 +136,11 @@ class DataController extends Controller
             $data = PengajuanPBG::find($request->id);
             if (!$data) {
                 return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+            }
+
+            // Cek apakah dokumen sudah terbit
+            if(strtolower($data->status) === 'terbit') {
+                return response()->json(['status' => false, 'message' => 'Dokumen sudah terbit, tidak dapat diedit lagi']);
             }
 
             // Validasi unik kecuali data sendiri
@@ -231,7 +249,64 @@ class DataController extends Controller
             $query->where('kecamatan_id', $request->kecamatan_id);
         }
 
-        return DataTables::of($query)->make(true);
+        return DataTables::of($query)
+            ->addColumn('hari_kerja', function($row) {
+                // Hitung hari kerja (exclude Sabtu & Minggu)
+                return $this->hitungHariKerja($row->created_at, now());
+            })
+            ->addColumn('posisi_terakhir', function($row) {
+                // Ambil tracking terakhir berdasarkan verified_at atau created_at
+                $lastTracking = PbgTracking::where('pengajuan_id', $row->id)
+                    ->orderBy('id', 'desc')
+                    ->first();
+                
+                if (!$lastTracking) {
+                    return '-';
+                }
+                
+                // Mapping role ke nama yang lebih readable
+                $roleNames = [
+                    'admin' => 'Admin',
+                    'petugas' => 'Petugas Lapangan',
+                    'pemeriksa' => 'Pemeriksa',
+                    'pemeriksa2' => 'Pemeriksa 2',
+                    'retribusi' => 'Admin Retribusi',
+                    'koordinator' => 'Koordinator',
+                    'kabid' => 'Kabid',
+                    'kadis' => 'Kadis',
+                ];
+                
+                $roleName = $roleNames[$lastTracking->role] ?? ucfirst($lastTracking->role);
+                $status = $lastTracking->status;
+                
+                return [
+                    'role' => $roleName,
+                    'status' => $status,
+                    'verified_at' => $lastTracking->verified_at,
+                ];
+            })
+            ->make(true);
+    }
+
+    /**
+     * Hitung hari kerja (tidak termasuk Sabtu & Minggu)
+     */
+    private function hitungHariKerja($startDate, $endDate)
+    {
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+        
+        $hariKerja = 0;
+        
+        while ($start->lte($end)) {
+            // 6 = Sabtu, 0 = Minggu
+            if ($start->dayOfWeek !== 6 && $start->dayOfWeek !== 0) {
+                $hariKerja++;
+            }
+            $start->addDay();
+        }
+        
+        return $hariKerja;
     }
 
     /**
@@ -652,8 +727,17 @@ class DataController extends Controller
                 'message' => "data not found"
             ]);
 
+        // Cek apakah dokumen sudah terbit
+        if(strtolower($data->status) === 'terbit')
+            return response()->json([
+                'status' => false,
+                'message' => "Dokumen sudah terbit, tidak dapat diedit lagi"
+            ]);
+
         if($request->photoMaps){
             $data->photoMaps = json_encode($request->photoMaps);
+            // Sync list_foto dengan photoMaps agar caption tersimpan
+            $data->list_foto = json_encode($request->photoMaps);
             $tracking = PbgTracking::updateOrCreate(
                 [
                     'pengajuan_id' => $data->id,
@@ -668,13 +752,9 @@ class DataController extends Controller
             );
         }
 
-        if($request->list_foto){
+        // list_foto hanya disimpan jika photoMaps tidak ada (backward compatibility)
+        if($request->list_foto && !$request->photoMaps){
             $data->list_foto = json_encode($request->list_foto);
-            // $data->save();
-            // return response()->json([
-            //     'status' => true,
-            //     'message' => 'Photo saved',
-            // ]);
         }
 
         if($request->answers)
@@ -766,9 +846,23 @@ class DataController extends Controller
             abort(403, 'Dokumen belum terbit');
         }
 
-        // Decode answers
-        $answers = json_decode($pengajuan['answers'], true) ?? [];
-        $sections = json_decode($pengajuan['questions'], true) ?? [];
+        // Handle answers - bisa array (dari cast) atau string JSON
+        $answers = $pengajuan['answers'] ?? [];
+        if (is_string($answers)) {
+            $answers = json_decode($answers, true) ?? [];
+        }
+        if (!is_array($answers)) {
+            $answers = [];
+        }
+        
+        // Handle questions - bisa array (dari cast) atau string JSON
+        $sections = $pengajuan['questions'] ?? [];
+        if (is_string($sections)) {
+            $sections = json_decode($sections, true) ?? [];
+        }
+        if (!is_array($sections)) {
+            $sections = [];
+        }
 
         $results = [];
 
@@ -893,13 +987,20 @@ class DataController extends Controller
         /* ======================================================
         * FOTO MAPPING
         ====================================================== */
-        $photos = json_decode($pengajuan['photoMaps'] ?? '[]', true);
+        // Handle photoMaps - bisa array (dari cast) atau string JSON
+        $photos = $pengajuan['photoMaps'] ?? [];
+        if (is_string($photos)) {
+            $photos = json_decode($photos, true) ?? [];
+        }
+        if (!is_array($photos)) {
+            $photos = [];
+        }
 
         $sectionPhotos = [];
 
         foreach ($photos as $p) {
 
-            preg_match('/^(\d+)-/', $p['caption'], $match);
+            preg_match('/^(\d+)-/', $p['caption'] ?? '', $match);
 
             if (!isset($match[1])) continue;
 
@@ -928,6 +1029,14 @@ class DataController extends Controller
     public function updateRetribusi(Request $request, $id)
     {
         $p = PengajuanPBG::findOrFail($id);
+
+        // Cek apakah dokumen sudah terbit
+        if(strtolower($p->status) === 'terbit') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen sudah terbit, tidak dapat diedit lagi'
+            ]);
+        }
 
         // VALIDASI
         $request->validate([
@@ -1010,9 +1119,23 @@ class DataController extends Controller
     {
         $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
 
-        // Decode answers
-        $answers = json_decode($pengajuan['answers'], true) ?? [];
-        $sections = json_decode($pengajuan['questions'], true) ?? [];
+        // Handle answers - bisa array (dari cast) atau string JSON
+        $answers = $pengajuan['answers'] ?? [];
+        if (is_string($answers)) {
+            $answers = json_decode($answers, true) ?? [];
+        }
+        if (!is_array($answers)) {
+            $answers = [];
+        }
+        
+        // Handle questions - bisa array (dari cast) atau string JSON
+        $sections = $pengajuan['questions'] ?? [];
+        if (is_string($sections)) {
+            $sections = json_decode($sections, true) ?? [];
+        }
+        if (!is_array($sections)) {
+            $sections = [];
+        }
 
         $results = [];
 
@@ -1135,6 +1258,16 @@ class DataController extends Controller
         ]);
 
         $pengajuanId = $request->pengajuan_id;
+
+        // Cek apakah dokumen sudah terbit
+        $pengajuanCheck = PengajuanPBG::find($pengajuanId);
+        if($pengajuanCheck && strtolower($pengajuanCheck->status) === 'terbit') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen sudah terbit, tidak dapat diverifikasi lagi'
+            ]);
+        }
+
         $rawHasil = $request->hasil; // 'sesuai' / 'tidak_sesuai'
 
         // map ke status yang konsisten di DB (optional)
@@ -1165,13 +1298,31 @@ class DataController extends Controller
         if ( auth()->user()->checkRole('pemeriksa') ) {
             
             $business_id = auth()->user()->business->id;
+            // Cari user pemeriksa 2
+            $admin = User::role("Pemeriksa2#$business_id")->get();
+            if($admin->count() > 0){
+                $emailList = $admin->pluck('email')->toArray();
+                $pengajuan = PengajuanPBG::findorfail($pengajuanId);
+    
+                // Kirim email ke Pemeriksa 2
+                \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
+                    $pengajuan,
+                    $tracking
+                ));
+            }
+        }
+
+        // === KIRIM EMAIL OTOMATIS JIKA ROLE = PEMERIKSA 2 ===
+        if ( auth()->user()->checkRole('pemeriksa 2') ) {
+            
+            $business_id = auth()->user()->business->id;
             // Cari user admin_retribusi
             $admin = User::role("Retribusi#$business_id")->get();
             if($admin->count() > 0){
                 $emailList = $admin->pluck('email')->toArray();
                 $pengajuan = PengajuanPBG::findorfail($pengajuanId);
     
-                // Kirim email
+                // Kirim email ke Retribusi
                 \Mail::to($emailList)->send(new \App\Mail\NotifVerifikasiRetribusi(
                     $pengajuan,
                     $tracking
@@ -1235,59 +1386,57 @@ class DataController extends Controller
     }
 
     public function timeline($id)
-{
-    $pengajuan = PengajuanPBG::find($id);
+    {
+        $pengajuan = PengajuanPBG::find($id);
 
-    if (!$pengajuan) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Data pengajuan tidak ditemukan'
-        ]);
-    }
-
-    $flow = config('pbgflow');
-
-    $timeline = [];
-
-    foreach ($flow as $step) {
-
-        // Normalisasi role flow: hilangkan spasi & lowercase
-        $searchKey = strtolower(str_replace(' ', '', $step['role']));
-
-        // Cari tracking berdasarkan LIKE
-        $track = PbgTracking::where('pengajuan_id', $id)
-            ->whereRaw("LOWER(REPLACE(role, ' ', '')) LIKE ?", ["%{$searchKey}%"])
-            ->first();
-
-        $row = [
-            'role' => $step['role'],
-            'label' => $step['label'],
-            'desc'  => $step['desc'],
-            'status' => 'pending',
-            'catatan' => null,
-            'verified_at' => null,
-            'user' => null,
-            'color' => 'red'
-        ];
-
-        if ($track) {
-            $row['status']      = $track->status;
-            $row['catatan']     = $track->catatan;
-            $row['verified_at'] = $track->verified_at;
-            $row['user']        = $track->user->username ?? null;
-            $row['color']       = 'green';
+        if (!$pengajuan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data pengajuan tidak ditemukan'
+            ]);
         }
 
-        $timeline[] = $row;
+        $flow = config('pbgflow');
+
+        $timeline = [];
+
+        foreach ($flow as $step) {
+
+            // Normalisasi role flow: hilangkan spasi & lowercase
+            $searchKey = strtolower(str_replace(' ', '', $step['role']));
+
+            // Cari tracking berdasarkan LIKE
+            $track = PbgTracking::where('pengajuan_id', $id)
+                ->whereRaw("LOWER(REPLACE(role, ' ', '')) LIKE ?", ["%{$searchKey}%"])
+                ->first();
+
+            $row = [
+                'role' => $step['role'],
+                'label' => $step['label'],
+                'desc'  => $step['desc'],
+                'status' => 'pending',
+                'catatan' => null,
+                'verified_at' => null,
+                'user' => null,
+                'color' => 'red'
+            ];
+
+            if ($track) {
+                $row['status']      = $track->status;
+                $row['catatan']     = $track->catatan;
+                $row['verified_at'] = $track->verified_at;
+                $row['user']        = $track->user->username ?? null;
+                $row['color']       = 'green';
+            }
+
+            $timeline[] = $row;
+        }
+
+        return response()->json([
+            'status' => true,
+            'timeline' => $timeline
+        ]);
     }
-
-    return response()->json([
-        'status' => true,
-        'timeline' => $timeline
-    ]);
-}
-
-
 
     public function riwayatVerifikasi($id)
     {
@@ -1361,6 +1510,236 @@ class DataController extends Controller
         return response()->json(['status' => true]);
     }
 
+    /**
+     * Proxy endpoint untuk fetch SIMBG data (mengatasi CORS)
+     */
+    public function getSimbgDetail(Request $request)
+    {
+        try {
+            $uid = $request->input('uid');
+            
+            if (!$uid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'UID tidak ditemukan'
+                ], 400);
+            }
 
+            // Build URL untuk SIMBG API
+            $url = "https://simbg.simtek-menanjak.com/api/data/pengajuan/batch-details";
+            $queryString = http_build_query(['uids' => [$uid]]);
+            $fullUrl = $url . '?' . $queryString;
+
+            // Request ke SIMBG API menggunakan cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $fullUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+
+            if ($error) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal terhubung ke SIMBG: ' . $error
+                ], 500);
+            }
+
+            if ($httpCode !== 200) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'SIMBG API error: HTTP ' . $httpCode
+                ], 500);
+            }
+
+            $data = json_decode($response, true);
+            
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid response from SIMBG'
+                ], 500);
+            }
+
+            return response()->json($data);
+
+        } catch (\Exception $e) {
+            Log::error('SIMBG Proxy Error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get statistics for public display
+     */
+    public function getStatistics()
+    {
+        try {
+            $stats = [
+                'pbg' => [
+                    'proses' => PengajuanPBG::where('tipe', 'LIKE', '%PBG%')
+                        ->whereNotIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                    'terbit' => PengajuanPBG::where('tipe', 'LIKE', '%PBG%')
+                        ->whereIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                ],
+                'slf' => [
+                    'proses' => PengajuanPBG::where('tipe', 'LIKE', '%SLF%')
+                        ->whereNotIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                    'terbit' => PengajuanPBG::where('tipe', 'LIKE', '%SLF%')
+                        ->whereIn('status', ['Terbit', 'terbit', 'TERBIT'])
+                        ->count(),
+                ]
+            ];
+
+            return response()->json([
+                'status' => true,
+                'data' => $stats
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengambil statistik: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Public tracking untuk visitor (tanpa login)
+     */
+    public function publicTracking(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'no_permohonan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Nomor permohonan harus diisi'
+            ]);
+        }
+
+        $pengajuan = PengajuanPBG::where('no_permohonan', $request->no_permohonan)
+            ->first();
+
+        if (!$pengajuan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Nomor permohonan tidak ditemukan dalam sistem'
+            ]);
+        }
+
+        // Ambil tracking history
+        $tracking = PbgTracking::where('pengajuan_id', $pengajuan->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Simplified flow untuk visitor
+        $simplifiedFlow = $this->getSimplifiedFlow($tracking, $pengajuan->status);
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'no_permohonan' => $pengajuan->no_permohonan,
+                'nama_pemohon' => $pengajuan->nama_pemohon,
+                'tipe' => $pengajuan->tipe,
+                'status' => $pengajuan->status,
+                'flow' => $simplifiedFlow
+            ]
+        ]);
+    }
+
+    /**
+     * Generate simplified flow untuk visitor
+     */
+    private function getSimplifiedFlow($tracking, $currentStatus)
+    {
+        $stages = [
+            ['name' => 'Pengajuan Diterima', 'icon' => 'fa-check-circle', 'role_keyword' => 'admin'],
+            ['name' => 'Verifikasi Berkas', 'icon' => 'fa-file-text', 'role_keyword' => 'petugas'],
+            ['name' => 'Pemeriksaan Teknis', 'icon' => 'fa-clipboard-check', 'role_keyword' => 'pemeriksa'],
+            ['name' => 'Perhitungan Retribusi', 'icon' => 'fa-calculator', 'role_keyword' => 'retribusi'],
+            ['name' => 'Verifikasi Koordinator', 'icon' => 'fa-user-check', 'role_keyword' => 'koordinator'],
+            ['name' => 'Penerbitan Sertifikat', 'icon' => 'fa-certificate', 'role_keyword' => 'kepala'],
+        ];
+
+        $currentStageIndex = 0;
+
+        // Jika status terbit, semua tahap selesai
+        if (stripos($currentStatus, 'terbit') !== false) {
+            $currentStageIndex = 5;
+        } else if ($tracking->count() > 0) {
+            // Cari tahap tertinggi berdasarkan role tracking
+            foreach ($tracking as $track) {
+                $roleLower = strtolower($track->role);
+                
+                // Cek setiap stage dan update currentStageIndex jika match
+                foreach ($stages as $index => $stage) {
+                    if (stripos($roleLower, $stage['role_keyword']) !== false) {
+                        // Update ke stage tertinggi yang ditemukan
+                        if ($index > $currentStageIndex) {
+                            $currentStageIndex = $index;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Build flow result
+        $flow = [];
+        foreach ($stages as $index => $stage) {
+            $flow[] = [
+                'name' => $stage['name'],
+                'icon' => $stage['icon'],
+                'status' => $index <= $currentStageIndex ? 'completed' : 'pending',
+                'color' => $index <= $currentStageIndex ? 'green' : 'gray'
+            ];
+        }
+
+        return $flow;
+    }
+
+    /**
+     * Get visitor statistics
+     */
+    public function getVisitorStatistics()
+    {
+        try {
+            $domain = request()->getHost();
+            
+            // Kunjungan hari ini
+            $today = \App\Visitor::where('domain', $domain)
+                ->whereDate('visited_date', today())
+                ->count();
+            
+            // Total kunjungan
+            $total = \App\Visitor::where('domain', $domain)
+                ->count();
+
+            return response()->json([
+                'status' => true,
+                'data' => [
+                    'today' => $today,
+                    'total' => $total
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengambil statistik kunjungan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
 }

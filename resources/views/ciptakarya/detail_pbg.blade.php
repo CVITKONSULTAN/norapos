@@ -303,6 +303,26 @@
 
 @section('content')
 
+<div class="modal fade" id="modal_simbg_detail">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fa fa-cloud"></i> Detail Data dari SIMBG</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="simbg_detail_content" style="max-height: 70vh; overflow-y: auto;">
+                <div class="text-center">
+                    <i class="fa fa-spinner fa-spin fa-3x"></i>
+                    <p class="mt-2">Memuat data dari SIMBG...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modal_disposisi">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
@@ -411,6 +431,11 @@
             @if(!auth()->user()->checkRole('koordinator'))
                 <button class="btn btn-sm btn-primary float-right" id="btnDisposisi">
                     <i class="fa fa-share"></i> Disposisikan
+                </button>
+            @endif
+            @if(!empty($pengajuan['uid']))
+                <button class="btn btn-sm btn-success float-right mr-2" id="btnLihatSIMBG" data-uid="{{ $pengajuan['uid'] }}">
+                    <i class="fa fa-cloud"></i> Lihat Data SIMBG
                 </button>
             @endif
         </div>
@@ -531,11 +556,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($uploadedFiles as $index => $fileUrl)
+                        @foreach($uploadedFiles as $index => $fileItem)
                             @php
-                                // Extract nama file dari URL
-                                $fileName = basename($fileUrl);
-                                $ext = strtoupper(pathinfo($fileName, PATHINFO_EXTENSION));
+                                // Support both string URLs and object structure from SIMBG
+                                if (is_string($fileItem)) {
+                                    $fileUrl = $fileItem;
+                                    $fileBaseName = basename($fileUrl);
+                                    $fileType = 'document';
+                                    $fileMeta = null;
+                                } else {
+                                    $fileUrl = $fileItem['file'] ?? '';
+                                    $fileBaseName = basename($fileUrl);
+                                    $fileType = $fileItem['type'] ?? 'document';
+                                    $fileMeta = $fileItem['name'] ?? null;
+                                }
+                                
+                                $ext = strtoupper(pathinfo($fileBaseName, PATHINFO_EXTENSION));
                                 
                                 // Icon berdasarkan extension
                                 $icon = 'fa-file-o';
@@ -544,19 +580,42 @@
                                 elseif(in_array($ext, ['DOC', 'DOCX'])) $icon = 'fa-file-word-o';
                                 elseif(in_array($ext, ['XLS', 'XLSX'])) $icon = 'fa-file-excel-o';
                                 elseif(in_array($ext, ['ZIP', 'RAR'])) $icon = 'fa-file-archive-o';
+                                
+                                // Badge color based on file type
+                                $badgeColor = $fileType === 'certificate' ? 'success' : 'primary';
+                                
+                                // Check if file can be previewed with Google Docs Viewer
+                                $canPreview = in_array($ext, ['PDF', 'DOC', 'DOCX', 'XLS', 'XLSX', 'PPT', 'PPTX']);
+                                $googleViewerUrl = 'https://docs.google.com/viewer?url=' . urlencode($fileUrl) . '&embedded=true';
                             @endphp
                             <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
                                 <td>
                                     <i class="fa {{ $icon }} text-primary"></i> 
-                                    {{ $fileName }}
-                                    <span class="badge bg-primary ml-2">{{ $ext }}</span>
+                                    @if($fileMeta)
+                                        <strong>{{ $fileMeta }}</strong><br>
+                                        <small class="text-muted">{{ $fileBaseName }}</small>
+                                    @else
+                                        {{ $fileBaseName }}
+                                    @endif
+                                    <span class="badge bg-{{ $badgeColor }} ml-2">{{ $ext }}</span>
+                                    @if($fileType === 'certificate')
+                                        <span class="badge bg-success ml-1">Sertifikat</span>
+                                    @endif
                                 </td>
                                 <td class="text-center">
+                                    @if($canPreview)
+                                        <a href="{{ $googleViewerUrl }}" 
+                                           target="_blank" 
+                                           class="btn btn-xs btn-info" 
+                                           title="Lihat di Google Docs Viewer">
+                                            <i class="fa fa-eye"></i> Lihat
+                                        </a>
+                                    @endif
                                     <a href="{{ $fileUrl }}" 
                                        target="_blank" 
                                        class="btn btn-xs btn-primary" 
-                                       title="Lihat/Download">
+                                       title="Download File">
                                         <i class="fa fa-download"></i> Download
                                     </a>
                                 </td>
@@ -572,7 +631,14 @@
         <div class="detail-title">Foto Lapangan</div>
 
         @php
-            $fotos = json_decode($pengajuan['list_foto'] ?? "[]", true);
+            // Prioritas: photoMaps (dari mobile/web baru), fallback ke list_foto
+            $fotos = $pengajuan['photoMaps'] ?? $pengajuan['list_foto'] ?? [];
+            if (is_string($fotos)) {
+                $fotos = json_decode($fotos, true) ?? [];
+            }
+            if (!is_array($fotos)) {
+                $fotos = [];
+            }
             // if(count($fotos) > 0)
             // $fotos = array_slice($fotos, 0, 10); // ambil 10 item pertama
         @endphp
@@ -886,6 +952,172 @@
     });
 
     $(document).ready(function() {
+
+        // Fetch SIMBG Detail Data
+        $('#btnLihatSIMBG').on('click', function() {
+            const uid = $(this).data('uid');
+            $('#modal_simbg_detail').modal('show');
+            
+            // Reset content
+            $('#simbg_detail_content').html(`
+                <div class="text-center">
+                    <i class="fa fa-spinner fa-spin fa-3x text-success"></i>
+                    <p class="mt-2">Memuat data dari SIMBG...</p>
+                </div>
+            `);
+            
+            // Fetch from SIMBG API via Laravel proxy (untuk mengatasi CORS)
+            $.ajax({
+                url: "{{ route('ciptakarya.simbg_detail') }}",
+                type: 'GET',
+                data: { uid: uid },
+                timeout: 30000,
+                success: function(response) {
+                    if (response.success && response.data && response.data[uid]) {
+                        renderSIMBGData(response.data[uid]);
+                    } else {
+                        $('#simbg_detail_content').html(`
+                            <div class="alert alert-warning">
+                                <i class="fa fa-exclamation-triangle"></i> Data tidak ditemukan
+                            </div>
+                        `);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#simbg_detail_content').html(`
+                        <div class="alert alert-danger">
+                            <i class="fa fa-times-circle"></i> Gagal memuat data: ${error}
+                        </div>
+                    `);
+                }
+            });
+        });
+        
+        function renderSIMBGData(data) {
+            let html = '';
+            
+            // Detail Data
+            if (data.detail && data.detail.detail_data) {
+                const d = data.detail.detail_data;
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary text-white">
+                            <strong><i class="fa fa-info-circle"></i> Informasi Detail</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Nama:</strong> ${d.name || '-'}</p>
+                                    <p><strong>Owner:</strong> ${d.owner_name || '-'}</p>
+                                    <p><strong>NIK:</strong> ${d.nik || '-'}</p>
+                                    <p><strong>Email:</strong> ${d.email || '-'}</p>
+                                    <p><strong>Telp:</strong> ${d.phone || '-'}</p>
+                                    <p><strong>No. Registrasi:</strong> ${d.registration_number || '-'}</p>
+                                    <p><strong>No. Dokumen:</strong> ${d.document_number || '-'}</p>
+                                    <p><strong>Jenis Permohonan:</strong> ${d.application_type_name || '-'}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Nama Bangunan:</strong> ${d.name_building || '-'}</p>
+                                    <p><strong>Fungsi:</strong> ${d.function_type || '-'}</p>
+                                    <p><strong>Unit/Bangunan:</strong> ${d.unit || '-'}</p>
+                                    <p><strong>Lantai:</strong> ${d.floor || '-'}</p>
+                                    <p><strong>Luas:</strong> ${d.total_area || '-'} m²</p>
+                                    <p><strong>Tinggi:</strong> ${d.height || '-'} m</p>
+                                    <p><strong>Lokasi:</strong> ${d.building_address || '-'}</p>
+                                    <p><strong>Status:</strong> <span class="badge badge-info">${d.status_name || '-'}</span></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>KDB:</strong> ${d.koefisien_dasar_bangunan || '-'}%</p>
+                                    <p><strong>KDH:</strong> ${d.koefisien_lantai_hijau || '-'}%</p>
+                                    <p><strong>KLB:</strong> ${d.koefisien_lantai_bangunan || '-'}</p>
+                                    <p><strong>GSB:</strong> ${d.gsb || '-'}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Latitude:</strong> ${d.latitude || '-'}</p>
+                                    <p><strong>Longitude:</strong> ${d.longitude || '-'}</p>
+                                    <p><strong>No. KRK:</strong> ${d.kkr_number || '-'}</p>
+                                    <p><strong>Tanggal Mulai:</strong> ${d.start_date ? new Date(d.start_date).toLocaleDateString('id-ID') : '-'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Certificates
+            if (data.certificates && data.certificates.length > 0) {
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white">
+                            <strong><i class="fa fa-certificate"></i> Sertifikat (${data.certificates.length})</strong>
+                        </div>
+                        <div class="card-body">
+                `;
+                
+                data.certificates.forEach((cert, idx) => {
+                    const c = cert.certificate_data;
+                    html += `
+                        <div class="border-bottom pb-2 mb-2">
+                            <p><strong>#${idx + 1} ${c.type_name || 'Certificate'}:</strong> ${c.number || '-'}</p>
+                            <p><strong>Nama:</strong> ${c.name || '-'}</p>
+                            <p><strong>Kepemilikan:</strong> ${c.ownership || '-'}</p>
+                            <p><strong>Luas:</strong> ${c.area || '-'} m²</p>
+                            <p><strong>Tanggal:</strong> ${c.date ? new Date(c.date).toLocaleDateString('id-ID') : '-'}</p>
+                            <p><strong>Alamat:</strong> ${c.address || '-'}</p>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // List Data (Documents)
+            if (data.list_data && data.list_data.length > 0) {
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <strong><i class="fa fa-file-text"></i> Dokumen Lampiran (${data.list_data.length})</strong>
+                        </div>
+                        <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                            <div class="list-group">
+                `;
+                
+                data.list_data.forEach((item, idx) => {
+                    const d = item.list_data;
+                    html += `
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">${idx + 1}. ${d.name || 'Document'}</h6>
+                                    <small class="text-muted">${d.data_type_name || '-'}</small>
+                                </div>
+                                <span class="badge badge-${d.status === 1 ? 'success' : 'warning'}">
+                                    ${d.status_name || '-'}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (!html) {
+                html = '<div class="alert alert-info">Tidak ada detail data.</div>';
+            }
+            
+            $('#simbg_detail_content').html(html);
+        }
 
         // Aktifkan Select2
         $('.select2').select2({

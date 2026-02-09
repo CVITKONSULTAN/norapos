@@ -12,6 +12,7 @@ class PengajuanPBG extends Model
     protected $table = 'pengajuan'; // Jika tabel tidak otomatis plural
 
     protected $fillable = [
+        'uid',
         'tipe',
         'no_permohonan',
         'no_krk',
@@ -38,10 +39,14 @@ class PengajuanPBG extends Model
         'koefisiensi_lantai',
         'koordinat_bangunan',
         'petugas_lapangan',
+        'petugas_id',
         'answers',
         'questions',
         'list_foto',
         'photoMaps',
+        'notes',
+        'verified_at',
+        'verified_by',
         'template_excel_retribusi',
         'tgl_penugasan',
         'kecamatan_id',
@@ -61,6 +66,7 @@ class PengajuanPBG extends Model
         'questions' => 'array',
         'list_foto' => 'array',
         'photoMaps' => 'array',
+        'verified_at' => 'datetime',
     ];
 
     function petugas(){

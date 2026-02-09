@@ -72,6 +72,7 @@ class Kernel extends HttpKernel
         'Cors' => \App\Http\Middleware\Cors::class,
         'visitor.counter' => \App\Http\Middleware\VisitorCounter::class,
         'ciptakarya.mobile' => \App\Http\Middleware\CiptakaryaAuth::class,
+        'auth.petugas' => \App\Http\Middleware\AuthPetugas::class,
     ];
     /**
      * The priority-sorted list of middleware.

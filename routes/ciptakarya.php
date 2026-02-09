@@ -39,6 +39,17 @@ Route::group([
 
     Route::post('update-retribusi/{id}', 'CiptaKarya\DataController@updateRetribusi');
 
+    // Public Routes (outside auth middleware)
+    Route::get('statistics', 'CiptaKarya\DataController@getStatistics')->name('ciptakarya.statistics');
+
+    // SIMBG Sync Routes
+    Route::post('sync-simbg', 'CiptaKarya\SimbgSyncController@sync')->name('ciptakarya.sync_simbg');
+    Route::get('last-sync', 'CiptaKarya\SimbgSyncController@getLastSync')->name('ciptakarya.last_sync');
+    Route::get('sync-logs', 'CiptaKarya\SimbgSyncController@getLogs')->name('ciptakarya.get_sync_logs');
+    
+    // SIMBG Detail Proxy (untuk mengatasi CORS)
+    Route::get('simbg-detail', 'CiptaKarya\DataController@getSimbgDetail')->name('ciptakarya.simbg_detail');
+
     Route::get('/pengajuan/disposisi/{id}', 'CiptaKarya\DataController@disposisi')->name('ciptakarya.disposisi');
     Route::post('/pengajuan/terbitkan/{id}', 'CiptaKarya\DataController@terbitkanDokumen')->name('ciptakarya.terbitkanDokumen');
 
@@ -51,3 +62,64 @@ Route::group([
     });
 
 });
+
+// =========================================
+// ROUTES PETUGAS LAPANGAN (PASSWORDLESS LOGIN)
+// =========================================
+
+// Login Routes (tanpa auth middleware)
+Route::get('ciptakarya/petugas/login', 'CiptaKarya\PetugasController@showLogin')
+    ->name('petugas.login');
+Route::post('ciptakarya/petugas/login', 'CiptaKarya\PetugasController@sendMagicLink')
+    ->name('petugas.login.send');
+Route::get('ciptakarya/petugas/verify/{token}', 'CiptaKarya\PetugasController@verifyMagicLink')
+    ->name('petugas.login.verify');
+
+// Protected Routes (dengan middleware auth.petugas)
+Route::group(['prefix' => 'ciptakarya/petugas', 'middleware' => 'auth.petugas'], function() {
+    Route::get('dashboard', 'CiptaKarya\PetugasController@dashboard')
+        ->name('petugas.dashboard');
+    
+    Route::get('api/tugas', 'CiptaKarya\PetugasController@apiListTugas')
+        ->name('petugas.api.tugas');
+    
+    // Detail tugas
+    Route::get('tugas/{id}', 'CiptaKarya\PetugasController@detailTugas')
+        ->name('petugas.tugas.detail');
+    
+    // Foto Lapangan
+    Route::get('tugas/{id}/foto', 'CiptaKarya\PetugasController@fotoLapangan')
+        ->name('petugas.tugas.foto');
+    Route::post('tugas/{id}/save-photos', 'CiptaKarya\PetugasController@savePhotos')
+        ->name('petugas.tugas.save-photos');
+    
+    // Kuesioner
+    Route::get('tugas/{id}/kuesioner', 'CiptaKarya\PetugasController@kuesioner')
+        ->name('petugas.tugas.kuesioner');
+    Route::post('tugas/{id}/save-answers', 'CiptaKarya\PetugasController@saveAnswers')
+        ->name('petugas.tugas.save-answers');
+    
+    // Submit Verifikasi
+    Route::get('tugas/{id}/submit', 'CiptaKarya\PetugasController@showSubmitVerifikasi')
+        ->name('petugas.tugas.submit');
+    Route::post('tugas/{id}/submit', 'CiptaKarya\PetugasController@submitVerifikasi')
+        ->name('petugas.tugas.verifikasi');
+    
+    // Upload foto
+    Route::post('upload-photo', 'CiptaKarya\PetugasController@uploadPhoto')
+        ->name('petugas.upload-photo');
+    
+    Route::get('profil', 'CiptaKarya\PetugasController@profil')
+        ->name('petugas.profil');
+    
+    Route::post('logout', 'CiptaKarya\PetugasController@logout')
+        ->name('petugas.logout');
+});
+
+// Public Tracking Route (tanpa auth middleware)
+Route::post('ciptakarya/public-tracking', 'CiptaKarya\DataController@publicTracking')
+    ->name('ciptakarya.public_tracking');
+
+// Public Visitor Statistics Route
+Route::get('visitor-statistics', 'CiptaKarya\DataController@getVisitorStatistics')
+    ->name('visitor.statistics');

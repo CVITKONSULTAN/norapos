@@ -22,7 +22,7 @@
 
         <p><b>No Permohonan:</b> {{ $pengajuan->no_permohonan }}</p>
         <p><b>Nama Pemohon:</b> {{ $pengajuan->nama_pemohon }}</p>
-        <p><b>Alamat Bangunan:</b> {{ $pengajuan->alamat }}</p>
+        <p><b>Alamat Bangunan:</b> {{ $pengajuan->lokasi_bangunan ?? "" }}</p>
 
         <p>Silakan melakukan validasi atau tindak lanjut sesuai prosedur.</p>
 

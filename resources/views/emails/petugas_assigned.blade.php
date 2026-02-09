@@ -96,8 +96,9 @@
 
             <div class="details-box">
                 <p><strong>ID Pengajuan:</strong> {{ $pengajuan->id }}</p>
-                <p><strong>Nama Pemohon:</strong> {{ $pengajuan->nama_pemilik ?? '-' }}</p>
-                <p><strong>Alamat Bangunan:</strong> {{ $pengajuan->alamat_lokasi ?? '-' }}</p>
+                <p><strong>No Pemohon:</strong> {{ $pengajuan->no_pemohon ?? '-' }}</p>
+                <p><strong>Nama Pemohon:</strong> {{ $pengajuan->nama_pemohon ?? '-' }}</p>
+                <p><strong>Alamat Bangunan:</strong> {{ $pengajuan->lokasi_bangunan ?? '-' }}</p>
                 <p><strong>Tanggal Penugasan:</strong> {{ now()->format('d M Y') }}</p>
             </div>
 

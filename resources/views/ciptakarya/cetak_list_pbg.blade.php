@@ -17,8 +17,8 @@
     }
 
     .page {
-        width: 210mm;
-        min-height: 297mm;
+        width: 216mm;
+        min-height: 356mm;
         padding: 20mm;
         margin: 10px auto;
         background: white;
@@ -26,7 +26,7 @@
     }
 
     @page {
-        size: A4;
+        size: legal;
         margin: 15mm;
     }
 
@@ -102,7 +102,6 @@
     /* Kolom kiri (judul) */
     .tabel_surat_pernyataan td:first-child {
         width: 260px;
-        font-weight: bold;
     }
 
     .ttd-container {
@@ -125,8 +124,8 @@
     }
 
     .page-dokumentasi {
-    width: 210mm;
-    min-height: 297mm;
+    width: 216mm;
+    min-height: 356mm;
     padding: 20mm;
     box-sizing: border-box;
     display: flex;
@@ -215,19 +214,19 @@
 }
 
 .kop-title {
-    font-size: 18px;
+    font-size: 12pt;
     font-weight: bold;
 }
 
 .kop-subtitle {
-    font-size: 18px;
+    font-size: 16pt;
     font-weight: 900;
     margin-top: 2px;
     line-height: 1.2;
 }
 
 .kop-alamat {
-    font-size: 13px;
+    font-size: 10pt;
     margin-top: 6px;
 }
 
@@ -241,6 +240,8 @@
     height: 4px;
     background: #000;
     margin-top: 5px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 .tabel_custom_head tr td {
@@ -334,8 +335,7 @@
         <tr>
             <td>Hal</td>
             <td>:</td>
-            {{-- <td><input style="font-weight:bold;width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;" type="text" value="Rekomendasi Teknis" /></td> --}}
-            <td><textarea rows="1" style="font-weight:bold;width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;"></textarea></td>
+            <td><textarea rows="2" style="font-style:italic;font-weight:bold;width: 500px;font-family:Arial, sans-serif;font-size:12pt;border:none;resize:none;"></textarea></td>
         </tr>
     </table>
 
@@ -350,206 +350,108 @@
         Berdasarkan hasil pemeriksaan kesesuaian dokumen rencana teknis yang disampaikan dan dengan memperhatikan berita acara konsultansi oleh TPA/TPT, bersama ini kami menyatakan bahwa dokumen rencana teknis telah memenuhi standar teknis dengan data sebagai berikut :
     </p>
 
-    {{-- <table class="tabel_surat_pernyataan">
-        <tr>
-            <td><strong>Nomor Permohonan</strong></td>
-            <td>611201-01092025-011</td>
-        </tr>
-        <tr>
-            <td><strong>Nomor KRK / KKPR</strong></td>
-            <td>600.3.3.2/167/DPUPRPKP-TR/2025</td>
-        </tr>
-        <tr>
-            <td><strong>Nama Pemohon</strong></td>
-            <td>SUSANTO<br>an. PT. Cemerlang Interplast Nusantara</td>
-        </tr>
-        <tr>
-            <td><strong>NIK</strong></td>
-            <td>6102071812860001</td>
-        </tr>
-        <tr>
-            <td><strong>Alamat</strong></td>
-            <td>
-            Jl. Sungai Raya Dalam, Komplek Sungai Raya Lestari 2,<br>
-            RT.012/RW.001, Desa Sungai Raya Dalam, Kecamatan Sungai Raya,<br>
-            Kabupaten Kubu Raya, Provinsi Kalimantan Barat
-            </td>
-        </tr>
-        <tr>
-            <td><strong>Fungsi Bangunan</strong></td>
-            <td>Usaha</td>
-        </tr>
-        <tr>
-            <td><strong>Nama Bangunan</strong></td>
-            <td>Gudang</td>
-        </tr>
-        <tr>
-            <td><strong>Jumlah Bangunan</strong></td>
-            <td>1 (satu) Unit</td>
-        </tr>
-        <tr>
-            <td><strong>Jumlah Lantai</strong></td>
-            <td>1 (satu) Lantai</td>
-        </tr>
-        <tr>
-            <td><strong>Luas Bangunan</strong></td>
-            <td>Bangunan Induk = 321,00 m²</td>
-        </tr>
-        <tr>
-            <td><strong>Ketinggian Bangunan</strong></td>
-            <td>8,90 m</td>
-        </tr>
-        <tr>
-            <td><strong>Lokasi Bangunan</strong></td>
-            <td>
-            Jl. Sungai Raya Dalam, Desa Sungai Raya Dalam,<br>
-            Kecamatan Sungai Raya, Kabupaten Kubu Raya,<br>
-            Provinsi Kalimantan Barat
-            </td>
-        </tr>
-        <tr>
-            <td><strong>Di Atas Tanah No. Persil</strong></td>
-            <td>
-            SHM No. 48084, Tanggal Penerbitan Sertipikat 18 Juli 2018<br>
-            SHM No. 48083, Tanggal Penerbitan Sertipikat 16 Desember 2015
-            </td>
-        </tr>
-        <tr>
-            <td><strong>Luas Tanah</strong></td>
-            <td>653 m², 141 m²</td>
-        </tr>
-        <tr>
-            <td><strong>Atas Nama/Pemilik Tanah</strong></td>
-            <td>Masing-masing an. Susanto</td>
-        </tr>
-        <tr>
-            <td><strong>Garis Sempadan Bangunan (GSB) Minimum</strong></td>
-            <td>Depan 15.00 m, Samping 2.00 m</td>
-        </tr>
-        <tr>
-            <td><strong>Koefisien Daerah Hijau (KDH) Minimum</strong></td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td><strong>Koefisien Dasar Bangunan (KDB) Maksimum</strong></td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td><strong>Koefisien Lantai Bangunan (KLB) Maksimum</strong></td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td><strong>Koordinat Bangunan</strong></td>
-            <td>-</td>
-        </tr>
-    </table> --}}
-
     <table class="tabel_surat_pernyataan">
 
     <tr>
-        <td><strong>Nomor Permohonan</strong></td>
-        <td>{{ $pengajuan['no_permohonan'] ?? '-' }}</td>
+        <td>Nomor Permohonan</td>
+        <td><strong>{{ $pengajuan['no_permohonan'] ?? '-' }}</strong></td>
     </tr>
 
     <tr>
-        <td><strong>Nomor KRK / KKPR</strong></td>
-        <td>{{ $pengajuan['no_krk'] ?? '-' }}</td>
+        <td>Nomor KRK / KKPR</td>
+        <td><strong>{{ $pengajuan['no_krk'] ?? '-' }}</strong></td>
     </tr>
 
     <tr>
-        <td><strong>Nama Pemohon</strong></td>
+        <td>Nama Pemohon</td>
         <td>
-            {{ $pengajuan['nama_pemohon'] ?? '-' }}
-            @if(!empty($pengajuan['pemilik_tanah']))
-                <br>an. {{ $pengajuan['pemilik_tanah'] }}
-            @endif
+            <strong>{{ $pengajuan['nama_pemohon'] ?? '-' }}</strong>
         </td>
     </tr>
 
     <tr>
-        <td><strong>NIK</strong></td>
+        <td>NIK</td>
         <td>{{ $pengajuan['nik'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Alamat</strong></td>
+        <td>Alamat</td>
         <td>{!! nl2br(e($pengajuan['alamat'] ?? '-')) !!}</td>
     </tr>
 
     <tr>
-        <td><strong>Fungsi Bangunan</strong></td>
+        <td>Fungsi Bangunan</td>
         <td>{{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Nama Bangunan</strong></td>
+        <td>Nama Bangunan</td>
         <td>{{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Jumlah Bangunan</strong></td>
+        <td>Jumlah Bangunan</td>
         <td>{{ $pengajuan['jumlah_bangunan'] ?? '-' }} Unit</td>
     </tr>
 
     <tr>
-        <td><strong>Jumlah Lantai</strong></td>
+        <td>Jumlah Lantai</td>
         <td>{{ $pengajuan['jumlah_lantai'] ?? '-' }} Lantai</td>
     </tr>
 
     <tr>
-        <td><strong>Luas Bangunan</strong></td>
-        {{-- <td>{{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td> --}}
-        <td>{{ $pengajuan['luas_bangunan'] ?? '-' }}</td>
+        <td>Luas Bangunan</td>
+        <td>{{ str_replace('m2', 'm²', $pengajuan['luas_bangunan'] ?? '-') }}</td>
     </tr>
 
     <tr>
-        <td><strong>Ketinggian Bangunan</strong></td>
+        <td>Ketinggian Bangunan</td>
         {{-- <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td> --}}
         <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Lokasi Bangunan</strong></td>
+        <td>Lokasi Bangunan</td>
         <td>{!! nl2br(e($pengajuan['lokasi_bangunan'] ?? '-')) !!}</td>
     </tr>
 
     <tr>
-        <td><strong>Di Atas Tanah No. Persil</strong></td>
+        <td>Di Atas Tanah No. Persil</td>
         <td>{!! nl2br(e($pengajuan['no_persil'] ?? '-')) !!}</td>
     </tr>
 
     <tr>
-        <td><strong>Luas Tanah</strong></td>
+        <td>Luas Tanah</td>
         <td>{{ $pengajuan['luas_tanah'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Atas Nama/Pemilik Tanah</strong></td>
+        <td>Atas Nama/Pemilik Tanah</td>
         <td>{{ $pengajuan['pemilik_tanah'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Garis Sempadan Bangunan (GSB) Minimum</strong></td>
+        <td>Garis Sempadan Bangunan (GSB) Minimum</td>
         <td>{{ $pengajuan['gbs_min'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Koefisien Daerah Hijau (KDH) Minimum</strong></td>
+        <td>Koefisien Daerah Hijau (KDH) Minimum</td>
         <td>{{ $pengajuan['kdh_min'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Koefisien Dasar Bangunan (KDB) Maksimum</strong></td>
+        <td>Koefisien Dasar Bangunan (KDB) Maksimum</td>
         <td>{{ $pengajuan['kdb_max'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Koefisien Lantai Bangunan (KLB) Maksimum</strong></td>
+        <td>Koefisien Lantai Bangunan (KLB) Maksimum</td>
         <td>{{ $pengajuan['koefisiensi_lantai'] ?? '-' }}</td>
     </tr>
 
     <tr>
-        <td><strong>Koordinat Bangunan</strong></td>
+        <td>Koordinat Bangunan</td>
         <td>{{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
     </tr>
 
@@ -566,19 +468,19 @@
         @if($pengajuan['tipe'] == 'SLF')
         Sertifikat Laik Fungsi (SLF) 
         @endif
-    dapat disetujui dan diterbitkan.<br />
+    dapat disetujui dan diterbitkan.
     Demikian surat pernyataan ini kami sampaikan, atas perhatiannya diucapkan terima kasih.</p>
 
     <div class="ttd-container" style="margin-left:450px;">
-        <div class="jabatan" style="margin-bottom:0px;">
+        <div class="jabatan" style="margin-bottom:0px; text-indent:-30px; padding-left:30px;">
             Plt. Kepala Dinas Pekerjaan Umum dan<br>
             Penataan Ruang, Perumahan Rakyat<br>
             dan Kawasan Permukiman,
         </div>
 
-        <img style="height: 80px;width:80px;" src="/img/ttd_kadis.png" />
+        <!-- <img style="height: 80px;width:80px;" src="/img/ttd_kadis.png" /> -->
 
-        <div class="nama-pejabat">
+        <div class="nama-pejabat" style="margin-top:100px;padding-left:30px;">
             <strong>Supratmansyah, S.T.</strong><br>
             Pembina (IV/a)<br>
             NIP 1973080620080201001

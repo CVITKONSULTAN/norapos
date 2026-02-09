@@ -21,6 +21,10 @@
 
         <table style="width:100%; margin-top:10px; border-collapse:collapse; font-size:14px;">
             <tr>
+                <td style="padding:6px 0; color:#555; width:150px;">No Pemohon</td>
+                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->no_pemohon }}</td>
+            </tr>
+            <tr>
                 <td style="padding:6px 0; color:#555; width:150px;">Nama Pemohon</td>
                 <td style="padding:6px 0; color:#333;">: {{ $pengajuan->nama_pemohon }}</td>
             </tr>
@@ -30,7 +34,7 @@
             </tr>
             <tr>
                 <td style="padding:6px 0; color:#555;">Alamat Bangunan</td>
-                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->alamat }}</td>
+                <td style="padding:6px 0; color:#333;">: {{ $pengajuan->lokasi_bangunan ?? "-" }}</td>
             </tr>
             <tr>
                 <td style="padding:6px 0; color:#555;">Tanggal Pemeriksaan</td>

@@ -224,11 +224,21 @@
             action="{{route('ciptakarya.store_pbg')}}"
             >
                 @csrf
-                <input type="hidden" name="tipe" value="PBG" />
                 <input type="hidden" name="insert" value="1" />
                 <input type="hidden" name="update" value="0" />
                 <input type="hidden" name="id" value="0" />
                 <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Tipe Izin <span class="text-danger">*</span>:</label>
+                        <div class="col-sm-9">
+                            <select name="tipe" class="form-control" required>
+                                <option value="">-- Pilih Tipe Izin --</option>
+                                <option value="PBG">PBG</option>
+                                <option value="SLF">SLF</option>
+                                <option value="PBG/SLF">PBG/SLF</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Nomor Permohonan :</label>
                         <div class="col-sm-9">
@@ -258,19 +268,6 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Kecamatan :</label>
-                        <div class="col-sm-9">
-                            <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
-                                <option value="">-- Pilih --</option>
-                                @foreach($kecamatan as $kec)
-                                    <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
-                                @endforeach
-                            </select>
-                            <input type="hidden" name="nama_kecamatan" id="nama_kecamatan" />
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Alamat :</label>
                         <div class="col-sm-9">
                         <textarea name="alamat" rows="3" class="form-control"></textarea>
@@ -287,6 +284,8 @@
                                 <option value="Hunian">Hunian </option>
                                 <option value="Usaha">Usaha </option>
                                 <option value="Keagamaan">Keagamaan </option>
+                                <option value="Prasarana">Prasarana </option>
+                                <option value="Campuran">Campuran </option>
                             </select>
                         </div>
                     </div>
@@ -330,6 +329,19 @@
                         <label class="col-sm-3 col-form-label">Lokasi Bangunan :</label>
                         <div class="col-sm-9">
                         <textarea name="lokasi_bangunan" rows="3" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Kecamatan :</label>
+                        <div class="col-sm-9">
+                            <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
+                                <option value="">-- Pilih --</option>
+                                @foreach($kecamatan as $kec)
+                                    <option value="{{ $kec->id }}">{{ $kec->nama }}</option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="nama_kecamatan" id="nama_kecamatan" />
                         </div>
                     </div>
 
@@ -438,20 +450,67 @@
     </div>
 </div>
 
+<!-- MODAL LOG SINKRONISASI -->
+<div id="modal_sync_logs" class="modal fade">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fa fa-list-alt"></i> Log Sinkronisasi SIMBG</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="sync_logs_table">
+                        <thead>
+                            <tr>
+                                <th width="150px">Waktu</th>
+                                <th width="100px">Status</th>
+                                <th width="120px">Total Data</th>
+                                <th>Pesan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sync_logs_tbody">
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    <i class="fa fa-spinner fa-spin"></i> Memuat data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary', 'title' => ""])
     @if( auth()->user()->checkRole('admin') )
         <div class="row">
-            <div class="col-sm-4">
-                <button onclick="addPengajuan('PBG')" class="btn btn-success btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG</button>
+            <div class="col-sm-3">
+                <button onclick="addPengajuan('PBG')" class="btn btn-primary btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG</button>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <button onclick="addPengajuan('SLF')" class="btn btn-danger btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan SLF</button>
             </div>
-            <div class="col-sm-4">
-                <button onclick="addPengajuan('PBG/SLF')" class="btn btn-primary btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG & SLF</button>
+            <div class="col-sm-3">
+                <button onclick="addPengajuan('PBG/SLF')" class="btn btn-success btn-block btn-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Pengajuan PBG & SLF</button>
+            </div>
+            <div class="col-sm-3">
+                <button onclick="syncSimbg()" class="btn btn-warning btn-block btn-lg"><i class="fa fa-refresh" aria-hidden="true"></i> Syncron SIMBG</button>
+                <div class="text-center mt-2">
+                    <a href="javascript:void(0)" onclick="showSyncLogs()" class="text-primary">
+                        <i class="fa fa-list-alt"></i> Lihat Log Sinkronisasi
+                    </a>
+                </div>
             </div>
         </div>
     @endif
@@ -520,7 +579,9 @@
                             <th>Fungsi Bangunan</th>
                             <th>Kecamatan</th>
                             <th>Tgl Pengajuan</th>
+                            <th>Hari Ke-</th>
                             <th>Status</th>
+                            <th>Posisi</th>
                             <th>Nilai Retribusi</th>
                             <th>Petugas</th>
                             <th>@lang( 'messages.action' )</th>
@@ -569,7 +630,7 @@
                 { searchable: false, data: 'tipe', render: (data) =>{
                     let status = "gray";
                     if(data == "PBG") status = "blue"
-                    if(data == "SLF") status = "yellow"
+                    if(data == "SLF") status = "red"
                     if(data == "PBG/SLF") status = "green"
                     return `<span class="badge bg-${status}">${data || '-'}</span>`
                 }
@@ -581,6 +642,16 @@
                     render: (data) => moment(data).format('DD/MM/YYYY HH:mm') 
                 },
                 { 
+                    searchable: false,
+                    data: 'hari_kerja',
+                    render: (data, type, row) => {
+                        if (!data) return '-';
+                        let color = data > 15 ? 'red' : (data > 10 ? 'orange' : 'green');
+                        let weight = data > 15 ? 'bold' : 'normal';
+                        return `<span style="color: ${color}; font-weight: ${weight};">Hari ke-${data}</span>`;
+                    }
+                },
+                { 
                     searchable: true,
                     data: 'status', 
                     render: (data) => {
@@ -589,6 +660,32 @@
                         let color = data === 'terbit' ? 'green' : (data === 'tolak' ? 'red' : 'blue');
                         return `<span class="badge bg-${color}">${label}</span>`;
                     } 
+                },
+                {
+                    searchable: false,
+                    data: 'posisi_terakhir',
+                    render: (data) => {
+                        if (!data || data === '-') return '-';
+                        
+                        let statusColor = 'gray';
+                        let statusLabel = '';
+                        
+                        if (data.status === 'approved') {
+                            statusColor = 'green';
+                            statusLabel = '✓';
+                        } else if (data.status === 'rejected') {
+                            statusColor = 'red';
+                            statusLabel = '✗';
+                        } else {
+                            statusColor = 'orange';
+                            statusLabel = '⏳';
+                        }
+                        
+                        // Hilangkan #angka dari role (misal: Admin#18 -> Admin)
+                        let roleName = data.role ? data.role.replace(/#\d+$/, '').trim() : '-';
+                        
+                        return `<span class="badge bg-${statusColor}">${statusLabel} ${roleName}</span>`;
+                    }
                 },
                 {
                     searchable: false,
@@ -666,6 +763,12 @@
                             `;
                         @elseif(auth()->user()->checkRole('retribusi'))
                             buttons += `
+                                <a href="print/${data}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-print"></i> Cetak
+                                </a>
+                                <button data-id="${data}" class="btn btn-sm btn-primary edit_pengajuan">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </button>
                                 <button data-id="${data}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-history"></i> Riwayat
                                 </button>
@@ -828,9 +931,10 @@
             // ✅ Reset hanya input & textarea biasa (jaga hidden)
             modals.find('input:not([type=hidden])').val("");
             modals.find('textarea').val("");
+            modals.find('select').val("");
 
-            // ✅ Atur state hidden input
-            modals.find('input[name=tipe]').val(tipe);
+            // ✅ Atur state hidden input dan select tipe
+            modals.find('select[name=tipe]').val(tipe);
             modals.find('input[name=insert]').val(1);
             modals.find('input[name=update]').val(0);
             modals.find('input[name=id]').val(0);
@@ -850,8 +954,14 @@
         };
 
         $(document).on('click', '.edit_pengajuan', function () {
+            const btn = $(this);
             const id = $(this).data('id');
             const url = `{{ route('ciptakarya.list_data_pbg') }}/${id}/detail`;
+
+            // Show loading state
+            btn.prop('disabled', true);
+            const originalHtml = btn.html();
+            btn.html('<i class="fa fa-spinner fa-spin"></i> Loading...');
 
             $.get(url, function(res) {
                 if (res.status) {
@@ -859,6 +969,12 @@
                 } else {
                     swal("Gagal", "Data tidak ditemukan", "error");
                 }
+            }).fail(function() {
+                swal("Error", "Gagal mengambil data", "error");
+            }).always(function() {
+                // Reset button state
+                btn.prop('disabled', false);
+                btn.html(originalHtml);
             });
         });
 
@@ -869,7 +985,7 @@
             modals.find('.modal-title').html(`Edit Data Pengajuan <b>${data.tipe}</b>`);
 
             // Set state
-            modals.find('input[name=tipe]').val(data.tipe);
+            modals.find('select[name=tipe]').val(data.tipe);
             modals.find('input[name=insert]').val(0);
             modals.find('input[name=update]').val(1);
             modals.find('input[name=id]').val(data.id);
@@ -900,9 +1016,25 @@
 
             // Jika ada file lama
             if (data.uploaded_files && data.uploaded_files.length > 0) {
-                data.uploaded_files.forEach((fileUrl) => {
+                data.uploaded_files.forEach((fileItem) => {
+                    // Handle both string URLs and object structure from SIMBG
+                    let fileUrl, fileName;
+                    
+                    if (typeof fileItem === 'string') {
+                        // Legacy format: simple string URL
+                        fileUrl = fileItem;
+                        fileName = fileItem.split('/').pop();
+                    } else if (typeof fileItem === 'object' && fileItem.file) {
+                        // SIMBG format: object with file, name, type properties
+                        fileUrl = fileItem.file;
+                        fileName = fileItem.name || fileItem.file.split('/').pop();
+                    } else {
+                        return; // Skip invalid items
+                    }
+                    
+                    // Simpan URL saja (normalisasi untuk backend)
                     uploadedFiles.push(fileUrl);
-                    addFileToList(fileUrl.split('/').pop(), fileUrl);
+                    addFileToList(fileName, fileUrl);
                 });
             }
 
@@ -1036,8 +1168,18 @@
                     }
                 });
 
-                // Tambahkan hasil Dropzone
-                formData.uploaded_files = uploadedFiles;
+                // Normalisasi uploaded_files: convert semua jadi string URL
+                // Agar backend selalu terima array of strings, bukan mixed array
+                const normalizedFiles = uploadedFiles.map(fileItem => {
+                    if (typeof fileItem === 'string') {
+                        return fileItem; // sudah string URL
+                    } else if (typeof fileItem === 'object' && fileItem.file) {
+                        return fileItem.file; // ambil URL dari object SIMBG
+                    }
+                    return null;
+                }).filter(f => f !== null); // hapus null
+
+                formData.uploaded_files = normalizedFiles;
 
                 // Kirim via AJAX
                 $.ajax({
@@ -1171,6 +1313,7 @@
                 {title: "Admin", desc: "Input data permohonan & penentuan jenis izin", icon: "🚀"},
                 {title: "Petugas Lapangan", desc: "Verifikasi gambar teknis & survey lokasi", icon: "📍"},
                 {title: "Pemeriksa", desc: "Pemeriksaan dokumen teknis", icon: "🧭"},
+                {title: "Pemeriksa 2", desc: "Pemeriksaan dokumen teknis", icon: "🧭"},
                 {title: "Admin Retribusi", desc: "Perhitungan retribusi & rekom teknis", icon: "💰"},
                 {title: "Koordinator", desc: "Verifikasi keseluruhan data", icon: "📊"},
                 {title: "Kabid", desc: "Validasi teknis lanjutan", icon: "📑"},
@@ -1354,44 +1497,179 @@
 
         function renderFullTimeline(flow) {
 
-    let html = `<div class="timeline">`;
+            let html = `<div class="timeline">`;
 
-    flow.forEach((step, index) => {
+            flow.forEach((step, index) => {
 
-        // gunakan warna dari backend: green / red
-        const bg = step.color === 'green' ? '#4CAF50' : '#FF5252';
-        const textColor = 'white';
+                // gunakan warna dari backend: green / red
+                const bg = step.color === 'green' ? '#4CAF50' : '#FF5252';
+                const textColor = 'white';
 
-        html += `
-            <div class="timeline-item">
-                <div class="timeline-year">${index + 1}</div>
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-year">${index + 1}</div>
 
-                <div class="timeline-icon" style="
-                    background: ${bg};
-                    color: ${textColor};
-                    border-color: ${bg};
-                ">
-                    <span style="font-size:22px">✔️</span>
-                </div>
+                        <div class="timeline-icon" style="
+                            background: ${bg};
+                            color: ${textColor};
+                            border-color: ${bg};
+                        ">
+                            <span style="font-size:22px">✔️</span>
+                        </div>
 
-                <div class="timeline-content">
-                    <h3><strong>${step.label}</strong></h3>
-                    <p>${step.desc}</p>
+                        <div class="timeline-content">
+                            <h3><strong>${step.label}</strong></h3>
+                            <p>${step.desc}</p>
+                            
+                            <p style="margin-top:4px;">
+                                <b>Status:</b> ${step.status.toUpperCase()} <br>
+                                <b>Catatan:</b> ${step.catatan ?? '-'} <br>
+                                <b>Tanggal:</b> ${step.verified_at ? moment(step.verified_at).format("DD MMMM YYYY HH:mm") : '-'} <br>
+                                <b>User:</b> ${step.user ?? '-'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+
+            return html;
+        }
+
+// ===================== SYNC SIMBG =====================
+function syncSimbg() {
+    swal({
+        title: "Sinkronisasi SIMBG",
+        text: "Proses ini akan mengambil data pengajuan terbaru dari SIMBG. Lanjutkan?",
+        icon: "info",
+        buttons: {
+            cancel: "Batal",
+            confirm: {
+                text: "Ya, Sync Sekarang",
+                value: true,
+            }
+        },
+    }).then((willSync) => {
+        if (willSync) {
+            // Show loading
+            swal({
+                title: "Sedang melakukan sinkronisasi...",
+                text: "Mohon tunggu, proses ini mungkin memakan waktu beberapa saat.",
+                icon: "info",
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+            });
+
+            $.ajax({
+                url: "{{ route('ciptakarya.sync_simbg') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.status) {
+                        swal({
+                            title: "Berhasil!",
+                            text: response.message,
+                            icon: "success",
+                            button: "OK",
+                        }).then(() => {
+                            // Reload datatable untuk lihat data baru
+                            product_table.ajax.reload();
+                        });
+                    } else {
+                        swal({
+                            title: "Peringatan",
+                            text: response.message,
+                            icon: "warning",
+                            button: "OK",
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let message = "Terjadi kesalahan saat melakukan sinkronisasi.";
                     
-                    <p style="margin-top:4px;">
-                        <b>Status:</b> ${step.status.toUpperCase()} <br>
-                        <b>Catatan:</b> ${step.catatan ?? '-'} <br>
-                        <b>Tanggal:</b> ${step.verified_at ? moment(step.verified_at).format("DD MMMM YYYY HH:mm") : '-'} <br>
-                        <b>User:</b> ${step.user ?? '-'}
-                    </p>
-                </div>
-            </div>
-        `;
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    
+                    swal({
+                        title: "Gagal!",
+                        text: message,
+                        icon: "error",
+                        button: "OK",
+                    });
+                }
+            });
+        }
     });
+}
 
-    html += `</div>`;
-
-    return html;
+// ===================== TAMPILKAN LOG SINKRONISASI =====================
+function showSyncLogs() {
+    // Tampilkan modal
+    $('#modal_sync_logs').modal('show');
+    
+    // Reset isi tabel
+    $('#sync_logs_tbody').html(`
+        <tr>
+            <td colspan="4" class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Memuat data...
+            </td>
+        </tr>
+    `);
+    
+    // Ambil data log dari server
+    $.ajax({
+        url: "{{ route('ciptakarya.get_sync_logs') }}",
+        type: "GET",
+        success: function(response) {
+            if (response.status && response.data.length > 0) {
+                let html = '';
+                
+                response.data.forEach(function(log) {
+                    let statusBadge = '';
+                    if (log.status === 'success') {
+                        statusBadge = '<span class="badge bg-green">Berhasil</span>';
+                    } else if (log.status === 'error') {
+                        statusBadge = '<span class="badge bg-red">Gagal</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-blue">Proses</span>';
+                    }
+                    
+                    html += `
+                        <tr>
+                            <td>${moment(log.created_at).format('DD/MM/YYYY HH:mm')}</td>
+                            <td>${statusBadge}</td>
+                            <td class="text-center">${log.total_synced || 0}</td>
+                            <td>${log.message || '-'}</td>
+                        </tr>
+                    `;
+                });
+                
+                $('#sync_logs_tbody').html(html);
+            } else {
+                $('#sync_logs_tbody').html(`
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            <i class="fa fa-info-circle"></i> Belum ada log sinkronisasi
+                        </td>
+                    </tr>
+                `);
+            }
+        },
+        error: function() {
+            $('#sync_logs_tbody').html(`
+                <tr>
+                    <td colspan="4" class="text-center text-danger">
+                        <i class="fa fa-exclamation-triangle"></i> Gagal memuat data log
+                    </td>
+                </tr>
+            `);
+        }
+    });
 }
 
 

@@ -16,9 +16,21 @@ class PetugasLapangan extends Model
         'google_data',
         'fcm_token',
         'auth_token',
+        'magic_link_token',
+        'magic_link_expires_at',
     ];
 
-    protected $casts = ['google_data'=>'array'];
+    protected $casts = [
+        'google_data' => 'array',
+        'magic_link_expires_at' => 'datetime',
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'magic_link_expires_at',
+    ];
 
     function pengajuan(){
         return $this->hasMany(PengajuanPBG::class.'petugas_id','id');

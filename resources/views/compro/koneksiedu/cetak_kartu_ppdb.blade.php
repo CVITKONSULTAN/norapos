@@ -153,6 +153,7 @@
       <tr><td width="40%">Nomor Urut</td><td>: {{ $ppdb->id }}-EDU</td></tr>
       <tr><td>Nama Lengkap</td><td>: {{ $ppdb->nama }}</td></tr>
       <tr><td>Jenis Kelamin</td><td>: {{ $ppdb->detail['jenis-kelamin'] ?? '-' }}</td></tr>
+      <tr><td>Tgl Lahir</td><td>: {{ $ppdb->detail['tanggal-lahir'] ?? '-' }}</td></tr>
       <tr><td>Kode Bayar</td><td>: {{ $ppdb->kode_bayar }}</td></tr>
       <tr><td>Tgl Pendaftaran</td><td>: {{ $ppdb->created_at->format('d/m/Y H:i:s') }}</td></tr>
     </table>

@@ -247,7 +247,7 @@
 
 <script type="text/javascript">
 
-    const tglMasuk = "{{ $ppdb_setting->tgl_masuk_sekolah }}";
+    const tglMasuk = "{{ !empty($ppdb_setting->tgl_masuk_sekolah) ? $ppdb_setting->tgl_masuk_sekolah : '' }}";
 
     const HitungTglLahir = (tgl_lahir,diff_date) => {
         const currentDate = !diff_date ? moment() : moment(diff_date);

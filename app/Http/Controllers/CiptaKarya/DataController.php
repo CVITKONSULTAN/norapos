@@ -836,15 +836,15 @@ class DataController extends Controller
     function print_data(Request $request, $id)
     {
         $pengajuan = PengajuanPBG::findOrFail($id)->toArray();
-        if (
-            $pengajuan['status'] !== 'terbit' 
-            && (
-                !auth()->user()->checkRole('kepala bidang') ||
-                !auth()->user()->checkRole('kepala dinas')
-                )
-            ) {
-            abort(403, 'Dokumen belum terbit');
-        }
+        // if (
+        //     $pengajuan['status'] !== 'terbit' 
+        //     && (
+        //         !auth()->user()->checkRole('kepala bidang') ||
+        //         !auth()->user()->checkRole('kepala dinas')
+        //         )
+        //     ) {
+        //     abort(403, 'Dokumen belum terbit');
+        // }
 
         // Handle answers - bisa array (dari cast) atau string JSON
         $answers = $pengajuan['answers'] ?? [];

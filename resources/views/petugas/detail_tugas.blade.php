@@ -315,6 +315,14 @@
         </div>
         @endif
 
+        <!-- Tombol Cetak Laporan (selalu tampil) -->
+        <div class="info-card">
+            <h5><i class="fas fa-print"></i> Cetak Dokumen</h5>
+            <a href="{{ route('petugas.tugas.cetak', $pengajuan->id) }}" target="_blank" class="btn btn-cetak-laporan">
+                <i class="fas fa-print"></i> Cetak Laporan Verifikasi
+            </a>
+        </div>
+
         <!-- Tombol Kembali -->
         <div style="margin-top: 15px;">
             <a href="{{ route('petugas.dashboard') }}" class="btn btn-primary-custom">
@@ -414,6 +422,30 @@
             margin: 5px 0 0 0;
             font-size: 13px;
             color: #666;
+        }
+        .btn-cetak-laporan {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cetak-laporan:hover {
+            background: #218838;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .btn-cetak-laporan i {
+            margin-right: 8px;
         }
     </style>
 

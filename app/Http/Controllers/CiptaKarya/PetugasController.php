@@ -443,6 +443,198 @@ class PetugasController extends Controller
     }
 
     /**
+     * Cetak laporan verifikasi untuk petugas lapangan
+     */
+    public function cetakLaporan(Request $request, $id)
+    {
+        $petugas = $request->petugas;
+        
+        // Pastikan pengajuan milik petugas yang login
+        $pengajuan = PengajuanPBG::where('id', $id)
+            ->where('petugas_id', $petugas->id)
+            ->first();
+
+        if (!$pengajuan) {
+            abort(404, 'Data tidak ditemukan atau Anda tidak memiliki akses');
+        }
+
+        $pengajuan = $pengajuan->toArray();
+
+        // Handle answers - bisa array (dari cast) atau string JSON
+        $answers = $pengajuan['answers'] ?? [];
+        if (is_string($answers)) {
+            $answers = json_decode($answers, true) ?? [];
+        }
+        if (!is_array($answers)) {
+            $answers = [];
+        }
+        
+        // Handle questions - bisa array (dari cast) atau string JSON
+        $sections = $pengajuan['questions'] ?? [];
+        if (is_string($sections)) {
+            $sections = json_decode($sections, true) ?? [];
+        }
+        if (!is_array($sections)) {
+            $sections = [];
+        }
+
+        $results = [];
+
+        // Helper untuk memisahkan answer & visual
+        $parseAnswer = function($val) {
+            if (!is_numeric($val)) {
+                return [
+                    'answer' => null,   // tidak dianggap Ya/Tidak
+                    'visual' => $val    // ini teks visual
+                ];
+            }
+            return [
+                'answer' => \App\Helpers\Helper::answerLabel($val),
+                'visual' => null
+            ];
+        };
+
+        foreach ($sections as $section) {
+
+            $sec = [
+                'caption' => $section['caption'],
+                'rows' => [],
+                'child' => [],
+            ];
+
+            /* ======================================================
+            * LEVEL 1  (section -> questioner)
+            ====================================================== */
+            if (isset($section['questioner'])) {
+
+                foreach ($section['questioner'] as $i => $q) {
+
+                    $key = $section['caption'] . '__' . $i;
+
+                    $val = $answers[$key]['value'] ?? null;
+                    $parsed = $parseAnswer($val);
+
+                    $sec['rows'][] = [
+                        'question' => $q['question'],
+                        'answer'   => $parsed['answer'],
+                        'visual'   => $parsed['visual'],
+                    ];
+                }
+            }
+
+
+            /* ======================================================
+            * LEVEL 2  (section -> child)
+            ====================================================== */
+            if (isset($section['child'])) {
+
+                foreach ($section['child'] as $child1) {
+
+                    $sub = [
+                        'caption' => $child1['caption'],
+                        'rows' => [],
+                        'child' => []
+                    ];
+
+                    // child1 langsung punya questioner
+                    if (isset($child1['questioner'])) {
+
+                        foreach ($child1['questioner'] as $i => $q) {
+
+                            $key = $section['caption']
+                                . ' > ' . $child1['caption']
+                                . '__' . $i;
+
+                            $val = $answers[$key]['value'] ?? null;
+                            $parsed = $parseAnswer($val);
+
+                            $sub['rows'][] = [
+                                'question' => $q['question'],
+                                'answer'   => $parsed['answer'],
+                                'visual'   => $parsed['visual'],
+                            ];
+                        }
+                    }
+
+
+                    /* ======================================================
+                    * LEVEL 3  (section -> child -> subchild)
+                    ====================================================== */
+                    if (isset($child1['child'])) {
+
+                        foreach ($child1['child'] as $child2) {
+
+                            $sub2 = [
+                                'caption' => $child2['caption'],
+                                'rows' => []
+                            ];
+
+                            foreach ($child2['questioner'] as $i => $q) {
+
+                                $key = $section['caption']
+                                    . ' > ' . $child1['caption']
+                                    . ' > ' . $child2['caption']
+                                    . '__' . $i;
+
+                                $val = $answers[$key]['value'] ?? null;
+                                $parsed = $parseAnswer($val);
+
+                                $sub2['rows'][] = [
+                                    'question' => $q['question'],
+                                    'answer'   => $parsed['answer'],
+                                    'visual'   => $parsed['visual'],
+                                ];
+                            }
+
+                            $sub['child'][] = $sub2;
+                        }
+                    }
+
+                    $sec['child'][] = $sub;
+                }
+            }
+
+            $results[] = $sec;
+        }
+
+
+        /* ======================================================
+        * FOTO MAPPING
+        ====================================================== */
+        // Handle photoMaps - bisa array (dari cast) atau string JSON
+        $photos = $pengajuan['photoMaps'] ?? [];
+        if (is_string($photos)) {
+            $photos = json_decode($photos, true) ?? [];
+        }
+        if (!is_array($photos)) {
+            $photos = [];
+        }
+
+        $sectionPhotos = [];
+
+        foreach ($photos as $p) {
+
+            preg_match('/^(\d+)-/', $p['caption'] ?? '', $match);
+
+            if (!isset($match[1])) continue;
+
+            $sectionNum = $match[1];
+
+            $sectionPhotos[$sectionNum][] = [
+                'caption' => $p['caption'],
+                'url' => $p['url']
+            ];
+        }
+
+        return view('ciptakarya.cetak_petugas_lapangan', [
+            'pengajuan'        => $pengajuan,
+            'petugas'          => $petugas,
+            'inspectionResults'=> $results,
+            'sectionPhotos'    => $sectionPhotos,
+        ]);
+    }
+
+    /**
      * Logout petugas
      */
     public function logout(Request $request)

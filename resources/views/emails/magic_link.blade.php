@@ -104,7 +104,7 @@
         <!-- Header -->
         <div class="email-header">
             <h1>🔐 Link Login Petugas Lapangan</h1>
-            <p>DPMPTSP Kabupaten Kubu Raya</p>
+            <p>Cipta Karya Kabupaten Kubu Raya</p>
         </div>
 
         <!-- Body -->
@@ -145,7 +145,7 @@
 
         <!-- Footer -->
         <div class="email-footer">
-            <p><strong>DPMPTSP Kabupaten Kubu Raya</strong></p>
+            <p><strong>Cipta Karya Kabupaten Kubu Raya</strong></p>
             <p>Sistem Petugas Lapangan Verifikasi PBG</p>
             <p style="margin-top: 15px;">
                 Email ini dikirim secara otomatis, mohon tidak membalas email ini.

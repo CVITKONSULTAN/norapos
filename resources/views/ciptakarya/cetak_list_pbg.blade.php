@@ -104,6 +104,12 @@
         width: 260px;
     }
 
+    /* Kolom titik dua */
+    .tabel_surat_pernyataan td:nth-child(2) {
+        width: 10px;
+        text-align: center;
+    }
+
     .ttd-container {
         font-family: Arial, sans-serif;
     }
@@ -354,104 +360,121 @@
 
     <tr>
         <td>Nomor Permohonan</td>
+        <td>:</td>
         <td><strong>{{ $pengajuan['no_permohonan'] ?? '-' }}</strong></td>
     </tr>
 
     <tr>
         <td>Nomor KRK / KKPR</td>
+        <td>:</td>
         <td><strong>{{ $pengajuan['no_krk'] ?? '-' }}</strong></td>
     </tr>
 
     <tr>
         <td>Nama Pemohon</td>
-        <td>
-            <strong>{{ $pengajuan['nama_pemohon'] ?? '-' }}</strong>
-        </td>
+        <td>:</td>
+        <td><strong>{{ $pengajuan['nama_pemohon'] ?? '-' }}</strong></td>
     </tr>
 
     <tr>
         <td>NIK</td>
+        <td>:</td>
         <td>{{ $pengajuan['nik'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Alamat</td>
+        <td>:</td>
         <td>{!! nl2br(e($pengajuan['alamat'] ?? '-')) !!}</td>
     </tr>
 
     <tr>
         <td>Fungsi Bangunan</td>
+        <td>:</td>
         <td>{{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Nama Bangunan</td>
+        <td>:</td>
         <td>{{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Jumlah Bangunan</td>
+        <td>:</td>
         <td>{{ $pengajuan['jumlah_bangunan'] ?? '-' }} Unit</td>
     </tr>
 
     <tr>
         <td>Jumlah Lantai</td>
+        <td>:</td>
         <td>{{ $pengajuan['jumlah_lantai'] ?? '-' }} Lantai</td>
     </tr>
 
     <tr>
         <td>Luas Bangunan</td>
+        <td>:</td>
         <td>{{ str_replace('m2', 'm²', $pengajuan['luas_bangunan'] ?? '-') }}</td>
     </tr>
 
     <tr>
         <td>Ketinggian Bangunan</td>
-        {{-- <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td> --}}
+        <td>:</td>
         <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Lokasi Bangunan</td>
+        <td>:</td>
         <td>{!! nl2br(e($pengajuan['lokasi_bangunan'] ?? '-')) !!}</td>
     </tr>
 
     <tr>
         <td>Di Atas Tanah No. Persil</td>
+        <td>:</td>
         <td>{!! nl2br(e($pengajuan['no_persil'] ?? '-')) !!}</td>
     </tr>
 
     <tr>
         <td>Luas Tanah</td>
+        <td>:</td>
         <td>{{ $pengajuan['luas_tanah'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Atas Nama/Pemilik Tanah</td>
+        <td>:</td>
         <td>{{ $pengajuan['pemilik_tanah'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Garis Sempadan Bangunan (GSB) Minimum</td>
+        <td>:</td>
         <td>{{ $pengajuan['gbs_min'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Koefisien Daerah Hijau (KDH) Minimum</td>
+        <td>:</td>
         <td>{{ $pengajuan['kdh_min'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Koefisien Dasar Bangunan (KDB) Maksimum</td>
+        <td>:</td>
         <td>{{ $pengajuan['kdb_max'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Koefisien Lantai Bangunan (KLB) Maksimum</td>
+        <td>:</td>
         <td>{{ $pengajuan['koefisiensi_lantai'] ?? '-' }}</td>
     </tr>
 
     <tr>
         <td>Koordinat Bangunan</td>
+        <td>:</td>
         <td>{{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
     </tr>
 
@@ -760,19 +783,23 @@
     <table class="tabel_surat_pernyataan">
         <tr>
             <td>Nama Petugas</td>
-            <td>: {{ $pengajuan['petugas_lapangan']['nama'] ?? '-' }}</td>
+            <td>:</td>
+            <td>{{ $pengajuan['petugas_lapangan']['nama'] ?? '-' }}</td>
         </tr>
         <tr>
             <td>Jabatan</td>
-            <td>: {{ $pengajuan['petugas_lapangan']['jabatan'] ?? '-' }}</td>
+            <td>:</td>
+            <td>{{ $pengajuan['petugas_lapangan']['jabatan'] ?? '-' }}</td>
         </tr>
         {{-- <tr>
             <td>Nama Petugas 2</td>
-            <td>: .....................................................</td>
+            <td>:</td>
+            <td>.....................................................</td>
         </tr>
         <tr>
             <td>Jabatan</td>
-            <td>: .....................................................</td>
+            <td>:</td>
+            <td>.....................................................</td>
         </tr> --}}
     </table>
 
@@ -783,59 +810,68 @@
     <table class="tabel_surat_pernyataan">
             <tr>
                 <td>Nama Bangunan</td>
-                <td>: {{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['nama_bangunan'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Alamat Bangunan</td>
-                <td>: {{ $pengajuan['lokasi_bangunan'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['lokasi_bangunan'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Koordinat</td>
-                <td>: {{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['koordinat_bangunan'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Fungsi Bangunan</td>
-                <td>: {{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['fungsi_bangunan'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Klasifikasi Kompleksitas</td>
-                <td>: {{ $pengajuan['klasifikasi_kompleksitas'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['klasifikasi_kompleksitas'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Ketinggian</td>
-                <td>: {{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td>
+                <td>:</td>
+                <td>{{ $pengajuan['ketinggian_bangunan'] ?? '-' }} m</td>
             </tr>
 
             <tr>
                 <td>Jumlah Lantai</td>
-                <td>: {{ $pengajuan['jumlah_lantai'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['jumlah_lantai'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Luas Lantai</td>
-                {{-- <td>: {{ $pengajuan['luas_bangunan'] ?? '-' }} m²</td> --}}
-                <td>: {!! nl2br(e($pengajuan['luas_bangunan'] ?? '-')) !!}</td>
+                <td>:</td>
+                <td>{!! nl2br(e($pengajuan['luas_bangunan'] ?? '-')) !!}</td>
             </tr>
 
             <tr>
                 <td>Jumlah Basemen</td>
-                <td>: {{ $pengajuan['jumlah_basemen'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['jumlah_basemen'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Luas Lantai Basemen</td>
-                <td>: {{ $pengajuan['luas_lantai_basemen'] ?? '-' }}</td>
+                <td>:</td>
+                <td>{{ $pengajuan['luas_lantai_basemen'] ?? '-' }}</td>
             </tr>
 
             <tr>
                 <td>Luas Tanah</td>
-                {{-- <td>: {{ $pengajuan['luas_tanah'] ?? '-' }}</td> --}}
-                <td>: {!! nl2br(e($pengajuan['luas_tanah'] ?? '-')) !!}</td>
+                <td>:</td>
+                <td>{!! nl2br(e($pengajuan['luas_tanah'] ?? '-')) !!}</td>
             </tr>
         </table>
 

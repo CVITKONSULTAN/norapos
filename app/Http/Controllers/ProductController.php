@@ -225,6 +225,12 @@ class ProductController extends Controller
                                 '<li><a href="' . action('ProductController@create', ["d" => $row->id]) . '"><i class="fa fa-copy"></i> ' . __("lang_v1.duplicate_product") . '</a></li>';
                         }
 
+                        // Link ke resep bahan baku
+                        if (auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create')) {
+                            $html .=
+                            '<li><a href="' . action('ProductRecipeController@index', [$row->id]) . '"><i class="fa fa-utensils"></i> Resep Bahan</a></li>';
+                        }
+
                         $html .= '</ul></div>';
 
                         return $html;

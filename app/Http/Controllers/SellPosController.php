@@ -58,6 +58,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 use App\InvoiceScheme;
+use App\Services\IngredientStockService;
 
 class SellPosController extends Controller
 {
@@ -487,6 +488,10 @@ class SellPosController extends Controller
                 if (!empty($input['has_module_data'])) {
                     $this->moduleUtil->getModuleData('after_sale_saved', ['transaction' => $transaction, 'input' => $input]);
                 }
+
+                // Deduct ingredient stock based on product recipes
+                $ingredientStockService = app(IngredientStockService::class);
+                $ingredientStockService->deductForTransaction($transaction);
 
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
 
@@ -1130,6 +1135,10 @@ class SellPosController extends Controller
                 if (!empty($input['has_module_data'])) {
                     $this->moduleUtil->getModuleData('after_sale_saved', ['transaction' => $transaction, 'input' => $input]);
                 }
+
+                // Recalculate ingredient stock (return old, deduct new)
+                $ingredientStockService = app(IngredientStockService::class);
+                $ingredientStockService->recalculateForTransaction($transaction);
 
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
 

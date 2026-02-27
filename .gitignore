@@ -39,3 +39,5 @@ npm-debug.log
 /public/CKverifyOld2.apk
 /public/CKverifyOld3.apk
 /public/CKverifyOld4.apk
+
+/public/uploads/ocr_temp/*

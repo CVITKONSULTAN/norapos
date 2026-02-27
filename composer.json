@@ -43,6 +43,7 @@
         "spipu/html2pdf": "^5.2",
         "srmklive/paypal": "^1.6",
         "stripe/stripe-php": "^7.100",
+        "thiagoalessio/tesseract_ocr": "^2.13",
         "unicodeveloper/laravel-paystack": "^1.0",
         "yajra/laravel-datatables-oracle": "^9.0"
     },

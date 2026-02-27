@@ -27,6 +27,19 @@ Route::get('/kartika', function(){
     return view('compro.grandkartika.index',$data);
 })->name("multi.index");
 
+// Route khusus untuk subdomain resto.grandkartika.com
+Route::group(['domain' => 'resto.grandkartika.com'], function() {
+    Route::get('/', function(){
+        return redirect('/login');
+    });
+    Route::get('/login', function(){
+        if (auth()->check()) {
+            return redirect('/home');
+        }
+        return view("compro.grandkartika.login");
+    })->name("resto.login");
+});
+
 Route::group(['domain' => '{domain}.{tld}'], function() use($database_domain){
     $host = request()->getHost();
     if(in_array($host,$database_domain)){
@@ -648,6 +661,25 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/stock-adjustments/remove-expired-stock/{purchase_line_id}', 'StockAdjustmentController@removeExpiredStock');
     Route::post('/stock-adjustments/get_product_row', 'StockAdjustmentController@getProductRow');
     Route::resource('stock-adjustments', 'StockAdjustmentController');
+
+    // Ingredients (Bahan Baku)
+    Route::get('/ingredients/usage-report', 'IngredientController@usageReport')->name('ingredients.usage_report');
+    Route::get('/ingredients/search-products', 'IngredientController@searchProducts')->name('ingredients.search_products');
+    Route::get('/ingredients/{id}/stock-log', 'IngredientController@stockLog')->name('ingredients.stock_log');
+    Route::match(['get', 'post'], '/ingredients/{id}/adjust-stock', 'IngredientController@adjustStock')->name('ingredients.adjust_stock');
+    Route::resource('ingredients', 'IngredientController');
+
+    // Ingredient Purchases (Pembelian Bahan)
+    Route::post('ingredient-purchases/process-ocr', 'IngredientPurchaseController@processOcr')->name('ingredient_purchases.process_ocr');
+    Route::post('ingredient-purchases/{id}/pay', 'IngredientPurchaseController@recordPayment')->name('ingredient_purchases.pay');
+    Route::resource('ingredient-purchases', 'IngredientPurchaseController')->except(['edit', 'update']);
+
+    // Product Recipes (Resep Produk)
+    Route::get('/product-recipes/catalog', 'ProductRecipeController@catalog')->name('product_recipes.catalog');
+    Route::get('/product-recipes/{product_id}', 'ProductRecipeController@index')->name('product_recipes.index');
+    Route::post('/product-recipes', 'ProductRecipeController@store')->name('product_recipes.store');
+    Route::put('/product-recipes/{id}', 'ProductRecipeController@update')->name('product_recipes.update');
+    Route::delete('/product-recipes/{id}', 'ProductRecipeController@destroy')->name('product_recipes.destroy');
 
     Route::get('/cash-register/register-details', 'CashRegisterController@getRegisterDetails');
     Route::get('/cash-register/close-register/{id?}', 'CashRegisterController@getCloseRegister');

@@ -105,6 +105,10 @@ Route::group(['prefix' => 'ciptakarya/petugas', 'middleware' => 'auth.petugas'],
     Route::post('tugas/{id}/submit', 'CiptaKarya\PetugasController@submitVerifikasi')
         ->name('petugas.tugas.verifikasi');
     
+    // Cetak Laporan
+    Route::get('tugas/{id}/cetak', 'CiptaKarya\PetugasController@cetakLaporan')
+        ->name('petugas.tugas.cetak');
+    
     // Upload foto
     Route::post('upload-photo', 'CiptaKarya\PetugasController@uploadPhoto')
         ->name('petugas.upload-photo');

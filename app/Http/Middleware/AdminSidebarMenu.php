@@ -431,6 +431,28 @@ class AdminSidebarMenu
                 )->order(41);
             }
 
+            // Venue Booking dropdown
+            if (auth()->user()->can('venue_booking.view') || auth()->user()->can('venue_booking.create')) {
+                $menu->dropdown(
+                    'Booking Venue',
+                    function ($sub) {
+                        $sub->url(
+                            action('VenueBookingController@index'),
+                            'Daftar Booking',
+                            ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'venue-bookings' && request()->segment(2) == null]
+                        );
+                        if (auth()->user()->can('venue_booking.create')) {
+                            $sub->url(
+                                action('VenueBookingController@create'),
+                                'Tambah Booking',
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'venue-bookings' && request()->segment(2) == 'create']
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-calendar-check']
+                )->order(42);
+            }
+
             //Expense dropdown
             if (in_array('expenses', $enabled_modules) && (auth()->user()->can('expense.access') || auth()->user()->can('view_own_expense'))) {
                 $menu->dropdown(

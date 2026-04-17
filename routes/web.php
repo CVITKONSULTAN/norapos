@@ -681,6 +681,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::put('/product-recipes/{id}', 'ProductRecipeController@update')->name('product_recipes.update');
     Route::delete('/product-recipes/{id}', 'ProductRecipeController@destroy')->name('product_recipes.destroy');
 
+    // Venue Master (CRUD)
+    Route::resource('venues', 'VenueController', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
+
     // Venue Booking
     Route::post('/venue-bookings/{id}/payment', 'VenueBookingController@addPayment')->name('venue_bookings.add_payment');
     Route::delete('/venue-bookings/{id}/payment/{paymentId}', 'VenueBookingController@deletePayment')->name('venue_bookings.delete_payment');

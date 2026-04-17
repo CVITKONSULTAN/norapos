@@ -15,7 +15,14 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     {!! Form::label('venue_id', 'Venue *') !!}
-                    {!! Form::select('venue_id', $venues, null, ['class' => 'form-control select2', 'required', 'placeholder' => 'Pilih Venue']) !!}
+                    <div class="input-group">
+                        {!! Form::select('venue_id', $venues, null, ['class' => 'form-control select2', 'required', 'id' => 'venue_id', 'placeholder' => 'Pilih Venue']) !!}
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" id="btn_manage_venues" title="Kelola Venue">
+                                <i class="fa fa-cog"></i>
+                            </button>
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-4">
@@ -226,6 +233,102 @@
 
     {!! Form::close() !!}
 </section>
+
+{{-- ============================================================ --}}
+{{-- MODAL: Kelola Venue                                          --}}
+{{-- ============================================================ --}}
+<div class="modal fade" id="modal_venue_manager" tabindex="-1" role="dialog" aria-labelledby="modal_venue_manager_label">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" id="modal_venue_manager_label"><i class="fa fa-map-marker"></i> Kelola Venue</h4>
+            </div>
+            <div class="modal-body">
+
+                {{-- Form Tambah / Edit --}}
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" id="venue_form_title">Tambah Venue Baru</h3>
+                    </div>
+                    <div class="box-body">
+                        <input type="hidden" id="venue_edit_id" value="">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label>Nama Venue <span class="text-danger">*</span></label>
+                                    <input type="text" id="venue_name" class="form-control" placeholder="Contoh: Ballroom, Ponton, Kapal">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>Deskripsi</label>
+                                    <input type="text" id="venue_description" class="form-control" placeholder="Keterangan singkat (opsional)">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Kapasitas (Orang)</label>
+                                    <input type="number" id="venue_capacity" class="form-control" placeholder="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>Harga Dasar (Rp)</label>
+                                    <input type="number" id="venue_base_price" class="form-control" placeholder="0" min="0" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>&nbsp;</label><br>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" id="venue_is_active" checked> Aktif
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 text-right" style="padding-top:25px;">
+                                <button type="button" class="btn btn-default btn-sm" id="btn_venue_cancel_edit" style="display:none;">
+                                    <i class="fa fa-times"></i> Batal Edit
+                                </button>
+                                <button type="button" class="btn btn-primary btn-sm" id="btn_venue_save">
+                                    <i class="fa fa-save"></i> <span id="venue_save_label">Simpan Venue</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tabel Daftar Venue --}}
+                <table class="table table-bordered table-striped table-hover" id="venue_list_table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nama</th>
+                            <th>Deskripsi</th>
+                            <th>Kapasitas</th>
+                            <th>Harga Dasar</th>
+                            <th>Status</th>
+                            <th style="width:100px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="venue_list_body">
+                        <tr><td colspan="7" class="text-center"><i class="fa fa-spinner fa-spin"></i> Memuat...</td></tr>
+                    </tbody>
+                </table>
+
+            </div>{{-- /modal-body --}}
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- /MODAL Kelola Venue --}}
+
 @endsection
 
 @section('javascript')
@@ -286,6 +389,150 @@
         function formatNumber(num) {
             return new Intl.NumberFormat('id-ID').format(num);
         }
+
+        // ====================================================
+        // CRUD Venue Modal
+        // ====================================================
+        var venueApiUrl  = '{{ action("VenueController@index") }}';
+        var venueStoreUrl = '{{ action("VenueController@store") }}';
+
+        // Buka modal
+        $('#btn_manage_venues').on('click', function() {
+            resetVenueForm();
+            loadVenueList();
+            $('#modal_venue_manager').modal('show');
+        });
+
+        function loadVenueList() {
+            $.get(venueApiUrl, function(data) {
+                var html = '';
+                if (data.length === 0) {
+                    html = '<tr><td colspan="7" class="text-center text-muted">Belum ada venue.</td></tr>';
+                } else {
+                    $.each(data, function(i, v) {
+                        html += '<tr>' +
+                            '<td>' + (i+1) + '</td>' +
+                            '<td>' + v.name + '</td>' +
+                            '<td>' + (v.description || '-') + '</td>' +
+                            '<td>' + (v.capacity || '-') + '</td>' +
+                            '<td>Rp ' + new Intl.NumberFormat('id-ID').format(v.base_price) + '</td>' +
+                            '<td>' + (v.is_active ? '<span class="label label-success">Aktif</span>' : '<span class="label label-default">Nonaktif</span>') + '</td>' +
+                            '<td>' +
+                                '<button type="button" class="btn btn-xs btn-warning btn-edit-venue" data-id="' + v.id + '" title="Edit"><i class="fa fa-edit"></i></button> ' +
+                                '<button type="button" class="btn btn-xs btn-danger btn-delete-venue" data-id="' + v.id + '" data-name="' + v.name + '" title="Hapus"><i class="fa fa-trash"></i></button>' +
+                            '</td>' +
+                        '</tr>';
+                    });
+                }
+                $('#venue_list_body').html(html);
+            });
+        }
+
+        function resetVenueForm() {
+            $('#venue_edit_id').val('');
+            $('#venue_name').val('');
+            $('#venue_description').val('');
+            $('#venue_capacity').val('');
+            $('#venue_base_price').val('');
+            $('#venue_is_active').prop('checked', true);
+            $('#venue_form_title').text('Tambah Venue Baru');
+            $('#venue_save_label').text('Simpan Venue');
+            $('#btn_venue_cancel_edit').hide();
+        }
+
+        // Simpan (store / update)
+        $('#btn_venue_save').on('click', function() {
+            var id = $('#venue_edit_id').val();
+            var url  = id ? '{{ url("venues") }}/' + id : venueStoreUrl;
+            var method = id ? 'PUT' : 'POST';
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    name: $('#venue_name').val(),
+                    description: $('#venue_description').val(),
+                    capacity: $('#venue_capacity').val(),
+                    base_price: $('#venue_base_price').val(),
+                    is_active: $('#venue_is_active').is(':checked') ? 1 : 0,
+                },
+                success: function(res) {
+                    if (res.success) {
+                        toastr.success(res.msg);
+                        resetVenueForm();
+                        loadVenueList();
+                        refreshVenueDropdown();
+                    }
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON && xhr.responseJSON.errors;
+                    if (errors) {
+                        var msg = Object.values(errors).map(function(e){ return e[0]; }).join('<br>');
+                        toastr.error(msg);
+                    } else {
+                        toastr.error('Terjadi kesalahan.');
+                    }
+                }
+            });
+        });
+
+        // Tombol edit
+        $(document).on('click', '.btn-edit-venue', function() {
+            var id = $(this).data('id');
+            $.get('{{ url("venues") }}/' + id, function(v) {
+                $('#venue_edit_id').val(v.id);
+                $('#venue_name').val(v.name);
+                $('#venue_description').val(v.description || '');
+                $('#venue_capacity').val(v.capacity || '');
+                $('#venue_base_price').val(v.base_price || 0);
+                $('#venue_is_active').prop('checked', v.is_active == 1);
+                $('#venue_form_title').text('Edit Venue: ' + v.name);
+                $('#venue_save_label').text('Update Venue');
+                $('#btn_venue_cancel_edit').show();
+                $('html, body').animate({ scrollTop: $('#modal_venue_manager .modal-body').offset().top }, 300);
+            });
+        });
+
+        // Batal edit
+        $('#btn_venue_cancel_edit').on('click', function() {
+            resetVenueForm();
+        });
+
+        // Tombol hapus
+        $(document).on('click', '.btn-delete-venue', function() {
+            var id   = $(this).data('id');
+            var name = $(this).data('name');
+            if (!confirm('Hapus venue "' + name + '"? Tindakan ini tidak dapat dibatalkan.')) return;
+            $.ajax({
+                url: '{{ url("venues") }}/' + id,
+                method: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function(res) {
+                    if (res.success) {
+                        toastr.success(res.msg);
+                        loadVenueList();
+                        refreshVenueDropdown();
+                    }
+                },
+                error: function() { toastr.error('Gagal menghapus venue.'); }
+            });
+        });
+
+        // Refresh dropdown #venue_id setelah perubahan
+        function refreshVenueDropdown() {
+            $.get(venueApiUrl, function(data) {
+                var selected = $('#venue_id').val();
+                $('#venue_id').empty().append('<option value="">Pilih Venue</option>');
+                $.each(data, function(i, v) {
+                    if (v.is_active) {
+                        $('#venue_id').append('<option value="' + v.id + '"' + (v.id == selected ? ' selected' : '') + '>' + v.name + '</option>');
+                    }
+                });
+                $('#venue_id').trigger('change');
+            });
+        }
+
     });
 </script>
 @endsection

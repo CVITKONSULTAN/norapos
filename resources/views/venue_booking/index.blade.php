@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Booking Venue')
 
+@php
+    $can_view_finance = auth()->user()->can('venue_booking.payment');
+@endphp
+
 @section('content')
 <section class="content-header">
     <h1>Booking Venue
@@ -64,9 +68,11 @@
                         <th>Event</th>
                         <th>Tgl Event</th>
                         <th>Est. Tamu</th>
+                        @if($can_view_finance)
                         <th>Total</th>
                         <th>DP</th>
                         <th>Sisa</th>
+                        @endif
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -99,9 +105,11 @@
                 { data: 'event_name', name: 'event_name' },
                 { data: 'event_date', name: 'event_date' },
                 { data: 'estimated_guests', name: 'estimated_guests' },
+                @if($can_view_finance)
                 { data: 'total_amount', name: 'total_amount' },
                 { data: 'dp_amount', name: 'dp_amount' },
                 { data: 'remaining_amount', name: 'remaining_amount' },
+                @endif
                 { data: 'status_label', name: 'status', orderable: false, searchable: false },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
             ],

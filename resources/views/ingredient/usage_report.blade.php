@@ -75,6 +75,42 @@
     @endcomponent
     @endif
 
+    {{-- Detail per booking venue / event --}}
+    @if(!empty($venue_summary) && count($venue_summary) > 0)
+    @component('components.widget', ['class' => 'box-warning', 'title' => 'Detail Pemakaian dari Booking Venue / Event'])
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-condensed" id="venue_table">
+                <thead>
+                    <tr>
+                        <th>Tgl Deduct</th>
+                        <th>No Booking</th>
+                        <th>Nama Event</th>
+                        <th>Tgl Event</th>
+                        <th>Lokasi</th>
+                        <th>Bahan Terpakai</th>
+                        <th>Qty</th>
+                        <th>Satuan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($venue_summary as $row)
+                    <tr>
+                        <td>{{ $row->deducted_at ? \Carbon\Carbon::parse($row->deducted_at)->format('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ $row->booking_ref ?? '-' }}</td>
+                        <td>{{ $row->event_name ?? '-' }}</td>
+                        <td>{{ $row->event_date ? \Carbon\Carbon::parse($row->event_date)->format('d/m/Y') : '-' }}</td>
+                        <td>{{ $row->location_name ?? '-' }}</td>
+                        <td>{{ $row->ingredient_name }}</td>
+                        <td class="text-right text-danger">{{ number_format($row->qty_used, 2) }}</td>
+                        <td>{{ $row->unit_short ?? '-' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endcomponent
+    @endif
+
     {{-- Detail per penjualan --}}
     @if(!empty($sale_summary) && count($sale_summary) > 0)
     @component('components.widget', ['class' => 'box-info', 'title' => 'Detail Pemakaian per Penjualan'])
@@ -118,6 +154,12 @@
 $(document).ready(function() {
     if ($('#detail_table').length) {
         $('#detail_table').DataTable({
+            pageLength: 25,
+            order: [[0, 'desc']],
+        });
+    }
+    if ($('#venue_table').length) {
+        $('#venue_table').DataTable({
             pageLength: 25,
             order: [[0, 'desc']],
         });

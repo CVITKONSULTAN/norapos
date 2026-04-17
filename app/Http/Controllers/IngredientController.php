@@ -355,19 +355,21 @@ class IngredientController extends Controller
         $usage_data = [];
         $sale_summary = [];
 
+        $venue_summary = [];
+
         if ($request->has('start_date')) {
-            // Query pemakaian bahan dari log
-            $query = IngredientStockLog::where('ingredient_stock_logs.business_id', $business_id)
-                ->where('ref_type', 'sale')
+            // Base query untuk semua jenis pemakaian (POS + venue booking)
+            $baseQuery = IngredientStockLog::where('ingredient_stock_logs.business_id', $business_id)
+                ->whereIn('ref_type', ['sale', 'venue_booking'])
                 ->whereDate('ingredient_stock_logs.created_at', '>=', $start_date)
                 ->whereDate('ingredient_stock_logs.created_at', '<=', $end_date);
 
             if (!empty($location_id)) {
-                $query->where('ingredient_stock_logs.location_id', $location_id);
+                $baseQuery->where('ingredient_stock_logs.location_id', $location_id);
             }
 
-            // Ringkasan pemakaian per bahan
-            $usage_data = (clone $query)
+            // Ringkasan pemakaian per bahan (gabungan POS + event)
+            $usage_data = (clone $baseQuery)
                 ->join('ingredients', 'ingredients.id', '=', 'ingredient_stock_logs.ingredient_id')
                 ->leftJoin('units', 'units.id', '=', 'ingredients.unit_id')
                 ->select(
@@ -381,8 +383,15 @@ class IngredientController extends Controller
                 ->orderBy('ingredients.name')
                 ->get();
 
-            // Ringkasan per transaksi penjualan
-            $sale_summary = (clone $query)
+            // Ringkasan per transaksi penjualan POS
+            $saleQuery = IngredientStockLog::where('ingredient_stock_logs.business_id', $business_id)
+                ->where('ref_type', 'sale')
+                ->whereDate('ingredient_stock_logs.created_at', '>=', $start_date)
+                ->whereDate('ingredient_stock_logs.created_at', '<=', $end_date);
+            if (!empty($location_id)) {
+                $saleQuery->where('ingredient_stock_logs.location_id', $location_id);
+            }
+            $sale_summary = $saleQuery
                 ->join('ingredients', 'ingredients.id', '=', 'ingredient_stock_logs.ingredient_id')
                 ->leftJoin('units', 'units.id', '=', 'ingredients.unit_id')
                 ->leftJoin('transactions', 'transactions.id', '=', 'ingredient_stock_logs.transaction_id')
@@ -402,11 +411,37 @@ class IngredientController extends Controller
                 ->orderBy('transactions.transaction_date', 'desc')
                 ->orderBy('transactions.invoice_no')
                 ->get();
+
+            // Ringkasan per booking venue / event
+            $venueQuery = IngredientStockLog::where('ingredient_stock_logs.business_id', $business_id)
+                ->where('ref_type', 'venue_booking')
+                ->whereDate('ingredient_stock_logs.created_at', '>=', $start_date)
+                ->whereDate('ingredient_stock_logs.created_at', '<=', $end_date);
+            if (!empty($location_id)) {
+                $venueQuery->where('ingredient_stock_logs.location_id', $location_id);
+            }
+            $venue_summary = $venueQuery
+                ->join('ingredients', 'ingredients.id', '=', 'ingredient_stock_logs.ingredient_id')
+                ->leftJoin('units', 'units.id', '=', 'ingredients.unit_id')
+                ->leftJoin('venue_bookings', 'venue_bookings.id', '=', 'ingredient_stock_logs.ref_id')
+                ->leftJoin('business_locations', 'business_locations.id', '=', 'ingredient_stock_logs.location_id')
+                ->select(
+                    'venue_bookings.booking_ref',
+                    'venue_bookings.event_date',
+                    'venue_bookings.event_name',
+                    'ingredients.name as ingredient_name',
+                    'units.short_name as unit_short',
+                    DB::raw('ABS(ingredient_stock_logs.qty_change) as qty_used'),
+                    'business_locations.name as location_name',
+                    'ingredient_stock_logs.created_at as deducted_at'
+                )
+                ->orderBy('ingredient_stock_logs.created_at', 'desc')
+                ->get();
         }
 
         return view('ingredient.usage_report', compact(
             'locations', 'start_date', 'end_date', 'location_id',
-            'usage_data', 'sale_summary'
+            'usage_data', 'sale_summary', 'venue_summary'
         ));
     }
 

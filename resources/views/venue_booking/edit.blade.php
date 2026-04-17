@@ -47,7 +47,7 @@
             <div class="col-sm-3">
                 <div class="form-group">
                     {!! Form::label('estimated_guests', 'Perkiraan Tamu') !!}
-                    {!! Form::number('estimated_guests', $booking->estimated_guests, ['class' => 'form-control', 'min' => '0']) !!}
+                    {!! Form::number('estimated_guests', $booking->estimated_guests, ['class' => 'form-control', 'id' => 'estimated_guests_input', 'min' => '0']) !!}
                 </div>
             </div>
             <div class="col-sm-3">
@@ -61,11 +61,17 @@
                 </div>
             </div>
         </div>
-        <div class="row" id="price_per_pax_row" style="{{ $booking->pricing_type === 'per_pax' ? '' : 'display: none;' }}">
-            <div class="col-sm-4">
+        <div class="row">
+            <div class="col-sm-4" id="price_per_pax_row" style="{{ $booking->pricing_type === 'per_pax' ? '' : 'display: none;' }}">
                 <div class="form-group">
                     {!! Form::label('price_per_pax', 'Harga Per Pax (Rp)') !!}
-                    {!! Form::number('price_per_pax', $booking->price_per_pax, ['class' => 'form-control', 'step' => '0.01', 'min' => '0']) !!}
+                    {!! Form::number('price_per_pax', $booking->price_per_pax, ['class' => 'form-control', 'id' => 'price_per_pax_input', 'step' => '0.01', 'min' => '0']) !!}
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    {!! Form::label('total_amount', 'Total (Rp)') !!}
+                    {!! Form::number('total_amount', $booking->total_amount, ['class' => 'form-control', 'id' => 'total_amount_input', 'step' => '0.01', 'min' => '0', 'placeholder' => '0']) !!}
                 </div>
             </div>
         </div>
@@ -143,50 +149,35 @@
 
     {{-- Item Pesanan --}}
     @component('components.widget', ['class' => 'box-success', 'title' => 'Item Pesanan / Menu'])
+        <p class="text-muted"><small><i class="fa fa-info-circle"></i> Isi nama menu / item yang akan disajikan. Rincian bahan baku akan diisi oleh tim purchasing setelah booking tersimpan.</small></p>
         <table class="table table-bordered" id="items_table">
             <thead>
                 <tr>
-                    <th style="width: 30%;">Nama Item / Menu</th>
-                    <th style="width: 10%;">Qty</th>
-                    <th style="width: 12%;">Satuan</th>
-                    <th style="width: 15%;">Harga (Rp)</th>
-                    <th style="width: 15%;">Subtotal</th>
-                    <th style="width: 13%;">Catatan</th>
-                    <th style="width: 5%;"></th>
+                    <th>Nama Menu / Item</th>
+                    <th style="width: 50px;"></th>
                 </tr>
             </thead>
             <tbody id="items_body">
                 @forelse($booking->items as $i => $item)
                 <tr class="item-row">
                     <td><input type="text" name="items[{{ $i }}][item_name]" class="form-control" value="{{ $item->item_name }}"></td>
-                    <td><input type="number" name="items[{{ $i }}][quantity]" class="form-control item-qty" value="{{ $item->quantity }}" min="0" step="0.01"></td>
-                    <td><input type="text" name="items[{{ $i }}][unit]" class="form-control" value="{{ $item->unit }}"></td>
-                    <td><input type="number" name="items[{{ $i }}][price]" class="form-control item-price" value="{{ $item->price }}" min="0" step="0.01"></td>
-                    <td><span class="item-subtotal">{{ number_format($item->subtotal, 0, ',', '.') }}</span></td>
-                    <td><input type="text" name="items[{{ $i }}][note]" class="form-control" value="{{ $item->note }}"></td>
                     <td><button type="button" class="btn btn-danger btn-xs remove-item"><i class="fa fa-times"></i></button></td>
                 </tr>
                 @empty
                 <tr class="item-row">
-                    <td><input type="text" name="items[0][item_name]" class="form-control" placeholder="Nama menu / item"></td>
-                    <td><input type="number" name="items[0][quantity]" class="form-control item-qty" value="1" min="0" step="0.01"></td>
-                    <td><input type="text" name="items[0][unit]" class="form-control" placeholder="pax, porsi"></td>
-                    <td><input type="number" name="items[0][price]" class="form-control item-price" value="0" min="0" step="0.01"></td>
-                    <td><span class="item-subtotal">0</span></td>
-                    <td><input type="text" name="items[0][note]" class="form-control" placeholder="Catatan"></td>
+                    <td><input type="text" name="items[0][item_name]" class="form-control" placeholder="Contoh: Nasi Goreng, Sate Ayam, Jus Alpukat"></td>
                     <td><button type="button" class="btn btn-danger btn-xs remove-item"><i class="fa fa-times"></i></button></td>
                 </tr>
                 @endforelse
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" class="text-right"><strong>Total:</strong></td>
-                    <td><strong id="grand_total">{{ number_format($booking->total_amount, 0, ',', '.') }}</strong></td>
-                    <td colspan="2">
+                    <td>
                         <button type="button" class="btn btn-success btn-sm" id="add_item_row">
                             <i class="fa fa-plus"></i> Tambah Item
                         </button>
                     </td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>
@@ -230,16 +221,26 @@
             } else {
                 $('#price_per_pax_row').hide();
             }
+            calculatePerPaxTotal();
         });
+
+        $(document).on('input', '#price_per_pax_input, #estimated_guests_input', function() {
+            calculatePerPaxTotal();
+        });
+
+        function calculatePerPaxTotal() {
+            if ($('#pricing_type').val() !== 'per_pax') {
+                return;
+            }
+
+            var pax = parseFloat($('#estimated_guests_input').val()) || 0;
+            var price = parseFloat($('#price_per_pax_input').val()) || 0;
+            $('#total_amount_input').val(pax * price);
+        }
 
         $('#add_item_row').on('click', function() {
             var row = `<tr class="item-row">
-                <td><input type="text" name="items[${itemIndex}][item_name]" class="form-control" placeholder="Nama menu / item"></td>
-                <td><input type="number" name="items[${itemIndex}][quantity]" class="form-control item-qty" value="1" min="0" step="0.01"></td>
-                <td><input type="text" name="items[${itemIndex}][unit]" class="form-control" placeholder="pax, porsi"></td>
-                <td><input type="number" name="items[${itemIndex}][price]" class="form-control item-price" value="0" min="0" step="0.01"></td>
-                <td><span class="item-subtotal">0</span></td>
-                <td><input type="text" name="items[${itemIndex}][note]" class="form-control" placeholder="Catatan"></td>
+                <td><input type="text" name="items[${itemIndex}][item_name]" class="form-control" placeholder="Contoh: Nasi Goreng, Sate Ayam, Jus Alpukat"></td>
                 <td><button type="button" class="btn btn-danger btn-xs remove-item"><i class="fa fa-times"></i></button></td>
             </tr>`;
             $('#items_body').append(row);
@@ -248,31 +249,9 @@
 
         $(document).on('click', '.remove-item', function() {
             $(this).closest('tr').remove();
-            calculateGrandTotal();
         });
 
-        $(document).on('input', '.item-qty, .item-price', function() {
-            var row = $(this).closest('tr');
-            var qty = parseFloat(row.find('.item-qty').val()) || 0;
-            var price = parseFloat(row.find('.item-price').val()) || 0;
-            var subtotal = qty * price;
-            row.find('.item-subtotal').text(formatNumber(subtotal));
-            calculateGrandTotal();
-        });
-
-        function calculateGrandTotal() {
-            var total = 0;
-            $('.item-row').each(function() {
-                var qty = parseFloat($(this).find('.item-qty').val()) || 0;
-                var price = parseFloat($(this).find('.item-price').val()) || 0;
-                total += qty * price;
-            });
-            $('#grand_total').text(formatNumber(total));
-        }
-
-        function formatNumber(num) {
-            return new Intl.NumberFormat('id-ID').format(num);
-        }
+        calculatePerPaxTotal();
     });
 </script>
 @endsection

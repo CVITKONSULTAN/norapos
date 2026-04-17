@@ -78,6 +78,11 @@ class VenueBooking extends Model
         return $this->hasMany(VenueBookingPayment::class);
     }
 
+    public function ingredientUsages()
+    {
+        return $this->hasMany(VenueBookingIngredient::class, 'venue_booking_id');
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -116,12 +121,19 @@ class VenueBooking extends Model
      */
     public function recalculateTotal()
     {
-        $itemsTotal = $this->items()->sum('subtotal');
-        $paidTotal = $this->payments()->sum('amount');
+        $itemsTotal = (float) $this->items()->sum('subtotal');
+        $paidTotal = (float) $this->payments()->sum('amount');
+        $currentTotal = (float) $this->total_amount;
 
-        $this->total_amount = $itemsTotal;
+        if ($this->pricing_type === 'per_pax') {
+            $currentTotal = (float) $this->estimated_guests * (float) $this->price_per_pax;
+        } elseif ($itemsTotal > 0) {
+            $currentTotal = $itemsTotal;
+        }
+
+        $this->total_amount = $currentTotal;
         $this->dp_amount = $paidTotal;
-        $this->remaining_amount = $itemsTotal - $paidTotal;
+        $this->remaining_amount = $currentTotal - $paidTotal;
         $this->save();
     }
 

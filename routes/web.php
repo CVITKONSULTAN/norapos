@@ -688,6 +688,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::post('/venue-bookings/{id}/payment', 'VenueBookingController@addPayment')->name('venue_bookings.add_payment');
     Route::delete('/venue-bookings/{id}/payment/{paymentId}', 'VenueBookingController@deletePayment')->name('venue_bookings.delete_payment');
     Route::post('/venue-bookings/{id}/update-status', 'VenueBookingController@updateStatus')->name('venue_bookings.update_status');
+    Route::get('/venue-bookings/{id}/ingredients', 'VenueBookingController@ingredients')->name('venue_bookings.ingredients');
+    Route::post('/venue-bookings/{id}/ingredients', 'VenueBookingController@saveIngredients')->name('venue_bookings.save_ingredients');
     Route::resource('venue-bookings', 'VenueBookingController');
 
     Route::get('/cash-register/register-details', 'CashRegisterController@getRegisterDetails');

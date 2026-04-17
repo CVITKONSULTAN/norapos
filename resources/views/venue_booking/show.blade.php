@@ -8,6 +8,11 @@
     </h1>
 </section>
 
+@php
+    $can_view_finance = auth()->user()->can('venue_booking.payment');
+    $can_manage_ingredients = auth()->user()->can('venue_booking.update') || auth()->user()->can('venue_booking.ingredient');
+@endphp
+
 <section class="content">
     <div class="row">
         {{-- Left Column --}}
@@ -45,7 +50,7 @@
                                 <td><strong>Tipe Harga</strong></td>
                                 <td>{{ $booking->pricing_type_label }}</td>
                             </tr>
-                            @if($booking->pricing_type === 'per_pax')
+                            @if($booking->pricing_type === 'per_pax' && $can_view_finance)
                             <tr>
                                 <td><strong>Harga Per Pax</strong></td>
                                 <td>Rp {{ number_format($booking->price_per_pax, 0, ',', '.') }}</td>
@@ -108,8 +113,10 @@
                             <th>Item / Menu</th>
                             <th>Qty</th>
                             <th>Satuan</th>
+                            @if($can_view_finance)
                             <th>Harga</th>
                             <th>Subtotal</th>
+                            @endif
                             <th>Catatan</th>
                         </tr>
                     </thead>
@@ -120,16 +127,19 @@
                             <td>{{ $item->item_name }}</td>
                             <td>{{ rtrim(rtrim(number_format($item->quantity, 4), '0'), '.') }}</td>
                             <td>{{ $item->unit ?? '-' }}</td>
+                            @if($can_view_finance)
                             <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                            @endif
                             <td>{{ $item->note ?? '-' }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Belum ada item pesanan</td>
+                            <td colspan="{{ $can_view_finance ? 7 : 5 }}" class="text-center text-muted">Belum ada item pesanan</td>
                         </tr>
                         @endforelse
                     </tbody>
+                    @if($can_view_finance)
                     <tfoot>
                         <tr>
                             <td colspan="5" class="text-right"><strong>Total</strong></td>
@@ -137,10 +147,49 @@
                             <td></td>
                         </tr>
                     </tfoot>
+                    @endif
+                </table>
+            @endcomponent
+
+            {{-- Bahan Baku Event --}}
+            @component('components.widget', ['class' => 'box-info', 'title' => 'Bahan Baku Event'])
+                @if($can_manage_ingredients)
+                <div style="margin-bottom: 10px;">
+                    <a href="{{ action('VenueBookingController@ingredients', [$booking->id]) }}" class="btn btn-primary btn-sm">
+                        <i class="fa fa-list-alt"></i> Input / Edit Bahan Baku
+                    </a>
+                </div>
+                @endif
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Bahan Baku</th>
+                            <th>Qty Estimasi</th>
+                            <th>Satuan</th>
+                            <th>Catatan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($booking->ingredientUsages as $i => $usage)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $usage->ingredient->name ?? '-' }}</td>
+                            <td>{{ rtrim(rtrim(number_format($usage->qty, 4), '0'), '.') }}</td>
+                            <td>{{ $usage->unit->short_name ?? $usage->unit->actual_name ?? $usage->ingredient->unit->short_name ?? $usage->ingredient->unit->actual_name ?? '-' }}</td>
+                            <td>{{ $usage->note ?? '-' }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Belum ada bahan baku yang diinput untuk event ini</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
                 </table>
             @endcomponent
 
             {{-- Riwayat Pembayaran --}}
+            @if($can_view_finance)
             @component('components.widget', ['class' => 'box-warning', 'title' => 'Riwayat Pembayaran'])
                 @can('venue_booking.payment')
                 @slot('tool')
@@ -194,10 +243,12 @@
                     </tbody>
                 </table>
             @endcomponent
+            @endif
         </div>
 
         {{-- Right Column: Summary --}}
         <div class="col-sm-4">
+            @if($can_view_finance)
             @component('components.widget', ['class' => 'box-default', 'title' => 'Ringkasan Keuangan'])
                 <table class="table">
                     <tr>
@@ -214,7 +265,9 @@
                     </tr>
                 </table>
             @endcomponent
+            @endif
 
+            @can('venue_booking.update')
             @component('components.widget', ['class' => 'box-default', 'title' => 'Update Status'])
                 <div class="form-group">
                     {!! Form::select('update_status', [
@@ -229,6 +282,7 @@
                     <i class="fa fa-refresh"></i> Update Status
                 </button>
             @endcomponent
+            @endcan
 
             <div class="row">
                 <div class="col-sm-12">

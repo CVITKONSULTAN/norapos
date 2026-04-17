@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Venue;
 use App\VenueBooking;
+use App\VenueBookingIngredient;
 use App\VenueBookingItem;
 use App\VenueBookingPayment;
+use App\IngredientStock;
+use App\IngredientStockLog;
+use App\BusinessLocation;
 use App\Contact;
+use App\Ingredient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -57,6 +62,9 @@ class VenueBookingController extends Controller
 
                     if (auth()->user()->can('venue_booking.view')) {
                         $html .= '<li><a href="' . action('VenueBookingController@show', [$row->id]) . '"><i class="fa fa-eye"></i> Detail</a></li>';
+                    }
+                    if (auth()->user()->can('venue_booking.update') || auth()->user()->can('venue_booking.ingredient')) {
+                        $html .= '<li><a href="' . action('VenueBookingController@ingredients', [$row->id]) . '"><i class="fa fa-list-alt"></i> Bahan Baku Event</a></li>';
                     }
                     if (auth()->user()->can('venue_booking.update')) {
                         $html .= '<li><a href="' . action('VenueBookingController@edit', [$row->id]) . '"><i class="fa fa-edit"></i> Edit</a></li>';
@@ -150,8 +158,8 @@ class VenueBookingController extends Controller
             ]);
 
             // Create booking items
+            $totalAmount = 0;
             if ($request->has('items')) {
-                $totalAmount = 0;
                 foreach ($request->items as $item) {
                     if (empty($item['item_name'])) continue;
 
@@ -171,9 +179,17 @@ class VenueBookingController extends Controller
 
                     $totalAmount += $subtotal;
                 }
-
-                $booking->total_amount = $totalAmount;
             }
+
+            if ($request->filled('total_amount')) {
+                $totalAmount = (float) $request->total_amount;
+            }
+
+            if (($request->pricing_type ?? 'custom') === 'per_pax') {
+                $totalAmount = (float) ($request->estimated_guests ?? 0) * (float) ($request->price_per_pax ?? 0);
+            }
+
+            $booking->total_amount = $totalAmount;
 
             // Record DP payment if provided
             $dpAmount = 0;
@@ -225,7 +241,7 @@ class VenueBookingController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $booking = VenueBooking::where('business_id', $business_id)
-            ->with(['venue', 'items', 'payments', 'payments.createdBy', 'contact', 'createdBy'])
+            ->with(['venue', 'items', 'payments', 'payments.createdBy', 'contact', 'createdBy', 'ingredientUsages.ingredient.unit', 'ingredientUsages.unit'])
             ->findOrFail($id);
 
         return view('venue_booking.show', compact('booking'));
@@ -271,6 +287,7 @@ class VenueBookingController extends Controller
             DB::beginTransaction();
 
             $booking = VenueBooking::where('business_id', $business_id)->findOrFail($id);
+            $oldStatus = $booking->status;
 
             $booking->update([
                 'venue_id' => $request->venue_id,
@@ -317,11 +334,21 @@ class VenueBookingController extends Controller
                 }
             }
 
+            if ($request->filled('total_amount')) {
+                $totalAmount = (float) $request->total_amount;
+            }
+
+            if (($request->pricing_type ?? 'custom') === 'per_pax') {
+                $totalAmount = (float) ($request->estimated_guests ?? 0) * (float) ($request->price_per_pax ?? 0);
+            }
+
             $paidTotal = $booking->payments()->sum('amount');
             $booking->total_amount = $totalAmount;
             $booking->dp_amount = $paidTotal;
             $booking->remaining_amount = $totalAmount - $paidTotal;
             $booking->save();
+
+            $this->syncIngredientStockByStatus($booking, $oldStatus, $booking->status, $business_id);
 
             DB::commit();
 
@@ -419,6 +446,98 @@ class VenueBookingController extends Controller
     }
 
     /**
+     * Show form to manage ingredient usage for an event.
+     */
+    public function ingredients($id)
+    {
+        if (!auth()->user()->can('venue_booking.update') && !auth()->user()->can('venue_booking.ingredient')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $booking = VenueBooking::where('business_id', $business_id)
+            ->with(['venue', 'ingredientUsages.ingredient.unit', 'ingredientUsages.unit'])
+            ->findOrFail($id);
+
+        $ingredients = Ingredient::where('business_id', $business_id)
+            ->active()
+            ->with('unit')
+            ->orderBy('name')
+            ->get();
+
+        return view('venue_booking.ingredients', compact('booking', 'ingredients'));
+    }
+
+    /**
+     * Save estimated ingredients for an event.
+     */
+    public function saveIngredients(Request $request, $id)
+    {
+        if (!auth()->user()->can('venue_booking.update') && !auth()->user()->can('venue_booking.ingredient')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $business_id = request()->session()->get('user.business_id');
+
+            DB::beginTransaction();
+
+            $booking = VenueBooking::where('business_id', $business_id)->findOrFail($id);
+
+            // Jika booking sudah completed, kembalikan dulu stok lama supaya bisa hitung ulang.
+            if ($booking->status === 'completed') {
+                $this->restoreIngredientsForBooking($booking, $business_id);
+            }
+
+            $booking->ingredientUsages()->delete();
+
+            foreach ($request->input('ingredients', []) as $line) {
+                if (empty($line['ingredient_id']) || empty($line['qty']) || (float) $line['qty'] <= 0) {
+                    continue;
+                }
+
+                $ingredient = Ingredient::where('business_id', $business_id)
+                    ->with('unit')
+                    ->findOrFail($line['ingredient_id']);
+
+                VenueBookingIngredient::create([
+                    'business_id' => $business_id,
+                    'venue_booking_id' => $booking->id,
+                    'ingredient_id' => $ingredient->id,
+                    'unit_id' => $ingredient->unit_id,
+                    'qty' => $line['qty'],
+                    'note' => $line['note'] ?? null,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+
+            // Jika booking completed, langsung potong lagi sesuai data terbaru.
+            if ($booking->status === 'completed') {
+                $booking->load('ingredientUsages');
+                $this->deductIngredientsForBooking($booking, $business_id);
+            }
+
+            DB::commit();
+
+            $output = [
+                'success' => true,
+                'msg' => 'Bahan baku event berhasil disimpan.'
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong')
+            ];
+        }
+
+        return redirect()->action('VenueBookingController@ingredients', [$id])->with('status', $output);
+    }
+
+    /**
      * Delete a payment record.
      */
     public function deletePayment($id, $paymentId)
@@ -464,15 +583,24 @@ class VenueBookingController extends Controller
 
         try {
             $business_id = request()->session()->get('user.business_id');
+
+            DB::beginTransaction();
+
             $booking = VenueBooking::where('business_id', $business_id)->findOrFail($id);
+            $oldStatus = $booking->status;
             $booking->status = $request->status;
             $booking->save();
+
+            $this->syncIngredientStockByStatus($booking, $oldStatus, $booking->status, $business_id);
+
+            DB::commit();
 
             $output = [
                 'success' => true,
                 'msg' => 'Status booking berhasil diupdate.'
             ];
         } catch (\Exception $e) {
+            DB::rollBack();
             \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
@@ -482,5 +610,115 @@ class VenueBookingController extends Controller
         }
 
         return $output;
+    }
+
+    /**
+     * Sinkron stok bahan baku berdasarkan perubahan status booking.
+     */
+    protected function syncIngredientStockByStatus(VenueBooking $booking, $oldStatus, $newStatus, $business_id)
+    {
+        if ($oldStatus !== 'completed' && $newStatus === 'completed') {
+            $booking->loadMissing('ingredientUsages');
+            $this->deductIngredientsForBooking($booking, $business_id);
+        }
+
+        if ($oldStatus === 'completed' && $newStatus !== 'completed') {
+            $this->restoreIngredientsForBooking($booking, $business_id);
+        }
+    }
+
+    /**
+     * Potong stok bahan baku untuk booking (sekali saja per booking).
+     */
+    protected function deductIngredientsForBooking(VenueBooking $booking, $business_id)
+    {
+        $hasLog = IngredientStockLog::where('ref_type', 'venue_booking')
+            ->where('ref_id', $booking->id)
+            ->exists();
+
+        if ($hasLog) {
+            return;
+        }
+
+        $location_id = $this->resolveStockLocationId($business_id);
+        if (empty($location_id)) {
+            throw new \Exception('Lokasi bisnis tidak ditemukan untuk update stok bahan baku.');
+        }
+
+        foreach ($booking->ingredientUsages as $usage) {
+            $qty = (float) $usage->qty;
+            if ($qty <= 0) {
+                continue;
+            }
+
+            $stock = IngredientStock::firstOrCreate(
+                [
+                    'ingredient_id' => $usage->ingredient_id,
+                    'location_id' => $location_id,
+                ],
+                [
+                    'business_id' => $business_id,
+                    'current_qty' => 0,
+                ]
+            );
+
+            $stock->current_qty -= $qty;
+            $stock->updated_at = now();
+            $stock->save();
+
+            IngredientStockLog::create([
+                'ingredient_id' => $usage->ingredient_id,
+                'business_id' => $business_id,
+                'location_id' => $location_id,
+                'qty_change' => -$qty,
+                'ref_type' => 'venue_booking',
+                'ref_id' => $booking->id,
+                'notes' => 'Auto deduct bahan baku dari booking venue #' . $booking->booking_ref,
+                'created_by' => auth()->id(),
+                'created_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Kembalikan stok bahan baku booking berdasarkan log sebelumnya.
+     */
+    protected function restoreIngredientsForBooking(VenueBooking $booking, $business_id)
+    {
+        $logs = IngredientStockLog::where('ref_type', 'venue_booking')
+            ->where('ref_id', $booking->id)
+            ->get();
+
+        foreach ($logs as $log) {
+            $stock = IngredientStock::firstOrCreate(
+                [
+                    'ingredient_id' => $log->ingredient_id,
+                    'location_id' => $log->location_id,
+                ],
+                [
+                    'business_id' => $business_id,
+                    'current_qty' => 0,
+                ]
+            );
+
+            // qty_change log deduct bernilai negatif, jadi dibalik dengan -= qty_change.
+            $stock->current_qty -= (float) $log->qty_change;
+            $stock->updated_at = now();
+            $stock->save();
+        }
+
+        IngredientStockLog::where('ref_type', 'venue_booking')
+            ->where('ref_id', $booking->id)
+            ->delete();
+    }
+
+    /**
+     * Ambil lokasi default untuk mutasi stok bahan baku.
+     */
+    protected function resolveStockLocationId($business_id)
+    {
+        return BusinessLocation::where('business_id', $business_id)
+            ->orderBy('id')
+            ->value('id');
     }
 }

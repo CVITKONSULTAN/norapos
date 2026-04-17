@@ -33,6 +33,11 @@ class Ingredient extends Model
         return $this->hasMany(IngredientAlias::class);
     }
 
+    public function venueBookingUsages()
+    {
+        return $this->hasMany(VenueBookingIngredient::class, 'ingredient_id');
+    }
+
     public function business()
     {
         return $this->belongsTo(Business::class);

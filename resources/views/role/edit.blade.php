@@ -1126,6 +1126,15 @@
               </label>
             </div>
           </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'venue_booking.ingredient', in_array('venue_booking.ingredient', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Input/Edit bahan baku event booking venue
+              </label>
+            </div>
+          </div>
         </div>
         </div>
         <hr>

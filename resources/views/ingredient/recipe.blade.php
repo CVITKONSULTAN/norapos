@@ -30,13 +30,13 @@
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Qty per Porsi *</label>
-                    <input type="number" id="recipe_qty" class="form-control" step="0.0001" min="0" required placeholder="Contoh: 0.25">
+                    <input type="number" id="recipe_qty" class="form-control" step="0.01" min="0" required placeholder="Contoh: 0.25">
                 </div>
             </div>
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Satuan (opsional)</label>
-                    <select id="recipe_unit_id" class="form-control select2">
+                    <select id="recipe_unit_id" class="form-control select2" disabled>
                         <option value="">Satuan bahan</option>
                         @foreach($units as $uid => $uname)
                             <option value="{{ $uid }}">{{ $uname }}</option>
@@ -77,6 +77,8 @@
 @section('javascript')
 <script>
     $(document).ready(function() {
+        var ingredientUnitMap = @json($ingredient_units);
+
         var recipe_table = $('#recipe_table').DataTable({
             processing: true,
             serverSide: true,
@@ -89,13 +91,29 @@
             ],
         });
 
+        // Auto pilih satuan default dari master bahan baku
+        $('#recipe_ingredient_id').on('change', function() {
+            var ingredientId = $(this).val();
+            var unitId = ingredientUnitMap[ingredientId] || '';
+            $('#recipe_unit_id').val(unitId).trigger('change');
+        });
+
         // Tambah resep
         $('#btn_add_recipe').click(function() {
             var edit_id = $('#edit_recipe_id').val();
+            var qty = parseFloat($('#recipe_qty').val());
+
+            if (isNaN(qty)) {
+                toastr.error('Qty tidak valid');
+                return;
+            }
+
+            qty = Number(qty.toFixed(2));
+
             var data = {
                 product_id: '{{ $product->id }}',
                 ingredient_id: $('#recipe_ingredient_id').val(),
-                qty_per_unit: $('#recipe_qty').val(),
+                qty_per_unit: qty,
                 unit_id: $('#recipe_unit_id').val() || null,
             };
 
@@ -144,7 +162,7 @@
 
             $('#edit_recipe_id').val(id);
             $('#recipe_ingredient_id').val(ingredient_id).trigger('change');
-            $('#recipe_qty').val(qty);
+            $('#recipe_qty').val(parseFloat(qty).toFixed(2));
             $('#recipe_unit_id').val(unit_id).trigger('change');
             $('#btn_add_recipe').html('<i class="fa fa-save"></i> Update');
         });

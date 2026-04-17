@@ -42,7 +42,7 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     {!! Form::label('min_stock', 'Minimal Stok') !!}
-                    {!! Form::number('min_stock', 0, ['class' => 'form-control', 'step' => '0.01', 'min' => '0']) !!}
+                    {!! Form::number('min_stock', '0.00', ['class' => 'form-control', 'step' => '0.01', 'min' => '0']) !!}
                 </div>
             </div>
             <div class="col-sm-4">

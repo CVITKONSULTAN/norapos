@@ -188,10 +188,23 @@ class StockAdjustmentController extends Controller
                 $product_data = [];
 
                 foreach ($products as $product) {
+                    $qty = 0;
+                    if (isset($product['stock_in_quantity']) || isset($product['stock_out_quantity'])) {
+                        $stock_in_qty = !empty($product['stock_in_quantity']) ? $this->productUtil->num_uf($product['stock_in_quantity']) : 0;
+                        $stock_out_qty = !empty($product['stock_out_quantity']) ? $this->productUtil->num_uf($product['stock_out_quantity']) : 0;
+                        $qty = round(($stock_out_qty - $stock_in_qty), 2);
+                    } else {
+                        $qty = round($this->productUtil->num_uf($product['quantity']), 2);
+                    }
+
+                    if ((float)$qty == 0.0) {
+                        continue;
+                    }
+
                     $adjustment_line = [
                         'product_id' => $product['product_id'],
                         'variation_id' => $product['variation_id'],
-                        'quantity' => $this->productUtil->num_uf($product['quantity']),
+                        'quantity' => $qty,
                         'unit_price' => $this->productUtil->num_uf($product['unit_price'])
                     ];
                     if (!empty($product['lot_no_line_id'])) {
@@ -200,24 +213,39 @@ class StockAdjustmentController extends Controller
                     }
                     $product_data[] = $adjustment_line;
 
-                    //Decrease available quantity
-                    $this->productUtil->decreaseProductQuantity(
-                        $product['product_id'],
-                        $product['variation_id'],
-                        $input_data['location_id'],
-                        $this->productUtil->num_uf($product['quantity'])
-                    );
+                    if ($qty > 0) {
+                        //Decrease available quantity (stock out)
+                        $this->productUtil->decreaseProductQuantity(
+                            $product['product_id'],
+                            $product['variation_id'],
+                            $input_data['location_id'],
+                            $qty
+                        );
+                    } else {
+                        //Increase available quantity (stock in)
+                        $this->productUtil->updateProductQuantity(
+                            $input_data['location_id'],
+                            $product['product_id'],
+                            $product['variation_id'],
+                            abs($qty)
+                        );
+                    }
                 }
 
-                $stock_adjustment = Transaction::create($input_data);
-                $stock_adjustment->stock_adjustment_lines()->createMany($product_data);
+                if (!empty($product_data)) {
+                    $stock_adjustment = Transaction::create($input_data);
+                    $stock_adjustment->stock_adjustment_lines()->createMany($product_data);
 
-                //Map Stock adjustment & Purchase.
-                $business = ['id' => $business_id,
-                                'accounting_method' => $request->session()->get('business.accounting_method'),
-                                'location_id' => $input_data['location_id']
-                            ];
-                $this->transactionUtil->mapPurchaseSell($business, $stock_adjustment->stock_adjustment_lines, 'stock_adjustment');
+                    //Map Stock adjustment & Purchase (only for stock out lines).
+                    $stock_out_lines = $stock_adjustment->stock_adjustment_lines()->where('quantity', '>', 0)->get();
+                    if ($stock_out_lines->count() > 0) {
+                        $business = ['id' => $business_id,
+                                        'accounting_method' => $request->session()->get('business.accounting_method'),
+                                        'location_id' => $input_data['location_id']
+                                    ];
+                        $this->transactionUtil->mapPurchaseSell($business, $stock_out_lines, 'stock_adjustment');
+                    }
+                }
             }
 
             $output = ['success' => 1,

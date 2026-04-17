@@ -42,7 +42,7 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     {!! Form::label('min_stock', 'Minimal Stok') !!}
-                    {!! Form::number('min_stock', $ingredient->min_stock, ['class' => 'form-control', 'step' => '0.01', 'min' => '0']) !!}
+                    {!! Form::number('min_stock', number_format((float) $ingredient->min_stock, 2, '.', ''), ['class' => 'form-control', 'step' => '0.01', 'min' => '0']) !!}
                 </div>
             </div>
             <div class="col-sm-4">

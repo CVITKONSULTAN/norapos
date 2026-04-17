@@ -117,6 +117,9 @@ class ProductRecipeController extends Controller
                 ->addColumn('ingredient_name', function ($row) {
                     return $row->ingredient->name ?? '-';
                 })
+                ->editColumn('qty_per_unit', function ($row) {
+                    return number_format((float) $row->qty_per_unit, 2, '.', '');
+                })
                 ->addColumn('unit_name', function ($row) {
                     return $row->unit->actual_name ?? ($row->ingredient->unit->actual_name ?? '-');
                 })
@@ -129,9 +132,12 @@ class ProductRecipeController extends Controller
         }
 
         $ingredients = Ingredient::forDropdown($business_id);
+        $ingredient_units = Ingredient::where('business_id', $business_id)
+            ->where('is_active', true)
+            ->pluck('unit_id', 'id');
         $units = Unit::forDropdown($business_id, true);
 
-        return view('ingredient.recipe', compact('product', 'ingredients', 'units'));
+        return view('ingredient.recipe', compact('product', 'ingredients', 'units', 'ingredient_units'));
     }
 
     /**
@@ -145,7 +151,12 @@ class ProductRecipeController extends Controller
 
         try {
             $input = $request->only(['product_id', 'ingredient_id', 'qty_per_unit', 'unit_id', 'variation_id']);
-            if (empty($input['unit_id'])) $input['unit_id'] = null;
+            $business_id = request()->session()->get('user.business_id');
+
+            $input['qty_per_unit'] = round((float) $input['qty_per_unit'], 2);
+            $input['unit_id'] = Ingredient::where('business_id', $business_id)
+                ->where('id', $input['ingredient_id'])
+                ->value('unit_id');
             if (empty($input['variation_id'])) $input['variation_id'] = null;
 
             ProductRecipe::create($input);
@@ -177,7 +188,12 @@ class ProductRecipeController extends Controller
         try {
             $recipe = ProductRecipe::findOrFail($id);
             $input = $request->only(['ingredient_id', 'qty_per_unit', 'unit_id']);
-            if (empty($input['unit_id'])) $input['unit_id'] = null;
+            $business_id = request()->session()->get('user.business_id');
+
+            $input['qty_per_unit'] = round((float) $input['qty_per_unit'], 2);
+            $input['unit_id'] = Ingredient::where('business_id', $business_id)
+                ->where('id', $input['ingredient_id'])
+                ->value('unit_id');
 
             $recipe->update($input);
 

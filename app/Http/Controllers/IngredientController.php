@@ -63,15 +63,24 @@ class IngredientController extends Controller
                 ->addColumn('unit_name', function ($row) {
                     return $row->unit->actual_name ?? '-';
                 })
+                ->editColumn('min_stock', function ($row) {
+                    $unit_label = $row->unit->actual_name ?? '';
+                    $formatted_qty = number_format((float) $row->min_stock, 2);
+
+                    return trim($formatted_qty . ' ' . $unit_label);
+                })
                 ->addColumn('stock_info', function ($row) {
                     $stocks = IngredientStock::where('ingredient_id', $row->id)
                         ->with('location')
                         ->get();
                     if ($stocks->isEmpty()) return '<span class="text-muted">Belum ada stok</span>';
+
+                    $unit_label = $row->unit->actual_name ?? '';
                     $html = '';
                     foreach ($stocks as $s) {
                         $class = $s->current_qty < 0 ? 'text-danger' : ($s->current_qty <= $row->min_stock ? 'text-warning' : 'text-success');
-                        $html .= '<span class="' . $class . '">' . ($s->location->name ?? '-') . ': ' . number_format($s->current_qty, 2) . '</span><br>';
+                        $qty_with_unit = trim(number_format((float) $s->current_qty, 2) . ' ' . $unit_label);
+                        $html .= '<span class="' . $class . '">' . ($s->location->name ?? '-') . ': ' . $qty_with_unit . '</span><br>';
                     }
                     return $html;
                 })
@@ -278,7 +287,25 @@ class IngredientController extends Controller
 
         if ($request->isMethod('post')) {
             try {
-                $qty = $request->input('qty');
+                $request->validate([
+                    'location_id' => 'required|integer',
+                    'stock_in' => 'required|numeric|min:0',
+                    'stock_out' => 'required|numeric|min:0',
+                ]);
+
+                $stock_in = round((float) $request->input('stock_in', 0), 2);
+                $stock_out = round((float) $request->input('stock_out', 0), 2);
+                $qty = round($stock_in - $stock_out, 2);
+
+                if ((float) $qty == 0.0) {
+                    $output = [
+                        'success' => false,
+                        'msg' => 'Nilai Stok Masuk/Keluar tidak boleh sama (netto 0).',
+                    ];
+
+                    return redirect()->back()->withInput()->with('status', $output);
+                }
+
                 $location_id = $request->input('location_id');
                 $notes = $request->input('notes', '');
 

@@ -73,9 +73,16 @@ $(document).ready(function() {
         update_table_total();
     });
 
-    $(document).on('change', 'input.product_quantity', function() {
+    $(document).on('change', 'input.stock_in_quantity, input.stock_out_quantity', function() {
+        format_stock_input_to_two_decimals($(this));
         update_table_row($(this).closest('tr'));
     });
+
+    $(document).on('blur', 'input.stock_in_quantity, input.stock_out_quantity', function() {
+        format_stock_input_to_two_decimals($(this));
+        update_table_row($(this).closest('tr'));
+    });
+
     $(document).on('change', 'input.product_unit_price', function() {
         update_table_row($(this).closest('tr'));
     });
@@ -170,10 +177,20 @@ function stock_adjustment_product_row(variation_id) {
         dataType: 'html',
         success: function(result) {
             $('table#stock_adjustment_product_table tbody').append(result);
+            update_table_row($('table#stock_adjustment_product_table tbody tr:last'));
             update_table_total();
             $('#product_row_index').val(row_index + 1);
         },
     });
+}
+
+function format_stock_input_to_two_decimals(input_element) {
+    var quantity = parseFloat(__read_number(input_element));
+    if (isNaN(quantity) || quantity < 0) {
+        quantity = 0;
+    }
+
+    input_element.val(__number_f(quantity, false, false, 2));
 }
 
 function update_table_total() {
@@ -189,7 +206,29 @@ function update_table_total() {
 }
 
 function update_table_row(tr) {
-    var quantity = parseFloat(__read_number(tr.find('input.product_quantity')));
+    var stock_in = parseFloat(__read_number(tr.find('input.stock_in_quantity')));
+    var stock_out = parseFloat(__read_number(tr.find('input.stock_out_quantity')));
+    stock_in = isNaN(stock_in) ? 0 : stock_in;
+    stock_out = isNaN(stock_out) ? 0 : stock_out;
+
+    if (stock_in < 0) {
+        stock_in = 0;
+    }
+    if (stock_out < 0) {
+        stock_out = 0;
+    }
+
+    var quantity_input = tr.find('input.product_quantity');
+    var max_qty = parseFloat(quantity_input.data('qty_available'));
+    if (!isNaN(max_qty) && stock_out > max_qty) {
+        toastr.error(quantity_input.data('msg_max_default'));
+        stock_out = max_qty;
+        tr.find('input.stock_out_quantity').val(__number_f(stock_out, false, false, 2));
+    }
+
+    var quantity = stock_out - stock_in;
+    quantity_input.val(__number_f(quantity, false, false, 2));
+
     var unit_price = parseFloat(__read_number(tr.find('input.product_unit_price')));
     var row_total = 0;
     if (quantity && unit_price) {

@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Adjust Stok - ' . $ingredient->name)
 
+@php
+    $unit_name = $ingredient->unit->actual_name ?? $ingredient->unit->short_name ?? '';
+@endphp
+
 @section('content')
 <section class="content-header">
     <h1>Adjust Stok: {{ $ingredient->name }}
@@ -20,7 +24,7 @@
             <thead>
                 <tr>
                     <th>Lokasi</th>
-                    <th>Qty</th>
+                    <th>Qty {{ !empty($unit_name) ? '(' . $unit_name . ')' : '' }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,7 +32,7 @@
                 <tr>
                     <td>{{ $s->location->name ?? '-' }}</td>
                     <td class="{{ $s->current_qty < 0 ? 'text-danger' : 'text-success' }}">
-                        {{ number_format($s->current_qty, 2) }}
+                        {{ number_format($s->current_qty, 2) }} {{ $unit_name }}
                     </td>
                 </tr>
                 @endforeach
@@ -49,11 +53,23 @@
             </div>
             <div class="col-sm-4">
                 <div class="form-group">
-                    {!! Form::label('qty', 'Qty (+ untuk tambah, - untuk kurangi) *') !!}
-                    {!! Form::number('qty', null, ['class' => 'form-control', 'required', 'step' => '0.01', 'placeholder' => 'Contoh: 100 atau -50']) !!}
+                    {!! Form::label('stock_in', 'Stok Masuk *') !!}
+                    <div class="input-group">
+                        {!! Form::number('stock_in', 0, ['class' => 'form-control', 'required', 'min' => '0', 'step' => '0.01', 'placeholder' => 'Contoh: 100.00']) !!}
+                        <span class="input-group-addon">{{ $ingredient->unit->actual_name ?? '-' }}</span>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-4">
+                <div class="form-group">
+                    {!! Form::label('stock_out', 'Stok Keluar *') !!}
+                    <div class="input-group">
+                        {!! Form::number('stock_out', 0, ['class' => 'form-control', 'required', 'min' => '0', 'step' => '0.01', 'placeholder' => 'Contoh: 50.00']) !!}
+                        <span class="input-group-addon">{{ $ingredient->unit->actual_name ?? '-' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
                 <div class="form-group">
                     {!! Form::label('notes', 'Catatan') !!}
                     {!! Form::text('notes', null, ['class' => 'form-control', 'placeholder' => 'Keterangan adjustment']) !!}

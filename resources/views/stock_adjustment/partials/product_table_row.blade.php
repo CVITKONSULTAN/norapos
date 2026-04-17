@@ -59,13 +59,34 @@
             @endphp
         @endif
 
-        <input type="text" class="form-control product_quantity input_number input_quantity" value="{{@format_quantity($product->quantity_ordered)}}" name="products[{{$row_index}}][quantity]" 
-        @if($product->unit_allow_decimal == 1) data-decimal=1 @else data-rule-abs_digit="true" data-msg-abs_digit="@lang('lang_v1.decimal_value_not_allowed')" data-decimal=0 @endif
-        data-rule-required="true" data-msg-required="@lang('validation.custom-messages.this_field_is_required')" @if($product->enable_stock) data-rule-max-value="{{$product->qty_available}}" data-msg-max-value="@lang('validation.custom-messages.quantity_not_available', ['qty'=> $product->formatted_qty_available, 'unit' => $product->unit  ])"
-        data-qty_available="{{$product->qty_available}}" 
+        @php
+            $default_stock_in = 0;
+            $default_stock_out = (float)$product->quantity_ordered;
+            if ((float)$product->quantity_ordered < 0) {
+                $default_stock_in = abs((float)$product->quantity_ordered);
+                $default_stock_out = 0;
+            }
+        @endphp
+
+        <input type="hidden" class="form-control product_quantity input_number" value="{{number_format(($default_stock_out - $default_stock_in), 2, '.', '')}}" name="products[{{$row_index}}][quantity]"
+        data-rule-required="true" data-msg-required="@lang('validation.custom-messages.this_field_is_required')" @if($product->enable_stock) data-qty_available="{{$product->qty_available}}"
         data-msg_max_default="@lang('validation.custom-messages.quantity_not_available', ['qty'=> $product->formatted_qty_available, 'unit' => $product->unit  ])"
          @endif >
-        {{$product->unit}}
+
+        <div class="input-group" style="margin-bottom: 5px;">
+            <span class="input-group-addon">@lang('stock_adjustment.stock_in')</span>
+            <input type="text" class="form-control stock_in_quantity input_number" value="{{number_format($default_stock_in, 2, '.', '')}}" name="products[{{$row_index}}][stock_in_quantity]"
+            @if($product->unit_allow_decimal == 1) data-decimal="1" @else data-rule-abs_digit="true" data-msg-abs_digit="@lang('lang_v1.decimal_value_not_allowed')" data-decimal="0" @endif
+            data-rule-min="0">
+            <span class="input-group-addon">{{$product->unit}}</span>
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon">@lang('stock_adjustment.stock_out')</span>
+            <input type="text" class="form-control stock_out_quantity input_number" value="{{number_format($default_stock_out, 2, '.', '')}}" name="products[{{$row_index}}][stock_out_quantity]"
+            @if($product->unit_allow_decimal == 1) data-decimal="1" @else data-rule-abs_digit="true" data-msg-abs_digit="@lang('lang_v1.decimal_value_not_allowed')" data-decimal="0" @endif
+            data-rule-min="0">
+            <span class="input-group-addon">{{$product->unit}}</span>
+        </div>
     </td>
     <td>
         <input type="text" name="products[{{$row_index}}][unit_price]" class="form-control product_unit_price input_number" value="{{@num_format($product->last_purchased_price)}}">

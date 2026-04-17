@@ -25,6 +25,9 @@ return [
     'reason_for_stock_adjustment' => 'Alasan',
     'stock_adjustment_added_successfully' => 'Penyesuaian stok berhasil ditambahkan',
     'search_products' => 'Cari produk',
+    'stock_in' => 'Stok masuk',
+    'stock_out' => 'Stok keluar',
+    'stock_in_out' => 'Stok masuk / keluar',
     'delete_success' => 'Penyesuaian stok berhasil dihapus',
     'view_details' => 'Lihat rincian penyesuaian stok'
 ];

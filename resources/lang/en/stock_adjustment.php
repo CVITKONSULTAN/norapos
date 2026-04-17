@@ -25,6 +25,9 @@ return [
     'reason_for_stock_adjustment' => 'Reason',
     'stock_adjustment_added_successfully' => 'Stock adjustment added successfully',
     'search_products' => 'Search Products',
+    'stock_in' => 'Stock in',
+    'stock_out' => 'Stock out',
+    'stock_in_out' => 'Stock in / out',
     'delete_success' => 'Stock adjustment deleted successfully',
     'view_details' => 'View stock adjustment details'
 ];

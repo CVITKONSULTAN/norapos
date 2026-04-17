@@ -81,7 +81,7 @@
 									@lang('sale.product')
 								</th>
 								<th class="col-sm-2 text-center">
-									@lang('sale.qty')
+									@lang('stock_adjustment.stock_in_out')
 								</th>
 								<th class="col-sm-2 text-center">
 									@lang('sale.unit_price')

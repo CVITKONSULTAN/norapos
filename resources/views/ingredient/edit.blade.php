@@ -59,6 +59,9 @@
 
         <div class="row">
             <div class="col-sm-12">
+                <a href="{{ action('IngredientController@adjustStock', [$ingredient->id]) }}" class="btn btn-warning">
+                    <i class="fa fa-exchange"></i> Adjust Stok
+                </a>
                 <button type="submit" class="btn btn-primary pull-right">
                     <i class="fa fa-save"></i> @lang('messages.update')
                 </button>

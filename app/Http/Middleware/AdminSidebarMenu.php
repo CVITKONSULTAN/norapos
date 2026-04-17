@@ -395,37 +395,41 @@ class AdminSidebarMenu
             }
 
             // Bahan Baku (Ingredients) dropdown
-            if (auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create')) {
+            if (
+                auth()->user()->can('ingredient.view') ||
+                auth()->user()->can('ingredient.create') ||
+                auth()->user()->can('ingredient.update') ||
+                auth()->user()->can('ingredient.delete')
+            ) {
                 $menu->dropdown(
                     'Bahan Baku',
                     function ($sub) {
-                        $sub->url(
-                            action('IngredientController@index'),
-                            'Daftar Bahan',
-                            ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'ingredients' && request()->segment(2) == null]
-                        );
-                        if (auth()->user()->can('purchase.create')) {
+                        if (
+                            auth()->user()->can('ingredient.view') ||
+                            auth()->user()->can('ingredient.create')
+                        ) {
+                            $sub->url(
+                                action('IngredientController@index'),
+                                'Daftar Bahan',
+                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(1) == 'ingredients' && request()->segment(2) == null]
+                            );
+                        }
+                        if (auth()->user()->can('ingredient.create')) {
                             $sub->url(
                                 action('IngredientController@create'),
                                 'Tambah Bahan',
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ingredients' && request()->segment(2) == 'create']
                             );
                         }
-                        $sub->url(
-                            action('IngredientPurchaseController@index'),
-                            'Pembelian Bahan',
-                            ['icon' => 'fa fas fa-truck', 'active' => request()->segment(1) == 'ingredient-purchases']
-                        );
-                        $sub->url(
-                            action('ProductRecipeController@catalog'),
-                            'Katalog Resep',
-                            ['icon' => 'fa fas fa-book', 'active' => request()->segment(1) == 'product-recipes' && request()->segment(2) == 'catalog']
-                        );
-                        $sub->url(
-                            action('IngredientController@usageReport'),
-                            'Laporan Pemakaian',
-                            ['icon' => 'fa fas fa-chart-bar', 'active' => request()->segment(1) == 'ingredients' && request()->segment(2) == 'usage-report']
-                        );
+                        if (
+                            auth()->user()->can('ingredient.view')
+                        ) {
+                            $sub->url(
+                                action('IngredientController@usageReport'),
+                                'Laporan Pemakaian',
+                                ['icon' => 'fa fas fa-chart-bar', 'active' => request()->segment(1) == 'ingredients' && request()->segment(2) == 'usage-report']
+                            );
+                        }
                     },
                     ['icon' => 'fa fas fa-cubes']
                 )->order(41);

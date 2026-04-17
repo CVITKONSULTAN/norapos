@@ -29,7 +29,12 @@ class IngredientController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('purchase.view') && !auth()->user()->can('purchase.create')) {
+        if (
+            !auth()->user()->can('ingredient.view') &&
+            !auth()->user()->can('ingredient.create') &&
+            !auth()->user()->can('ingredient.update') &&
+            !auth()->user()->can('ingredient.delete')
+        ) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -48,6 +53,7 @@ class IngredientController extends Controller
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
                             <li><a href="' . action('IngredientController@edit', [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a></li>
+                            <li><a href="' . action('IngredientController@adjustStock', [$row->id]) . '"><i class="fa fa-exchange"></i> Adjust Stok</a></li>
                             <li><a href="' . action('IngredientController@stockLog', [$row->id]) . '"><i class="fa fa-history"></i> Log Stok</a></li>
                             <li><a href="#" class="delete-ingredient" data-href="' . action('IngredientController@destroy', [$row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</a></li>
                         </ul>
@@ -86,7 +92,7 @@ class IngredientController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('ingredient.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -101,7 +107,7 @@ class IngredientController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('ingredient.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -139,7 +145,7 @@ class IngredientController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('ingredient.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -155,7 +161,7 @@ class IngredientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('ingredient.update')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -191,7 +197,7 @@ class IngredientController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('ingredient.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -218,6 +224,15 @@ class IngredientController extends Controller
      */
     public function stockLog($id)
     {
+        if (
+            !auth()->user()->can('ingredient.view') &&
+            !auth()->user()->can('ingredient.create') &&
+            !auth()->user()->can('ingredient.update') &&
+            !auth()->user()->can('ingredient.delete')
+        ) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $business_id = request()->session()->get('user.business_id');
         $ingredient = Ingredient::where('business_id', $business_id)->with('unit')->findOrFail($id);
 
@@ -254,6 +269,10 @@ class IngredientController extends Controller
      */
     public function adjustStock(Request $request, $id)
     {
+        if (!auth()->user()->can('ingredient.update')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $business_id = request()->session()->get('user.business_id');
         $ingredient = Ingredient::where('business_id', $business_id)->findOrFail($id);
 
@@ -294,7 +313,7 @@ class IngredientController extends Controller
      */
     public function usageReport(Request $request)
     {
-        if (!auth()->user()->can('purchase.view') && !auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('ingredient.view') && !auth()->user()->can('ingredient.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -369,6 +388,10 @@ class IngredientController extends Controller
      */
     public function searchProducts(Request $request)
     {
+        if (!auth()->user()->can('ingredient.view') && !auth()->user()->can('ingredient.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $business_id = request()->session()->get('user.business_id');
         $term = $request->input('term', '');
 

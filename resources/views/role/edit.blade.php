@@ -1018,6 +1018,117 @@
           </div>
         </div>
         <hr>
+        <div class="row check_group">
+        <div class="col-md-1">
+          <h4>Bahan Baku</h4>
+        </div>
+        <div class="col-md-2">
+          <div class="checkbox">
+              <label>
+                <input type="checkbox" class="check_all input-icheck" > {{ __( 'role.select_all' ) }}
+              </label>
+            </div>
+        </div>
+        <div class="col-md-9">
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'ingredient.view', in_array('ingredient.view', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Lihat bahan baku
+              </label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'ingredient.create', in_array('ingredient.create', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Tambah bahan baku
+              </label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'ingredient.update', in_array('ingredient.update', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Edit bahan baku
+              </label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'ingredient.delete', in_array('ingredient.delete', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Hapus bahan baku
+              </label>
+            </div>
+          </div>
+        </div>
+        </div>
+        <hr>
+        <div class="row check_group">
+        <div class="col-md-1">
+          <h4>Booking Venue</h4>
+        </div>
+        <div class="col-md-2">
+          <div class="checkbox">
+              <label>
+                <input type="checkbox" class="check_all input-icheck" > {{ __( 'role.select_all' ) }}
+              </label>
+            </div>
+        </div>
+        <div class="col-md-9">
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'venue_booking.view', in_array('venue_booking.view', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Lihat booking venue
+              </label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'venue_booking.create', in_array('venue_booking.create', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Tambah booking venue
+              </label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'venue_booking.update', in_array('venue_booking.update', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Edit booking venue
+              </label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'venue_booking.delete', in_array('venue_booking.delete', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Hapus booking venue
+              </label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'venue_booking.payment', in_array('venue_booking.payment', $role_permissions),
+                [ 'class' => 'input-icheck']); !!}
+                  Tambah/Edit/Hapus pembayaran booking venue
+              </label>
+            </div>
+          </div>
+        </div>
+        </div>
+        <hr>
 
         @if(in_array('booking', $enabled_modules))
         <div class="row check_group">

@@ -357,18 +357,29 @@ class KelasController extends Controller
     }
 
     function kelasSiswaImport(Request $request){
+        $request->validate([
+            'kelas_id' => 'required',
+            'import_file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
 
         $kelas_id = $request->kelas_id;
 
-        Excel::import(
-            new KelasSiswaImport([
-                'kelas_id'=>$kelas_id
-            ]), 
-            request()->file('import_file')
-        );
-        return redirect()
-        ->back()
-        ->with('success', 'All good!');
+        try {
+            Excel::import(
+                new KelasSiswaImport([
+                    'kelas_id' => $kelas_id
+                ]),
+                $request->file('import_file')
+            );
+
+            return redirect()
+            ->back()
+            ->with('message', 'success|Import data siswa kelas berhasil.');
+        } catch (\Throwable $e) {
+            return redirect()
+            ->back()
+            ->with('message', 'error|' . $e->getMessage());
+        }
     }
 
     function detail(Request $request,$id){

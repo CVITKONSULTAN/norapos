@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 
 use \App\Models\Sekolah\Siswa;
 use \App\Models\Sekolah\Kelas;
@@ -13,6 +14,8 @@ use \App\Http\Controllers\Sekolah\KelasController;
 
 class KelasSiswaImport implements ToModel, WithHeadingRow
 {
+    use RemembersRowNumber;
+
     private $kelas_id = null;
 
     function __construct($data){
@@ -26,31 +29,33 @@ class KelasSiswaImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // try {
-            // dd($row);
+        $rowNumber = $this->getRowNumber();
+        $nisn = trim((string) ($row['nisn'] ?? ''));
 
-            $siswa = Siswa::where('nisn',$row['nisn'])->first();
-            if(empty($siswa)){
-                dd("nisn not found",$siswa,$row);
-            }
+        if ($nisn === '') {
+            throw new \Exception("Import gagal pada baris {$rowNumber}: kolom 'nisn' kosong.");
+        }
 
-            $input = [
-                'siswa_id' => $siswa->id,
-                'kelas_id' => $this->kelas_id,
-            ];
+        $siswa = Siswa::where('nisn', $nisn)->first();
+        if (empty($siswa)) {
+            throw new \Exception("Import gagal pada baris {$rowNumber}: NISN '{$nisn}' tidak ditemukan pada data siswa.");
+        }
 
-            $k = KelasSiswa::where($input)->firstOrCreate($input);
+        $input = [
+            'siswa_id' => $siswa->id,
+            'kelas_id' => $this->kelas_id,
+        ];
 
-            $kelas_data = Kelas::find($this->kelas_id);
+        $k = KelasSiswa::where($input)->firstOrCreate($input);
 
-            $kelas = new KelasController();
-            $kelas->storeKelasMapel($k,$kelas_data->kelas);
-            // dd($k);
-            return $k;
-        // } catch (\Throwable $th) {
-            //throw $th;
-            // return ['message'=> $th->getMessage()];
-            return;
-        // }
+        $kelas_data = Kelas::find($this->kelas_id);
+        if (empty($kelas_data)) {
+            throw new \Exception("Import gagal pada baris {$rowNumber}: kelas tujuan tidak ditemukan.");
+        }
+
+        $kelas = new KelasController();
+        $kelas->storeKelasMapel($k, $kelas_data->kelas);
+
+        return $k;
     }
 }

@@ -209,6 +209,69 @@
                     }
                 ]
             })
+            
+            // Event handlers for dynamic dropdown filtering
+            function updateFilterOptions() {
+                const tahunAjaran = $('#filter_tahun_ajaran').val();
+                const semester = $('#filter_semester').val();
+                const namaKelas = $('#filter_nama_kelas').val();
+                
+                $.ajax({
+                    url: "{{ route('sekolah_sd.walikelas.filter_options') }}",
+                    type: 'GET',
+                    data: {
+                        tahun_ajaran: tahunAjaran,
+                        semester: semester,
+                        nama_kelas: namaKelas
+                    },
+                    success: function(response) {
+                        // Update tahun_ajaran dropdown
+                        const currentTahun = $('#filter_tahun_ajaran').val();
+                        $('#filter_tahun_ajaran').empty();
+                        response.tahun_ajaran.forEach(item => {
+                            $('#filter_tahun_ajaran').append(
+                                `<option value="${item}" ${item === currentTahun ? 'selected' : ''}>${item}</option>`
+                            );
+                        });
+                        
+                        // Update semester dropdown
+                        const currentSemester = $('#filter_semester').val();
+                        $('#filter_semester').empty();
+                        response.semester.forEach(item => {
+                            $('#filter_semester').append(
+                                `<option value="${item}" ${item === currentSemester ? 'selected' : ''}>${item}</option>`
+                            );
+                        });
+                        
+                        // Update nama_kelas dropdown
+                        const currentKelas = $('#filter_nama_kelas').val();
+                        $('#filter_nama_kelas').empty();
+                        response.nama_kelas.forEach(item => {
+                            $('#filter_nama_kelas').append(
+                                `<option value="${item}" ${item === currentKelas ? 'selected' : ''}>${item}</option>`
+                            );
+                        });
+                        
+                        // Update mapel dropdown
+                        const currentMapel = $('#filter_mapel').val();
+                        $('#filter_mapel').empty();
+                        response.mapel.forEach(item => {
+                            $('#filter_mapel').append(
+                                `<option value="${item.nama}" ${item.nama === currentMapel ? 'selected' : ''}>${item.nama}</option>`
+                            );
+                        });
+                    },
+                    error: function(err) {
+                        console.error('Error updating filter options:', err);
+                    }
+                });
+            }
+            
+            // Bind events to dropdowns
+            $('#filter_tahun_ajaran, #filter_semester, #filter_nama_kelas').on('change', updateFilterOptions);
+            
+            // Initialize filter options on page load
+            updateFilterOptions();
         })
 
 </script>

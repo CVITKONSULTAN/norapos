@@ -1413,6 +1413,60 @@ class SekolahSDController extends Controller
         return view('sekolah_sd.rekap_formatif_walikelas',$data);
     }
     
+    function getWalikelasFilterOptions(Request $request){
+        $tahun_ajaran = $request->get('tahun_ajaran');
+        $semester = $request->get('semester');
+        $nama_kelas = $request->get('nama_kelas');
+        
+        $user = $request->user();
+        
+        // Base query builder function
+        $getBaseQuery = function() use ($user) {
+            $q = Kelas::query();
+            if($user->checkGuruMapel() || $user->checkGuruWaliKelas()){
+                $q = $q->where('wali_kelas_id', $user->id);
+            }
+            return $q;
+        };
+        
+        $result = [];
+        
+        // Get available tahun_ajaran (only filter by semester and nama_kelas)
+        $tahunAjaranQuery = $getBaseQuery();
+        if($semester) $tahunAjaranQuery = $tahunAjaranQuery->where('semester', $semester);
+        if($nama_kelas) $tahunAjaranQuery = $tahunAjaranQuery->where('nama_kelas', $nama_kelas);
+        $result['tahun_ajaran'] = $tahunAjaranQuery->distinct()->pluck('tahun_ajaran')->values();
+        
+        // Get available semester (only filter by tahun_ajaran and nama_kelas)
+        $semesterQuery = $getBaseQuery();
+        if($tahun_ajaran) $semesterQuery = $semesterQuery->where('tahun_ajaran', $tahun_ajaran);
+        if($nama_kelas) $semesterQuery = $semesterQuery->where('nama_kelas', $nama_kelas);
+        $result['semester'] = $semesterQuery->distinct()->pluck('semester')->values();
+        
+        // Get available nama_kelas (only filter by tahun_ajaran and semester)
+        $namaKelasQuery = $getBaseQuery();
+        if($tahun_ajaran) $namaKelasQuery = $namaKelasQuery->where('tahun_ajaran', $tahun_ajaran);
+        if($semester) $namaKelasQuery = $namaKelasQuery->where('semester', $semester);
+        $result['nama_kelas'] = $namaKelasQuery->distinct()->pluck('nama_kelas')->values();
+        
+        // Get available mapel (filter by all three)
+        $kelasQuery = $getBaseQuery();
+        if($tahun_ajaran) $kelasQuery = $kelasQuery->where('tahun_ajaran', $tahun_ajaran);
+        if($semester) $kelasQuery = $kelasQuery->where('semester', $semester);
+        if($nama_kelas) $kelasQuery = $kelasQuery->where('nama_kelas', $nama_kelas);
+        
+        $kelasList = $kelasQuery->get()->pluck('kelas')->unique()->values();
+        $result['mapel'] = [];
+        if(count($kelasList) > 0) {
+            $mapelQuery = Mapel::whereIn('kelas', $kelasList->toArray())->distinct()->groupBy('nama')->get();
+            $result['mapel'] = $mapelQuery->map(function($item){
+                return ['id' => $item->id, 'nama' => $item->nama];
+            })->values();
+        }
+        
+        return response()->json($result);
+    }
+    
     function sumatif_walikelas_index(Request $request){
         
         $filter = $request->all();

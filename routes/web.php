@@ -193,6 +193,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->name('sekolah_sd.walikelas.formatif');
         Route::get('sumatif-walikelas','SekolahSDController@sumatif_walikelas_index')
         ->name('sekolah_sd.walikelas.sumatif');
+        Route::get('walikelas-filter-options','SekolahSDController@getWalikelasFilterOptions')
+        ->name('sekolah_sd.walikelas.filter_options');
 
         Route::post('dimensi-projek/import',"Sekolah\ProjekController@import_dimensi_projek")
         ->name('sekolah_sd.dimensi_projek.import');

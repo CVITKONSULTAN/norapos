@@ -1339,7 +1339,7 @@ class SekolahSDController extends Controller
             $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
             if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
 
-            $kelasQuery = Kelas::where('wali_kelas_id',$user->id)->get();
+            $kelasQuery = $this->getWalikelasAccessibleKelasQuery($user)->get();
 
             $kelasList = $kelasQuery->groupBy('kelas')->keys();
             // dd($kelasList);
@@ -1412,6 +1412,21 @@ class SekolahSDController extends Controller
 
         return view('sekolah_sd.rekap_formatif_walikelas',$data);
     }
+
+    private function getWalikelasAccessibleKelasQuery($user)
+    {
+        $kelasIds = [];
+
+        if(!empty($user->tendik)){
+            $kelasIds = $user->tendik->getUniqKelasKhusus();
+        }
+
+        if(empty($kelasIds)){
+            $kelasIds = Kelas::where('wali_kelas_id', $user->id)->pluck('id')->toArray();
+        }
+
+        return Kelas::whereIn('id', $kelasIds);
+    }
     
     function getWalikelasFilterOptions(Request $request){
         $tahun_ajaran = $request->get('tahun_ajaran');
@@ -1420,13 +1435,12 @@ class SekolahSDController extends Controller
         
         $user = $request->user();
         
-        // Base query builder function
         $getBaseQuery = function() use ($user) {
-            $q = Kelas::query();
             if($user->checkGuruMapel() || $user->checkGuruWaliKelas()){
-                $q = $q->where('wali_kelas_id', $user->id);
+                return $this->getWalikelasAccessibleKelasQuery($user);
             }
-            return $q;
+
+            return Kelas::query();
         };
         
         $result = [];
@@ -1498,7 +1512,7 @@ class SekolahSDController extends Controller
             $data['mapel_id_list'] = json_decode($user->tendik->mapel_id_list ?? "[]",true);
             if(empty($data['mapel_id_list'])) $data['mapel_id_list'] = [];
 
-            $kelasQuery = Kelas::where('wali_kelas_id',$user->id)->get();
+            $kelasQuery = $this->getWalikelasAccessibleKelasQuery($user)->get();
 
             $kelasList = $kelasQuery->groupBy('kelas')->keys();
             // dd($kelasList);

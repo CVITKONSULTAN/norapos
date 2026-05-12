@@ -499,7 +499,7 @@ class SekolahSDController extends Controller
 
         $user = $request->user();
         if($user->checkGuruWalikelas()){
-            $kelas = Kelas::where('wali_kelas_id',$user->id)->get();
+            $kelas = $this->getWalikelasAccessibleKelasQuery($user)->get();
             $data['tahun_ajaran'] = $kelas->groupBy('tahun_ajaran')->keys();
             $data['semester'] = $kelas->groupBy('semester')->keys();
             $data['nama_kelas'] = $kelas->groupBy('nama_kelas')->keys();
@@ -1302,8 +1302,9 @@ class SekolahSDController extends Controller
         $data['kelas_perwalian'] = [];
         $data['selected'] = null;
         if($user->checkGuruWalikelas()){
-            $data['kelas_perwalian'] = Kelas::where('wali_kelas_id',$user->id)->get()->pluck('id')->toArray();
-            $data['selected'] = Kelas::where('wali_kelas_id',$user->id)->first();
+            $kelas = $this->getWalikelasAccessibleKelasQuery($user)->get();
+            $data['kelas_perwalian'] = $kelas->pluck('id')->toArray();
+            $data['selected'] = $kelas->first();
         }
         return view('sekolah_sd.tabel_raport',$data);
     }
@@ -1590,13 +1591,13 @@ class SekolahSDController extends Controller
         $data['kelas_perwalian'] = [];
         $data['selected'] = null;
         if($user->checkGuruWalikelas()){
-            $data['kelas_perwalian'] = Kelas::where('wali_kelas_id',$user->id)
+            $data['kelas_perwalian'] = $this->getWalikelasAccessibleKelasQuery($user)
             ->get()
             ->pluck('id')
             ->toArray();
             arsort($data['kelas_perwalian']);
             $data['kelas_perwalian'] = array_values($data['kelas_perwalian']);
-            $data['selected'] = Kelas::where('wali_kelas_id',$user->id)->first();
+            $data['selected'] = Kelas::whereIn('id', $data['kelas_perwalian'])->first();
         }
 
         $data['kelas'] = null;

@@ -629,8 +629,12 @@ class SekolahSDController extends Controller
     
             }
         } catch (\Throwable $th) {
-            Log::info("Error raport akhir index :".$th->getMessage());
-            Log::info(json_encode($data));
+            Log::error('raport_akhir_index_error', [
+                'message' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+                'kelas_siswa_id' => optional($data['kelas_siswa'] ?? null)->id,
+            ]);
         }
 
         $data['nilai_kokurikuler'] = $nilai_kokurikuler;
@@ -802,7 +806,12 @@ class SekolahSDController extends Controller
     
             }
         } catch (\Throwable $th) {
-            Log::info("Error raport akhir index :".$th->getMessage());
+            Log::error('raport_akhir_print_error', [
+                'message' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+                'kelas_siswa_id' => optional($data['kelas_siswa'] ?? null)->id,
+            ]);
         }
 
 
@@ -1601,70 +1610,87 @@ class SekolahSDController extends Controller
         }
 
         $data['kelas'] = null;
-        if($request->kelas_id){
-            $data['kelas'] = Kelas::find($request->kelas_id);
-            if(empty($data['kelas'])){
-                return redirect()
-                ->back()
-                ->with(['success'=>false,'Silahkan pilih kelas yang ada']);
-            }
-            $data['mapel'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
-            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
-            ->whereNull('mapels.deleted_at')
-            ->groupBy('mapel_id')
-            ->orderBy('mapels.orders','asc')
-            ->get();
-            // $data['nilai_siswa'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
-            $nilai_siswa = NilaiSiswa::where('kelas_id',$data['kelas']->id)
-            ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
-            ->whereNull('mapels.deleted_at')
-            ->get()
-            ->groupBy('siswa_id');
-
-            Log::info('kelas_ranking >> '. json_encode($data['kelas']));
-            Log::info('nilais_siswa >> '. json_encode($nilai_siswa));
-
-            $data['nilai_siswa'] = [];
-
-            foreach ($nilai_siswa as $key => $item) {
-                $avg = $item->avg('nilai_rapor');
-                $avg = number_format($avg,2);
-                $total = $item->sum('nilai_rapor');
-                $listItem = $item->sortBy('orders');
-
-                $nis = $item[0]->siswa->detail['nis'] ?? '';
-                $nama = $item[0]->siswa->nama ?? '';
-
-                $list_data = [
-                    'nis'=>$nis,
-                    'nama'=>$nama,
-                    'total'=>$total,
-                    'avg'=>$avg,
-                    'list_nilai'=>[],
-                ];
-                foreach ($listItem as $val) {
-                    $ket = "";
-                    if(
-                        $val->nilai_rapor >= 0 &&
-                        $val->nilai_rapor <= 74
-                    ){
-                        $ket = " (PB)";
-                    }
-                    if(
-                        $val->nilai_rapor >= 75 &&
-                        $val->nilai_rapor <= 100
-                    ){
-                        $ket = " (MP)";
-                    }
-                    $list_data['list_nilai'][] = [
-                        "nilai_rapor"=>$val->nilai_rapor,
-                        "ket"=>$ket
-                    ];
+        try {
+            if($request->kelas_id){
+                $data['kelas'] = Kelas::find($request->kelas_id);
+                if(empty($data['kelas'])){
+                    return redirect()
+                    ->back()
+                    ->with(['success'=>false,'Silahkan pilih kelas yang ada']);
                 }
-                $data['nilai_siswa'][] = $list_data;
-            }
+                $data['mapel'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+                ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
+                ->whereNull('mapels.deleted_at')
+                ->groupBy('mapel_id')
+                ->orderBy('mapels.orders','asc')
+                ->get();
+                // $data['nilai_siswa'] = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+                $nilai_siswa = NilaiSiswa::where('kelas_id',$data['kelas']->id)
+                ->join('mapels', 'mapels.id', '=', 'nilai_siswas.mapel_id')
+                ->whereNull('mapels.deleted_at')
+                ->get()
+                ->groupBy('siswa_id');
 
-            $data['nilai_siswa'] = collect($data['nilai_siswa'])->sortByDesc('avg');
+                $data['nilai_siswa'] = [];
+
+                foreach ($nilai_siswa as $key => $item) {
+                    if($item->isEmpty()){
+                        continue;
+                    }
+
+                    $avg = $item->avg('nilai_rapor');
+                    $avg = number_format($avg,2);
+                    $total = $item->sum('nilai_rapor');
+                    $listItem = $item->sortBy('orders');
+
+                    $firstRow = $item->first();
+                    $nis = $firstRow->siswa->detail['nis'] ?? '';
+                    $nama = $firstRow->siswa->nama ?? '';
+
+                    $list_data = [
+                        'nis'=>$nis,
+                        'nama'=>$nama,
+                        'total'=>$total,
+                        'avg'=>$avg,
+                        'list_nilai'=>[],
+                    ];
+                    foreach ($listItem as $val) {
+                        $ket = "";
+                        if(
+                            $val->nilai_rapor >= 0 &&
+                            $val->nilai_rapor <= 74
+                        ){
+                            $ket = " (PB)";
+                        }
+                        if(
+                            $val->nilai_rapor >= 75 &&
+                            $val->nilai_rapor <= 100
+                        ){
+                            $ket = " (MP)";
+                        }
+                        $list_data['list_nilai'][] = [
+                            "nilai_rapor"=>$val->nilai_rapor,
+                            "ket"=>$ket
+                        ];
+                    }
+                    $data['nilai_siswa'][] = $list_data;
+                }
+
+                $data['nilai_siswa'] = collect($data['nilai_siswa'])->sortByDesc('avg');
+            }
+        } catch (\Throwable $e) {
+            Log::error('ranking_kelas_error', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'kelas_id' => $request->kelas_id,
+                'user_id' => optional($user)->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()
+            ->route('sekolah_sd.ranking_kelas.index')
+            ->with(['success'=>false,'Terjadi kendala saat memuat ranking kelas. Silahkan coba lagi.']);
         }
         return view('sekolah_sd.ranking_kelas',$data);
     }
